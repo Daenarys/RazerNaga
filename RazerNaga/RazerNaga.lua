@@ -299,6 +299,12 @@ function RazerNaga:HideBlizzard()
 	    "MultiBar7",
 	    "PossessActionBar"
 	)
+
+	-- don't reparent the tracking manager, as it assumes its parent has a callback
+	if StatusTrackingBarManager then
+		StatusTrackingBarManager:UnregisterAllEvents()
+		StatusTrackingBarManager:Hide()
+	end
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
