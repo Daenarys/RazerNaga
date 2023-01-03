@@ -255,8 +255,8 @@ local ActionButtons = setmetatable({}, {
         -- enable binding to mousewheel
         button:EnableMouseWheel(true)
 		
-		-- enable masque support
-		button:Skin()
+        -- enable masque support
+        button:Skin()
 
         rawset(self, id, button)
         return button
