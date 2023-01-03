@@ -115,12 +115,21 @@ function PetActionButtonMixin:Skin()
 
 		self.NormalTexture:SetTexture()
 		texture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-		texture:SetSize(50, 49)
+		texture:SetSize(54, 54)
 		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 		texture:SetVertexColor(1, 1, 1, 0.5)
-		texture:SetPoint('CENTER')
+		texture:SetPoint('CENTER', 0, -1)
 		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
 		self.PushedTexture:SetSize(30, 30)
+        self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+        self.HighlightTexture:SetSize(30, 30)
+        self.HighlightTexture:SetBlendMode("ADD")
+        self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+        self.CheckedTexture:ClearAllPoints()
+        self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
+        self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
+        self.CheckedTexture:SetBlendMode("ADD")
+        self.HotKey:SetPoint("TOPRIGHT", 0, -1)
 	end
 end
 
