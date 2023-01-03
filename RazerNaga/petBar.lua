@@ -113,7 +113,6 @@ function PetActionButtonMixin:Skin()
 	if not RazerNaga:Masque('Pet Bar', self) then
 		local texture = self:CreateTexture(nil, 'OVERLAY')
 
-		self.SlotBackground:Hide()
 		self.NormalTexture:SetTexture()
 		texture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
 		texture:SetSize(50, 49)
