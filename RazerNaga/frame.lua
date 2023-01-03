@@ -491,51 +491,31 @@ local function isChildFocus(...)
 	return false
 end
 
-local function isDescendant(frame, ancestor)
-    if frame == nil then
-        return false
-    end
-
-    if frame == ancestor then
-        return true
-    end
-
-    return isDescendant(frame:GetParent(), ancestor)
+local function isDescendant(frame, ...)
+	for i = 1, select('#', ...) do
+		local f = select(i, ...)
+		if frame == f then
+			return true
+		end
+	end
+	for i = 1, select('#', ...) do
+		local f = select(i, ...)
+		if isDescendant(frame, f:GetChildren()) then
+			return true
+		end
+	end
+	return false
 end
 
-local function isFlyoutFocus(flyout, owner)
-    if flyout and flyout:IsVisible() and flyout:IsMouseOver(1, -1, -1, 1) then
-        return isDescendant(flyout, owner)
-    end
-
-    return false
-end
-
-local function isFocus(frame)
-    local focus = GetMouseFocus()
-
-    -- not focused on a particular frame, check to see if the mouse is over
-    -- either the frame itself, or a flyout owned by the frame
-    if focus == WorldFrame then
-        if frame:IsMouseOver(1, -1, -1, 1) then
-            return true
-        end
-
-        if isFlyoutFocus(_G.SpellFlyout, frame) then
-            return true
-        end
-
-        if isFlyoutFocus(RazerNaga.SpellFlyout, frame) then
-            return true
-        end
-    end
-
-    return focus and isDescendant(focus, frame)
-end
-
--- returns all frames docked to the given frame
+--returns all frames docked to the given frame
 function Frame:IsFocus()
-    return isFocus(self) or (RazerNaga:IsLinkedOpacityEnabled() and self:IfAnchored('IsFocus'))
+	if self:IsMouseOver(1, -1, -1, 1) then
+		return (GetMouseFocus() == WorldFrame) or isChildFocus(self:GetChildren())
+	end
+	if SpellFlyout and SpellFlyout:IsMouseOver(1, -1, -1, 1) and isDescendant(SpellFlyout:GetParent(), self) then
+		return true
+	end
+	return RazerNaga:IsLinkedOpacityEnabled() and self:IsDockedFocus()
 end
 
 function Frame:IsDockedFocus()

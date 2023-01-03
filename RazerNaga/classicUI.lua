@@ -69,7 +69,7 @@ ClassicUI.defaults = {
 		},
 		extraFrames = {
 			['Minimap'] = {
-				enabled = false,
+				enabled = true,
 				xOffset = 0,
 				yOffset = 0,
 				scale = 1,
@@ -175,7 +175,7 @@ function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 		QueueStatusButton:SetParent(MinimapBackdrop)
 		QueueStatusButton:ClearAllPoints()
 		if (ClassicUI.db.profile.extraFrames.Minimap.enabled) then
-			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 22 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -100 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
+			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 20 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -95 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
 		else
 			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -7 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -135 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
 		end

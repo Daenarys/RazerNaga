@@ -123,15 +123,49 @@ end
 
 --[[ Bag Bar Controller ]]
 
-local BagBarController = RazerNaga:NewModule('BagBar')
+local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+
+function BagBarController:OnInitialize()
+    -- use our own handling for the blizzard bag bar
+    if MainMenuBarManager then
+        EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", MainMenuBarManager)
+        EventRegistry:UnegisterFrameEventAndCallback("VARIABLES_LOADED", MainMenuBarManager)
+    elseif BagsBar then
+        EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
+        hooksecurefunc(BagsBar, "Layout", function() self:LayoutBagBar() end)
+    end
+
+    if BagBarExpandToggle then
+        BagBarExpandToggle:Hide()
+    end
+
+    if CharacterReagentBag0Slot then
+        CharacterReagentBag0Slot:Hide()
+    end
+end
 
 function BagBarController:Load()
-	self.frame = BagBar:New()
+    if self.frame == nil then
+        self.frame = BagBar:New()
+    end
 end
 
 function BagBarController:Unload()
-	if self.frame then
-		self.frame:Free()
-		self.frame = nil
-	end
+    if self.frame ~= nil then
+        self.frame:Free()
+        self.frame = nil
+    end
+end
+
+function BagBarController:LayoutBagBar()
+    if InCombatLockdown() then
+        self.needsUpdate = true
+        return
+    end
+
+    if self.frame then
+        self.frame:Layout()
+    end
+
+    self.needsUpdate = nil
 end
