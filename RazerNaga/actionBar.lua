@@ -316,31 +316,21 @@ end
 --[[ flyout direction updating ]]--
 
 function ActionBar:GetFlyoutDirection()
-	local w, h = self:GetSize()
-	local isVertical = w < h
-	local anchor = self:GetPoint()
+    local w, h = self:GetSize()
+    local isVertical = w < h
+    local anchor = self:GetPoint()
 
-	if isVertical then
-		if anchor and anchor:match('LEFT') then
-			return 'RIGHT'
-		end
-		return 'LEFT'
-	end
-
-	if anchor and anchor:match('TOP') then
-		return 'DOWN'
-	end
-	return 'UP'
-end
-
-function ActionBar:SetFlyoutDirection(direction)
-    local oldDirection = self.sets.flyoutDirection or 'auto'
-    local newDirection = direction or 'auto'
-
-    if oldDirection ~= newDirection then
-        self.sets.flyoutDirection = newDirection
-        self:UpdateFlyoutDirection()
+    if isVertical then
+        if anchor and anchor:match('LEFT') then
+            return 'RIGHT'
+        end
+        return 'LEFT'
     end
+
+    if anchor and anchor:match('TOP') then
+        return 'DOWN'
+    end
+    return 'UP'
 end
 
 function ActionBar:UpdateFlyoutDirection()
