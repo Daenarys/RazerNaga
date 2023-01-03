@@ -145,7 +145,7 @@ function RazerNaga:GetDefaults()
 			showBindingText = true,
 			showTooltips = true,
 			showTooltipsCombat = true,
-			useOverrideUI = true,
+			useVehicleUI = true,
 
 			minimap = {
 				hide = false,
@@ -153,6 +153,7 @@ function RazerNaga:GetDefaults()
 
 			ab = {
 				count = 10,
+				showgrid = true,
 			},
 
 			frames = {},
