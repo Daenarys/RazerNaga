@@ -241,7 +241,12 @@ function RazerNaga:HideBlizzard()
 	end
 
 	local function banish(frame)
-	    (frame.HideBase or frame.Hide)(frame)
+	    -- EditMode overrides the Hide function, avoid calling it as it can taint
+		if frame.HideBase then
+			frame:HideBase()
+		else
+			frame:Hide()
+		end
 	    frame:SetParent(RazerNaga.ShadowUIParent)
 	end
 
@@ -256,9 +261,9 @@ function RazerNaga:HideBlizzard()
 	    end
 
 	    for _, button in pairs(buttons) do
+	    	button:Hide()
 	        button:UnregisterAllEvents()
 	        button:SetAttribute('statehidden', true)
-	        button:Hide()
 	    end
 	end
 
@@ -272,6 +277,7 @@ function RazerNaga:HideBlizzard()
 	    "MultiBar5",
 	    "MultiBar6",
 	    "MultiBar7",
+	    "StanceBar",
 	    "PossessActionBar",
 	    "MainMenuBarVehicleLeaveButton"
 	)
