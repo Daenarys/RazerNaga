@@ -3,6 +3,8 @@
 		Handles automatic keybinding mode for lynn
 --]]
 
+--[[ globals ]]--
+
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
 local AutoBinder = RazerNaga:NewModule('AutoBinder', 'AceEvent-3.0'); RazerNaga.AutoBinder = AutoBinder
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
@@ -10,7 +12,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 --[[ Events ]]--
 
 function AutoBinder:Load()
-	self:EnforceBindings()
+	--self:EnforceBindings()
 
 	self:RegisterEvent('PLAYER_LOGOUT')
 	RazerNaga.Envoy:Register(self, 'CONFIG_MODE_UPDATE')
@@ -29,7 +31,7 @@ end
 
 --lock events
 function AutoBinder:CONFIG_MODE_UPDATE()
-	self:EnforceBindings()
+	--self:EnforceBindings()
 end
 
 --auto binding enforcement
@@ -39,16 +41,16 @@ end
 
 --keybound events
 function AutoBinder:LIBKEYBOUND_ENABLED()
-	self:EnforceBindings()
+	--self:EnforceBindings()
 end
 
 function AutoBinder:LIBKEYBOUND_DISABLED()
-	self:EnforceBindings()
+	--self:EnforceBindings()
 end
 
 --logout event
 function AutoBinder:PLAYER_LOGOUT()
-	self:EnforceBindings()
+	--self:EnforceBindings()
 end
 
 
@@ -68,14 +70,14 @@ function AutoBinder:EnforceBindings()
 		local set = RazerNaga.BindingsLoader:GetCurrentBindingsSet()
 		if set then
 			RazerNaga:Print(format(L.EnforcingBindings, set.layout, set.localizedName))
-			RazerNaga.BindingsLoader:LoadBindings(set)
+			--RazerNaga.BindingsLoader:LoadBindings(set)
 		end
 	end
 end
 
 --binding confirmation dialog
 local function CreateEnableAutomaticBindingsPrompt()
-	local f = CreateFrame('Frame', nil, UIParent)
+	local f = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 	f:SetFrameStrata('DIALOG')
 	f:SetToplevel(true)
 	f:EnableMouse(true)

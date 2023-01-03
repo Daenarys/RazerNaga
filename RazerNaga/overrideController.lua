@@ -1,7 +1,15 @@
+--[[
+	overrideController.lua
+		Handles the override bars
+--]]
+
+--[[ globals ]]--
+
 local OverrideController = CreateFrame('Frame', nil, UIParent, 'SecureHandlerStateTemplate'); OverrideController:Hide()
 RazerNaga.OverrideController = OverrideController
 
 local overrideBarStates = {
+	bonusbar = '[bonusbar:5]1;0',
 	overridebar = '[overridebar]1;0',
 	possessbar = '[possessbar]1;0',
 	vehicleui = '[vehicleui]1;0',
@@ -90,6 +98,8 @@ function OverrideController:Load()
 			newPage = GetOverrideBarIndex() or 0
 		elseif HasTempShapeshiftActionBar() then
 			newPage = GetTempShapeshiftBarIndex() or 0
+		elseif GetBonusBarOffset() > 4 then
+			newPage = GetBonusBarOffset() + 6
 		else
 			newPage = GetBonusBarOffset() or 0
 		end

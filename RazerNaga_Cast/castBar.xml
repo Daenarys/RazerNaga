@@ -4,7 +4,7 @@
 
 	<Script file="castBar.lua"/>
 
-	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
+	<StatusBar name="RazerNagaCastingBarTemplate" mixin="CastingBarMixin, RazerNagaCastingBarExtensionMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="210" y="14"/>
 
 		<Layers>
@@ -31,17 +31,8 @@
 					</Anchors>
 				</FontString>
 
-				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
-					<Size x="275" y="68"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
-
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
-					<Size>
-						<AbsDimension x="275" y="68"/>
-					</Size>
+					<Size x="275" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -49,8 +40,14 @@
 			</Layer>
 
 			<Layer level="OVERLAY">
+				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
+					<Size x="275" y="68"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-					<Size x="32" y="32"/>
+					<Size x="8" y="20"/>
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset x="0" y="-4"/>
@@ -65,14 +62,20 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		
+		<Animations>
+			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.075" startDelay="0.075"/>
+				<Scripts>
+					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
+				</Scripts>
+			</AnimationGroup>
+		</Animations>
 
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, 'player', true)
+				self:OnLoad('player', true, false);
 			</OnLoad>
 		</Scripts>
-
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 </Ui>

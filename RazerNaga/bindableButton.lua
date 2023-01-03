@@ -3,114 +3,152 @@
 		An abstract button class used to allow keybound to work transparently on both the stock blizzard bindings, and click bindings
 --]]
 
---[[ Globals ]]--
+--[[ globals ]]--
 
-local _G = _G
-local RazerNaga = _G['RazerNaga']
+local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 
+-- binding method definitions
+-- returns the binding action associated with the button
+local function getButtonBindingAction(button)
+    local commandName = button.commandName
+    if commandName then
+        return commandName
+    end
 
---[[ Class ]]--
-
-local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableButton = BindableButton
-
---there's a nice assumption here: all hotkey text will use the same naming convention
---the call here is wacky because this functionality is actually called for the blizzard buttons _before_ I'm able to bind the action button methods to them
-function BindableButton:UpdateHotkey(buttonType)
-	local key = BindableButton.GetHotkey(self, buttonType)
-	
-	if key ~= ''  and RazerNaga:ShowBindingText() then
-		self.HotKey:SetText(key)
-		self.HotKey:Show()
-	else
-		self.HotKey:SetText('') --blank out non blank text, such as RANGE_INDICATOR
-		self.HotKey:Hide()
-	end
+    return ('CLICK %s:LeftButton'):format(button:GetName())
 end
 
---returns what hotkey to display for the button
---priority is auto binding set key, then blizzard binding key, then click binding key
-function BindableButton:GetHotkey(buttonType)
-	local key = BindableButton.GetAutoBindingDisplayKey(self) or BindableButton.GetBlizzBindings(self, buttonType) or BindableButton.GetClickBindings(self)
-	return key and KeyBound:ToShortKey(tostring(key)) or ''
+local function getButtonActionName(button)
+    local commandName = button.commandName
+    if commandName then
+        return GetBindingName(commandName)
+    end
+
+    local action = getButtonBindingAction(button)
+    local bindingName = GetBindingName(action)
+
+    if bindingName and bindingName ~= action then
+        return bindingName
+    end
+
+    return button:GetName()
 end
 
---returns all blizzard bindings assigned to the button
-function BindableButton:GetBlizzBindings(buttonType)
-	local buttonType = buttonType or self.buttonType
-	if buttonType then
-		local id = self:GetAttribute('bindingid') or self:GetID()
-		return GetBindingKey(buttonType .. id)
-	end
+local function getButtonBindings(button)
+    return GetBindingKey(getButtonBindingAction(button))
 end
 
---returns all click bindings assigned to the button
-function BindableButton:GetClickBindings()
-	return GetBindingKey(('CLICK %s:LeftButton'):format(self:GetName()))
+-- returns what hotkey to display for the button
+local function getButtonHotkey(button)
+    local key = (getButtonBindings(button))
+
+    if key then
+        return KeyBound:ToShortKey(key)
+    end
+
+    return ''
 end
 
---returns a comma separated list of all bindings for the given action button
---used for keybound support
-do
-	local strjoin = string.join
-	local select = select
-	local unpack = unpack
-	local _mapTemp = {}
-
-	local function map(func, ...)
-		for k, v in pairs(_mapTemp) do
-			_mapTemp[k] = nil
-		end
-
-		for i = 1, select('#', ...) do
-			local arg = (select(i, ...))
-			_mapTemp[i] = func(arg)
-		end
-
-		return unpack(_mapTemp)
-	end
-
-	local function getKeyStrings(...)
-		return strjoin(', ', map(GetBindingText, ...))
-	end
-
-	function BindableButton:GetBindings()
-		local blizzKeys = getKeyStrings(self:GetBlizzBindings())
-		local clickKeys = getKeyStrings(self:GetClickBindings())
-
-		if blizzKeys then
-			if clickKeys then
-				return strjoin(', ', blizzKeys, clickKeys)
-			end
-			return blizzKeys
-		else
-			return clickKeys
-		end
-	end
+-- returns a space separated list of all bindings for the given button
+local function getButtonBindingsList(button)
+    return strjoin(' ', getButtonBindings(button))
 end
 
---set bindings (more keybound support)
-function BindableButton:SetKey(key)
-	if self.buttonType then
-		local id = self:GetAttribute('bindingid') or self:GetID()
-		SetBinding(key, self.buttonType .. id)
-	else
-		SetBindingClick(key, self:GetName(), 'LeftButton')
-	end
+-- set bindings
+local function setButtonBinding(button, key)
+    return SetBinding(key, getButtonBindingAction(button))
 end
 
---clears all bindings from the button (keybound support again)
-local function ClearBindings(...)
-	for i = 1, select('#', ...) do
-		SetBinding(select(i, ...), nil)
-	end
+-- clears all bindings from the button
+local function clearButtonBindings(button)
+    local key = (getButtonBindings(button))
+
+    while key do
+        SetBinding(key, nil)
+        key = (getButtonBindings(button))
+    end
 end
 
-function BindableButton:ClearBindings()
-	ClearBindings(self:GetBlizzBindings())
-	ClearBindings(self:GetClickBindings())
+-- used to implement keybinding support without applying all of the LibKeyBound
+-- interface methods via a mixin
+local BindableButtonProxy = RazerNaga:CreateHiddenFrame('Frame', 'RazerNaga' .. 'BindableButtonProxy')
+
+-- call a thing if the thing exists
+local function whenExists(obj, func, ...)
+    if obj then
+        return func(obj, ...)
+    end
 end
 
+function BindableButtonProxy:GetHotkey()
+    return whenExists(self:GetParent(), getButtonHotkey)
+end
+
+function BindableButtonProxy:SetKey(key)
+    return whenExists(self:GetParent(), setButtonBinding, key)
+end
+
+function BindableButtonProxy:GetBindings()
+    return whenExists(self:GetParent(), getButtonBindingsList)
+end
+
+function BindableButtonProxy:ClearBindings()
+    return whenExists(self:GetParent(), clearButtonBindings)
+end
+
+function BindableButtonProxy:GetActionName()
+    return whenExists(self:GetParent(), getButtonActionName) or UNKNOWN
+end
+
+BindableButtonProxy:SetScript('OnLeave', function(self)
+    self:ClearAllPoints()
+    self:SetParent(nil)
+end)
+
+-- methods to inject onto a bar to add in common binding functionality
+-- previously, this was a mixin
+local BindableButton = { }
+
+-- adds quickbinding support to buttons
+function BindableButton:AddQuickBindingSupport(button, bindingAction)
+    button:HookScript('OnEnter', BindableButton.OnEnter)
+
+    if bindingAction then
+        button:SetAttribute('bindingAction', bindingAction)
+    end
+
+    if button.UpdateHotkeys then
+        hooksecurefunc(button, 'UpdateHotkeys', BindableButton.UpdateHotkeys)
+    else
+        button.UpdateHotkeys = BindableButton.UpdateHotkeys
+    end
+end
+
+function BindableButton:UpdateHotkeys()
+    local key = getButtonHotkey(self)
+
+    if key ~= '' and RazerNaga:ShowBindingText() then
+        self.HotKey:SetText(key)
+        self.HotKey:Show()
+    else
+        -- blank out non blank text, such as RANGE_INDICATOR
+        self.HotKey:SetText('')
+        self.HotKey:Hide()
+    end
+end
+
+function BindableButton:OnEnter()
+    if not KeyBound:IsShown() then
+        return
+    end
+
+    BindableButtonProxy:ClearAllPoints()
+    BindableButtonProxy:SetAllPoints(self)
+    BindableButtonProxy:SetParent(self)
+
+    KeyBound:Set(BindableButtonProxy)
+end
 
 --[[ lynn auto binding settings, for display override purposes ]]--
 
@@ -130,3 +168,7 @@ end
 function BindableButton:GetAutoBindingDisplayKey()
 	return self.autoBinding
 end
+
+--[[ exports ]]--
+
+RazerNaga.BindableButton = BindableButton

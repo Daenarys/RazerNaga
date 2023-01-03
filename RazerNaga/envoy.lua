@@ -1,7 +1,9 @@
 --[[
-	EnvoyProto
+	envoyProto.lua
 		A simple message passing object.
 --]]
+
+--[[ globals ]]--
 
 local assert = function(condition, msg)
 	if not condition then

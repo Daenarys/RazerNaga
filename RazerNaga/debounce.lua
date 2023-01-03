@@ -1,4 +1,9 @@
---[[ Globals ]]--
+--[[
+	debounce.lua
+		Group multiple sequential calls in a single one
+--]]
+
+--[[ globals ]]--
 
 local AddonName, Addon = ...
 local Timer = RazerNaga.Timer

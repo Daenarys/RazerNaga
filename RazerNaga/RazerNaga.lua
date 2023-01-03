@@ -3,14 +3,19 @@
 		Driver for RazerNaga Frames
 --]]
 
+--[[ globals ]]--
+
 local AddonName, Addon = ...
 
 RazerNaga = LibStub('AceAddon-3.0'):NewAddon(AddonName, 'AceEvent-3.0', 'AceConsole-3.0')
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local KeyBound = LibStub('LibKeyBound-1.0')
 
 local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
+-- setup custom callbacks
+RazerNaga.callbacks = LibStub('CallbackHandler-1.0'):New(Addon)
 
 --[[ Startup ]]--
 
@@ -26,7 +31,6 @@ function RazerNaga:OnInitialize()
 	--version update
 	if RazerNagaVersion then
 		if RazerNagaVersion ~= CURRENT_VERSION then
-			self:UpdateSettings(RazerNagaVersion:match('(%w+)%.(%w+)%.(%w+)'))
 			self:UpdateVersion()
 		end
 	--new user
@@ -37,17 +41,9 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
-	--create a loader for the options menu
-	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
-	f:SetScript('OnShow', function(self)
-		self:SetScript('OnShow', nil)
-		LoadAddOn('RazerNaga_Config')
-	end)
-
 	--keybound support
-	local kb = LibStub('LibKeyBound-1.0')
-	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
-	kb.RegisterCallback(self, 'LIBKEYBOUND_DISABLED')
+    KeyBound.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
+    KeyBound.RegisterCallback(self, 'LIBKEYBOUND_DISABLED')
 end
 
 function RazerNaga:OnEnable()
@@ -57,9 +53,16 @@ function RazerNaga:OnEnable()
 		return
 	end
 
+	self:UpdateUseOverrideUI()
 	self:HideBlizzard()
 	self:CreateDataBrokerPlugin()
+	self:LoadRareDragon()
 	self:Load()
+	
+    -- watch for binding updates, updating all bars on the last one that happens
+    -- in rapid sequence
+    self.UPDATE_BINDINGS = self:Defer(function() self.Frame:ForAll('ForButtons', 'UpdateHotkeys') end, 0.01)
+    self:RegisterEvent('UPDATE_BINDINGS')
 end
 
 function RazerNaga:CreateDataBrokerPlugin()
@@ -142,7 +145,7 @@ function RazerNaga:GetDefaults()
 			showBindingText = true,
 			showTooltips = true,
 			showTooltipsCombat = true,
-			useVehicleUI = true,
+			useOverrideUI = true,
 
 			minimap = {
 				hide = false,
@@ -150,7 +153,6 @@ function RazerNaga:GetDefaults()
 
 			ab = {
 				count = 10,
-				showgrid = true,
 			},
 
 			frames = {},
@@ -182,99 +184,6 @@ function RazerNaga:GetDefaults()
 	self.SettingsLoader:ReplaceSettings(defaults.profile, self.SettingsLoader:GetThreeByFour())
 
 	return defaults
-end
-
-function RazerNaga:UpdateSettings(major, minor, bugfix)
-	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
-		self:UpgradePagingSettings()
-	end
-
-	if self:ShouldFixRogueSettings(major, minor, bugfix) then
-		self:FixRoguePagingSettings()
-	end
-end
-
-function RazerNaga:ShouldUpgradePagingSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 6)
-end
-
-function RazerNaga:ShouldFixRogueSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 7)
-end
-
-function RazerNaga:UpgradePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, oldStates in pairs(frameSets.pages) do
-						local newStates = {}
-
-						--convert class states
-						if class == 'WARRIOR' then
-							newStates['battle'] = oldStates['[bonusbar:1]']
-							newStates['defensive'] = oldStates['[bonusbar:2]']
-							newStates['berserker'] = oldStates['[bonusbar:3]']
-						elseif class == 'DRUID' then
-							newStates['moonkin'] = oldStates['[bonusbar:4]']
-							newStates['bear'] = oldStates['[bonusbar:3]']
-							newStates['tree'] = oldStates['[bonusbar:2]']
-							newStates['prowl'] = oldStates['[bonusbar:1,stealth]']
-							newStates['cat'] = oldStates['[bonusbar:1]']
-						elseif class == 'PRIEST' then
-							newStates['shadow'] = oldStates['[bonusbar:1]']
-						elseif class == 'ROGUE' then
-							newStates['vanish'] = oldStates['[bonusbar:1,form:3]']
-							newStates['shadowdance'] = oldStates['[bonusbar:2]'] or oldStates['form:3']
-							newStates['stealth'] = oldStates['[bonusbar:1]']
-						elseif class == 'WARLOCK' then
-							newStates['meta'] = oldStates['[form:2]']
-						end
-
-						--modifier states
-						for i, state in RazerNaga.BarStates:getAll('modifier') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--possess states
-						for i, state in RazerNaga.BarStates:getAll('possess') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--page states
-						for i, state in RazerNaga.BarStates:getAll('page') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--targeting states
-						for i, state in RazerNaga.BarStates:getAll('target') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						frameSets.pages[class] = newStates
-					end
-				end
-			end
-		end
-	end
-end
-
-function RazerNaga:FixRoguePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, states in pairs(frameSets.pages) do
-						if class == 'ROGUE' then
-							states['shadowdance'] = (states['shadowdance'] or states['stealth'])
-						end
-					end
-				end
-			end
-		end
-	end
 end
 
 function RazerNaga:UpdateVersion()
@@ -316,107 +225,90 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-	HiddenFrame:SetAllPoints(UIParent)
-	HiddenFrame:Hide()
+	-- move a frame to the hidden shadow UI parent
+	local function apply(func, ...)
+		for i = 1, select('#', ...) do
+			local name = (select(i, ...))
+			local frame = _G[name]
 
-	local function apply(func, frame, ...)
-		if select("#", ...) > 0 then
-			return func(frame), apply(func, ...)
-		end
-
-		return func(frame)
-	end
-
-	local function hide(frame)
-		if not frame then return end
-
-		frame:Hide()
-		frame:SetParent(HiddenFrame)
-		frame.ignoreFramePositionManager = true
-
-		-- with 8.2, there's more restrictions on frame anchoring if something
-		-- happens to be attached to a restricted frame. This causes issues with
-		-- moving the action bars around, so we perform a clear all points to avoid
-		-- some frame dependency issues
-		-- we then follow it up with a SetPoint to handle the cases of bits of the
-		-- UI code assuming that this element has a position
-		frame:ClearAllPoints()
-		frame:SetPoint("CENTER")
-	end
-
-	-- disables override bar transition animations
-	local function disableSlideOutAnimations(frame)
-		if not (frame and frame.slideOut) then return end
-
-		local animation = (frame.slideOut:GetAnimations())
-		if animation then
-			animation:SetOffset(0, 0)
+			if frame then
+				func(frame)
+			else
+				self:Printf('Could not find frame %q', name)
+			end
 		end
 	end
 
-	apply(hide,
-		ActionBarDownButton,
-		ActionBarUpButton,
-		MainMenuBarPerformanceBar,
-		MicroButtonAndBagsBar,
-		MultiBarBottomLeft,
-		MultiBarBottomRight,
-		MultiBarLeft,
-		MultiBarRight,
-		MultiCastActionBarFrame,
-		PetActionBarFrame,
-		StanceBarFrame
+	local function banish(frame)
+		(frame.HideBase or frame.Hide)(frame)
+		frame:SetParent(RazerNaga.ShadowUIParent)
+	end
+
+	local function unregisterEvents(frame)
+		frame:UnregisterAllEvents()
+	end
+
+	local function disableActionButtons(frame)
+		local buttons = frame.actionButtons
+		if type(buttons) ~= "table" then
+			return
+		end
+
+		for _, button in pairs(buttons) do
+			button:UnregisterAllEvents()
+			button:SetAttribute('statehidden', true)
+			button:Hide()
+		end
+	end
+
+	apply(banish,
+		"MainMenuBar",
+		"MicroButtonAndBagsBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"PossessActionBar",
+		"StanceBar",
+		"MultiCastActionBarFrame",
+		"StatusTrackingBarManager",
+		"MainMenuBarVehicleLeaveButton"
 	)
 
-	apply(disableSlideOutAnimations,
-		MainMenuBar,
-		MultiBarLeft,
-		MultiBarRight,
-		OverrideActionBar
+	apply(unregisterEvents,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"PossessActionBar",
+		"StanceBar",
+		"MainMenuBarVehicleLeaveButton"
 	)
 
-	-- we don't completely disable the main menu bar, as there's some logic
-	-- dependent on it being visible
-	if MainMenuBar then
-		MainMenuBar:EnableMouse(false)
+	apply(disableActionButtons,
+		"MainMenuBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"PossessActionBar",
+		"StanceBar"
+	)
 
-		-- the main menu bar is responsible for updating the micro buttons
-		-- so we don't disable all events for it
-		MainMenuBar:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
-		MainMenuBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		MainMenuBar:UnregisterEvent("DISPLAY_SIZE_CHANGED")
-		MainMenuBar:UnregisterEvent("UI_SCALE_CHANGED")
-	end
-
-	-- don't hide the art frame, as the multi action bars are dependent on GetLeft
-	-- or similar calls returning a value
-	if MainMenuBarArtFrame then
-		MainMenuBarArtFrame:SetAlpha(0)
-	end
-
-	-- don't reparent the tracking manager, as it assumes its parent has a callback
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:UnregisterAllEvents()
-		StatusTrackingBarManager:Hide()
-	end
-
-	if MainMenuExpBar then
-		MainMenuExpBar:UnregisterAllEvents()
-		hide(MainMenuExpBar)
-	end
-
-	if ReputationWatchBar then
-		ReputationWatchBar:UnregisterAllEvents()
-		hide(ReputationWatchBar)
-	end
-
-	if VerticalMultiBarsContainer then
-		VerticalMultiBarsContainer:UnregisterAllEvents()
-		hide(VerticalMultiBarsContainer)
-	end
-
-	self:UpdateUseOverrideUI()
+	-- disable some action bar controller updates that we probably don't need
+	ActionBarController:UnregisterEvent("UPDATE_SHAPESHIFT_FORM")
+	ActionBarController:UnregisterEvent("UPDATE_SHAPESHIFT_FORMS")
+	ActionBarController:UnregisterEvent("UPDATE_SHAPESHIFT_USABLE")
+	ActionBarController:UnregisterEvent('UPDATE_POSSESS_BAR')
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -445,20 +337,16 @@ end
 
 --[[ Keybound Events ]]--
 
+function RazerNaga:UPDATE_BINDINGS()
+    self:UpdateHotkeys()
+end
+
 function RazerNaga:LIBKEYBOUND_ENABLED()
-	for _,frame in self.Frame:GetAll() do
-		if frame.KEYBOUND_ENABLED then
-			frame:KEYBOUND_ENABLED()
-		end
-	end
+    self.Frame:ForAll('KEYBOUND_ENABLED')
 end
 
 function RazerNaga:LIBKEYBOUND_DISABLED()
-	for _,frame in self.Frame:GetAll() do
-		if frame.KEYBOUND_DISABLED then
-			frame:KEYBOUND_DISABLED()
-		end
-	end
+    self.Frame:ForAll('KEYBOUND_DISABLED')
 end
 
 
@@ -595,11 +483,12 @@ end
 
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
 	if LoadAddOn('RazerNaga_Config') then
-		InterfaceOptionsFrame_Show()
+		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
 	end
@@ -738,6 +627,7 @@ end
 
 function RazerNaga:SetLock(enable)
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
@@ -784,7 +674,6 @@ function RazerNaga:ToggleBindingMode()
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
-		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
@@ -896,8 +785,7 @@ end
 
 function RazerNaga:SetShowGrid(enable)
 	self.db.profile.showgrid = enable or false
-
-	self.ActionBar:ForAll('UpdateGrid')
+	self.Frame:ForAll('UpdateGrid')
 end
 
 function RazerNaga:ShowGrid()
@@ -907,7 +795,7 @@ end
 --right click selfcast
 function RazerNaga:SetRightClickUnit(unit)
 	self.db.profile.ab.rightClickUnit = unit
-	self.ActionBar:ForAll('UpdateRightClickUnit')
+	self.Frame:ForAll('UpdateRightClickUnit')
 end
 
 function RazerNaga:GetRightClickUnit()
@@ -916,17 +804,8 @@ end
 
 --binding text
 function RazerNaga:SetShowBindingText(enable)
-	self.db.profile.showBindingText = enable or false
-
-	for _,f in self.Frame:GetAll() do
-		if f.buttons then
-			for _,b in pairs(f.buttons) do
-				if b.UpdateHotkey then
-					b:UpdateHotkey()
-				end
-			end
-		end
-	end
+    self.db.profile.showBindingText = enable or false
+    self.Frame:ForAll('ForButtons', 'UpdateHotkeys')
 end
 
 function RazerNaga:ShowBindingText()
@@ -935,17 +814,8 @@ end
 
 --macro text
 function RazerNaga:SetShowMacroText(enable)
-	self.db.profile.showMacroText = enable or false
-
-	for _,f in self.Frame:GetAll() do
-		if f.buttons then
-			for _,b in pairs(f.buttons) do
-				if b.UpdateMacro then
-					b:UpdateMacro()
-				end
-			end
-		end
-	end
+    self.db.profile.showMacroText = enable or false
+    self.Frame:ForAll('ForButtons', 'SetShowMacroText', enable)
 end
 
 function RazerNaga:ShowMacroText()
@@ -968,16 +838,12 @@ end
 
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-	count = max(min(count, 120), 1) --sometimes, I do entertaininig things
+    count = Clamp(count, 1, 120)
 
-	if count ~= self:NumBars() then
-		self.ActionBar:ForAll('Delete')
-		self.db.profile.ab.count = count
-
-		for i = 1, self:NumBars() do
-			self.ActionBar:New(i)
-		end
-	end
+    if count ~= self:NumBars() then
+        self.db.profile.ab.count = count
+        self.callbacks:Fire('ACTIONBAR_COUNT_UPDATED', count)
+    end
 end
 
 function RazerNaga:SetNumButtons(count)
@@ -1121,20 +987,206 @@ end
 
 
 --[[ Utility Functions ]]--
+-- create a frame, and then hide it
+function RazerNaga:CreateHiddenFrame(...)
+    local frame = CreateFrame(...)
 
---utility function: create a widget class
-function RazerNaga:CreateClass(type, parentClass)
-	local class = CreateFrame(type)
-	class.mt = {__index = class}
+    frame:Hide()
 
-	if parentClass then
-		class = setmetatable(class, {__index = parentClass})
-		class.super = parentClass
-	end
+    return frame
+end
 
-	function class:Bind(o)
-		return setmetatable(o, self.mt)
-	end
+-- A utility function for extending blizzard widget types (Frames, Buttons, etc)
+do
+    -- extend basically just does a post hook of an existing object method
+    -- its here so that I can not forget to do class.proto.thing when hooking
+    -- thing
+    local function class_Extend(class, method, func)
+        if not (type(method) == 'string' and type(func) == 'function') then
+            error('Usage: Class:Extend("method", func)', 2)
+        end
 
-	return class
+        if type(class.proto[method]) ~= 'function' then
+            error(('Parent has no method named %q'):format(method), 2)
+        end
+
+        class[method] = function(self, ...)
+            class.proto[method](self, ...)
+
+            return func(self, ...)
+        end
+    end
+
+    function RazerNaga:CreateClass(frameType, prototype)
+        local class = self:CreateHiddenFrame(frameType)
+
+        local class_mt = {__index = class}
+
+        class.Bind = function(_, object)
+            return setmetatable(object, class_mt)
+        end
+
+        if type(prototype) == 'table' then
+            class.proto = prototype
+            class.Extend = class_Extend
+
+            setmetatable(class, {__index = prototype})
+        end
+
+        return class
+    end
+end
+-- returns a function that generates unique names for frames
+-- in the format <AddonName>_<Prefix>[1, 2, ...]
+function RazerNaga:CreateNameGenerator(prefix)
+    local id = 0
+    return function()
+        id = id + 1
+        return ('%s_%s_%d'):format('RazerNaga', prefix, id)
+    end
+end
+
+-- A functional way to fade a frame from one opacity to another without constantly
+-- creating new animation groups for the frame
+do
+
+    local function clouseEnough(value1, value2)
+        return _G.Round(value1 * 100) == _G.Round(value2 * 100)
+    end
+
+    -- track the time the animation started playing
+    -- this is so that we can figure out how long we've been delaying for
+    local function animation_OnPlay(self)
+        self.start = _G.GetTime()
+    end
+
+    local function sequence_OnFinished(self)
+        if self.alpha then
+            self:GetParent():SetAlpha(self.alpha)
+            self.alpha = nil
+        end
+    end
+
+    local function sequence_Create(frame)
+        local sequence = frame:CreateAnimationGroup()
+        sequence:SetLooping('NONE')
+        sequence:SetScript('OnFinished', sequence_OnFinished)
+        sequence.alpha = nil
+
+        local animation = sequence:CreateAnimation('Alpha')
+        animation:SetSmoothing('IN_OUT')
+        animation:SetOrder(0)
+        animation:SetScript('OnPlay', animation_OnPlay)
+
+        return sequence, animation
+    end
+
+    RazerNaga.Fade =
+        setmetatable(
+        {},
+        {
+            __call = function(self, addon, frame, toAlpha, delay, duration)
+                return self[frame](toAlpha, delay, duration)
+            end,
+
+            __index = function(self, frame)
+                local sequence, animation
+
+                -- handle animation requests
+                local function func(toAlpha, delay, duration)
+                    -- we're already at target alpha, stop
+                    if clouseEnough(frame:GetAlpha(), toAlpha) then
+                        if sequence and sequence:IsPlaying() then
+                            sequence:Stop()
+                            return
+                        end
+                    end
+
+                    -- create the animation if we've not yet done so
+                    if not sequence then
+                        sequence, animation = sequence_Create(frame)
+                    end
+
+                    local fromAlpha = frame:GetAlpha()
+
+                    -- animation already started, but is in the delay phase
+                    -- so shorten the delay by however much time has gone by
+                    if animation:IsDelaying() then
+                        delay = math.max(delay - (_G.GetTime() - animation.start), 0)
+                    -- we're already in the middle of a fade animation
+                    elseif animation:IsPlaying() then
+                        -- set delay to zero, as we don't want to pause in the
+                        -- middle of an animation
+                        delay = 0
+
+                        -- figure out what opacity we're currently at
+                        -- by using the animation progress
+                        local delta = animation:GetFromAlpha() - animation:GetToAlpha()
+                        fromAlpha = animation:GetFromAlpha() + (delta * animation:GetSmoothProgress())
+                    end
+
+                    -- check that value against our current one
+                    -- if so, quit early
+                    if clouseEnough(fromAlpha, toAlpha) then
+                        frame:SetAlpha(toAlpha)
+
+                        if sequence:IsPlaying() then
+                            sequence:Stop()
+                            return
+                        end
+                    end
+
+                    sequence.alpha = toAlpha
+                    animation:SetFromAlpha(frame:GetAlpha())
+                    animation:SetToAlpha(toAlpha)
+                    animation:SetStartDelay(delay)
+                    animation:SetDuration(duration)
+
+                    sequence:Restart()
+                end
+
+                self[frame] = func
+                return func
+            end
+        }
+    )
+end
+
+-- somewhere between a debounce and a throttle
+function RazerNaga:Defer(func, delay, arg1)
+    delay = delay or 0
+
+    local waiting = false
+
+    local function callback()
+        func(arg1)
+
+        waiting = false
+    end
+
+    return function()
+        if not waiting then
+            waiting = true
+
+            C_Timer.After(delay or 0, callback)
+        end
+    end
+end
+
+-- adds the silver dragon border back to rare portraits
+function RazerNaga:LoadRareDragon()
+	hooksecurefunc(TargetFrame, "CheckClassification", function (self)
+		local classification = UnitClassification(self.unit);
+
+		local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture;
+		if (classification == "rare") then
+			bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
+            bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
+            bossPortraitFrameTexture:Show();
+		else
+			bossPortraitFrameTexture:SetTexCoord(0, 1, 0, 1) -- Reset coords so no more squished dragons
+		end
+
+		self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide();
+	end);
 end

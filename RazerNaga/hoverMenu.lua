@@ -3,6 +3,8 @@
 		A popup menu that is displayed when hovering over a RazerNaga frame in configuration mode
 --]]
 
+--[[ globals ]]--
+
 local HoverMenu = CreateFrame('Frame', nil, UIParent)
 HoverMenu:Hide()
 

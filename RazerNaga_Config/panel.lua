@@ -96,7 +96,7 @@ function Panel:NewCheckButton(name, getter, setter)
 end
 
 function Panel:NewSmallCheckButton(name, getter, setter)
-	local b = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsSmallCheckButtonTemplate')
+	local b = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsCheckButtonTemplate')
 	_G[b:GetName() .. 'Text']:SetText(name)
 	
 	if getter then

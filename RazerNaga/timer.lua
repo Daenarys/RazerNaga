@@ -1,6 +1,9 @@
 --[[
-	Timer Prototype
+	timerPrototype.lua
+		A RazerNaga timer
 --]]
+
+--[[ globals ]]--
 
 local TimerParent = CreateFrame('Frame')
 

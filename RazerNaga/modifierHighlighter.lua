@@ -3,6 +3,8 @@
 		Handles modifier key detection, highlighting, and fading
 --]]
 
+--[[ globals ]]--
+
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
 local ModHighlighter = RazerNaga:NewModule('ModHighlighter', 'AceEvent-3.0'); RazerNaga.ModHighlighter = ModHighlighter
 
@@ -68,7 +70,7 @@ end
 
 function ModHighlighter:GetActiveFrameModifier(frame)
 	local BindingsLoader = RazerNaga.BindingsLoader
-	return BindingsLoader:IsAutoBindingEnabled(frame) and BindingsLoader:GetFrameModifier(frame) 
+	return BindingsLoader:IsAutoBindingEnabled(frame) and BindingsLoader:GetFrameModifier(frame)
 end
 
 

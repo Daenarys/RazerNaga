@@ -3,6 +3,8 @@
 		A dominos based casting bar
 --]]
 
+--[[ globals ]]--
+
 local DCB = RazerNaga:NewModule('CastingBar')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 local CastBar, CastingBar
@@ -21,14 +23,12 @@ end
 CastBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function CastBar:New()
-	local f = self.super.New(self, 'cast')
+	local f = self.proto.New(self, 'cast')
 	f:SetTooltipText(L.CastBarHelp)
 	f:SetFrameStrata('HIGH')
 
 	if not f.cast then
 		f.cast = CastingBar:New(f)
-		f.header:SetParent(nil)
-		f.header:ClearAllPoints()
 		f:SetWidth(240)
 		f:SetHeight(24)
 	end
@@ -97,28 +97,27 @@ function CastingBar:New(parent)
 	f:SetPoint('CENTER')
 
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnUpdate', f.OnUpdate)
-	f:SetScript('OnEvent', f.OnEvent)
+	f:SetScript('OnUpdate', self.OnUpdate)
+	f:SetScript('OnEvent', self.OnEvent)
 
 	return f
 end
 
 function CastingBar:OnEvent(event, ...)
-	CastingBarFrame_OnEvent(self, event, ...)
-
-	local unit, spell = ...
-	if unit == self.unit then
-		if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-			self.failed = true
-		elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-			self.failed = nil
-		end
-		self:UpdateColor(spell)
+	CastingBarMixin.OnEvent(self, event, ...)
+	
+	local unit = self.unit
+	local spell = UnitCastingInfo(unit)
+	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+		self.failed = true
+	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
+		self.failed = nil
 	end
+	self:UpdateColor(spell)
 end
 
 function CastingBar:OnUpdate(elapsed)
-	CastingBarFrame_OnUpdate(self, elapsed)
+	CastingBarMixin.OnUpdate(self, elapsed)
 
 	if self.casting then
 		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
@@ -126,6 +125,14 @@ function CastingBar:OnUpdate(elapsed)
 	elseif self.channeling then
 		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
+		self:HideSpark()
+	elseif self.value >= self.maxValue then
+		self:SetValue(self.maxValue)
+		self:SetStatusBarColor(0.0, 1.0, 0.0)
+		self:HideSpark()
+	else
+		self:SetValue(self.maxValue)
+		self:HideSpark()
 	end
 end
 
@@ -162,5 +169,22 @@ function CastingBar:UpdateColor(spell)
 end
 
 --hide the old casting bar
-CastingBarFrame:UnregisterAllEvents()
-CastingBarFrame:Hide()
+PlayerCastingBarFrame:UnregisterAllEvents()
+PlayerCastingBarFrame:Hide()
+
+
+--[[ 10.0 stuff ]]--
+
+RazerNagaCastingBarExtensionMixin = {}
+
+-- default bars, will get overwritten from layouts
+local typeInfoTexture = "Interface\\TargetingFrame\\UI-StatusBar";
+RazerNagaCastingBarExtensionMixin.typeInfo = {
+    filling = typeInfoTexture,
+    full = typeInfoTexture,
+    glow = typeInfoTexture
+}
+
+function RazerNagaCastingBarExtensionMixin:GetTypeInfo(barType)
+    return self.typeInfo
+end

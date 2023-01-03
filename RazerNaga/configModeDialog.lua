@@ -3,10 +3,12 @@
 		The RazerNaga config mode dialog display
 --]]
 
+--[[ globals ]]--
+
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent)
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()

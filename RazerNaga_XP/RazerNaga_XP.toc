@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 100002
 ## Title: Razer Naga XP
 ## Notes: A movable experience/reputation bar
 ## Author: Tuller

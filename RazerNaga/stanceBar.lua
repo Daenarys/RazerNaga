@@ -1,222 +1,171 @@
+if not StanceBar then return end
 --[[
-	StanceBar.lua: A RazerNaga stance bar
+	stanceBar.lua
+		A RazerNaga stance bar
 --]]
 
 -- don't bother loading the module if the player is currently playing something without a stance
-if not (select(2, UnitClass('player')) == 'DRUID' or select(2, UnitClass('player')) == 'ROGUE') then
-	return
+if not ({
+    DRUID = true,
+    PALADIN = true,
+    PRIEST = true,
+	ROGUE = true,
+    WARRIOR = true,
+})[UnitClassBase('player')] then
+    return
 end
 
---[[ Globals ]]--
+--[[ globals ]]--
 
-local _G = _G
-local RazerNaga = _G['RazerNaga']
+local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 
 
 --[[ Button ]]--
 
-local StanceButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
+local function stanceButton_OnCreate(button)
+    -- tag with the default stance button
+    button.commandName = ('SHAPESHIFTBUTTON%d'):format(button:GetID())
 
-do
-	local unused = {}
+    -- turn off cooldown edges
+    button.cooldown:SetDrawEdge(false)
 
-	StanceButton.buttonType = 'SHAPESHIFTBUTTON'
+    -- turn off constant usability updates
+    button:SetScript("OnUpdate", nil)
 
-	function StanceButton:New(id)
-		local button = self:Restore(id) or self:Create(id)
+    -- register mouse clicks
+    button:EnableMouseWheel(true)
 
-		RazerNaga.BindingsController:Register(button)
-		RazerNaga:GetModule('Tooltips'):Register(button)
+    -- apply hooks for quick binding
+    RazerNaga.BindableButton:AddQuickBindingSupport(button)
+end
 
-		return button
-	end
+local function getOrCreateStanceButton(id)
+    local name = ('%sStanceButton%d'):format('RazerNaga', id)
 
-	function StanceButton:Create(id)
-		local button = self:Bind(_G['StanceButton' .. id])
+    local button = _G[name]
 
-		if button then
-			button:HookScript('OnEnter', self.OnEnter)
-			button:Skin()
-		end
+    if not button then
+        button = CreateFrame('CheckButton', name, nil, 'StanceButtonTemplate', id)
 
-		return button
-	end
+        stanceButton_OnCreate(button)
+    end
 
-	--if we have button facade support, then skin the button that way
-	--otherwise, apply the RazerNaga style to the button to make it pretty
-	function StanceButton:Skin()
-		if RazerNaga:Masque('Class Bar', self) then
-			return
-		end
-
-		local r = self:GetWidth() / _G['ActionButton1']:GetWidth()
-
-		local nt = self:GetNormalTexture()
-		nt:ClearAllPoints()
-		nt:SetPoint('TOPLEFT', -15 * r, 15 * r)
-		nt:SetPoint('BOTTOMRIGHT', 15 * r, -15 * r)
-
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
-	end
-
-	function StanceButton:Restore(id)
-		local b = unused[id]
-		if b then
-			unused[id] = nil
-			b:Show()
-
-			return b
-		end
-	end
-
-	--saving them thar memories
-	function StanceButton:Free()
-		unused[self:GetID()] = self
-
-		self:SetParent(nil)
-		self:Hide()
-
-		RazerNaga.BindingsController:Unregister(self)
-		RazerNaga:GetModule('Tooltips'):Unregister(self)
-	end
-
-	--keybound support
-	function StanceButton:OnEnter()
-		KeyBound:Set(self)
-	end
+    return button
 end
 
 
 --[[ Bar ]]--
 
-local StanceBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+local StanceBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
-do
-	local playerClass = (select(2, UnitClass('Player')))
+function StanceBar:New()
+    return StanceBar.proto.New(self, 'class')
+end
 
-	function StanceBar:New()
-		local f = RazerNaga.Frame.New(self, 'class')
+function StanceBar:GetDefaults()
+    return {
+        point = 'CENTER',
+        spacing = 2
+    }
+end
 
-		local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
-		f:SetTooltipText(L['ClassBarHelp_' .. playerClass])
+function StanceBar:NumButtons()
+    return GetNumShapeshiftForms() or 0
+end
 
-		f:SetScript('OnEvent', f.OnEvent)
+function StanceBar:AcquireButton(index)
+    return getOrCreateStanceButton(index)
+end
 
-		f:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
-		f:RegisterEvent('PLAYER_REGEN_ENABLED')
-		f:RegisterEvent('PLAYER_ENTERING_WORLD')
+function StanceBar:OnAttachButton(button)
+    button:Show()
+    button:UpdateHotkeys()
 
-		f:UpdateNumForms()
+    RazerNaga:GetModule('Tooltips'):Register(button)
+end
 
-		return f
-	end
+function StanceBar:OnDetachButton(button)
+    RazerNaga:GetModule('Tooltips'):Unregister(button)
+end
 
-	function StanceBar:GetDefaults()
-		return {
-			point = 'CENTER',
-			spacing = 2
-		}
-	end
+function StanceBar:UpdateActions()
+	for i, button in pairs(self.buttons) do
+        local texture, isActive, isCastable = GetShapeshiftFormInfo(i)
 
-	function StanceBar:Free()
-		self:UnregisterAllEvents()
+        button:SetAlpha(texture and 1 or 0)
 
-		self.numForms = nil
+        local icon = button.icon
 
-		RazerNaga.Frame.Free(self)
-	end
+        icon:SetTexture(texture)
 
+        if isCastable then
+            icon:SetVertexColor(1.0, 1.0, 1.0)
+        else
+            icon:SetVertexColor(0.4, 0.4, 0.4)
+        end
 
-	--[[ Events/Messages ]]--
+        local start, duration, enable = GetShapeshiftFormCooldown(i)
+        if enable and enable ~= 0 and start > 0 and duration > 0 then
+            button.cooldown:SetCooldown(start, duration)
+        else
+            button.cooldown:Clear()
+        end
 
-	function StanceBar:OnEvent(event, ...)
-		local f = self[event]
+        button:SetChecked(isActive and true)
+    end
+end
 
-		if f and type(f) == 'function' then
-			f(self, event, ...)
-		end
-	end
+--[[ exports ]]--
 
-	function StanceBar:UPDATE_SHAPESHIFT_FORMS()
-		self:UpdateNumForms()
-	end
+RazerNaga.StanceBar = StanceBar
 
-	function StanceBar:PLAYER_REGEN_ENABLED()
-		self:UpdateNumForms()
-	end
+--[[ custom menu ]]--
 
-	function StanceBar:PLAYER_ENTERING_WORLD()
-		self:UpdateNumForms()
-	end
+function StanceBar:CreateMenu()
+	local menu = RazerNaga:NewMenu(self.id)
 
+	menu:AddBindingSelectorPanel()
+	menu:AddLayoutPanel()
+	menu:AddAdvancedPanel()
 
-	--[[ button stuff]]--
-
-	function StanceBar:LoadButtons()
-		self:UpdateForms()
-		self:UpdateClickThrough()
-	end
-
-	function StanceBar:AddButton(i)
-		local b = StanceButton:New(i)
-
-		b:SetParent(self.header)
-		self.buttons[i] = b
-
-		return b
-	end
-
-	function StanceBar:RemoveButton(i)
-		local b = self.buttons[i]
-
-		self.buttons[i] = nil
-
-		b:Free()
-	end
-
-	function StanceBar:UpdateNumForms()
-		if InCombatLockdown() then
-			return
-		end
-
-		local oldNumForms = self.numForms
-		local numForms = GetNumShapeshiftForms() or 0
-
-		if oldNumForms ~= numForms then
-			self.numForms = numForms
-
-			self:SetNumButtons(numForms)
-		end
-	end
-
-	--[[ custom menu ]]--
-
-	function StanceBar:CreateMenu()
-		local menu = RazerNaga:NewMenu(self.id)
-
-		menu:AddBindingSelectorPanel()
-		menu:AddLayoutPanel()
-		menu:AddAdvancedPanel()
-
-		StanceBar.menu = menu
-	end
+	StanceBar.menu = menu
 end
 
 
 --[[ Module ]]--
 
-do
-	local StanceBarController = RazerNaga:NewModule('StanceBar')
+local StanceBarModule = RazerNaga:NewModule('StanceBar', 'AceEvent-3.0')
 
-	function StanceBarController:Load()
-		self.bar = StanceBar:New()
-	end
+function StanceBarModule:Load()
+    self.bar = StanceBar:New()
 
-	function StanceBarController:Unload()
-		if self.bar then
-			self.bar:Free()
-		end
-	end
+    self:RegisterEvent("PLAYER_ENTERING_WORLD", 'UpdateNumForms')
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", 'UpdateNumForms')
+    self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", 'UpdateStanceButtons')
+    self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", 'UpdateStanceButtons')
+    self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", 'UpdateStanceButtons')
 end
+
+function StanceBarModule:Unload()
+    self:UnregisterAllEvents()
+
+    if self.bar then
+        self.bar:Free()
+    end
+end
+
+function StanceBarModule:UpdateNumForms()
+    if not InCombatLockdown() then
+        self.bar:UpdateNumButtons()
+    end
+
+    self:UpdateStanceButtons()
+end
+
+StanceBarModule.UpdateStanceButtons = RazerNaga:Defer(function(self)
+    local bar = self.bar
+    if bar then
+        bar:UpdateActions()
+    end
+end, 0.01, StanceBarModule)

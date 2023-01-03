@@ -1,7 +1,9 @@
 --[[
-	TooltipsController.lua
+	tooltipController.lua
 		Handle showing/hiding frame tooltips in a secure manner
 --]]
+
+--[[ globals ]]--
 
 local TooltipController = RazerNaga:NewModule('Tooltips')
 

@@ -1,146 +1,135 @@
-if not _G['ExtraActionBarFrame'] then
-	return
-end
+if not ExtraAbilityContainer then return end
 
---[[ Globals ]]--
+--[[
+	extraActionBar.lua
+		The RazerNaga extra action bar
+--]]
 
-local _G = _G
-local RazerNaga = _G['RazerNaga']
-local KeyBound = LibStub('LibKeyBound-1.0')
-local Tooltips = RazerNaga:GetModule('Tooltips')
-local Bindings = RazerNaga.BindingsController
+--[[ globals ]]--
 
---[[ buttons ]]--
-
-local ExtraActionButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
-
-do
-	local unused = {}
-
-	function ExtraActionButton:New(id)
-		local button = self:Restore(id) or self:Create(id)
-
-		Tooltips:Register(button)
-		Bindings:Register(button)
-
-		return button
-	end
-
-	function ExtraActionButton:Create(id)
-		local b = self:Bind(_G[('ExtraActionButton%d'):format(id)])
-
-		if b then
-			b.buttonType = 'EXTRAACTIONBUTTON'
-			b:HookScript('OnEnter', self.OnEnter)
-			b:Skin()
-
-			return b
-		end
-	end
-
-	--if we have button facade support, then skin the button that way
-	--otherwise, apply the RazerNaga style to the button to make it pretty
-	function ExtraActionButton:Skin()
-		if not RazerNaga:Masque('Extra Bar', self) then
-			self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-			self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
-		end
-	end
-
-	function ExtraActionButton:Restore(id)
-		local b = unused and unused[id]
-
-		if b then
-			unused[id] = nil
-			b:Show()
-
-			return b
-		end
-	end
-
-	--saving them thar memories
-	function ExtraActionButton:Free()
-		unused[self:GetID()] = self
-
-		self:SetParent(nil)
-		self:Hide()
-
-		Tooltips:Unregister(button)
-		Bindings:Unregister(self)
-	end
-
-	--keybound support
-	function ExtraActionButton:OnEnter()
-		KeyBound:Set(self)
-	end
-end
-
+local RazerNaga = _G[...]
+local L = LibStub("AceLocale-3.0"):GetLocale('RazerNaga')
 
 --[[ bar ]]--
 
-local ExtraBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+local ExtraAbilityBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
-function ExtraBar:New()
-	local f = RazerNaga.Frame.New(self, 'extra')
-	
-	f:LoadButtons()
-	f:Layout()
-
-	return f
+function ExtraAbilityBar:New()
+    return ExtraAbilityBar.proto.New(self, 'extra')
 end
 
-function ExtraBar:GetDefaults()
-	return {
-		point = 'CENTER',
-		x = -244,
-		y = 0,
-	}
+ExtraAbilityBar:Extend('OnAcquire',  function(self)
+    self:RepositionExtraAbilityContainer()
+    self:Layout()
+end)
+
+function ExtraAbilityBar:GetDefaults()
+    return {
+        point = 'BOTTOM',
+        x = 0,
+        y = 160,
+        showInPetBattleUI = true,
+        showInOverrideUI = true
+    }
 end
 
-function ExtraBar:GetShowStates()
-	return '[extrabar]show;hide'
+function ExtraAbilityBar:Layout()
+    local w, h = 256, 120
+    local pW, pH = self:GetPadding()
+
+    self:SetSize(w + pW, h + pH)
 end
 
-function ExtraBar:NumButtons()
-	return 1
+function ExtraAbilityBar:RepositionExtraAbilityContainer()
+    local container = ExtraAbilityContainer
+
+    container:SetParent(self)
+    container:ClearAllPointsBase()
+    container:SetPointBase('CENTER', self)
 end
 
-function ExtraBar:AddButton(i)
-	local b = ExtraActionButton:New(i)
+function ExtraAbilityBar:CreateMenu()
+	local menu = RazerNaga:NewMenu(self.id)
 
-	if b then
-		b:SetAttribute('showgrid', 1)
-		b:SetParent(self.header)
-		b:Show()
+	self:AddLayoutPanel(menu)
 
-		self.buttons[i] = b
-	end
+	self.menu = menu
+
+	return menu
 end
 
-function ExtraBar:RemoveButton(i)
-	local b = self.buttons[i]
+function ExtraAbilityBar:AddLayoutPanel(menu)
+	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
 
-	if b then
-		b:SetParent(nil)
-		b:Hide()
+	panel.opacitySlider = panel:NewOpacitySlider()
+	panel.fadeSlider = panel:NewFadeSlider()
+	panel.scaleSlider = panel:NewScaleSlider()
+	panel.paddingSlider = panel:NewPaddingSlider()
 
-		self.buttons[i] = nil
-	end
+	return panel
 end
-
 
 --[[ module ]]--
 
-local ExtraBarController = RazerNaga:NewModule('ExtraBar')
+local ExtraAbilityBarModule = RazerNaga:NewModule('ExtraAbilityBar')
 
-function ExtraBarController:OnInitialize()
-	_G['ExtraActionBarFrame'].ignoreFramePositionManager = true
+function ExtraAbilityBarModule:Load()
+    if not self.loaded then
+        self:OnFirstLoad()
+        self.loaded = true
+    end
+
+    self.frame = ExtraAbilityBar:New()
 end
 
-function ExtraBarController:Load()
-	self.frame = ExtraBar:New()
+function ExtraAbilityBarModule:Unload()
+    if self.frame then
+        self.frame:Free()
+    end
 end
 
-function ExtraBarController:Unload()
-	self.frame:Free()
+function ExtraAbilityBarModule:OnFirstLoad()
+    self:ApplyTitanPanelWorkarounds()
+
+    -- disable mouse interactions on the extra action bar
+    -- as it can sometimes block the UI from being interactive
+    if ExtraActionBarFrame:IsMouseEnabled() then
+        ExtraActionBarFrame:EnableMouse(false)
+    end
+
+    -- onshow/hide call UpdateManagedFramePositions on the blizzard end so
+    -- turn that bit off
+    ExtraAbilityContainer:SetScript("OnShow", nil)
+    ExtraAbilityContainer:SetScript("OnHide", nil)
+
+    -- also reposition whenever edit mode tries to do so
+    hooksecurefunc(ExtraAbilityContainer, 'ApplySystemAnchor', function()
+        self:RepositionExtraAbilityContainer()
+    end)
+end
+
+function ExtraAbilityBarModule:RepositionExtraAbilityContainer()
+    if (not self.frame) then return end
+
+    local _, relFrame = ExtraAbilityContainer:GetPoint()
+
+    if self.frame ~= relFrame then
+        self.frame:RepositionExtraAbilityContainer()
+    end
+end
+
+
+-- Titan panel will attempt to take control of the ExtraActionBarFrame and break
+-- its position and ability to be usable. This is because Titan Panel doesn't
+-- check to see if another addon has taken control of the bar
+--
+-- To resolve this, we call TitanMovable_AddonAdjust() for the extra ability bar
+-- frames to let titan panel know we are handling positions for the extra bar
+function ExtraAbilityBarModule:ApplyTitanPanelWorkarounds()
+    local adjust = _G.TitanMovable_AddonAdjust
+    if not adjust then return end
+
+    adjust('ExtraAbilityContainer', true)
+    adjust("ExtraActionBarFrame", true)
+    return true
 end

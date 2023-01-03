@@ -2,7 +2,7 @@ local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
 local Anansi = RazerNaga:GetModule('Anansi'); _G['Anansi'] = Anansi
 
 local AnansiFont = CreateFont('RazerAnansi_Font')
-AnansiFont:SetFont([[Interface\AddOns\RazerAnansi\Fonts\RAZER.ttf]], 28)
+AnansiFont:SetFont([[Interface\AddOns\RazerAnansi\Fonts\RAZER.ttf]], 28, "")
 AnansiFont:SetShadowColor(0, 0, 0, 0.5)
 AnansiFont:SetShadowOffset(1, -1)
 
@@ -184,7 +184,7 @@ local AlertsBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame); Anansi.Alerts
 local unused = {}
 
 function AlertsBar:New()
-	local f = self.super.New(self, 'alerts')
+	local f = self.proto.New(self, 'alerts')
 	f:SetFrameStrata('HIGH')
 	f:Layout()
 
