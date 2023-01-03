@@ -1,0 +1,12 @@
+## Interface: 80300
+## Title: Razer Anansi
+## Notes: Anansi keyboard enhancements to the Razer Naga addon
+## Author: Tuller
+## Version: 3.0.8
+## Dependencies: RazerNaga
+anansi.lua
+config.lua
+tPanelWatcher.lua
+tPanel.lua
+bindSync.lua
+alertsBar.lua
