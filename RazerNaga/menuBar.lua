@@ -100,7 +100,7 @@ function MenuBar:Create(frameId)
     if OverrideActionBar then
         getOrHook(
             OverrideActionBar, 'OnShow', function()
-                self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
+                self.isOverrideUIShown = true
                 requestLayoutUpdate()
             end
         )
