@@ -110,7 +110,7 @@ end
 -- if we have button facade support, then skin the button that way
 -- otherwise, apply the RazerNaga style to the button to make it pretty
 function PetActionButtonMixin:Skin()
-	if not RazerNaga:Masque('Pet Bar', self) then
+    if not RazerNaga:Masque('Pet Bar', self) then
         local texture = self:CreateTexture(nil, 'OVERLAY')
 
         self.NormalTexture:SetTexture()
@@ -131,7 +131,7 @@ function PetActionButtonMixin:Skin()
         self.CheckedTexture:SetBlendMode("ADD")
         self.HotKey:SetFont(self.HotKey:GetFont(), 13, "OUTLINE")
         self.HotKey:SetPoint("TOPRIGHT", 0, -2)
-	end
+    end
 end
 
 local function createPetActionButton(name, id)
