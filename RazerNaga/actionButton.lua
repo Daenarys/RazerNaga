@@ -119,6 +119,9 @@ function ActionButtonMixin:Skin()
 		self.CheckedTexture:SetBlendMode("ADD")
 		self.cooldown:ClearAllPoints()
         self.cooldown:SetAllPoints()
+        self.HotKey:SetFont(self.HotKey:GetFont(), 13, "OUTLINE")
+        self.HotKey:SetPoint("TOPRIGHT", -2, -2)
+        self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 	end
 end
 

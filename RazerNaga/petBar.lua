@@ -129,7 +129,8 @@ function PetActionButtonMixin:Skin()
         self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
         self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
         self.CheckedTexture:SetBlendMode("ADD")
-        self.HotKey:SetPoint("TOPRIGHT", 0, -1)
+        self.HotKey:SetFont(self.HotKey:GetFont(), 13, "OUTLINE")
+        self.HotKey:SetPoint("TOPRIGHT", 0, -2)
 	end
 end
 
