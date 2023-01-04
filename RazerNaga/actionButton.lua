@@ -100,7 +100,7 @@ end
 -- if we have button facade support, then skin the button that way
 -- otherwise, apply the RazerNaga style to the button to make it pretty
 function ActionButtonMixin:Skin()
-	if not RazerNaga:Masque('Action Bar', self) then
+    if not RazerNaga:Masque('Action Bar', self) then
         self.SlotBackground:Hide()
         self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
         self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
