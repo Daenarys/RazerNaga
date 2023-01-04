@@ -101,28 +101,24 @@ end
 -- otherwise, apply the RazerNaga style to the button to make it pretty
 function ActionButtonMixin:Skin()
 	if not RazerNaga:Masque('Action Bar', self) then
-		local texture = self:CreateTexture(nil, 'OVERLAY')
-
 		self.SlotBackground:Hide()
-		self.NormalTexture:SetTexture()
-        self.icon:SetTexCoord(0.01, 0.99, 0.01, 0.99)
-		texture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-		texture:SetPoint("TOPLEFT", -15, 15)
-        texture:SetPoint("BOTTOMRIGHT", 15, -15)
-		texture:SetVertexColor(1, 1, 1, 0.5)
+        self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+		self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+        self.NormalTexture:ClearAllPoints()
+		self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+        self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+		self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
 		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-		self.PushedTexture:SetSize(44, 44)
+        self.PushedTexture:SetSize(36, 36)
 		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-		self.HighlightTexture:SetSize(44, 44)
+        self.HighlightTexture:SetSize(36, 36)
 		self.HighlightTexture:SetBlendMode("ADD")
 		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
 		self.CheckedTexture:ClearAllPoints()
-		self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 1, -1)
-		self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -2, 2)
+        self.CheckedTexture:SetAllPoints()
 		self.CheckedTexture:SetBlendMode("ADD")
 		self.cooldown:ClearAllPoints()
-		self.cooldown:SetPoint("TOPLEFT", self.icon, "TOPLEFT", 2, -2)
-		self.cooldown:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT", -2, 2)
+        self.cooldown:SetAllPoints()
 	end
 end
 
@@ -168,6 +164,9 @@ end
 local function createActionButton(id)
     local buttonName = ('%sActionButton%d'):format('RazerNaga', id)
     local button = CreateFrame('CheckButton', buttonName, nil, 'ActionBarButtonTemplate')
+
+    -- set the size of the buttons to the pre 10.0 default
+    button:SetSize(36, 36)
 
     -- inject custom flyout handling
     RazerNaga.SpellFlyout:WrapScript(button, "OnClick", [[
