@@ -44,7 +44,7 @@ ActionBar.mainbarOffsets = {
             pages.bear = 8
             pages.moonkin = 9
             pages.tree = 7
-		elseif i == 'EVOKER' then
+        elseif i == 'EVOKER' then
             pages.soar = 7
         elseif i == 'ROGUE' then
             pages.stealth = 6
@@ -116,7 +116,7 @@ end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
-	button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
+    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
 	
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
@@ -506,7 +506,7 @@ function ActionBarsModule:Load()
         self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'OnOverrideBarUpdated')
     end
 	
-	self:RegisterEvent("SPELLS_CHANGED")
+    self:RegisterEvent("SPELLS_CHANGED")
 
     self:SetBarCount(RazerNaga:NumBars())
 end

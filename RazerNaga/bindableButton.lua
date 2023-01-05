@@ -153,20 +153,20 @@ end
 --[[ lynn auto binding settings, for display override purposes ]]--
 
 function BindableButton:SetAutoBinding(key)
-	self:SetAutoBindingDisplayKey(key)
-	self:SetKey(key)
+    self:SetAutoBindingDisplayKey(key)
+    self:SetKey(key)
 end
 
 function BindableButton:SetAutoBindingDisplayKey(key)
-	self.autoBinding = key
+    self.autoBinding = key
 end
 
 function BindableButton:ClearAutoBindingDisplayKey()
-	self:SetAutoBindingDisplayKey(nil)
+    self:SetAutoBindingDisplayKey(nil)
 end
 
 function BindableButton:GetAutoBindingDisplayKey()
-	return self.autoBinding
+    return self.autoBinding
 end
 
 --[[ exports ]]--

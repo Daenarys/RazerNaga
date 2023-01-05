@@ -840,7 +840,7 @@ end
 
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-    count = Clamp(count, 1, 120)
+    count = max(min(count, 120), 1) --sometimes, I do entertaininig things
 
     if count ~= self:NumBars() then
         self.db.profile.ab.count = count
@@ -855,7 +855,6 @@ end
 function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
-
 
 --tooltips
 function RazerNaga:ShowTooltips()
@@ -875,7 +874,6 @@ end
 function RazerNaga:ShowCombatTooltips()
 	return self.db.profile.showTooltipsCombat
 end
-
 
 --minimap button
 function RazerNaga:SetShowMinimap(enable)
@@ -935,6 +933,7 @@ end
 function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
+
 
 --[[ Masque Support ]]--
 

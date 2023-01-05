@@ -175,7 +175,7 @@ end
 function Frame:LoadSettings()
 	self.sets = RazerNaga:GetFrameSets(self.id) or RazerNaga:SetFrameSets(self.id, self:GetDefaults()) --get defaults must be provided by anything implementing the Frame type
 	self:UpdateDisplayLayer()
-    self:UpdateDisplayLevel()
+	self:UpdateDisplayLevel()
 	self:Reposition()
 
 	if self.sets.hidden then
