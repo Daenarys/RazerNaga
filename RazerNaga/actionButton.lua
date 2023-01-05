@@ -6,7 +6,6 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local ACTION_BUTTON_COUNT = 120
 
 --[[ Mixin ]]--
 
@@ -60,43 +59,6 @@ function ActionButtonMixin:SetFlyoutDirection(direction)
     self:UpdateFlyout()
 end
 
-function ActionButtonMixin:SetShowCountText(show)
-    if show then
-        self.Count:Show()
-    else
-        self.Count:Hide()
-    end
-end
-
-function ActionButtonMixin:SetShowMacroText(show)
-    if show then
-        self.Name:Show()
-    else
-        self.Name:Hide()
-    end
-end
-
-function ActionButtonMixin:SetShowEquippedItemBorders(show)
-    if show then
-        self.Border:SetParent(self)
-    else
-        self.Border:SetParent(RazerNaga.ShadowUIParent)
-    end
-end
-
--- we hide cooldowns when action buttons are transparent
--- so that the sparks don't appear
-function ActionButtonMixin:SetShowCooldowns(show)
-    if show then
-        if self.cooldown:GetParent() ~= self then
-            self.cooldown:SetParent(self)
-            ActionButton_UpdateCooldown(self)
-        end
-    else
-        self.cooldown:SetParent(RazerNaga.ShadowUIParent)
-    end
-end
-
 -- if we have button facade support, then skin the button that way
 -- otherwise, apply the RazerNaga style to the button to make it pretty
 function ActionButtonMixin:Skin()
@@ -131,6 +93,8 @@ function ActionButtonMixin:Skin()
     end
 end
 
+--[[ exports ]]--
+
 RazerNaga.ActionButtonMixin = ActionButtonMixin
 
 --[[ Buttons ]]--
@@ -160,7 +124,7 @@ local function proxyActionButton(owner, target)
         if name ~= "action" then return end
         local target = self:GetFrameRef("ProxyTarget")
         if target and target:GetAttribute(name) ~= value then
-			target:SetAttribute(name, value)
+            target:SetAttribute(name, value)
         end
     ]])
 

@@ -8,7 +8,7 @@
 local RazerNaga = _G[...]
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ACTION_BUTTON_COUNT = 120
+local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
 local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
@@ -79,25 +79,24 @@ ActionBar:Extend('OnAcquire', function(self)
     self:UpdateFlyoutDirection()
 end)
 
--- TODO: change the position code to be based more on the number of action bars
+--TODO: change the position code to be based more on the number of action bars
 function ActionBar:GetDefaults()
-    return {
-        point = 'BOTTOM',
-        x = 0,
-        y = 14 + (ActionButton1:GetHeight() + 4) * (self.id - 1),
-        pages = {},
-        spacing = 2,
-        padW = 2,
-        padH = 2,
-        numButtons = self:MaxLength(),
-        showEmptyButtons = false,
-		displayLayer = 'LOW'
-    }
+    local defaults = {}
+    defaults.point = 'BOTTOM'
+    defaults.x = 0
+    defaults.y = 40*(self.id-1)
+    defaults.pages = {}
+    defaults.spacing = 4
+    defaults.padW = 2
+    defaults.padH = 2
+    defaults.numButtons = self:MaxLength()
+
+    return defaults
 end
 
--- returns the maximum possible size for a given bar
+--returns the maximum possible size for a given bar
 function ActionBar:MaxLength()
-    return floor(ACTION_BUTTON_COUNT / RazerNaga:NumBars())
+    return floor(MAX_BUTTONS / RazerNaga:NumBars())
 end
 
 function ActionBar:AcquireButton(index)
@@ -120,8 +119,6 @@ function ActionBar:OnAttachButton(button)
 	button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
 	
     button:SetFlyoutDirection(self:GetFlyoutDirection())
-    button:SetShowMacroText(RazerNaga:ShowMacroText())
-    button:SetShowCooldowns(self:GetAlpha() > 0)
     button:UpdateHotkeys()
 
     RazerNaga:GetModule('Tooltips'):Register(button)
