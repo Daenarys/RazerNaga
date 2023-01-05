@@ -996,6 +996,81 @@ function ClassicUI:MainFunction(isLogin)
 	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:ClearAllPoints()
 	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:SetPoint("CENTER", GuildMicroButton.NotificationOverlay, "TOP", 0, -5)
 	
+	local GuildMicroButtonTabard = CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
+	GuildMicroButtonTabard:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
+	GuildMicroButtonTabard:SetPoint("TOPLEFT", GuildMicroButton, "TOPLEFT", 0, 0)
+	GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardBackground", "ARTWORK")
+	GuildMicroButtonTabard:Hide()
+	GuildMicroButtonTabard.background = GuildMicroButtonTabardBackground
+	GuildMicroButtonTabardBackground:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
+	GuildMicroButtonTabardBackground:SetTexture("Interface\\Buttons\\UI-MicroButton-Guild-Banner")
+	GuildMicroButtonTabardBackground:SetTexCoord(0/32, 32/32, 22/64, 64/64)
+	GuildMicroButtonTabardBackground:SetPoint("CENTER", GuildMicroButtonTabard, "CENTER", 0, 0)
+	GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardEmblem", "OVERLAY")
+	GuildMicroButtonTabard.emblem = GuildMicroButtonTabardEmblem
+	GuildMicroButtonTabardEmblem:SetTexture("Interface\\GuildFrame\\GuildEmblems_01")
+	GuildMicroButtonTabardEmblem:SetDrawLayer("OVERLAY", 1)
+	GuildMicroButtonTabardEmblem:SetSize(14, 14)
+	GuildMicroButtonTabardEmblem:SetPoint("CENTER", GuildMicroButtonTabard, "CENTER", 0, 0)
+	
+	ClassicUI.GuildMicroButton_UpdateTabard = function(forceUpdate)
+		local tabard = GuildMicroButtonTabard
+		if ( not tabard.needsUpdate and not forceUpdate ) then
+			return
+		end
+		if not(ClassicUI.db.profile.barsConfig.MicroButtons.useClassicGuildIcon) then
+			local emblemFilename = select(10, GetGuildLogoInfo())
+			if ( emblemFilename ) then
+				if ( not tabard:IsShown() ) then
+					local button = GuildMicroButton
+					button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
+					button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
+					tabard:Show()
+				end
+				SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
+			else
+				if ( tabard:IsShown() ) then
+					local button = GuildMicroButton
+					button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
+					button:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up")
+					button:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down")
+					button:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled")
+					tabard:Hide()
+				end
+			end
+		end
+		tabard.needsUpdate = nil
+	end
+	
+	GuildMicroButtonTabard:SetScript("OnEvent", function(self, event, ...)
+		if (Kiosk_IsEnabled()) then
+			return
+		end
+		if (event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+			self.needsUpdate = true
+			ClassicUI.GuildMicroButton_UpdateTabard()
+		end
+	end)
+	
+	hooksecurefunc("UpdateMicroButtons", function(self)
+		ClassicUI.GuildMicroButton_UpdateTabard()
+		local factionGroup = UnitFactionGroup("player")
+		if not( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk_IsEnabled() ) and
+		   not( C_Club_IsEnabled() and not BNConnected() ) and
+		   not( C_Club_IsEnabled() and C_Club_IsRestricted() ~= Enum.ClubRestrictionReason.None ) and
+		      ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -2)
+			GuildMicroButtonTabard:SetAlpha(0.70)
+		else
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
+			GuildMicroButtonTabard:SetAlpha(1)
+		end
+	end)
+
+	GuildMicroButtonTabard:RegisterEvent("PLAYER_GUILD_UPDATE")
+	GuildMicroButtonTabard:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
+	ClassicUI.GuildMicroButton_UpdateTabard(true)
+	
 	-- [MicroButtons] LFDMicroButton
 	LFDMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
 	LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0)
