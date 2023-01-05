@@ -19,7 +19,7 @@ function PetActionButtonMixin:CancelSpellDataLoadedCallback()
     if cancelFunc then
         cancelFunc()
         self.spellDataLoadedCancelFunc = nil
-	end
+    end
 end
 
 -- this is mostly a straight port of PetActionBarMixin:Update()
@@ -192,7 +192,7 @@ function PetBar:New()
     local f = self.proto.New(self, 'pet')
     f:SetTooltipText(L.PetBarHelp)
 
-	return f
+    return f
 end
 
 function PetBar:IsOverrideBar()
