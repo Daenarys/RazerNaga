@@ -57,6 +57,7 @@ function RazerNaga:OnEnable()
 	self:HideBlizzard()
 	self:CreateDataBrokerPlugin()
 	self:LoadRareDragon()
+	self:LoadQueueStatus()
 	self:Load()
 	
     -- watch for binding updates, updating all bars on the last one that happens
@@ -1190,4 +1191,11 @@ function RazerNaga:LoadRareDragon()
 
 		self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide();
 	end);
+end
+
+-- handle the LFG eye
+function RazerNaga:LoadQueueStatus()
+	QueueStatusButton:ClearAllPoints()
+	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 40, -182)
+	QueueStatusButton:SetParent(UIParent)
 end
