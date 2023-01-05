@@ -21,7 +21,6 @@ modifierHighlighter.lua
 shadowUIParent.lua
 drag.lua
 frame.lua
-classicUI.lua
 buttonBar.lua
 bindableButton.lua
 barStates.lua
