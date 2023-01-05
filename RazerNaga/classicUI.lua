@@ -42,6 +42,21 @@ local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetGuildInfo = GetGuildInfo
 local InGuildParty = InGuildParty
 
+local PlayerName = PlayerName
+local PlayerFrame = PlayerFrame
+local PlayerLevelText = PlayerLevelText
+local PlayerHitIndicator = PlayerHitIndicator
+local PlayerFrameManaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar
+local PlayerFrameHealthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar
+local SetTextStatusBarText = SetTextStatusBarText
+local PlayerFrameManaBarText = PlayerFrameManaBar.ManaBarText
+local PlayerFrameHealthBarText = PlayerFrameHealthBar.TextString
+local PlayerFrameManaBarTextLeft = PlayerFrameManaBar.LeftText
+local PlayerFrameManaBarTextRight = PlayerFrameManaBar.RightText
+local PlayerFrameHealthBarTextLeft = PlayerFrameHealthBar.LeftText
+local PlayerFrameHealthBarTextRight = PlayerFrameHealthBar.RightText
+local ranOnce = false
+
 -- Cache variables
 ClassicUI.cached_db_profile = { }
 
@@ -1312,3 +1327,476 @@ function ClassicUI:MainFunction(isLogin)
 	MainMenuBarBackpackButton:SetFrameStrata("MEDIUM")
 	MainMenuBarBackpackButton:SetFrameLevel(3)
 end
+
+function PermaHide(frameToHide)
+    frameToHide:Hide()
+    hooksecurefunc(frameToHide, "Show", function()
+        frameToHide:Hide()
+    end)
+end
+
+function ApplyClassicFrame(frame)
+    local contextual = frame.TargetFrameContent.TargetFrameContentContextual;
+    PermaHide(contextual.PrestigeBadge)
+    PermaHide(contextual.PrestigePortrait)
+    PermaHide(contextual.PvpIcon)
+    PermaHide(frame.TargetFrameContainer.Flash)
+
+    frame.Background = frame:CreateTexture(nil, "ARTWORK");
+    frame.Background:SetPoint("TOPLEFT", frame, "TOPLEFT", 26, -29);
+    frame.Background:SetSize(119, 41)
+    frame.Background:SetColorTexture(0, 0, 0, 0.5)
+
+    if (GetCVar("comboPointLocation") == "1") then
+        ComboFrame:SetPoint("TOPRIGHT", TargetFrame, -25, -20)
+    end
+
+    local function PositionTargetBars()
+        local powerColor = GetPowerBarColor(UnitPowerType(frame.unit))
+
+        local FrameManaBar = frame.TargetFrameContent.TargetFrameContentMain.ManaBar;
+        local FrameHealthBar = frame.TargetFrameContent.TargetFrameContentMain.HealthBar;
+
+        FrameHealthBar:ClearAllPoints()
+        FrameHealthBar:SetSize(119, 12);
+        FrameHealthBar:SetPoint("TOPLEFT", 26, -48);
+        FrameHealthBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        FrameHealthBar:SetStatusBarColor(0, 1, 0);
+
+        FrameManaBar:ClearAllPoints()
+        FrameManaBar:SetSize(119, 12);
+        FrameManaBar:SetPoint("TOPLEFT", 26, -59);
+
+        local atlas = GetAtlasForBar(FrameManaBar)
+
+        if (atlas) then
+            if (FrameManaBar.SetStatusBarAtlas) then
+                FrameManaBar:SetStatusBarAtlas(atlas)
+            end
+            FrameManaBar:SetStatusBarColor(1, 1, 1)
+        else
+            FrameManaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+            FrameManaBar:SetStatusBarColor(powerColor.r, powerColor.g, powerColor.b)
+        end
+
+        local frameNameText = frame.TargetFrameContent.TargetFrameContentMain.Name;
+        frameNameText:ClearAllPoints()
+        frameNameText:SetJustifyH("CENTER")
+        frameNameText:SetPoint("TOPLEFT", frame.TargetFrameContainer, "TOPLEFT", 40, -33)
+        frameNameText:SetParent(frame.TargetFrameContainer)
+
+        FrameHealthBar.TextString:SetParent(frame.TargetFrameContainer)
+        FrameHealthBar.RightText:SetParent(frame.TargetFrameContainer)
+        FrameHealthBar.LeftText:SetParent(frame.TargetFrameContainer)
+
+        FrameManaBar.TextString:SetParent(frame.TargetFrameContainer)
+        FrameManaBar.RightText:SetParent(frame.TargetFrameContainer)
+        FrameManaBar.LeftText:SetParent(frame.TargetFrameContainer)
+
+		frame.TargetFrameContent.TargetFrameContentMain.ManaBar.RightText:SetPoint("RIGHT", frame.TargetFrameContent.TargetFrameContentMain.ManaBar, "RIGHT", -4, 0)
+    end
+
+    local function CreateNameBackground()
+        if (frame.nameBackground == nil) then
+            frame.nameBackground = frame.TargetFrameContainer:CreateTexture("nameBackground", "BACKGROUND")
+        end
+
+        frame.nameBackground:SetSize(119, 19)
+        frame.nameBackground:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-LevelBackground")
+        frame.nameBackground:ClearAllPoints()
+        frame.nameBackground:SetPoint("TOPRIGHT", frame.TargetFrameContent.TargetFrameContentMain, "TOPRIGHT", -88, -30)
+		-- if ( not UnitPlayerControlled(frame.unit) ) then
+		local colors
+
+       	local red, green, _ = UnitSelectionColor(frame.unit)
+
+		if (red == 0) then
+			colors = {0, 1, 0, 0.99999779462814} -- friendly
+		elseif (green == 0) then
+			colors = {1, 0, 0, 0.99999779462814}
+		else
+			colors = {1, 1, 0, 0.99999779462814} -- yellow
+		end
+
+		frame.nameBackground:SetVertexColor(colors[1], colors[2], colors[3]);
+    end
+
+    hooksecurefunc(frame, "CheckClassification", function()
+        CreateNameBackground()
+
+        local leaderIcon = frame.TargetFrameContent.TargetFrameContentContextual.LeaderIcon;
+        leaderIcon:ClearAllPoints()
+        leaderIcon:SetPoint("TOPRIGHT", -22, -18)
+
+        frame.TargetFrameContainer.FrameTexture:Hide()
+        if (frame.TargetFrameContainer.ClassicTexture == nil) then
+            frame.TargetFrameContainer.ClassicTexture = frame.TargetFrameContainer:CreateTexture(nil, "ARTWORK")
+        end
+        frame.TargetFrameContainer.ClassicTexture:ClearAllPoints()
+        frame.TargetFrameContainer.ClassicTexture:SetPoint("TOPLEFT", frame.TargetFrameContainer, "TOPLEFT", 20, -7)
+        frame.TargetFrameContainer.ClassicTexture:SetSize(232, 100)
+        frame.TargetFrameContainer.ClassicTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame")
+        --<TexCoords left="0.09375" right="1.0" top="0" bottom="0.78125"/>
+        frame.TargetFrameContainer.ClassicTexture:SetTexCoord(0.09375, 1, 0, 0.78125)
+		if (not UnitIsPlayer(frame.unit)) then
+			local colors
+
+       		local red, green, _ = UnitSelectionColor(frame.unit)
+
+			if (red == 0) then
+				colors = {0, 1, 0, 0.99999779462814} -- friendly
+			elseif (green == 0) then
+				colors = {1, 0, 0, 0.99999779462814}
+			else
+				colors = {1, 1, 0, 0.99999779462814} -- yellow
+			end
+			frame.TargetFrameContent.TargetFrameContentMain.HealthBar:SetStatusBarColor(colors[1], colors[2], colors[3]);
+		end
+		-- frame.TargetFrameContainer.ClassicTexture:SetVertexColor(frame.TargetFrameContainer.FrameTexture:GetVertexColor())
+        frame.TargetFrameContent.TargetFrameContentMain.ReputationColor:Hide()
+        frame.TargetFrameContainer.Portrait:SetSize(64, 64)
+        frame.TargetFrameContainer.Portrait:ClearAllPoints()
+        frame.TargetFrameContainer.Portrait:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -22, -20)
+        frame.TargetFrameContainer:SetFrameStrata("MEDIUM")
+        frame.TargetFrameContainer.BossPortraitFrameTexture:SetDrawLayer("BACKGROUND", 1)
+        frame.TargetFrameContent.TargetFrameContentContextual:SetFrameStrata("MEDIUM")
+    end)
+
+    local function fixDebuffs()
+        local frameName = frame.totFrame:GetName();
+        local suffix = "Debuff";
+		local frameNameWithSuffix = frameName..suffix;
+		for i=1,4 do
+			local debuffName = frameNameWithSuffix..i;
+            _G[debuffName]:ClearAllPoints()
+            if (i == 1) then
+                _G[debuffName]:SetPoint("TOPLEFT", frame.totFrame, "TOPRIGHT", -23, -8)
+			elseif (i==2) then
+                _G[debuffName]:SetPoint("TOPLEFT", frame.totFrame, "TOPRIGHT", -10, -8)
+			elseif (i==3) then
+                _G[debuffName]:SetPoint("TOPLEFT", frame.totFrame, "TOPRIGHT", -23, -21)
+			elseif (i==4) then
+                _G[debuffName]:SetPoint("TOPLEFT", frame.totFrame, "TOPRIGHT", -10, -21)
+            end
+        end
+    end
+
+    hooksecurefunc(frame, "Update", function()
+        PositionTargetBars();
+        if (frame.totFrame) then
+            frame.totFrame:ClearAllPoints()
+            if (not InCombatLockdown()) then
+                frame.totFrame:SetPoint("TOPLEFT", frame, "BOTTOMRIGHT", -83, 17)
+            end
+            frame.totFrame.FrameTexture:Hide()
+
+            local powerColor = GetPowerBarColor(UnitPowerType(frame.totFrame.unit))
+
+            frame.totFrame.HealthBar.HealthBarMask:Hide()
+            frame.totFrame.HealthBar:ClearAllPoints()
+            frame.totFrame.HealthBar:SetPoint("TOPRIGHT", -29, -15)
+            frame.totFrame.HealthBar:SetSize(46, 7)
+            frame.totFrame.HealthBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+            frame.totFrame.HealthBar:SetStatusBarColor(0, 1, 0);
+            frame.totFrame.HealthBar:SetFrameLevel(1)
+
+            frame.totFrame.ManaBar.ManaBarMask:Hide()
+            frame.totFrame.ManaBar:ClearAllPoints()
+            frame.totFrame.ManaBar:SetPoint("TOPRIGHT", -29, -23)
+            frame.totFrame.ManaBar:SetSize(46, 7)
+            frame.totFrame.ManaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+            frame.totFrame.ManaBar:SetStatusBarColor(powerColor.r, powerColor.g, powerColor.b)
+            frame.totFrame.ManaBar:SetFrameLevel(1)
+
+            if (frame.totFrame.ClassicTexture == nil) then
+                frame.totFrame.ClassicTexture = frame.totFrame:CreateTexture(nil, "BORDER")
+            end
+            frame.totFrame.ClassicTexture:ClearAllPoints()
+            frame.totFrame.ClassicTexture:SetPoint("TOPLEFT", frame.totFrame, "TOPLEFT", 0, 0)
+            frame.totFrame.ClassicTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetofTargetFrame")
+            -- <TexCoords left="0.015625" right="0.7265625" top="0" bottom="0.703125"/>
+            frame.totFrame.ClassicTexture:SetTexCoord(0.015625, 0.7265625, 0, 0.703125)
+            frame.totFrame.ClassicTexture:SetSize(93, 45)
+
+            frame.totFrame.name:ClearAllPoints();
+            frame.totFrame.name:SetPoint("BOTTOMLEFT", 42, 5)
+            fixDebuffs()
+        end
+    end)
+
+    hooksecurefunc(frame, "CheckLevel", function()
+        local contextual = frame.TargetFrameContent.TargetFrameContentContextual
+        local levelText = frame.TargetFrameContent.TargetFrameContentMain.LevelText;
+        local petBattle = contextual.PetBattleIcon;
+        local highLevelTexture = contextual.HighLevelTexture;
+
+        highLevelTexture:ClearAllPoints();
+        highLevelTexture:SetParent(contextual)
+        highLevelTexture:SetPoint("CENTER", contextual, "CENTER", 81, -24)
+
+        petBattle:ClearAllPoints();
+        petBattle:SetParent(contextual)
+        petBattle:SetPoint("CENTER", contextual, "CENTER", 81, 24)
+
+        levelText:ClearAllPoints();
+        levelText:SetParent(contextual)
+        levelText:SetPoint("CENTER", contextual, "CENTER", 81, -24)
+    end)
+
+    hooksecurefunc(frame, "CreateTargetofTarget", function()
+        if (frame.totFrame) then
+            frame.totFrame.FrameTexture:Hide()
+        end
+    end)
+
+    frame:HookScript("OnEvent", function(s, e, ...)
+        PositionTargetBars()
+    end)
+
+
+    if (frame.totFrame) then
+        frame.totFrame:RegisterEvent("UNIT_AURA")
+        frame.totFrame:HookScript("OnEvent", function(s, e, ...)
+            local arg1 = ...;
+            if ((not (arg1 == "")) and (not (arg1 == nil)) and
+                (not (s.unit == "")) and (not (s.unit == nil)) and
+                UnitIsUnit(arg1, s.unit)) then
+                RefreshDebuffs(s, s.unit, nil, nil, true)
+            end
+        end)
+    end
+end
+
+function GetAtlasForBar(self)
+    local atlas = nil
+    if (self.powerType and (self.powerType >= 11 or self.powerType == 8)) then
+        atlas = PowerBarColor[self.powerType].atlas
+    end
+    return atlas
+end
+
+local function updateBarTexture(self, texture)
+    local atlas = GetAtlasForBar(self)
+    if (atlas) then
+        if (self.SetStatusBarAtlas) then
+            self:SetStatusBarAtlas(atlas)
+        end
+    else
+		if (texture == "Interface\\TargetingFrame\\UI-StatusBar") then return end
+        self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    end
+end
+local function updateManaBarColor(self, r, g, b, a)
+    local color = {};
+    color.r = 1;
+    color.g = 1;
+    color.b = 1;
+    local atlas = GetAtlasForBar(self)
+    if (not atlas and self.powerType) then
+        color = GetPowerBarColor(self.powerType)
+    end
+    if (color.r ~= r or color.g ~= g or color.b ~= b) then
+        self:SetStatusBarColor(color.r, color.g, color.b)
+    end
+end
+
+local function updateBarColor(self, r, g, b, a)
+    local color = {};
+    color.r = 0;
+    color.g = 1;
+    color.b = 0;
+    if (self.powerType) then
+        color = GetPowerBarColor(self.powerType)
+    end
+    if (color.r ~= r or color.g ~= g or color.b ~= b) then
+        self:SetStatusBarColor(color.r, color.g, color.b)
+    end
+end
+
+PlayerFrame.PlayerFrameContainer.FrameTexture:ClearAllPoints()
+PlayerFrame.PlayerFrameContainer.FrameTexture:SetPoint("TOPLEFT", PlayerFrame.PlayerFrameContainer, "TOPLEFT", -20, -5)
+PlayerFrame.PlayerFrameContainer.FrameTexture:SetSize(232, 100)
+PlayerFrame.PlayerFrameContainer.FrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame")
+--<TexCoords left="1.0" right="0.09375" top="0" bottom="0.78125"/>
+PlayerFrame.PlayerFrameContainer.FrameTexture:SetTexCoord(1, 0.09375, 0, 0.78125)
+PlayerFrame.PlayerFrameContainer:SetFrameLevel(4)
+PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:SetFrameLevel(5)
+PlayerFrame.PlayerFrameContainer.PlayerPortrait:SetSize(64, 64)
+PlayerFrame.PlayerFrameContainer.PlayerPortraitMask:SetTexture("Interface/CHARACTERFRAME/TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+PlayerFrame.PlayerFrameContainer.PlayerPortrait:SetDrawLayer("BACKGROUND")
+PlayerFrame.PlayerFrameContainer.PlayerPortraitMask:SetDrawLayer("BACKGROUND")
+
+PlayerFrameHealthBarText:SetParent(PlayerFrame.PlayerFrameContainer)
+PlayerFrameManaBarText:SetParent(PlayerFrame.PlayerFrameContainer)
+PlayerFrameHealthBarTextLeft:SetParent(PlayerFrame.PlayerFrameContainer)
+PlayerFrameManaBarTextLeft:SetParent(PlayerFrame.PlayerFrameContainer)
+PlayerFrameHealthBarTextRight:SetParent(PlayerFrame.PlayerFrameContainer)
+PlayerFrameManaBarTextRight:SetParent(PlayerFrame.PlayerFrameContainer)
+
+PlayerFrame.Background = PlayerFrame:CreateTexture(nil, "BACKGROUND");
+PlayerFrame.Background:SetPoint("TOPLEFT", PlayerFrame, "TOPLEFT", 86, -26);
+PlayerFrame.Background:SetSize(119, 19)
+PlayerFrame.Background:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-LevelBackground")
+-- PlayerFrame.Background:SetColorTexture(c.r,c.g,c.b)
+PlayerFrame.Background:SetVertexColor(0, 0, 0, 0.5)
+
+local attackIconGlow = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:CreateTexture(nil, "ARTWORK")
+PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.AttackIconGlow = attackIconGlow;
+attackIconGlow:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
+attackIconGlow:SetTexCoord(0.5, 1.0, 0.5, 1)
+attackIconGlow:SetBlendMode("ADD")
+attackIconGlow:SetSize(32, 32)
+attackIconGlow:ClearAllPoints();
+attackIconGlow:SetPoint("TOPLEFT", PlayerLevelText, "TOPLEFT", -9, 12)
+
+local function RunOncePlayer()
+    if (not ranOnce) then
+        ranOnce = true
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture);
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PrestigeBadge)
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PrestigePortrait)
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerPortraitCornerIcon)
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar.ManaBarMask)
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar.HealthBarMask)
+        PermaHide(PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.PlayerFrameHealthBarAnimatedLoss)
+        PermaHide(PlayerFrameManaBar.FeedbackFrame)
+        PermaHide(PlayerFrame.threatIndicator)
+        if (GetCVar("comboPointLocation") == "1") then
+            PermaHide(ComboPointPlayerFrame)
+        end
+    end
+end
+
+local function HookBars(frameToHook, colorHook, hookColor)
+    updateBarTexture(frameToHook);
+    colorHook(frameToHook);
+    hooksecurefunc(frameToHook, "SetStatusBarTexture", updateBarTexture)
+    if (hookColor) then
+        hooksecurefunc(frameToHook, "SetStatusBarColor", colorHook)
+    end
+end
+
+HookBars(PlayerFrameHealthBar, updateBarColor)
+HookBars(PlayerFrameManaBar, updateManaBarColor, true)
+
+hooksecurefunc("PlayerFrame_ToPlayerArt", function()
+    RunOncePlayer()
+    PlayerFrameHealthBar:SetSize(119, 12);
+    PlayerFrameHealthBar:SetPoint("TOPLEFT", 88, -46);
+
+    PlayerFrameManaBar:SetSize(119, 12);
+    PlayerFrameManaBar:SetPoint("TOPLEFT", 88, -57);
+end)
+
+hooksecurefunc("PlayerFrame_UpdatePlayerNameTextAnchor", function()
+    PlayerName:ClearAllPoints()
+    PlayerName:SetJustifyH("CENTER")
+    PlayerName:SetPoint("TOPLEFT", PlayerFrame.PlayerFrameContainer, "TOPLEFT", 98, -30)
+end)
+
+hooksecurefunc("PlayerFrame_UpdateLevel", function()
+    PlayerLevelText:ClearAllPoints();
+    PlayerLevelText:SetPoint("CENTER", PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual, "CENTER", -81, -22)
+    PlayerLevelText:SetParent(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual)
+    PlayerHitIndicator:SetParent(PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual)
+end)
+
+hooksecurefunc("PlayerFrame_UpdateRolesAssigned", function()
+    local roleIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RoleIcon;
+	local role =  UnitGroupRolesAssigned("player");
+    local hasIcon = false;
+
+    roleIcon:SetSize(19, 19)
+    roleIcon:SetTexture("Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES")
+    roleIcon:ClearAllPoints();
+    roleIcon:SetPoint("TOPLEFT", 75, -20)
+	if ( role == "TANK" or role == "HEALER" or role == "DAMAGER") then
+        roleIcon:SetTexCoord(GetTexCoordsForRoleSmallCircle(role));
+        hasIcon = true
+    end
+
+    roleIcon:SetShown(hasIcon);
+    PlayerLevelText:SetShown(true);
+    PlayerFrame_UpdateStatus()
+end)
+
+local function holyPower(self)
+    self:ClearAllPoints()
+    self:SetPoint("TOPLEFT", 10, 15)
+end
+
+local function alternatePower(self)
+    self:ClearAllPoints()
+    self:SetPoint("TOPLEFT", 30, 5)
+end
+
+hooksecurefunc("AlternatePowerBar_OnEvent", alternatePower)
+PaladinPowerBarFrame:HookScript("OnEvent", holyPower)
+
+hooksecurefunc("PlayerFrame_UpdateStatus", function()
+    local attackIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.AttackIcon;
+    local attackIconGlow = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.AttackIconGlow;
+    local restIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RestIcon;
+    local restLoop = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.PlayerRestLoop;
+    restLoop:Hide();
+
+    if (restIcon == nil) then
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RestIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual:CreateTexture(nil, "OVERLAY")
+        restIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.RestIcon
+    end
+
+    attackIcon:SetDrawLayer("ARTWORK", 1)
+    attackIcon:SetTexture("Interface\\CharacterFrame\\UI-StateIcon");
+    attackIcon:SetTexCoord(0.5, 1.0, 0, 0.5)
+    attackIcon:SetSize(32, 32)
+    attackIcon:ClearAllPoints();
+    attackIcon:SetPoint("TOPLEFT", PlayerLevelText, "TOPLEFT", -9, 12)
+
+    restIcon:SetTexture("Interface\\CharacterFrame\\UI-StateIcon")
+    restIcon:SetTexCoord(0, 0.5, 0, 0.421875)
+    restIcon:SetSize(31, 33)
+    restIcon:ClearAllPoints();
+    restIcon:SetPoint("TOPLEFT", PlayerLevelText, "TOPLEFT", -9, 12)
+
+    PlayerFrame.inCombat = UnitAffectingCombat("player")
+    if (IsResting()) then
+        restIcon:Show()
+
+        attackIcon:Hide()
+        attackIconGlow:Hide()
+        PlayerLevelText:Hide()
+    elseif (PlayerFrame.inCombat) then
+        attackIcon:Show()
+        attackIconGlow:Show()
+
+        PlayerLevelText:Hide()
+        restIcon:Hide()
+    else
+        PlayerLevelText:Show()
+
+        attackIcon:Hide()
+        attackIconGlow:Hide()
+        restIcon:Hide()
+    end
+end)
+
+hooksecurefunc("PlayerFrame_UpdatePartyLeader", function()
+    local leaderIcon = PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual.LeaderIcon;
+    leaderIcon:ClearAllPoints()
+    leaderIcon:SetPoint("TOPLEFT", 22, -18)
+end)
+
+if (IsAddOnLoaded("BigDebuffs")) then
+    hooksecurefunc(BigDebuffs, "UNIT_AURA", function(self, unit)
+        local frame = self.UnitFrames[unit]
+   		 if not frame then return end
+        if frame.mask then
+            if frame.unit == "player" then
+				frame.mask:SetTexture("Interface/CHARACTERFRAME/TempPortraitAlphaMask", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+            end
+        end
+    end)
+end
+
+ApplyClassicFrame(TargetFrame)
+ApplyClassicFrame(FocusFrame)

@@ -369,19 +369,6 @@ end
 local MenuBarController = RazerNaga:NewModule('MenuBar')
 
 function MenuBarController:OnInitialize()
-    -- fixed blizzard nil bug
-    if not AchievementMicroButton_Update then
-        AchievementMicroButton_Update = function() end
-	end
-
-    -- the performance bar actually appears under the game menu button if you
-    -- move it somewhere else
-    local MainMenuBarPerformanceBar = MainMenuBarPerformanceBar
-    local MainMenuMicroButton = MainMenuMicroButton
-    if MainMenuBarPerformanceBar and MainMenuMicroButton then
-        MainMenuBarPerformanceBar:ClearAllPoints()
-        MainMenuBarPerformanceBar:SetPoint('BOTTOM', MainMenuMicroButton, 'BOTTOM')
-    end
 end
 
 function MenuBarController:Load()
