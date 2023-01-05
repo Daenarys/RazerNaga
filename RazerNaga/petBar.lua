@@ -17,8 +17,8 @@ function PetActionButtonMixin:CancelSpellDataLoadedCallback()
     local cancelFunc = self.spellDataLoadedCancelFunc
 
     if cancelFunc then
-		cancelFunc()
-		self.spellDataLoadedCancelFunc = nil
+        cancelFunc()
+        self.spellDataLoadedCancelFunc = nil
 	end
 end
 
@@ -167,8 +167,8 @@ local function createPetActionButton(name, id)
     -- unregister spell data loaded callback
     button:HookScript("OnHide", PetActionButtonMixin.CancelSpellDataLoadedCallback)
 	
-	-- enable masque support
-	button:Skin()
+    -- enable masque support
+    button:Skin()
 
     return button
 end
@@ -189,8 +189,8 @@ end
 local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
 function PetBar:New()
-	local f = self.proto.New(self, 'pet')
-	f:SetTooltipText(L.PetBarHelp)
+    local f = self.proto.New(self, 'pet')
+    f:SetTooltipText(L.PetBarHelp)
 
 	return f
 end
@@ -203,7 +203,7 @@ function PetBar:UpdateOverrideBar()
 end
 
 function PetBar:GetShowStates()
-	return '[@pet,exists,nopossessbar]show;hide'
+    return '[@pet,exists,nopossessbar]show;hide'
 end
 
 function PetBar:GetDefaults()
