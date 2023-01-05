@@ -198,7 +198,6 @@ function MenuBar:LayoutNormal()
     self:UpdateActiveButtons()
 
     for i, button in pairs(self.buttons) do
-        button:SetSize(27, 36)
         button:Hide()
     end
 
