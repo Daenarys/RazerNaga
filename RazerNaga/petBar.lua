@@ -8,14 +8,12 @@
 
 local RazerNaga = _G[...]
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
-local format = string.format
 local unused = {}
-local PetActionButtonMixin = {}
 
 
 --[[ Pet Button ]]--
 
-local PetButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
+local PetButton = RazerNaga:CreateClass('CheckButton')
 
 function PetButton:New(id)
     local b = self:Restore(id) or self:Create(id)
@@ -26,11 +24,11 @@ function PetButton:New(id)
 end
 
 function PetButton:Create(id)
-    local b = _G['PetActionButton' .. id]
+    local buttonName = ('PetActionButton%d'):format(id)
+
+    local b = self:Bind(_G[buttonName])
     b.buttonType = 'BONUSACTIONBUTTON'
 
-    Mixin(b, PetActionButtonMixin)
-    
     b:Skin()
 
     return b
@@ -38,7 +36,7 @@ end
 
 -- if we have button facade support, then skin the button that way
 -- otherwise, apply the RazerNaga style to the button to make it pretty
-function PetActionButtonMixin:Skin()
+function PetButton:Skin()
     if not RazerNaga:Masque('Pet Bar', self) then
         _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
         self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
@@ -84,13 +82,11 @@ end
 
 --[[ Pet Bar ]]--
 
-local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
 function PetBar:New()
-    local f = self.proto.New(self, 'pet')
+    local f = PetBar.proto.New(self, 'pet')
     f:SetTooltipText(L.PetBarHelp)
-    f:LoadButtons()
-    f:Layout()
 
     return f
 end
@@ -108,25 +104,16 @@ function PetBar:GetDefaults()
     }
 end
 
---RazerNaga frame method overrides
 function PetBar:NumButtons()
     return NUM_PET_ACTION_SLOTS
 end
 
-function PetBar:AddButton(i)
-    local b = PetButton:New(i)
-    b:SetParent(self)
-    self.buttons[i] = b
-end
-
-function PetBar:RemoveButton(i)
-    local b = self.buttons[i]
-    self.buttons[i] = nil
-    b:Free()
+function PetBar:AcquireButton(index)
+    return PetButton:New(index)
 end
 
 
---[[ keybound  support ]]--
+--[[ keybound support ]]--
 
 function PetBar:KEYBOUND_ENABLED()
     self:SetAttribute('state-visibility', 'display')
