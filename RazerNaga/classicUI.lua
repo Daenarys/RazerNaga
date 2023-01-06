@@ -94,7 +94,7 @@ function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	-- [QueueStatusButton]
 	QueueStatusButton:SetParent(MinimapBackdrop)
 	QueueStatusButton:ClearAllPoints()
-	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 35 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -152 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
+	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 35 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -157 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
 	QueueStatusButton:SetFrameStrata("LOW")
 	QueueStatusButton:SetFrameLevel(5)
 	ClassicUI:QueueButtonSetSmallSize()
