@@ -81,23 +81,7 @@ end
 
 -- Function that sets the LFG button icon (QueueStatusButton) to a smaller size similar to the classic LFG button
 function ClassicUI:QueueButtonSetSmallSize()
-	QueueStatusButton:SetSize(33, 33)
-	QueueStatusButtonIcon.texture:SetSize(29, 29)
-	QueueStatusButtonIcon.EyeInitial.EyeInitialTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyeMouseOver.EyeMouseOverTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyeFoundInitial.EyeFoundInitialTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyeFoundLoop.EyeFoundLoopTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyePokeInitial.EyePokeInitialTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyePokeLoop.EyePokeLoopTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyePokeEnd.EyePokeEndTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyeSearchingLoop.EyeSearchingTexture:SetSize(30, 30)
-	QueueStatusButtonIcon.EyeInitial.CircShine:SetSize(28, 28)
-	QueueStatusButtonIcon.EyeFoundInitial.SpriteShards:SetSize(51, 51)
-	QueueStatusButtonIcon.EyeInitial.GlowFront:SetSize(34, 34)
-	QueueStatusButtonIcon.EyeInitial.GlowBack:SetSize(56, 56)
-	QueueStatusButtonIcon.EyeFoundInitial.GlowFront:SetSize(34, 34)
-	QueueStatusButtonIcon.EyeFoundInitial.GlowBack:SetSize(56, 56)
-	QueueStatusButtonIcon.GlowBackLoop.GlowBack:SetSize(56, 56)
+	QueueStatusButton:SetScale(0.65)
 end
 
 -- Function that executes functionalities of the 'ExtraFramesFunc' function that need to be executed after the first "PLAYER_ENTERING_WORLD" event
@@ -110,7 +94,7 @@ function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	-- [QueueStatusButton]
 	QueueStatusButton:SetParent(MinimapBackdrop)
 	QueueStatusButton:ClearAllPoints()
-	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 23 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -98 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
+	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 35 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -152 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
 	QueueStatusButton:SetFrameStrata("LOW")
 	QueueStatusButton:SetFrameLevel(5)
 	ClassicUI:QueueButtonSetSmallSize()
