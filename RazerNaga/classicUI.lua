@@ -51,9 +51,7 @@ ClassicUI.defaults = {
 				yOffset = 0
 			},
 			['MicroButtons'] = {
-				scale = 1,
-				useClassicQuestIcon = false,
-				useClassicMainMenuIcon = false
+				scale = 1
 			},
 			['BagsIcons'] = {
 				iconBorderAlpha = 1,
