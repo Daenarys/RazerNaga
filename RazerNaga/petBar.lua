@@ -1,110 +1,39 @@
-﻿if not PetActionBar then return end
---[[
-	petBar.lua
-		A RazerNaga pet bar
+﻿--[[
+    petBar.lua
+        A RazerNaga pet bar
 --]]
 
---[[ globals ]]--
+
+--[[ Globals ]]--
 
 local RazerNaga = _G[...]
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
+local format = string.format
+local unused = {}
+local PetActionButtonMixin = {}
+
 
 --[[ Pet Button ]]--
 
-local PetActionButtonMixin = {}
+local PetButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
 
-function PetActionButtonMixin:CancelSpellDataLoadedCallback()
-    local cancelFunc = self.spellDataLoadedCancelFunc
+function PetButton:New(id)
+    local b = self:Restore(id) or self:Create(id)
 
-    if cancelFunc then
-        cancelFunc()
-        self.spellDataLoadedCancelFunc = nil
-    end
+    RazerNaga:GetModule('Tooltips'):Register(b)
+
+    return b
 end
 
--- this is mostly a straight port of PetActionBarMixin:Update()
-function PetActionButtonMixin:Update()
-    local petActionID = self:GetID()
-    local petActionIcon = self.icon
-    local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(petActionID)
-	
-    if not isToken then
-        self.tooltipName = name
-    else
-        self.tooltipName = _G[name]
-    end
+function PetButton:Create(id)
+    local b = _G['PetActionButton' .. id]
+    b.buttonType = 'BONUSACTIONBUTTON'
 
-    self.isToken = isToken
+    Mixin(b, PetActionButtonMixin)
+    
+    b:Skin()
 
-    if spellID and spellID ~= self.spellID then
-        self.spellID = spellID
-
-        local spell = Spell:CreateFromSpellID(spellID)
-
-        self.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
-            self.tooltipSubtext = spell:GetSpellSubtext()
-        end)
-    end
-
-    if isActive then
-        if IsPetAttackAction(petActionID) then
-            self:StartFlash()
-            self:GetCheckedTexture():SetAlpha(0.5)
-        else
-            self:StopFlash()
-            self:GetCheckedTexture():SetAlpha(1)
-        end
-    else
-        self:StopFlash()
-    end
-
-    self:SetChecked(isActive and true)
-
-    self.AutoCastable:SetShown(autoCastAllowed and true)
-
-    if autoCastEnabled then
-        AutoCastShine_AutoCastStart(self.AutoCastShine)
-    else
-        AutoCastShine_AutoCastStop(self.AutoCastShine)
-    end
-
-    if texture then
-        if GetPetActionSlotUsable(petActionID) then
-            petActionIcon:SetVertexColor(1, 1, 1)
-        else
-            petActionIcon:SetVertexColor(0.4, 0.4, 0.4)
-        end
-
-        petActionIcon:SetTexture(isToken and _G[texture] or texture)
-        petActionIcon:Show()
-    else
-        petActionIcon:Hide()
-    end
-
-    SharedActionButton_RefreshSpellHighlight(self, PET_ACTION_HIGHLIGHT_MARKS[petActionID])
-end
-
-function PetActionButtonMixin:UpdateCooldown()
-    local cooldown = self.cooldown
-    local start, duration, enable = GetPetActionCooldown(self:GetID())
-
-    if enable and enable ~= 0 and start > 0 and duration > 0 then
-        cooldown:SetCooldown(start, duration)
-    else
-        cooldown:Clear()
-    end
-
-    if GameTooltip and GameTooltip:IsOwned(self) then
-        self:OnEnter()
-    end
-end
-
-function PetActionButtonMixin:UpdateShownInsecure()
-    if InCombatLockdown() then
-        return
-    end
-
-    self:SetShown(self.watcher:IsVisible() and not self:GetAttribute("statehidden"))
+    return b
 end
 
 -- if we have button facade support, then skin the button that way
@@ -134,72 +63,38 @@ function PetActionButtonMixin:Skin()
     end
 end
 
-local function createPetActionButton(name, id)
-    local button = CreateFrame('CheckButton', name, nil, 'PetActionButtonTemplate')
+function PetButton:Restore(id)
+    local b = unused and unused[id]
+    if b then
+        unused[id] = nil
+        b:Show()
 
-    Mixin(button, PetActionButtonMixin)
-
-    -- get the stock button
-    local petActionButton = _G['PetActionButton' .. id]
-
-    -- copy its ID
-    button:SetID(petActionButton:GetID())
-
-    -- copy its visibility state
-    local watcher = CreateFrame('Frame', nil, petActionButton, "SecureHandlerShowHideTemplate")
-    watcher:SetFrameRef("owner", button)
-    watcher:SetAttribute("_onshow", [[ self:GetFrameRef("owner"):Show(true) ]])
-    watcher:SetAttribute("_onhide", [[ self:GetFrameRef("owner"):Hide(true) ]])
-    button.watcher = watcher
-
-    -- copy its pushed state
-    hooksecurefunc(petActionButton, "SetButtonState", function(_, ...)
-        button:SetButtonState(...)
-    end)
-
-    -- setup bindings
-    button.commandName = ("BONUSACTIONBUTTON%d"):format(id)
-    RazerNaga.BindableButton:AddQuickBindingSupport(button)
-
-    -- add support for mousewheel bindings
-    button:EnableMouseWheel(true)
-
-    -- unregister spell data loaded callback
-    button:HookScript("OnHide", PetActionButtonMixin.CancelSpellDataLoadedCallback)
-	
-    -- enable masque support
-    button:Skin()
-
-    return button
-end
-
-local function getOrCreatePetActionButton(id)
-    local name = ('%sPetActionButton%d'):format('RazerNaga', id)
-    local button = _G[name]
-
-    if not button then
-        button = createPetActionButton(name, id)
+        return b
     end
-
-    return button
 end
+
+--saving them thar memories
+function PetButton:Free()
+    unused[self:GetID()] = self
+
+    RazerNaga:GetModule('Tooltips'):Unregister(self)
+
+    self:SetParent(nil)
+    self:Hide()
+end
+
 
 --[[ Pet Bar ]]--
 
-local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function PetBar:New()
     local f = self.proto.New(self, 'pet')
     f:SetTooltipText(L.PetBarHelp)
+    f:LoadButtons()
+    f:Layout()
 
     return f
-end
-
-function PetBar:IsOverrideBar()
-    return RazerNaga.db.profile.possessBar == self.id
-end
-
-function PetBar:UpdateOverrideBar()
 end
 
 function PetBar:GetShowStates()
@@ -215,50 +110,63 @@ function PetBar:GetDefaults()
     }
 end
 
+--RazerNaga frame method overrides
 function PetBar:NumButtons()
     return NUM_PET_ACTION_SLOTS
 end
 
-function PetBar:AcquireButton(index)
-    return getOrCreatePetActionButton(index)
+function PetBar:AddButton(i)
+    local b = PetButton:New(i)
+    b:SetParent(self)
+    self.buttons[i] = b
 end
 
-function PetBar:OnAttachButton(button)
-    button:UpdateHotkeys()
-    button:UpdateShownInsecure()
-
-    RazerNaga:GetModule('Tooltips'):Register(button)
+function PetBar:RemoveButton(i)
+    local b = self.buttons[i]
+    self.buttons[i] = nil
+    b:Free()
 end
 
-function PetBar:OnDetachButton(button)
-    RazerNaga:GetModule('Tooltips'):Unregister(button)
-end
 
--- keybound events
+--[[ keybound  support ]]--
+
 function PetBar:KEYBOUND_ENABLED()
-    self:ForButtons("UpdateShownInsecure")
+    self:SetAttribute('state-visibility', 'display')
+
+    for _, button in pairs(self.buttons) do
+        button:Show()
+    end
 end
 
 function PetBar:KEYBOUND_DISABLED()
-    self:ForButtons("UpdateShownInsecure")
+    self:UpdateShowStates()
+
+    local petBarShown = PetHasActionBar()
+
+    for _, button in pairs(self.buttons) do
+        if petBarShown and GetPetActionInfo(button:GetID()) then
+            button:Show()
+        else
+            button:Hide()
+        end
+    end
 end
+
 
 --[[ controller good times ]]--
 
-local PetBarModule = RazerNaga:NewModule('PetBar', 'AceEvent-3.0')
+local PetBarController = RazerNaga:NewModule('PetBar', 'AceEvent-3.0')
 
-function PetBarModule:Load()
+function PetBarController:Load()
     if not self.loaded then
         self:OnFirstLoad()
         self.loaded = true
     end
 
     self.bar = PetBar:New()
-    self:UpdateActions()
-    self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
 end
 
-function PetBarModule:Unload()
+function PetBarController:Unload()
     self:UnregisterAllEvents()
 
     if self.bar then
@@ -267,39 +175,15 @@ function PetBarModule:Unload()
     end
 end
 
-function PetBarModule:OnFirstLoad()
-    -- "hide" the pet bar (make invisible and non-interactive)
-    PetActionBar:SetAlpha(0)
-    PetActionBar:EnableMouse(false)
-    PetActionBar:SetScript("OnUpdate", nil)
+function PetBarController:OnFirstLoad()
+    -- wipe buttons and spacers to avoid layout updates from the stock ui
+    table.wipe(_G.PetActionBar.buttonsAndSpacers)
 
-    -- and its buttons, too
-    for _, button in pairs(PetActionBar.actionButtons) do
-        button:EnableMouse(false)
-        button:SetScript("OnUpdate", nil)
-        button:UnregisterAllEvents()
+    for _, button in pairs(_G.PetActionBar.actionButtons) do
+        -- setup bindings
+        RazerNaga.BindableButton:AddQuickBindingSupport(button)
+
+        -- add support for mousewheel bindings
+        button:EnableMouseWheel(true)
     end
-
-    -- unregister events that do not impact pet action bar visibility
-    PetActionBar:UnregisterEvent("PET_BAR_UPDATE_COOLDOWN")
-
-    -- an extremly lazy method of updating the Dominos pet bar when the
-    -- normal pet bar would be updated
-    hooksecurefunc(PetActionBar, "Update", RazerNaga:Defer(function() self:UpdateActions() end, 0.01))
-end
-
-function PetBarModule:PET_BAR_UPDATE_COOLDOWN()
-    self:UpdateCooldowns()
-end
-
-function PetBarModule:UpdateActions()
-    if not (self.bar and PetHasActionBar() and UnitIsVisible("pet")) then return end
-
-    self.bar:ForButtons("Update")
-end
-
-function PetBarModule:UpdateCooldowns()
-    if not (self.bar and PetHasActionBar() and UnitIsVisible("pet")) then return end
-
-    self.bar:ForButtons("UpdateCooldown")
 end
