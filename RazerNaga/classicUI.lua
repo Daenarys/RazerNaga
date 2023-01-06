@@ -22,13 +22,10 @@ local strformat = string.format
 local type = type
 local pairs = pairs
 local SetPortraitTexture = SetPortraitTexture
-local ActionBarController_GetCurrentActionBarState = ActionBarController_GetCurrentActionBarState
 local BNConnected = BNConnected
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
 local C_Club_IsEnabled = C_Club.IsEnabled
 local C_Club_IsRestricted = C_Club.IsRestricted
-local C_Container_GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
-local ContainerFrame_IsReagentBag = ContainerFrame_IsReagentBag
 local Kiosk_IsEnabled = Kiosk.IsEnabled
 local UIFrameFlashStop = UIFrameFlashStop
 local UnitFactionGroup = UnitFactionGroup
@@ -70,16 +67,9 @@ ClassicUI.defaults = {
 				xOffset = 0,
 				yOffset = 0,
 				scale = 1,
-				anchorQueueButtonToMinimap = true,
 				xOffsetQueueButton = 0,
 				yOffsetQueueButton = 0,
-				bigQueueButton = false
 			},
-			['Bags'] = {
-				freeSlotCounterMod = 0,		-- 0 = AllItems (default), 1 = AllItems-ReagentItems (addon default), 2 = NormalItems and ReagentItems in two different numbers
-				xOffsetFreeSlotsCounter = 0,
-				yOffsetFreeSlotsCounter = 0
-			}
 		},
 	}
 }
@@ -112,54 +102,6 @@ function ClassicUI:QueueButtonSetSmallSize()
 	QueueStatusButtonIcon.GlowBackLoop.GlowBack:SetSize(56, 56)
 end
 
--- Function that modifies the behavior of the free slots counter in the bag
-function ClassicUI:BagsFreeSlotsCounterMod()
-	if (ClassicUI.cached_db_profile.extraFrames_Bags_freeSlotCounterMod == 2) then	-- cached db value
-		ClassicUI.BACKPACK_FREESLOTS_FORMAT = "(%s+%s)"
-	else
-		ClassicUI.BACKPACK_FREESLOTS_FORMAT = "(%s)"
-	end
-	if not ClassicUI.hooked_MainMenuBarBackpackButton_UpdateFreeSlots then
-		ClassicUI.MainMenuBarBackpackButton_UpdateFreeSlots = function(self)
-			if (ClassicUI.cached_db_profile.extraFrames_Bags_freeSlotCounterMod == 1) then	-- cached db value
-				local totalFree, freeSlots, bagFamily = 0
-				for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-					if not(ContainerFrame_IsReagentBag(i)) then
-						freeSlots, bagFamily = C_Container_GetContainerNumFreeSlots(i)
-						if (bagFamily == 0) then
-							totalFree = totalFree + freeSlots
-						end
-					end
-				end
-				self.Count:SetText(ClassicUI.BACKPACK_FREESLOTS_FORMAT:format(totalFree))
-			elseif (ClassicUI.cached_db_profile.extraFrames_Bags_freeSlotCounterMod == 2) then	-- cached db value
-				local totalFree, freeSlots, bagFamily = 0
-				local reagentFree = 0
-				for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-					freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i)
-					if (bagFamily == 0) then
-						if not(ContainerFrame_IsReagentBag(i)) then
-							totalFree = totalFree + freeSlots
-						else
-							reagentFree = reagentFree + freeSlots
-						end
-					end
-				end
-				self.Count:SetText(ClassicUI.BACKPACK_FREESLOTS_FORMAT:format(totalFree, reagentFree))
-			end
-		end
-		hooksecurefunc(MainMenuBarBackpackButton, "UpdateFreeSlots", ClassicUI.MainMenuBarBackpackButton_UpdateFreeSlots)
-		ClassicUI.hooked_MainMenuBarBackpackButton_UpdateFreeSlots = true
-	end
-	if (ClassicUI.cached_db_profile.extraFrames_Bags_freeSlotCounterMod ~= 0) then	-- cached db value
-		ClassicUI.MainMenuBarBackpackButton_UpdateFreeSlots(MainMenuBarBackpackButton)
-	else
-		local freeBagSlots = CalculateTotalNumberOfFreeBagSlots()
-		MainMenuBarBackpackButton:UpdateFreeSlots()
-		MainMenuBarBackpackButton.Count:SetText(ClassicUI.BACKPACK_FREESLOTS_FORMAT:format(freeBagSlots))
-	end
-end
-
 -- Function that executes functionalities of the 'ExtraFramesFunc' function that need to be executed after the first "PLAYER_ENTERING_WORLD" event
 function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	-- [Minimap]
@@ -168,31 +110,12 @@ function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	end
 	
 	-- [QueueStatusButton]
-	if (ClassicUI.db.profile.extraFrames.Minimap.anchorQueueButtonToMinimap) then
-		QueueStatusButton:SetParent(MinimapBackdrop)
-		QueueStatusButton:ClearAllPoints()
-		if (ClassicUI.db.profile.extraFrames.Minimap.enabled) then
-			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 23 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -98 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-		else
-			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -7 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -135 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-		end
-		QueueStatusButton:SetFrameStrata("LOW")
-		QueueStatusButton:SetFrameLevel(5)
-		ClassicUI:QueueButtonSetSmallSize()
-	else
-		if (ClassicUI:IsEnabled()) then
-			QueueStatusButton:SetParent(UIParent)
-		end
-	end
-	
-	-- [Bags]
-	if (ClassicUI.db.profile.extraFrames.Bags.freeSlotCounterMod ~= 0) then
-		ClassicUI:BagsFreeSlotsCounterMod()
-	end
-	if (ClassicUI.db.profile.extraFrames.Bags.xOffsetFreeSlotsCounter ~= 0) or (ClassicUI.db.profile.extraFrames.Bags.yOffsetFreeSlotsCounter ~= 0) then
-		MainMenuBarBackpackButton.Count:ClearAllPoints()
-		MainMenuBarBackpackButton.Count:SetPoint("CENTER", MainMenuBarBackpackButton, "CENTER", 0 + ClassicUI.db.profile.extraFrames.Bags.xOffsetFreeSlotsCounter, -10 + ClassicUI.db.profile.extraFrames.Bags.yOffsetFreeSlotsCounter)
-	end
+	QueueStatusButton:SetParent(MinimapBackdrop)
+	QueueStatusButton:ClearAllPoints()
+	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 23 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -98 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
+	QueueStatusButton:SetFrameStrata("LOW")
+	QueueStatusButton:SetFrameLevel(5)
+	ClassicUI:QueueButtonSetSmallSize()
 end
 
 -- Main function that modifies the additional frames that ClassicUI handles
@@ -777,34 +700,9 @@ function ClassicUI:EnableOldMinimap()
 	end)
 end
 
--- Function that executes functionalities of the 'MainFunction' function that need to be executed after the first "PLAYER_ENTERING_WORLD" event
-function ClassicUI:MF_PLAYER_ENTERING_WORLD()
-	
-	-- [QueueStatusButton]
-	if (ClassicUI.db.profile.extraFrames.Minimap.anchorQueueButtonToMinimap) then
-		QueueStatusButton:SetParent(MinimapBackdrop)
-		QueueStatusButton:SetFrameStrata("LOW")
-		QueueStatusButton:SetFrameLevel(5)
-		if (ClassicUI.db.profile.extraFrames.Minimap.enabled) then
-			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 22 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -100 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-		else
-			QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -7 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -135 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-		end
-	else
-		QueueStatusButton:SetParent(UIParent)
-		QueueStatusButton:SetFrameStrata("MEDIUM")
-		QueueStatusButton:SetFrameLevel(53)
-		QueueStatusButton:SetPoint("BOTTOMLEFT", MicroButtonAndBagsBar, "BOTTOMLEFT", -45 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, 4 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-	end
-end
-
 -- Function to manage the PLAYER_ENTERING_WORLD event. Here we do modifications to interface elements that may not have been fully loaded before this event.
 function ClassicUI:PLAYER_ENTERING_WORLD()
 	ClassicUI.frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	if (ClassicUI.OnEvent_PEW_mf) then
-		ClassicUI.OnEvent_PEW_mf = false
-		ClassicUI:MF_PLAYER_ENTERING_WORLD()
-	end
 	if (ClassicUI.OnEvent_PEW_eff) then
 		ClassicUI.OnEvent_PEW_eff = false
 		ClassicUI:EFF_PLAYER_ENTERING_WORLD()

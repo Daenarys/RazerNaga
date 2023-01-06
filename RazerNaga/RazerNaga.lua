@@ -1177,17 +1177,17 @@ end
 -- adds the silver dragon border back to rare portraits
 function RazerNaga:LoadRareDragon()
 	hooksecurefunc(TargetFrame, "CheckClassification", function (self)
-		local classification = UnitClassification(self.unit);
+		local classification = UnitClassification(self.unit)
 
-		local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture;
+		local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture
 		if (classification == "rare") then
-			bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
-            bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
-            bossPortraitFrameTexture:Show();
+			bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize)
+            bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8)
+            bossPortraitFrameTexture:Show()
 		else
 			bossPortraitFrameTexture:SetTexCoord(0, 1, 0, 1) -- Reset coords so no more squished dragons
 		end
 
-		self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide();
-	end);
+		self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide()
+	end)
 end
