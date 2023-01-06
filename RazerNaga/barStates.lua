@@ -142,7 +142,7 @@ do
 	local f = CreateFrame('Frame'); f:Hide()
 	f:SetScript('OnEvent', function()
 		if not InCombatLockdown() then
-			self.Frame:ForAll('UpdateStateDriver')
+			RazerNaga.Frame:ForAll('UpdateStateDriver')
 		end
 	end)
 	f:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
