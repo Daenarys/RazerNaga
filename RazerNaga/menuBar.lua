@@ -254,54 +254,42 @@ function MenuBar:SkinButton(b)
     GuildMicroButtonTabardEmblem:SetDrawLayer("OVERLAY", 1)
     GuildMicroButtonTabardEmblem:SetSize(14, 14)
     GuildMicroButtonTabardEmblem:SetPoint("CENTER", GuildMicroButtonTabard, "CENTER", 0, 0)
-    
-    RazerNaga.GuildMicroButton_UpdateTabard = function(forceUpdate)
-        local tabard = GuildMicroButtonTabard
+
+    local function GuildMicroButton_UpdateTabard(forceUpdate)
+        local tabard = GuildMicroButtonTabard;
         if ( not tabard.needsUpdate and not forceUpdate ) then
-            return
+            return;
         end
-            local emblemFilename = select(10, GetGuildLogoInfo())
-            if ( emblemFilename ) then
-                if ( not tabard:IsShown() ) then
-                    local button = GuildMicroButton
-                    button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
-                    button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
-                    tabard:Show()
-                end
-            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
-        end
-        tabard.needsUpdate = nil
-    end
-    
-    GuildMicroButtonTabard:SetScript("OnEvent", function(self, event, ...)
-        if (Kiosk_IsEnabled()) then
-            return
-        end
-        if (event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-            self.needsUpdate = true
-            RazerNaga.GuildMicroButton_UpdateTabard()
-        end
-    end)
-    
-    hooksecurefunc("UpdateMicroButtons", function(self)
-        RazerNaga.GuildMicroButton_UpdateTabard()
-        local factionGroup = UnitFactionGroup("player")
-        if not( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk_IsEnabled() ) and
-           not( C_Club_IsEnabled() and not BNConnected() ) and
-           not( C_Club_IsEnabled() and C_Club_IsRestricted() ~= Enum.ClubRestrictionReason.None ) and
-              ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -2)
-            GuildMicroButtonTabard:SetAlpha(0.70)
+        -- switch textures if the guild has a custom tabard 
+        local emblemFilename = select(10, GetGuildLogoInfo());
+        if ( emblemFilename ) then
+            if ( not tabard:IsShown() ) then
+                local button = GuildMicroButton;
+                button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
+                button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
+                -- no need to change disabled texture, should always be available if you're in a guild
+                tabard:Show();
+            end
+            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
         else
-            GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
-            GuildMicroButtonTabard:SetAlpha(1)
+            if ( tabard:IsShown() ) then
+                local button = GuildMicroButton;
+                button:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up");
+                button:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down");
+                button:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled");
+                tabard:Hide();
+            end
         end
+        tabard.needsUpdate = nil;
+    end
+
+    GuildMicroButton_UpdateTabard()
+    C_Timer.After(4, GuildMicroButton_UpdateTabard)
+
+    hooksecurefunc("UpdateMicroButtons", function()
+        GuildMicroButton_UpdateTabard(true)
     end)
 
-    GuildMicroButtonTabard:RegisterEvent("PLAYER_GUILD_UPDATE")
-    GuildMicroButtonTabard:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
-    RazerNaga.GuildMicroButton_UpdateTabard(true)
-    
     -- [MicroButtons] LFDMicroButton
     LFDMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0)
