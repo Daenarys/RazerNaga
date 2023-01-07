@@ -6,15 +6,14 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
 local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
 local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
-local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+--[[ Action Bar ]]--
 
-ActionBar.class = UnitClassBase('player')
+local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
 -- Metatable magic. Basically this says, "create a new table for this index"
 -- I do this so that I only create page tables for classes the user is actually
@@ -26,8 +25,8 @@ ActionBar.defaultOffsets = {
     end
 }
 
--- Metatable magic.  Basically this says, 'create a new table for this index,
--- with these defaults. I do this so that I only create page tables for classes
+-- Metatable magic. Basically this says, "create a new table for this index,
+-- with these defaults" I do this so that I only create page tables for classes
 -- the user is actually playing
 ActionBar.mainbarOffsets = {
     __index = function(t, i)
@@ -61,6 +60,8 @@ ActionBar.mainbarOffsets = {
         return pages
     end
 }
+
+ActionBar.class = select(2, UnitClass('player'))
 
 ActionBar:Extend('OnLoadSettings', function(self)
     self.sets.pages = setmetatable(self.sets.pages or {}, self.id == 1 and self.mainbarOffsets or self.defaultOffsets)
@@ -99,6 +100,9 @@ function ActionBar:MaxLength()
     return floor(MAX_BUTTONS / RazerNaga:NumBars())
 end
 
+
+--[[ button stuff]]--
+
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
     local button = RazerNaga.ActionButtons[id]
@@ -111,12 +115,11 @@ end
 
 function ActionBar:ReleaseButton(button)
     button:SetAttribute('statehidden', true)
-    button:SetShowGridInsecure("showgrid", 0, true)
+    button:Hide()
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
-    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
 	
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
@@ -128,7 +131,9 @@ function ActionBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
 
--- paging
+
+--[[ Paging Code ]]--
+
 function ActionBar:SetOffset(stateId, page)
     self.pages[stateId] = page
     self:UpdateStateDriver()
@@ -138,6 +143,9 @@ function ActionBar:GetOffset(stateId)
     return self.pages[stateId]
 end
 
+-- note to self:
+-- if you leave a ; on the end of a statebutton string, it causes evaluation issues,
+-- especially if you're doing right click selfcast on the base state
 function ActionBar:UpdateStateDriver()
     local conditions
 
@@ -215,7 +223,7 @@ function ActionBar:IsOverrideBar()
     return RazerNaga.db.profile.possessBar == self.id
 end
 
--- Empty button display
+--Empty button display
 local function hasFlag(value, flag)
     return value % (2 * flag) >= flag
 end
@@ -248,7 +256,7 @@ function ActionBar:UpdateGrid(force)
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON, show, force)
 end
 
--- keybound support
+--keybound support
 function ActionBar:KEYBOUND_ENABLED()
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, true)
 end
@@ -257,7 +265,7 @@ function ActionBar:KEYBOUND_DISABLED()
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, false)
 end
 
--- right click targeting support
+--right click targeting support
 function ActionBar:SetUnit(unit)
     unit = unit or 'none'
 
@@ -309,6 +317,7 @@ function ActionBar:UpdateTransparent(force)
         self:ForButtons('SetShowCooldowns', not isTransparent)
     end
 end
+
 
 --[[ flyout direction updating ]]--
 
@@ -495,78 +504,34 @@ end
 
 --[[ Action Bar Controller ]]--
 
-local ActionBarsModule = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
+local ActionBarController = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
 
-function ActionBarsModule:Load()
-    self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
-    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'OnOverrideBarUpdated')
+function ActionBarController:Load()
+    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'UpdateOverrideBar')
+    self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
+    self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
 
-    if OverrideActionBar then
-        self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'OnOverrideBarUpdated')
-        self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'OnOverrideBarUpdated')
+    for i = 1, RazerNaga:NumBars() do
+        ActionBar:New(i)
     end
-	
-    self:RegisterEvent("SPELLS_CHANGED")
-
-    self:SetBarCount(RazerNaga:NumBars())
 end
 
-function ActionBarsModule:Unload()
+function ActionBarController:Unload()
     self:UnregisterAllEvents()
-    self:ForActive('Free')
-    self.active = nil
+
+    for i = 1, RazerNaga:NumBars() do
+        RazerNaga.Frame:ForFrame(i, 'Free')
+    end
 end
 
--- events
-function ActionBarsModule:OnOverrideBarUpdated()
-    if InCombatLockdown() or not (RazerNaga.OverrideController and RazerNaga.OverrideController:OverrideBarActive()) then
+function ActionBarController:UpdateOverrideBar()
+    if InCombatLockdown() or (not RazerNaga.OverrideController:OverrideBarActive()) then
         return
     end
 
-    local bar = RazerNaga:GetOverrideBar()
-    if bar then
-        bar:ForButtons('Update')
+    local overrideBar = RazerNaga:GetOverrideBar()
+
+    for _, button in pairs(overrideBar.buttons) do
+        ActionBarActionButtonMixin.Update(button)
     end
 end
-
-function ActionBarsModule:ACTIONBAR_COUNT_UPDATED(_, count)
-    self:SetBarCount(count)
-end
-
-function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
-    if InCombatLockdown() then
-        return
-    end
-
-    self:ForActive('UpdateStateDriver')
-end
-
-function ActionBarsModule:SPELLS_CHANGED()
-    self:ForActive('ForButtons', 'UpdateShownInsecure')
-end
-
-function ActionBarsModule:SetBarCount(count)
-    self:ForActive('Free')
-
-    if count > 0 then
-        self.active = {}
-
-        for i = 1, count do
-            self.active[i] = RazerNaga.ActionBar:New(i)
-        end
-    else
-        self.active = nil
-    end
-end
-
-function ActionBarsModule:ForActive(method, ...)
-    if self.active then
-        for _, bar in pairs(self.active) do
-            bar:CallMethod(method, ...)
-        end
-    end
-end
-
---[[ exports ]]--
-
-RazerNaga.ActionBar = ActionBar
