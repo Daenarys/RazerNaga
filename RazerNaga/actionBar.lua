@@ -1,20 +1,19 @@
 ﻿--[[
-	actionBar.lua
-		A pool of action bars
+    actionBar.lua
+        A pool of action bars
 --]]
 
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
 local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
 local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
-local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+--[[ Action Bar ]]--
 
-ActionBar.class = UnitClassBase('player')
+local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
 -- Metatable magic. Basically this says, "create a new table for this index"
 -- I do this so that I only create page tables for classes the user is actually
@@ -26,8 +25,8 @@ ActionBar.defaultOffsets = {
     end
 }
 
--- Metatable magic.  Basically this says, 'create a new table for this index,
--- with these defaults. I do this so that I only create page tables for classes
+-- Metatable magic. Basically this says, "create a new table for this index,
+-- with these defaults" I do this so that I only create page tables for classes
 -- the user is actually playing
 ActionBar.mainbarOffsets = {
     __index = function(t, i)
@@ -61,6 +60,8 @@ ActionBar.mainbarOffsets = {
         return pages
     end
 }
+
+ActionBar.class = select(2, UnitClass('player'))
 
 ActionBar:Extend('OnLoadSettings', function(self)
     self.sets.pages = setmetatable(self.sets.pages or {}, self.id == 1 and self.mainbarOffsets or self.defaultOffsets)
@@ -99,6 +100,9 @@ function ActionBar:MaxLength()
     return floor(MAX_BUTTONS / RazerNaga:NumBars())
 end
 
+
+--[[ button stuff]]--
+
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
     local button = RazerNaga.ActionButtons[id]
@@ -111,13 +115,12 @@ end
 
 function ActionBar:ReleaseButton(button)
     button:SetAttribute('statehidden', true)
-    button:SetShowGridInsecure("showgrid", 0, true)
+    button:Hide()
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
-    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
-	
+    
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
 
@@ -128,7 +131,9 @@ function ActionBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
 
--- paging
+
+--[[ Paging Code ]]--
+
 function ActionBar:SetOffset(stateId, page)
     self.pages[stateId] = page
     self:UpdateStateDriver()
@@ -138,6 +143,9 @@ function ActionBar:GetOffset(stateId)
     return self.pages[stateId]
 end
 
+-- note to self:
+-- if you leave a ; on the end of a statebutton string, it causes evaluation issues,
+-- especially if you're doing right click selfcast on the base state
 function ActionBar:UpdateStateDriver()
     local conditions
 
@@ -215,7 +223,7 @@ function ActionBar:IsOverrideBar()
     return RazerNaga.db.profile.possessBar == self.id
 end
 
--- Empty button display
+--Empty button display
 local function hasFlag(value, flag)
     return value % (2 * flag) >= flag
 end
@@ -248,7 +256,7 @@ function ActionBar:UpdateGrid(force)
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON, show, force)
 end
 
--- keybound support
+--keybound support
 function ActionBar:KEYBOUND_ENABLED()
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, true)
 end
@@ -257,7 +265,7 @@ function ActionBar:KEYBOUND_DISABLED()
     self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, false)
 end
 
--- right click targeting support
+--right click targeting support
 function ActionBar:SetUnit(unit)
     unit = unit or 'none'
 
@@ -310,6 +318,7 @@ function ActionBar:UpdateTransparent(force)
     end
 end
 
+
 --[[ flyout direction updating ]]--
 
 function ActionBar:GetFlyoutDirection()
@@ -340,233 +349,189 @@ ActionBar:Extend("Stick", ActionBar.UpdateFlyoutDirection)
 --right click menu code for action bars
 --TODO: Probably enable the showstate stuff for other bars, since every bar basically has showstate functionality for 'free'
 do
-	local L
+    local L
 
-	--state slider template
-	local function ConditionSlider_OnShow(self)
-		self:SetMinMaxValues(-1, RazerNaga:NumBars() - 1)
-		self:SetValue(self:GetParent().owner:GetOffset(self.stateId) or -1)
-		self:UpdateText(self:GetValue())
-	end
+    --state slider template
+    local function ConditionSlider_OnShow(self)
+        self:SetMinMaxValues(-1, RazerNaga:NumBars() - 1)
+        self:SetValue(self:GetParent().owner:GetOffset(self.stateId) or -1)
+        self:UpdateText(self:GetValue())
+    end
 
-	local function ConditionSlider_UpdateValue(self, value)
-		self:GetParent().owner:SetOffset(self.stateId, (value > -1 and value) or nil)
-	end
+    local function ConditionSlider_UpdateValue(self, value)
+        self:GetParent().owner:SetOffset(self.stateId, (value > -1 and value) or nil)
+    end
 
-	local function ConditionSlider_UpdateText(self, value)
-		if value > -1 then
-			local page = (self:GetParent().owner.id + value - 1) % RazerNaga:NumBars() + 1
-			self.valText:SetFormattedText(L.Bar, page)
-		else
-			self.valText:SetText(DISABLE)
-		end
-	end
+    local function ConditionSlider_UpdateText(self, value)
+        if value > -1 then
+            local page = (self:GetParent().owner.id + value - 1) % RazerNaga:NumBars() + 1
+            self.valText:SetFormattedText(L.Bar, page)
+        else
+            self.valText:SetText(DISABLE)
+        end
+    end
 
-	local function ConditionSlider_New(panel, stateId, text)
-		local s = panel:NewSlider(stateId, 0, 1, 1)
-		s.OnShow = ConditionSlider_OnShow
-		s.UpdateValue = ConditionSlider_UpdateValue
-		s.UpdateText = ConditionSlider_UpdateText
-		s.stateId = stateId
+    local function ConditionSlider_New(panel, stateId, text)
+        local s = panel:NewSlider(stateId, 0, 1, 1)
+        s.OnShow = ConditionSlider_OnShow
+        s.UpdateValue = ConditionSlider_UpdateValue
+        s.UpdateText = ConditionSlider_UpdateText
+        s.stateId = stateId
 
-		s:SetWidth(s:GetWidth() + 28)
+        s:SetWidth(s:GetWidth() + 28)
 
-		local title = _G[s:GetName() .. 'Text']
-		title:ClearAllPoints()
-		title:SetPoint('BOTTOMLEFT', s, 'TOPLEFT')
-		title:SetJustifyH('LEFT')
-		title:SetText(text or L['State_' .. stateId:upper()])
+        local title = _G[s:GetName() .. 'Text']
+        title:ClearAllPoints()
+        title:SetPoint('BOTTOMLEFT', s, 'TOPLEFT')
+        title:SetJustifyH('LEFT')
+        title:SetText(text or L['State_' .. stateId:upper()])
 
-		local value = s.valText
-		value:ClearAllPoints()
-		value:SetPoint('BOTTOMRIGHT', s, 'TOPRIGHT')
-		value:SetJustifyH('RIGHT')
+        local value = s.valText
+        value:ClearAllPoints()
+        value:SetPoint('BOTTOMRIGHT', s, 'TOPRIGHT')
+        value:SetJustifyH('RIGHT')
 
-		return s
-	end
+        return s
+    end
 
-	local function AddLayout(self)
-		local p = self:AddLayoutPanel()
+    local function AddLayout(self)
+        local p = self:AddLayoutPanel()
 
-		local size = p:NewSlider(L.Size, 1, 1, 1)
-		size.OnShow = function(self)
-			self:SetMinMaxValues(1, self:GetParent().owner:MaxLength())
-			self:SetValue(self:GetParent().owner:NumButtons())
-		end
+        local size = p:NewSlider(L.Size, 1, 1, 1)
+        size.OnShow = function(self)
+            self:SetMinMaxValues(1, self:GetParent().owner:MaxLength())
+            self:SetValue(self:GetParent().owner:NumButtons())
+        end
 
-		size.UpdateValue = function(self, value)
-			self:GetParent().owner:SetNumButtons(value)
-			_G[self:GetParent():GetName() .. L.Columns]:OnShow()
-		end
-	end
+        size.UpdateValue = function(self, value)
+            self:GetParent().owner:SetNumButtons(value)
+            _G[self:GetParent():GetName() .. L.Columns]:OnShow()
+        end
+    end
 
-	local function AddAdvancedLayout(self)
-		self:AddAdvancedPanel()
-	end
+    local function AddAdvancedLayout(self)
+        self:AddAdvancedPanel()
+    end
 
-	--GetSpellInfo(spellID) is awesome for localization
-	local function addStatePanel(self, name, type)
-		local states = RazerNaga.BarStates:map(function(s) return s.type == type end)
-		if #states > 0 then
-			local p = self:NewPanel(name)
+    --GetSpellInfo(spellID) is awesome for localization
+    local function addStatePanel(self, name, type)
+        local states = RazerNaga.BarStates:map(function(s) return s.type == type end)
+        if #states > 0 then
+            local p = self:NewPanel(name)
 
-			--HACK: Make the state panel wider for monks
-			--		since their stances have long names
-			local playerClass = select(2, UnitClass('player'))
-			local hasLongStanceNames = playerClass == 'MONK' or playerClass == 'ROGUE' or playerClass == 'DRUID'
-			for i = #states, 1, -1 do
-				local state = states[i]
-				local slider = ConditionSlider_New(p, state.id, state.text)
-				if hasLongStanceNames then
-					slider:SetWidth(slider:GetWidth() + 48)
-				end
-			end
+            --HACK: Make the state panel wider for monks
+            --      since their stances have long names
+            local playerClass = select(2, UnitClass('player'))
+            local hasLongStanceNames = playerClass == 'MONK' or playerClass == 'ROGUE' or playerClass == 'DRUID'
+            for i = #states, 1, -1 do
+                local state = states[i]
+                local slider = ConditionSlider_New(p, state.id, state.text)
+                if hasLongStanceNames then
+                    slider:SetWidth(slider:GetWidth() + 48)
+                end
+            end
 
-			if hasLongStanceNames then
-				p.width = 228
-			end
-		end
-	end
+            if hasLongStanceNames then
+                p.width = 228
+            end
+        end
+    end
 
-	local function AddClass(self)
-		addStatePanel(self, UnitClass('player'), 'class')
-	end
+    local function AddClass(self)
+        addStatePanel(self, UnitClass('player'), 'class')
+    end
 
-	local function AddPaging(self)
-		addStatePanel(self, L.QuickPaging, 'page')
-	end
+    local function AddPaging(self)
+        addStatePanel(self, L.QuickPaging, 'page')
+    end
 
-	local function AddModifier(self)
-		addStatePanel(self, L.Modifiers, 'modifier')
-	end
+    local function AddModifier(self)
+        addStatePanel(self, L.Modifiers, 'modifier')
+    end
 
-	local function AddTargeting(self)
-		addStatePanel(self, L.Targeting, 'target')
-	end
+    local function AddTargeting(self)
+        addStatePanel(self, L.Targeting, 'target')
+    end
 
-	local function AddShowState(self)
-		local p = self:NewPanel(L.ShowStates)
-		p.height = 56
+    local function AddShowState(self)
+        local p = self:NewPanel(L.ShowStates)
+        p.height = 56
 
-		local editBox = CreateFrame('EditBox', p:GetName() .. 'StateText', p,  'InputBoxTemplate')
-		editBox:SetWidth(148) editBox:SetHeight(20)
-		editBox:SetPoint('TOPLEFT', 12, -10)
-		editBox:SetAutoFocus(false)
-		editBox:SetScript('OnShow', function(self)
-			self:SetText(self:GetParent().owner:GetShowStates() or '')
-		end)
-		editBox:SetScript('OnEnterPressed', function(self)
-			local text = self:GetText()
-			self:GetParent().owner:SetShowStates(text ~= '' and text or nil)
-		end)
-		editBox:SetScript('OnEditFocusLost', function(self) self:HighlightText(0, 0) end)
-		editBox:SetScript('OnEditFocusGained', function(self) self:HighlightText() end)
+        local editBox = CreateFrame('EditBox', p:GetName() .. 'StateText', p,  'InputBoxTemplate')
+        editBox:SetWidth(148) editBox:SetHeight(20)
+        editBox:SetPoint('TOPLEFT', 12, -10)
+        editBox:SetAutoFocus(false)
+        editBox:SetScript('OnShow', function(self)
+            self:SetText(self:GetParent().owner:GetShowStates() or '')
+        end)
+        editBox:SetScript('OnEnterPressed', function(self)
+            local text = self:GetText()
+            self:GetParent().owner:SetShowStates(text ~= '' and text or nil)
+        end)
+        editBox:SetScript('OnEditFocusLost', function(self) self:HighlightText(0, 0) end)
+        editBox:SetScript('OnEditFocusGained', function(self) self:HighlightText() end)
 
-		local set = CreateFrame('Button', p:GetName() .. 'Set', p, 'UIPanelButtonTemplate')
-		set:SetWidth(30) set:SetHeight(20)
-		set:SetText(L.Set)
-		set:SetScript('OnClick', function(self)
-			local text = editBox:GetText()
-			self:GetParent().owner:SetShowStates(text ~= '' and text or nil)
-			editBox:SetText(self:GetParent().owner:GetShowStates() or '')
-		end)
-		set:SetPoint('BOTTOMRIGHT', -8, 2)
+        local set = CreateFrame('Button', p:GetName() .. 'Set', p, 'UIPanelButtonTemplate')
+        set:SetWidth(30) set:SetHeight(20)
+        set:SetText(L.Set)
+        set:SetScript('OnClick', function(self)
+            local text = editBox:GetText()
+            self:GetParent().owner:SetShowStates(text ~= '' and text or nil)
+            editBox:SetText(self:GetParent().owner:GetShowStates() or '')
+        end)
+        set:SetPoint('BOTTOMRIGHT', -8, 2)
 
-		return p
-	end
+        return p
+    end
 
-	function ActionBar:CreateMenu()
-		local menu = RazerNaga:NewMenu(self.id)
+    function ActionBar:CreateMenu()
+        local menu = RazerNaga:NewMenu(self.id)
 
-		L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
-		menu:AddBindingSelectorPanel()
-		AddLayout(menu)
-		AddClass(menu)
-		AddPaging(menu)
-		AddModifier(menu)
-		AddTargeting(menu)
-		AddShowState(menu)
-		AddAdvancedLayout(menu)
+        L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
+        menu:AddBindingSelectorPanel()
+        AddLayout(menu)
+        AddClass(menu)
+        AddPaging(menu)
+        AddModifier(menu)
+        AddTargeting(menu)
+        AddShowState(menu)
+        AddAdvancedLayout(menu)
 
-		ActionBar.menu = menu
-	end
+        ActionBar.menu = menu
+    end
 end
 
 
 --[[ Action Bar Controller ]]--
 
-local ActionBarsModule = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
+local ActionBarController = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
 
-function ActionBarsModule:Load()
-    self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
-    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'OnOverrideBarUpdated')
+function ActionBarController:Load()
+    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'UpdateOverrideBar')
+    self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
+    self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
 
-    if OverrideActionBar then
-        self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'OnOverrideBarUpdated')
-        self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'OnOverrideBarUpdated')
+    for i = 1, RazerNaga:NumBars() do
+        ActionBar:New(i)
     end
-	
-    self:RegisterEvent("SPELLS_CHANGED")
-
-    self:SetBarCount(RazerNaga:NumBars())
 end
 
-function ActionBarsModule:Unload()
+function ActionBarController:Unload()
     self:UnregisterAllEvents()
-    self:ForActive('Free')
-    self.active = nil
+
+    for i = 1, RazerNaga:NumBars() do
+        RazerNaga.Frame:ForFrame(i, 'Free')
+    end
 end
 
--- events
-function ActionBarsModule:OnOverrideBarUpdated()
-    if InCombatLockdown() or not (RazerNaga.OverrideController and RazerNaga.OverrideController:OverrideBarActive()) then
+function ActionBarController:UpdateOverrideBar()
+    if InCombatLockdown() or (not RazerNaga.OverrideController:OverrideBarActive()) then
         return
     end
 
-    local bar = RazerNaga:GetOverrideBar()
-    if bar then
-        bar:ForButtons('Update')
+    local overrideBar = RazerNaga:GetOverrideBar()
+
+    for _, button in pairs(overrideBar.buttons) do
+        button:Update()
     end
 end
-
-function ActionBarsModule:ACTIONBAR_COUNT_UPDATED(_, count)
-    self:SetBarCount(count)
-end
-
-function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
-    if InCombatLockdown() then
-        return
-    end
-
-    self:ForActive('UpdateStateDriver')
-end
-
-function ActionBarsModule:SPELLS_CHANGED()
-    self:ForActive('ForButtons', 'UpdateShownInsecure')
-end
-
-function ActionBarsModule:SetBarCount(count)
-    self:ForActive('Free')
-
-    if count > 0 then
-        self.active = {}
-
-        for i = 1, count do
-            self.active[i] = RazerNaga.ActionBar:New(i)
-        end
-    else
-        self.active = nil
-    end
-end
-
-function ActionBarsModule:ForActive(method, ...)
-    if self.active then
-        for _, bar in pairs(self.active) do
-            bar:CallMethod(method, ...)
-        end
-    end
-end
-
---[[ exports ]]--
-
-RazerNaga.ActionBar = ActionBar
