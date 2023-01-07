@@ -312,6 +312,12 @@ function RazerNaga:HideBlizzard()
 		StatusTrackingBarManager:UnregisterAllEvents()
 		StatusTrackingBarManager:Hide()
 	end
+
+	-- hide the buff expand toggle
+	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)
+		self.CollapseAndExpandButton:Hide()
+	end)
+	BuffFrame.CollapseAndExpandButton:Hide()
 end
 
 function RazerNaga:SetUseOverrideUI(enable)

@@ -5,8 +5,6 @@
 
 ClassicUI = LibStub("AceAddon-3.0"):NewAddon("ClassicUI", "AceConsole-3.0")
 
-local AceDB = LibStub("AceDB-3.0")
-
 ClassicUI.frame = ClassicUI.frame or CreateFrame("Frame", "ClassicUIFrame")
 
 function ClassicUI:OnEvent(event, ...) -- functions created in "object:method"-style have an implicit first parameter of "self", which points to object
@@ -14,111 +12,30 @@ function ClassicUI:OnEvent(event, ...) -- functions created in "object:method"-s
 end
 ClassicUI.frame:SetScript("OnEvent", ClassicUI.OnEvent)
 
-local _G = _G
 local _
-local STANDARD_EPSILON = 0.001
-local SCALE_EPSILON = 0.001
 local strformat = string.format
 local type = type
 local pairs = pairs
-local SetPortraitTexture = SetPortraitTexture
-local BNConnected = BNConnected
 local C_DateAndTime_GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
-local C_Club_IsEnabled = C_Club.IsEnabled
-local C_Club_IsRestricted = C_Club.IsRestricted
-local Kiosk_IsEnabled = Kiosk.IsEnabled
-local UIFrameFlashStop = UIFrameFlashStop
-local UnitFactionGroup = UnitFactionGroup
-local GetFileStreamingStatus = GetFileStreamingStatus
-local GetBackgroundLoadingStatus = GetBackgroundLoadingStatus
-local IsCommunitiesUIDisabledByTrialAccount = IsCommunitiesUIDisabledByTrialAccount
 local GetDifficultyInfo = GetDifficultyInfo
 local GetInstanceInfo = GetInstanceInfo
 local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetGuildInfo = GetGuildInfo
 local InGuildParty = InGuildParty
 
--- Cache variables
-ClassicUI.cached_db_profile = { }
-
--- Default settings
-ClassicUI.defaults = {
-	profile = {
-		enabled = true,
-		barsConfig = {
-			['**'] = {
-				xOffset = 0,
-				yOffset = 0
-			},
-			['MicroButtons'] = {
-				scale = 1
-			},
-			['BagsIcons'] = {
-				iconBorderAlpha = 1,
-				xOffsetReagentBag = 0,
-				yOffsetReagentBag = 0
-			},
-		},
-		extraFrames = {
-			['Minimap'] = {
-				enabled = true,
-				xOffset = 0,
-				yOffset = 0,
-				scale = 1,
-				xOffsetQueueButton = 0,
-				yOffsetQueueButton = 0,
-			},
-		},
-	}
-}
-
 -- First function fired
 function ClassicUI:OnInitialize()
-	self.db = AceDB:New("ClassicUI_DB", self.defaults, true)
-	self:MainFunction(true)
 	self:ExtraFramesFunc(true)
-end
-
--- Function that sets the LFG button icon (QueueStatusButton) to a smaller size similar to the classic LFG button
-function ClassicUI:QueueButtonSetSmallSize()
-	QueueStatusButton:SetScale(0.65)
 end
 
 -- Function that executes functionalities of the 'ExtraFramesFunc' function that need to be executed after the first "PLAYER_ENTERING_WORLD" event
 function ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	-- [Minimap]
-	if (ClassicUI.db.profile.extraFrames.Minimap.enabled) then
-		ClassicUI:EnableOldMinimap()
-	end
-	
-	-- [QueueStatusButton]
-	QueueStatusButton:SetParent(MinimapBackdrop)
-	QueueStatusButton:ClearAllPoints()
-	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 36 + ClassicUI.db.profile.extraFrames.Minimap.xOffsetQueueButton, -157 + ClassicUI.db.profile.extraFrames.Minimap.yOffsetQueueButton)
-	QueueStatusButton:SetFrameStrata("LOW")
-	QueueStatusButton:SetFrameLevel(5)
-	ClassicUI:QueueButtonSetSmallSize()
-end
-
--- Main function that modifies the additional frames that ClassicUI handles
-function ClassicUI:ExtraFramesFunc(isLogin)
-	if (isLogin) then
-		ClassicUI.OnEvent_PEW_eff = true
-		if (not ClassicUI.frame:IsEventRegistered("PLAYER_ENTERING_WORLD")) then
-			ClassicUI.frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-		end
-	else
-		ClassicUI:EFF_PLAYER_ENTERING_WORLD()
-	end
-end
-
--- Function that performs all the necessary modifications in the interface to bring back the old Minimap
-function ClassicUI:EnableOldMinimap()
 	MinimapCluster:SetSize(192, 192)
 	MinimapCluster:SetHitRectInsets(30, 10, 0, 30)
-	MinimapCluster:SetScale(self.db.profile.extraFrames.Minimap.scale)
+	MinimapCluster:SetScale(1)
 	MinimapCluster:ClearAllPoints()
-	MinimapCluster:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", self.db.profile.extraFrames.Minimap.xOffset, self.db.profile.extraFrames.Minimap.yOffset)
+	MinimapCluster:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
 	Minimap:SetSize(140, 140)
 	Minimap:ClearAllPoints()
 	Minimap:SetPoint("CENTER", MinimapCluster, "TOP", 9, -92)
@@ -587,7 +504,7 @@ function ClassicUI:EnableOldMinimap()
 	MinimapZoneText:SetJustifyH("CENTER")
 	MinimapBackdrop:CreateTexture("MinimapBorderTop", "ARTWORK")
 	MinimapBorderTop:ClearAllPoints()
-	MinimapBorderTop:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", ClassicUI.db.profile.extraFrames.Minimap.xOffset, ClassicUI.db.profile.extraFrames.Minimap.yOffset)
+	MinimapBorderTop:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT")
 	MinimapBorderTop:SetTexture("Interface\\Minimap\\UI-Minimap-Border")
 	MinimapBorderTop:SetTexCoord(0.25, 0, 0.25, 0.125, 1, 0, 1, 0.125)
 	MinimapBorderTop:SetSize(192, 32)
@@ -680,6 +597,26 @@ function ClassicUI:EnableOldMinimap()
 		self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP")
 		self.newbieText = NEWBIE_TOOLTIP_WORLDMAP
 	end)
+	
+	-- [QueueStatusButton]
+	QueueStatusButton:SetParent(MinimapBackdrop)
+	QueueStatusButton:ClearAllPoints()
+	QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 36, -157)
+	QueueStatusButton:SetFrameStrata("LOW")
+	QueueStatusButton:SetFrameLevel(5)
+	QueueStatusButton:SetScale(0.65)
+end
+
+-- Main function that modifies the additional frames that ClassicUI handles
+function ClassicUI:ExtraFramesFunc(isLogin)
+	if (isLogin) then
+		ClassicUI.OnEvent_PEW_eff = true
+		if (not ClassicUI.frame:IsEventRegistered("PLAYER_ENTERING_WORLD")) then
+			ClassicUI.frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+		end
+	else
+		ClassicUI:EFF_PLAYER_ENTERING_WORLD()
+	end
 end
 
 -- Function to manage the PLAYER_ENTERING_WORLD event. Here we do modifications to interface elements that may not have been fully loaded before this event.
@@ -689,537 +626,4 @@ function ClassicUI:PLAYER_ENTERING_WORLD()
 		ClassicUI.OnEvent_PEW_eff = false
 		ClassicUI:EFF_PLAYER_ENTERING_WORLD()
 	end
-end
-
--- Main function that loads the core features of ClassicUI. This function at the end calls to 'ClassicUI:PLAYER_ENTERING_WORLD()'.
-function ClassicUI:MainFunction(isLogin)
-	-- hide the buff expand toggle
-	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)
-		self.CollapseAndExpandButton:Hide()
-	end)
-	ClassicUI.hooked_BuffFrame_RefreshCollapseExpandButtonState = true
-	BuffFrame.CollapseAndExpandButton:Hide()
-	
-	-- [MicroButtons]
-	ClassicUI.mbWidth = 28
-	ClassicUI.mbHeight = 38
-	ClassicUI.MicroButtonsGroup = {
-		[CharacterMicroButton] = 1,
-		[SpellbookMicroButton] = 2,
-		[TalentMicroButton] = 3,
-		[AchievementMicroButton] = 4,
-		[QuestLogMicroButton] = 5,
-		[GuildMicroButton] = 6,
-		[LFDMicroButton] = 7,
-		[CollectionsMicroButton] = 8,
-		[EJMicroButton] = 9,
-		[StoreMicroButton] = 10,
-		[MainMenuMicroButton] = 11
-	}
-	
-	-- [MicroButtons] CharacterMicroButton
-	CharacterMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	CharacterMicroButton:SetPoint("BOTTOMLEFT", 556 + ClassicUI.db.profile.barsConfig.MicroButtons.xOffset, 2 + ClassicUI.db.profile.barsConfig.MicroButtons.yOffset)
-	CharacterMicroButton:SetFrameStrata("MEDIUM")
-	CharacterMicroButton:SetFrameLevel(3)
-	CharacterMicroButton:SetNormalAtlas("hud-microbutton-Character-Up", true)
-	CharacterMicroButton:SetPushedAtlas("hud-microbutton-Character-Down", true)
-	CharacterMicroButton:SetDisabledAtlas("hud-microbutton-Character-Disabled", true)
-	CharacterMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	CharacterMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
-	CharacterMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
-	CharacterMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	CharacterMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Disabled")
-	CharacterMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CharacterMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CharacterMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CharacterMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CharacterMicroButton.FlashBorder:SetSize(34, 44)
-	CharacterMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] CharacterMicroButton -> Portrait texture
-	local CUI_MicroButtonPortrait = CharacterMicroButton:CreateTexture("CUI_MicroButtonPortrait")
-	CUI_MicroButtonPortrait:SetPoint("TOP", CharacterMicroButton, "TOP", 0, -7)
-	CUI_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
-	CUI_MicroButtonPortrait:SetAlpha(1)
-	CUI_MicroButtonPortrait:SetSize(18, 25)
-	CUI_MicroButtonPortrait:SetDrawLayer("OVERLAY", 0)
-	hooksecurefunc(CharacterMicroButton, "SetPushed", function(self)
-		CUI_MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
-		CUI_MicroButtonPortrait:SetAlpha(0.5)
-	end)
-	hooksecurefunc(CharacterMicroButton, "SetNormal", function(self)
-		CUI_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
-		CUI_MicroButtonPortrait:SetAlpha(1.0)
-	end)
-	CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
-		if (event == "UNIT_PORTRAIT_UPDATE") then
-			local unit = ...
-			if (unit == "player") then
-				SetPortraitTexture(CUI_MicroButtonPortrait, "player")
-			end
-		elseif (event == "PORTRAITS_UPDATED") then
-			SetPortraitTexture(CUI_MicroButtonPortrait, "player")
-		elseif (event == "PLAYER_ENTERING_WORLD") then
-			SetPortraitTexture(CUI_MicroButtonPortrait, "player")
-		end
-	end)
-	CharacterMicroButton:RegisterEvent("PLAYER_ENTERING_WORLD")
-	CharacterMicroButton:RegisterEvent("UNIT_PORTRAIT_UPDATE")
-	CharacterMicroButton:RegisterEvent("PORTRAITS_UPDATED")
-	SetPortraitTexture(CUI_MicroButtonPortrait, "player")
-	CUI_MicroButtonPortrait:Show()
-	
-	-- [MicroButtons] SpellbookMicroButton
-	SpellbookMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	SpellbookMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton, "BOTTOMRIGHT", -2, 0)
-	SpellbookMicroButton:SetFrameStrata("MEDIUM")
-	SpellbookMicroButton:SetFrameLevel(3)
-	SpellbookMicroButton:SetNormalAtlas("hud-microbutton-Spellbook-Up", true)
-	SpellbookMicroButton:SetPushedAtlas("hud-microbutton-Spellbook-Down", true)
-	SpellbookMicroButton:SetDisabledAtlas("hud-microbutton-Spellbook-Disabled", true)
-	SpellbookMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	SpellbookMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Spellbook-Up")
-	SpellbookMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Spellbook-Down")
-	SpellbookMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	SpellbookMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Spellbook-Disabled")
-	SpellbookMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	SpellbookMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	SpellbookMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	SpellbookMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	SpellbookMicroButton.FlashBorder:SetSize(34, 44)
-	SpellbookMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] TalentMicroButton
-	TalentMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	TalentMicroButton:SetPoint("BOTTOMLEFT", SpellbookMicroButton, "BOTTOMRIGHT", -2, 0)
-	TalentMicroButton:SetFrameStrata("MEDIUM")
-	TalentMicroButton:SetFrameLevel(3)
-	TalentMicroButton:SetNormalAtlas("hud-microbutton-Talents-Up", true)
-	TalentMicroButton:SetPushedAtlas("hud-microbutton-Talents-Down", true)
-	TalentMicroButton:SetDisabledAtlas("hud-microbutton-Talents-Disabled", true)
-	TalentMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	TalentMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Talents-Up")
-	TalentMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Talents-Down")
-	TalentMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	TalentMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Talents-Disabled")
-	TalentMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	TalentMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	TalentMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	TalentMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	TalentMicroButton.FlashBorder:SetSize(34, 44)
-	TalentMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] AchievementMicroButton
-	AchievementMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	AchievementMicroButton:SetPoint("BOTTOMLEFT", TalentMicroButton, "BOTTOMRIGHT", -2, 0)
-	AchievementMicroButton:SetFrameStrata("MEDIUM")
-	AchievementMicroButton:SetFrameLevel(3)
-	AchievementMicroButton:SetNormalAtlas("hud-microbutton-Achievement-Up", true)
-	AchievementMicroButton:SetPushedAtlas("hud-microbutton-Achievement-Down", true)
-	AchievementMicroButton:SetDisabledAtlas("hud-microbutton-Achievement-Disabled", true)
-	AchievementMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	AchievementMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Achievement-Up")
-	AchievementMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Achievement-Down")
-	AchievementMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	AchievementMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Achievement-Disabled")
-	AchievementMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	AchievementMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	AchievementMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	AchievementMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	AchievementMicroButton.FlashBorder:SetSize(34, 44)
-	AchievementMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] QuestLogMicroButton
-	QuestLogMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	QuestLogMicroButton:SetPoint("BOTTOMLEFT", AchievementMicroButton, "BOTTOMRIGHT", -2, 0)
-	QuestLogMicroButton:SetFrameStrata("MEDIUM")
-	QuestLogMicroButton:SetFrameLevel(3)
-	QuestLogMicroButton:SetNormalAtlas("hud-microbutton-Quest-Up", true)
-	QuestLogMicroButton:SetPushedAtlas("hud-microbutton-Quest-Down", true)
-	QuestLogMicroButton:SetDisabledAtlas("hud-microbutton-Quest-Disabled", true)
-	QuestLogMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	QuestLogMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Quest-Up")
-	QuestLogMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Quest-Down")
-	QuestLogMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Quest-Disabled")
-	QuestLogMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	QuestLogMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	QuestLogMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	QuestLogMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	QuestLogMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	QuestLogMicroButton.FlashBorder:SetSize(34, 44)
-	QuestLogMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] GuildMicroButton
-	GuildMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -2, 0)
-	GuildMicroButton:SetFrameStrata("MEDIUM")
-	GuildMicroButton:SetFrameLevel(3)
-	GuildMicroButton:SetNormalAtlas("hud-microbutton-Socials-Up", true)
-	GuildMicroButton:SetPushedAtlas("hud-microbutton-Socials-Down", true)
-	GuildMicroButton:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
-	GuildMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	GuildMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up")
-	GuildMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down")
-	GuildMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled")
-	GuildMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	GuildMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	GuildMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	GuildMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	GuildMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	GuildMicroButton.FlashBorder:SetSize(34, 44)
-	GuildMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	GuildMicroButton.NotificationOverlay:SetFrameStrata("MEDIUM")
-	GuildMicroButton.NotificationOverlay:SetFrameLevel(500)
-	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:SetAtlas("hud-microbutton-communities-icon-notification")
-	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:SetSize(18, 18)
-	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:ClearAllPoints()
-	GuildMicroButton.NotificationOverlay.UnreadNotificationIcon:SetPoint("CENTER", GuildMicroButton.NotificationOverlay, "TOP", 0, -5)
-	
-	local GuildMicroButtonTabard = CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
-	GuildMicroButtonTabard:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	GuildMicroButtonTabard:SetPoint("TOPLEFT", GuildMicroButton, "TOPLEFT", 0, 0)
-	GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardBackground", "ARTWORK")
-	GuildMicroButtonTabard:Hide()
-	GuildMicroButtonTabard.background = GuildMicroButtonTabardBackground
-	GuildMicroButtonTabardBackground:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	GuildMicroButtonTabardBackground:SetTexture("Interface\\Buttons\\UI-MicroButton-Guild-Banner")
-	GuildMicroButtonTabardBackground:SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	GuildMicroButtonTabardBackground:SetPoint("CENTER", GuildMicroButtonTabard, "CENTER", 0, 0)
-	GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardEmblem", "OVERLAY")
-	GuildMicroButtonTabard.emblem = GuildMicroButtonTabardEmblem
-	GuildMicroButtonTabardEmblem:SetTexture("Interface\\GuildFrame\\GuildEmblems_01")
-	GuildMicroButtonTabardEmblem:SetDrawLayer("OVERLAY", 1)
-	GuildMicroButtonTabardEmblem:SetSize(14, 14)
-	GuildMicroButtonTabardEmblem:SetPoint("CENTER", GuildMicroButtonTabard, "CENTER", 0, 0)
-	
-	ClassicUI.GuildMicroButton_UpdateTabard = function(forceUpdate)
-		local tabard = GuildMicroButtonTabard
-		if ( not tabard.needsUpdate and not forceUpdate ) then
-			return
-		end
-		if not(ClassicUI.db.profile.barsConfig.MicroButtons.useClassicGuildIcon) then
-			local emblemFilename = select(10, GetGuildLogoInfo())
-			if ( emblemFilename ) then
-				if ( not tabard:IsShown() ) then
-					local button = GuildMicroButton
-					button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
-					button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
-					tabard:Show()
-				end
-				SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
-			else
-				if ( tabard:IsShown() ) then
-					local button = GuildMicroButton
-					button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
-					button:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up")
-					button:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down")
-					button:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled")
-					tabard:Hide()
-				end
-			end
-		end
-		tabard.needsUpdate = nil
-	end
-	
-	GuildMicroButtonTabard:SetScript("OnEvent", function(self, event, ...)
-		if (Kiosk_IsEnabled()) then
-			return
-		end
-		if (event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-			self.needsUpdate = true
-			ClassicUI.GuildMicroButton_UpdateTabard()
-		end
-	end)
-	
-	hooksecurefunc("UpdateMicroButtons", function(self)
-		ClassicUI.GuildMicroButton_UpdateTabard()
-		local factionGroup = UnitFactionGroup("player")
-		if not( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk_IsEnabled() ) and
-		   not( C_Club_IsEnabled() and not BNConnected() ) and
-		   not( C_Club_IsEnabled() and C_Club_IsRestricted() ~= Enum.ClubRestrictionReason.None ) and
-		      ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-			GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -2)
-			GuildMicroButtonTabard:SetAlpha(0.70)
-		else
-			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
-			GuildMicroButtonTabard:SetAlpha(1)
-		end
-	end)
-
-	GuildMicroButtonTabard:RegisterEvent("PLAYER_GUILD_UPDATE")
-	GuildMicroButtonTabard:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT")
-	ClassicUI.GuildMicroButton_UpdateTabard(true)
-	
-	-- [MicroButtons] LFDMicroButton
-	LFDMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0)
-	LFDMicroButton:SetFrameStrata("MEDIUM")
-	LFDMicroButton:SetFrameLevel(3)
-	LFDMicroButton:SetNormalAtlas("hud-microbutton-LFG-Up", true)
-	LFDMicroButton:SetPushedAtlas("hud-microbutton-LFG-Down", true)
-	LFDMicroButton:SetDisabledAtlas("hud-microbutton-LFG-Disabled", true)
-	LFDMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	LFDMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-LFG-Up")
-	LFDMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-LFG-Down")
-	LFDMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	LFDMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-LFG-Disabled")
-	LFDMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	LFDMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	LFDMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	LFDMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	LFDMicroButton.FlashBorder:SetSize(34, 44)
-	LFDMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] CollectionsMicroButton
-	CollectionsMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	CollectionsMicroButton:SetPoint("BOTTOMLEFT", LFDMicroButton, "BOTTOMRIGHT", -2, 0)
-	CollectionsMicroButton:SetFrameStrata("MEDIUM")
-	CollectionsMicroButton:SetFrameLevel(3)
-	CollectionsMicroButton:SetNormalAtlas("hud-microbutton-Mounts-Up", true)
-	CollectionsMicroButton:SetPushedAtlas("hud-microbutton-Mounts-Down", true)
-	CollectionsMicroButton:SetDisabledAtlas("hud-microbutton-Mounts-Disabled", true)
-	CollectionsMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	CollectionsMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Mounts-Up")
-	CollectionsMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Mounts-Down")
-	CollectionsMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	CollectionsMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Mounts-Disabled")
-	CollectionsMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CollectionsMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CollectionsMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CollectionsMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	CollectionsMicroButton.FlashBorder:SetSize(34, 44)
-	CollectionsMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] EJMicroButton
-	EJMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	EJMicroButton:SetPoint("BOTTOMLEFT", CollectionsMicroButton, "BOTTOMRIGHT", -2, 0)
-	EJMicroButton:SetFrameStrata("MEDIUM")
-	EJMicroButton:SetFrameLevel(3)
-	EJMicroButton:SetNormalAtlas("hud-microbutton-EJ-Up", true)
-	EJMicroButton:SetPushedAtlas("hud-microbutton-EJ-Down", true)
-	EJMicroButton:SetDisabledAtlas("hud-microbutton-EJ-Disabled", true)
-	EJMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	EJMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-EJ-Up")
-	EJMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-EJ-Down")
-	EJMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	EJMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-EJ-Disabled")
-	EJMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	EJMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	EJMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	EJMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	EJMicroButton.FlashBorder:SetSize(34, 44)
-	EJMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] StoreMicroButton
-	StoreMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	StoreMicroButton:SetPoint("BOTTOMLEFT", EJMicroButton, "BOTTOMRIGHT", -2, 0)
-	StoreMicroButton:SetFrameStrata("MEDIUM")
-	StoreMicroButton:SetFrameLevel(3)
-	StoreMicroButton:SetNormalAtlas("hud-microbutton-BStore-Up", true)
-	StoreMicroButton:SetPushedAtlas("hud-microbutton-BStore-Down", true)
-	StoreMicroButton:SetDisabledAtlas("hud-microbutton-BStore-Disabled", true)
-	StoreMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	StoreMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-BStore-Up")
-	StoreMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-BStore-Down")
-	StoreMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	StoreMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-BStore-Disabled")
-	StoreMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	StoreMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	StoreMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	StoreMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	StoreMicroButton.FlashBorder:SetSize(34, 44)
-	StoreMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	-- [MicroButtons] MainMenuMicroButton
-	MainMenuMicroButton:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-	MainMenuMicroButton:SetPoint("BOTTOMLEFT", StoreMicroButton, "BOTTOMRIGHT", -3, 0)
-	MainMenuMicroButton:SetFrameStrata("MEDIUM")
-	MainMenuMicroButton:SetFrameLevel(3)
-	MainMenuMicroButton:SetNormalAtlas("hud-microbutton-MainMenu-Up", true)
-	MainMenuMicroButton:SetPushedAtlas("hud-microbutton-MainMenu-Down", true)
-	MainMenuMicroButton:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true)
-	MainMenuMicroButton:SetHighlightAtlas("hud-microbutton-highlight")
-	MainMenuMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up")
-	MainMenuMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down")
-	MainMenuMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled")
-	MainMenuMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-	MainMenuMicroButton:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	MainMenuMicroButton:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	MainMenuMicroButton:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	MainMenuMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-	MainMenuMicroButton.FlashBorder:SetSize(34, 44)
-	MainMenuMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-	
-	if (MainMenuMicroButton.MainMenuBarPerformanceBar ~= nil) then
-		MainMenuMicroButton.MainMenuBarPerformanceBar:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-		MainMenuMicroButton.MainMenuBarPerformanceBar:SetTexCoord(0/32, 32/32, 22/64, 64/64)
-		MainMenuMicroButton.MainMenuBarPerformanceBar:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 0)
-		if (ClassicUI.db.profile.barsConfig.MainMenuBar.hideLatencyBar) then
-			MainMenuMicroButton.MainMenuBarPerformanceBar:SetAlpha(0)
-			MainMenuMicroButton.MainMenuBarPerformanceBar:Hide()
-		end
-	end
-	
-	hooksecurefunc("MicroButtonPulse", function(self, duration)
-		if (ClassicUI.MicroButtonsGroup[self] ~= nil and self.FlashContent ~= nil) then
-			UIFrameFlashStop(self.FlashContent)
-		end
-	end)
-	
-	-- [MicroButtons] MainMenuMicroButton -> HelpOpenWebTicketButton
-	if (HelpOpenWebTicketButton ~= nil) then
-		HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
-		HelpOpenWebTicketButton:SetPoint("CENTER", HelpOpenWebTicketButton:GetParent(), "TOPRIGHT", -3, -4)
-	end
-	
-	-- [MicroButtons] MainMenuMicroButton -> MainMenuBarDownload texture
-	local CUI_MainMenuBarDownload = MainMenuMicroButton:CreateTexture("CUI_MainMenuBarDownload")
-	CUI_MainMenuBarDownload:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 7)
-	CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
-	CUI_MainMenuBarDownload:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-	CUI_MainMenuBarDownload:SetSize(28, 28)
-	CUI_MainMenuBarDownload:SetDrawLayer("OVERLAY", 0)
-	CUI_MainMenuBarDownload:SetAlpha(1)
-	CUI_MainMenuBarDownload:Hide()
-	
-	MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
-		if (self.updateInterval >= 1) then	-- PERFORMANCE_BAR_UPDATE_INTERVAL = 1
-			local status = GetFileStreamingStatus()
-			if ( status == 0 ) then
-				status = (GetBackgroundLoadingStatus()~=0) and 1 or 0
-			end
-			self:SetSize(ClassicUI.mbWidth, ClassicUI.mbHeight)
-			self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true)
-			self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true)
-			self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true)
-			self:SetHighlightAtlas("hud-microbutton-highlight")
-			self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight", "ADD")
-			self:GetNormalTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-			if ( status == 0 ) then
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up")
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down")
-				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled")
-				self:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				self:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				self:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				CUI_MainMenuBarDownload:Hide()
-			else
-				self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
-				self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down")
-				self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
-				self:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				self:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				self:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-				if ( status == 1 ) then
-					CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Green")
-				elseif ( status == 2 ) then
-					CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
-				elseif ( status == 3 ) then
-					CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Red")
-				end
-				CUI_MainMenuBarDownload:Show()
-			end
-		end
-	end)
-	
-	-- [Bags]
-	ClassicUI.BaseBagSlotButton_UpdateTextures = function(self)
-		self:GetPushedTexture():SetAtlas(nil)
-		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress", "ADD")
-		self:GetPushedTexture():SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-		self:GetPushedTexture():SetSize(30, 30)
-		self:GetPushedTexture():SetAlpha(1)
-		--self:GetPushedTexture():ClearAllPoints()		-- not needed
-		--self:GetPushedTexture():SetAllPoints(self)	-- not needed
-		
-		self:GetHighlightTexture():SetAtlas(nil)
-		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-		self:GetHighlightTexture():SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-		self:GetHighlightTexture():SetSize(30, 30)
-		self:GetHighlightTexture():SetAlpha(1)
-		--self:GetHighlightTexture():ClearAllPoints()	-- not needed
-		--self:GetHighlightTexture():SetAllPoints(self)	-- not needed
-		
-		self.SlotHighlightTexture:SetAtlas(nil)
-		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		self.SlotHighlightTexture:SetBlendMode("ADD")
-		self.SlotHighlightTexture:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-		self.SlotHighlightTexture:SetSize(30, 30)
-		self.SlotHighlightTexture:SetAlpha(1)
---		--self.SlotHighlightTexture:ClearAllPoints()	-- not needed
---		--self.SlotHighlightTexture:SetAllPoints(self)	-- not needed
-		
-		self:GetNormalTexture():SetAtlas(nil)
-	end
-	
-	for i = 0, 3 do
-		local bagSlot = _G["CharacterBag"..i.."Slot"]
-		bagSlot.IconBorder:SetTexture("Interface\\Common\\WhiteIconFrame")
-		bagSlot.IconBorder:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-		bagSlot.IconBorder:SetSize(30, 30)
-		bagSlot.IconBorder:SetDrawLayer("OVERLAY")
-		bagSlot.IconBorder:SetAlpha(ClassicUI.db.profile.barsConfig.BagsIcons.iconBorderAlpha)
-		bagSlot.IconBorder:SetPoint("CENTER", bagSlot, "CENTER", 0, 0)
-		hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
-		hooksecurefunc(bagSlot, "UpdateTextures", ClassicUI.BaseBagSlotButton_UpdateTextures)
-	end
-	hooksecurefunc(MainMenuBarBackpackButton, "UpdateTextures", ClassicUI.BaseBagSlotButton_UpdateTextures)
-	
-	ItemButtonMixin.SetItemButtonQuality(CharacterBag0Slot, GetInventoryItemQuality("player", CharacterBag0Slot:GetID()), GetInventoryItemID("player", CharacterBag0Slot:GetID()), CharacterBag0Slot.HasPaperDollAzeriteItemOverlay)
-	ItemButtonMixin.SetItemButtonQuality(CharacterBag1Slot, GetInventoryItemQuality("player", CharacterBag1Slot:GetID()), GetInventoryItemID("player", CharacterBag1Slot:GetID()), CharacterBag1Slot.HasPaperDollAzeriteItemOverlay)
-	ItemButtonMixin.SetItemButtonQuality(CharacterBag2Slot, GetInventoryItemQuality("player", CharacterBag2Slot:GetID()), GetInventoryItemID("player", CharacterBag2Slot:GetID()), CharacterBag2Slot.HasPaperDollAzeriteItemOverlay)
-	ItemButtonMixin.SetItemButtonQuality(CharacterBag3Slot, GetInventoryItemQuality("player", CharacterBag3Slot:GetID()), GetInventoryItemID("player", CharacterBag3Slot:GetID()), CharacterBag3Slot.HasPaperDollAzeriteItemOverlay)
-	C_Timer.After(8, function()
-		ItemButtonMixin.SetItemButtonQuality(CharacterBag0Slot, GetInventoryItemQuality("player", CharacterBag0Slot:GetID()), GetInventoryItemID("player", CharacterBag0Slot:GetID()), CharacterBag0Slot.HasPaperDollAzeriteItemOverlay)
-		ItemButtonMixin.SetItemButtonQuality(CharacterBag1Slot, GetInventoryItemQuality("player", CharacterBag1Slot:GetID()), GetInventoryItemID("player", CharacterBag1Slot:GetID()), CharacterBag1Slot.HasPaperDollAzeriteItemOverlay)
-		ItemButtonMixin.SetItemButtonQuality(CharacterBag2Slot, GetInventoryItemQuality("player", CharacterBag2Slot:GetID()), GetInventoryItemID("player", CharacterBag2Slot:GetID()), CharacterBag2Slot.HasPaperDollAzeriteItemOverlay)
-		ItemButtonMixin.SetItemButtonQuality(CharacterBag3Slot, GetInventoryItemQuality("player", CharacterBag3Slot:GetID()), GetInventoryItemID("player", CharacterBag3Slot:GetID()), CharacterBag3Slot.HasPaperDollAzeriteItemOverlay)
-	end)
-	
-	CharacterBag0Slot.CircleMask:Hide()
-	ClassicUI.BaseBagSlotButton_UpdateTextures(CharacterBag0Slot)
-	CharacterBag0SlotNormalTexture:Hide()
-	CharacterBag0Slot:SetSize(30, 30)
-	CharacterBag0Slot.IconBorder:SetSize(30, 30)
-	CharacterBag0Slot:ClearAllPoints()
-	CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -2, 0)
-	CharacterBag0Slot:SetFrameStrata("MEDIUM")
-	CharacterBag0Slot:SetFrameLevel(3)
-	CharacterBag1Slot.CircleMask:Hide()
-	ClassicUI.BaseBagSlotButton_UpdateTextures(CharacterBag1Slot)
-	CharacterBag1SlotNormalTexture:Hide()
-	CharacterBag1Slot:SetSize(30, 30)
-	CharacterBag1Slot.IconBorder:SetSize(30, 30)
-	CharacterBag1Slot:ClearAllPoints()
-	CharacterBag1Slot:SetPoint("RIGHT", CharacterBag0Slot, "LEFT", -2, 0)
-	CharacterBag1Slot:SetFrameStrata("MEDIUM")
-	CharacterBag1Slot:SetFrameLevel(3)
-	CharacterBag2Slot.CircleMask:Hide()
-	ClassicUI.BaseBagSlotButton_UpdateTextures(CharacterBag2Slot)
-	CharacterBag2SlotNormalTexture:Hide()
-	CharacterBag2Slot:SetSize(30, 30)
-	CharacterBag2Slot.IconBorder:SetSize(30, 30)
-	CharacterBag2Slot:ClearAllPoints()
-	CharacterBag2Slot:SetPoint("RIGHT", CharacterBag1Slot, "LEFT", -2, 0)
-	CharacterBag2Slot:SetFrameStrata("MEDIUM")
-	CharacterBag2Slot:SetFrameLevel(3)
-	CharacterBag3Slot.CircleMask:Hide()
-	ClassicUI.BaseBagSlotButton_UpdateTextures(CharacterBag3Slot)
-	CharacterBag3SlotNormalTexture:Hide()
-	CharacterBag3Slot:SetSize(30, 30)
-	CharacterBag3Slot.IconBorder:SetSize(30, 30)
-	CharacterBag3Slot:ClearAllPoints()
-	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
-	CharacterBag3Slot:SetFrameStrata("MEDIUM")
-	CharacterBag3Slot:SetFrameLevel(3)
-	MainMenuBarBackpackButton.CircleMask:Hide()
-	ClassicUI.BaseBagSlotButton_UpdateTextures(MainMenuBarBackpackButton)
-	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
-	MainMenuBarBackpackButton:SetSize(30, 30)
-	MainMenuBarBackpackButton.IconBorder:SetSize(30, 30)
-	MainMenuBarBackpackButton:ClearAllPoints()
-	MainMenuBarBackpackButton:SetPoint("BOTTOMRIGHT", -4, 6)
-	MainMenuBarBackpackButton:SetFrameStrata("MEDIUM")
-	MainMenuBarBackpackButton:SetFrameLevel(3)
 end
