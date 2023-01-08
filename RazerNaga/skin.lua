@@ -621,6 +621,9 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 		PermaHide(contextual.PrestigePortrait)
 		PermaHide(contextual.PvpIcon)
 		PermaHide(frame.TargetFrameContainer.Flash)
+		PermaHide(PetFrameHealthBarMask)
+		PermaHide(PetFrameManaBarMask)
+		PermaHide(PetFrameOverAbsorbGlow)
 
 		frame.Background = frame:CreateTexture(nil, "ARTWORK");
 		frame.Background:SetPoint("TOPLEFT", frame, "TOPLEFT", 26, -29);
@@ -826,13 +829,8 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 	end
 
 	-- [PlayerFrame]
-	local PlayerName = PlayerName
-	local PlayerFrame = PlayerFrame
-	local PlayerLevelText = PlayerLevelText
-	local PlayerHitIndicator = PlayerHitIndicator
 	local PlayerFrameManaBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.ManaBarArea.ManaBar
 	local PlayerFrameHealthBar = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarArea.HealthBar
-	local SetTextStatusBarText = SetTextStatusBarText
 	local PlayerFrameManaBarText = PlayerFrameManaBar.ManaBarText
 	local PlayerFrameHealthBarText = PlayerFrameHealthBar.TextString
 	local PlayerFrameManaBarTextLeft = PlayerFrameManaBar.LeftText
@@ -1069,12 +1067,35 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 	end
 
 	-- [PetFrame]
-	--ApplyFrame(PetFrame)
-    local PetFrame = PetFrame
-
     local function PetFrame_OnEvent()
+    	local powerColor = GetPowerBarColor(UnitPowerType(PetFrame.unit))
     	PetFrame:ClearAllPoints()
-    	PetFrame:SetPoint("TOPLEFT", PlayerFrame, 40, -100)
+    	PetFrame:SetSize(128, 53)
+    	PetFrame:SetPoint("TOPLEFT", PlayerFrame, 40, -97)
+    	PetFrame:SetHitRectInsets(7, 66, 6, 7)
+    	PetFrameFlash:ClearAllPoints()
+    	PetFrameFlash:SetTexture("Interface\\TargetingFrame\\UI-PartyFrame-Flash")
+    	PetFrameFlash:SetSize(128, 64)
+    	PetFrameFlash:SetPoint("TOPLEFT", PetFrame, "TOPLEFT", -4, 11)
+    	PetFrameFlash:SetTexCoord(0, 1, 1, 0)
+    	PetFrameTexture:ClearAllPoints()
+		PetFrameTexture:SetPoint("TOPLEFT", PlayerFrame, 40, -97)
+		PetFrameTexture:SetSize(128, 64)
+		PetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-SmallTargetingFrame")
+		PetFrameTexture:SetDrawLayer("OVERLAY", 0)
+		PetPortrait:SetSize(37, 37)
+		PetFrameHealthBar:SetFrameLevel(3)
+		PetFrameHealthBar:SetSize(69, 8)
+		PetFrameHealthBar:SetPoint("TOPLEFT", PetFrame, 47, -22)
+		PetFrameHealthBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+		PetFrameHealthBar:SetStatusBarColor(0, 1, 0)
+		PetFrameManaBar:SetFrameLevel(3)
+		PetFrameManaBar:SetSize(71, 8)
+		PetFrameManaBar:SetPoint("TOPLEFT", PetFrame, 46, -29)
+		PetFrameManaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+		PetFrameManaBar:SetStatusBarColor(powerColor.r, powerColor.g, powerColor.b)
+		PetName:ClearAllPoints()
+		PetName:SetPoint("BOTTOMLEFT", PetFrame, 52, 35)
     end
 
     self.EventFrame = CreateFrame("Frame")
