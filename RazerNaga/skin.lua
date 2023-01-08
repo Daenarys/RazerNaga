@@ -963,7 +963,7 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 	 hooksecurefunc("PlayerFrame_UpdatePlayerNameTextAnchor", function()
 		PlayerName:ClearAllPoints()
 		PlayerName:SetJustifyH("CENTER")
-		PlayerName:SetPoint("TOPLEFT", PlayerFrame.PlayerFrameContainer, "TOPLEFT", 98, -30)
+		PlayerName:SetPoint("TOPLEFT", PlayerFrame.PlayerFrameContainer, "TOPLEFT", 98, -31)
 	 end)
 
 	 hooksecurefunc("PlayerFrame_UpdateLevel", function()
