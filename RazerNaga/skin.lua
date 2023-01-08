@@ -1069,7 +1069,18 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 	end
 
 	-- [PetFrame]
-	--ApplyFrame(PetFrame)
+    local PetFrame = PetFrame
+
+    local function PetFrame_OnEvent()
+    	PetFrame:ClearAllPoints()
+    	PetFrame:SetPoint("TOPLEFT", PlayerFrame, 40, -100)
+    end
+
+    self.EventFrame = CreateFrame("Frame")
+    self.EventFrame:RegisterEvent("PET_UI_UPDATE")
+    self.EventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self.EventFrame:RegisterUnitEvent("UNIT_PET", "player");
+    self.EventFrame:SetScript("OnEvent", PetFrame_OnEvent)
 
 	-- [TargetFrame]
 	ApplyFrame(TargetFrame)
