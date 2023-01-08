@@ -110,6 +110,8 @@ function BagBar:SkinButton(b)
 	MainMenuBarBackpackButton:SetFrameStrata("MEDIUM")
 	MainMenuBarBackpackButton:SetFrameLevel(3)
 
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -6)
+
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
 	b.skinned = true
