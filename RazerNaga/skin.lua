@@ -1068,6 +1068,9 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 		end)
 	end
 
+	-- [PetFrame]
+	--ApplyFrame(PetFrame)
+
 	-- [TargetFrame]
 	ApplyFrame(TargetFrame)
 
