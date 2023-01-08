@@ -62,7 +62,6 @@ function MenuBar:SkinButton(b)
     local GetBackgroundLoadingStatus = GetBackgroundLoadingStatus
     local IsCommunitiesUIDisabledByTrialAccount = IsCommunitiesUIDisabledByTrialAccount
 
-    -- [MicroButtons]
     RazerNaga.mbWidth = 28
     RazerNaga.mbHeight = 38
     RazerNaga.MicroButtonsGroup = {
@@ -79,7 +78,6 @@ function MenuBar:SkinButton(b)
         [MainMenuMicroButton] = 11
     }
     
-    -- [MicroButtons] CharacterMicroButton
     CharacterMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     CharacterMicroButton:SetPoint("BOTTOMLEFT", 556, 2)
     CharacterMicroButton:SetFrameStrata("MEDIUM")
@@ -99,40 +97,38 @@ function MenuBar:SkinButton(b)
     CharacterMicroButton.FlashBorder:SetSize(34, 44)
     CharacterMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
     
-    -- [MicroButtons] CharacterMicroButton -> Portrait texture
-    local CUI_MicroButtonPortrait = CharacterMicroButton:CreateTexture("CUI_MicroButtonPortrait")
-    CUI_MicroButtonPortrait:SetPoint("TOP", CharacterMicroButton, "TOP", 0, -7)
-    CUI_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
-    CUI_MicroButtonPortrait:SetAlpha(1)
-    CUI_MicroButtonPortrait:SetSize(18, 25)
-    CUI_MicroButtonPortrait:SetDrawLayer("OVERLAY", 0)
+    local RazerNaga_MicroButtonPortrait = CharacterMicroButton:CreateTexture("RazerNaga_MicroButtonPortrait")
+    RazerNaga_MicroButtonPortrait:SetPoint("TOP", CharacterMicroButton, "TOP", 0, -7)
+    RazerNaga_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
+    RazerNaga_MicroButtonPortrait:SetAlpha(1)
+    RazerNaga_MicroButtonPortrait:SetSize(18, 25)
+    RazerNaga_MicroButtonPortrait:SetDrawLayer("OVERLAY", 0)
     hooksecurefunc(CharacterMicroButton, "SetPushed", function(self)
-        CUI_MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
-        CUI_MicroButtonPortrait:SetAlpha(0.5)
+        RazerNaga_MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
+        RazerNaga_MicroButtonPortrait:SetAlpha(0.5)
     end)
     hooksecurefunc(CharacterMicroButton, "SetNormal", function(self)
-        CUI_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
-        CUI_MicroButtonPortrait:SetAlpha(1.0)
+        RazerNaga_MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
+        RazerNaga_MicroButtonPortrait:SetAlpha(1.0)
     end)
     CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
         if (event == "UNIT_PORTRAIT_UPDATE") then
             local unit = ...
             if (unit == "player") then
-                SetPortraitTexture(CUI_MicroButtonPortrait, "player")
+                SetPortraitTexture(RazerNaga_MicroButtonPortrait, "player")
             end
         elseif (event == "PORTRAITS_UPDATED") then
-            SetPortraitTexture(CUI_MicroButtonPortrait, "player")
+            SetPortraitTexture(RazerNaga_MicroButtonPortrait, "player")
         elseif (event == "PLAYER_ENTERING_WORLD") then
-            SetPortraitTexture(CUI_MicroButtonPortrait, "player")
+            SetPortraitTexture(RazerNaga_MicroButtonPortrait, "player")
         end
     end)
     CharacterMicroButton:RegisterEvent("PLAYER_ENTERING_WORLD")
     CharacterMicroButton:RegisterEvent("UNIT_PORTRAIT_UPDATE")
     CharacterMicroButton:RegisterEvent("PORTRAITS_UPDATED")
-    SetPortraitTexture(CUI_MicroButtonPortrait, "player")
-    CUI_MicroButtonPortrait:Show()
+    SetPortraitTexture(RazerNaga_MicroButtonPortrait, "player")
+    RazerNaga_MicroButtonPortrait:Show()
     
-    -- [MicroButtons] SpellbookMicroButton
     SpellbookMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     SpellbookMicroButton:SetPoint("BOTTOMLEFT", CharacterMicroButton, "BOTTOMRIGHT", -2, 0)
     SpellbookMicroButton:SetFrameStrata("MEDIUM")
@@ -152,7 +148,6 @@ function MenuBar:SkinButton(b)
     SpellbookMicroButton.FlashBorder:SetSize(34, 44)
     SpellbookMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
     
-    -- [MicroButtons] TalentMicroButton
     TalentMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     TalentMicroButton:SetPoint("BOTTOMLEFT", SpellbookMicroButton, "BOTTOMRIGHT", -2, 0)
     TalentMicroButton:SetFrameStrata("MEDIUM")
@@ -172,7 +167,6 @@ function MenuBar:SkinButton(b)
     TalentMicroButton.FlashBorder:SetSize(34, 44)
     TalentMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
     
-    -- [MicroButtons] AchievementMicroButton
     AchievementMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     AchievementMicroButton:SetPoint("BOTTOMLEFT", TalentMicroButton, "BOTTOMRIGHT", -2, 0)
     AchievementMicroButton:SetFrameStrata("MEDIUM")
@@ -191,8 +185,7 @@ function MenuBar:SkinButton(b)
     AchievementMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
     AchievementMicroButton.FlashBorder:SetSize(34, 44)
     AchievementMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-    
-    -- [MicroButtons] QuestLogMicroButton
+
     QuestLogMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     QuestLogMicroButton:SetPoint("BOTTOMLEFT", AchievementMicroButton, "BOTTOMRIGHT", -2, 0)
     QuestLogMicroButton:SetFrameStrata("MEDIUM")
@@ -212,7 +205,6 @@ function MenuBar:SkinButton(b)
     QuestLogMicroButton.FlashBorder:SetSize(34, 44)
     QuestLogMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
     
-    -- [MicroButtons] GuildMicroButton
     GuildMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     GuildMicroButton:SetPoint("BOTTOMLEFT", QuestLogMicroButton, "BOTTOMRIGHT", -2, 0)
     GuildMicroButton:SetFrameStrata("MEDIUM")
@@ -290,7 +282,6 @@ function MenuBar:SkinButton(b)
         GuildMicroButton_UpdateTabard(true)
     end)
 
-    -- [MicroButtons] LFDMicroButton
     LFDMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     LFDMicroButton:SetPoint("BOTTOMLEFT", GuildMicroButton, "BOTTOMRIGHT", -3, 0)
     LFDMicroButton:SetFrameStrata("MEDIUM")
@@ -309,8 +300,7 @@ function MenuBar:SkinButton(b)
     LFDMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
     LFDMicroButton.FlashBorder:SetSize(34, 44)
     LFDMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-    
-    -- [MicroButtons] CollectionsMicroButton
+
     CollectionsMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     CollectionsMicroButton:SetPoint("BOTTOMLEFT", LFDMicroButton, "BOTTOMRIGHT", -2, 0)
     CollectionsMicroButton:SetFrameStrata("MEDIUM")
@@ -329,8 +319,7 @@ function MenuBar:SkinButton(b)
     CollectionsMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
     CollectionsMicroButton.FlashBorder:SetSize(34, 44)
     CollectionsMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-    
-    -- [MicroButtons] EJMicroButton
+
     EJMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     EJMicroButton:SetPoint("BOTTOMLEFT", CollectionsMicroButton, "BOTTOMRIGHT", -2, 0)
     EJMicroButton:SetFrameStrata("MEDIUM")
@@ -349,8 +338,7 @@ function MenuBar:SkinButton(b)
     EJMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
     EJMicroButton.FlashBorder:SetSize(34, 44)
     EJMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-    
-    -- [MicroButtons] StoreMicroButton
+
     StoreMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     StoreMicroButton:SetPoint("BOTTOMLEFT", EJMicroButton, "BOTTOMRIGHT", -2, 0)
     StoreMicroButton:SetFrameStrata("MEDIUM")
@@ -369,8 +357,7 @@ function MenuBar:SkinButton(b)
     StoreMicroButton:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
     StoreMicroButton.FlashBorder:SetSize(34, 44)
     StoreMicroButton.FlashBorder:SetPoint("TOPLEFT", TalentMicroButton, "TOPLEFT", -2, 3)
-    
-    -- [MicroButtons] MainMenuMicroButton
+
     MainMenuMicroButton:SetSize(RazerNaga.mbWidth, RazerNaga.mbHeight)
     MainMenuMicroButton:SetPoint("BOTTOMLEFT", StoreMicroButton, "BOTTOMRIGHT", -3, 0)
     MainMenuMicroButton:SetFrameStrata("MEDIUM")
@@ -402,21 +389,19 @@ function MenuBar:SkinButton(b)
         end
     end)
     
-    -- [MicroButtons] MainMenuMicroButton -> HelpOpenWebTicketButton
     if (HelpOpenWebTicketButton ~= nil) then
         HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
         HelpOpenWebTicketButton:SetPoint("CENTER", HelpOpenWebTicketButton:GetParent(), "TOPRIGHT", -3, -4)
     end
     
-    -- [MicroButtons] MainMenuMicroButton -> MainMenuBarDownload texture
-    local CUI_MainMenuBarDownload = MainMenuMicroButton:CreateTexture("CUI_MainMenuBarDownload")
-    CUI_MainMenuBarDownload:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 7)
-    CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
-    CUI_MainMenuBarDownload:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
-    CUI_MainMenuBarDownload:SetSize(28, 28)
-    CUI_MainMenuBarDownload:SetDrawLayer("OVERLAY", 0)
-    CUI_MainMenuBarDownload:SetAlpha(1)
-    CUI_MainMenuBarDownload:Hide()
+    local RazerNaga_MainMenuBarDownload = MainMenuMicroButton:CreateTexture("RazerNaga_MainMenuBarDownload")
+    RazerNaga_MainMenuBarDownload:SetPoint("BOTTOM", MainMenuMicroButton, "BOTTOM", 0, 7)
+    RazerNaga_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
+    RazerNaga_MainMenuBarDownload:SetTexCoord(0, 0, 0, 1, 1, 0, 1, 1)
+    RazerNaga_MainMenuBarDownload:SetSize(28, 28)
+    RazerNaga_MainMenuBarDownload:SetDrawLayer("OVERLAY", 0)
+    RazerNaga_MainMenuBarDownload:SetAlpha(1)
+    RazerNaga_MainMenuBarDownload:Hide()
     
     MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
         if (self.updateInterval >= 1) then  -- PERFORMANCE_BAR_UPDATE_INTERVAL = 1
@@ -438,7 +423,7 @@ function MenuBar:SkinButton(b)
                 self:GetPushedTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
                 self:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
                 self:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
-                CUI_MainMenuBarDownload:Hide()
+                RazerNaga_MainMenuBarDownload:Hide()
             else
                 self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
                 self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down")
@@ -447,13 +432,13 @@ function MenuBar:SkinButton(b)
                 self:GetHighlightTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
                 self:GetDisabledTexture():SetTexCoord(0/32, 32/32, 22/64, 64/64)
                 if ( status == 1 ) then
-                    CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Green")
+                    RazerNaga_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Green")
                 elseif ( status == 2 ) then
-                    CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
+                    RazerNaga_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Yellow")
                 elseif ( status == 3 ) then
-                    CUI_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Red")
+                    RazerNaga_MainMenuBarDownload:SetTexture("Interface\\Buttons\\UI-MicroStream-Red")
                 end
-                CUI_MainMenuBarDownload:Show()
+                RazerNaga_MainMenuBarDownload:Show()
             end
         end
     end)

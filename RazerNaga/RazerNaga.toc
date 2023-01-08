@@ -37,4 +37,4 @@ extraActionBar.lua
 vehicleBar.lua
 configModeDialog.lua
 hoverMenu.lua
-classicUI.lua
+skin.lua
