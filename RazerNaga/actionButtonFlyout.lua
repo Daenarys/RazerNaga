@@ -112,6 +112,9 @@ local function createSpellFlyoutButton(parent, id)
 
 	local button = RazerNaga:CreateHiddenFrame('CheckButton', name, parent, template)
 
+	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
+	button.NormalTexture:SetTexture()
+
 	Mixin(button, SpellFlyoutButton)
 
 	button:SetAttribute("type", "spell")
