@@ -1069,6 +1069,7 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
 	end
 
 	-- [PetFrame]
+	--ApplyFrame(PetFrame)
     local PetFrame = PetFrame
 
     local function PetFrame_OnEvent()
