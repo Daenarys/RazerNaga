@@ -16,8 +16,8 @@ local MICRO_BUTTONS = {
     'QuestLogMicroButton',
     'GuildMicroButton',
     'LFDMicroButton',
-    'CollectionsMicroButton',
     'EJMicroButton',
+    'CollectionsMicroButton',
     'StoreMicroButton',
     'MainMenuMicroButton'
 }
