@@ -92,6 +92,13 @@ function PetBar:New()
 end
 
 function PetBar:GetShowStates()
+    -- workaround: filter out channeling of eye of kilrog when playing a warlock
+    -- as it doesn't trigger the possess bar condition properly if you already
+    -- have a pet summoned
+    if UnitClassBase("player") == "WARLOCK" then
+        local eyeOfKilrogg = GetSpellInfo(126)
+        return ('[channeling:%s]hide;[@pet,exists,nopossessbar]show;hide'):format(eyeOfKilrogg)
+    end
     return '[@pet,exists,nopossessbar]show;hide'
 end
 

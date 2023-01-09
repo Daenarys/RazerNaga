@@ -114,6 +114,8 @@ local function createSpellFlyoutButton(parent, id)
 
 	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
 	button.NormalTexture:SetTexture()
+	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:SetBlendMode("ADD")
 
 	Mixin(button, SpellFlyoutButton)
 
@@ -180,6 +182,9 @@ function SpellFlyout:OnLoad()
 	self:SetAttribute("_onhide", [[ self:CallMethod("OnHide");  self:Hide(true) ]])
 
 	self:RegisterEvent("PLAYER_LOGIN")
+	self:RegisterEvent("SPELL_FLYOUT_UPDATE")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+
 	self.OnLoad = nil
 end
 
@@ -191,6 +196,13 @@ function SpellFlyout:CURRENT_SPELL_CAST_CHANGED()
 	self:ForShown("UpdateState")
 end
 
+function SpellFlyout:PLAYER_REGEN_ENABLED()
+	if self.needsFlyoutUpdates then
+		self:UpdateKnownFlyouts()
+		self.needsFlyoutUpdates = nil
+	end
+end
+
 function SpellFlyout:SPELL_UPDATE_COOLDOWN()
 	self:ForShown("UpdateCooldown")
 end
@@ -199,7 +211,11 @@ function SpellFlyout:SPELL_UPDATE_USABLE()
 	self:ForShown("UpdateUsable")
 end
 
-function SpellFlyout:SPELL_FLYOUT_UPDATE()
+function SpellFlyout:SPELL_FLYOUT_UPDATE(_, flyoutID)
+	if flyoutID then
+		self:UpdateFlyout(flyoutID)
+	end
+
 	self:ForShown("Update")
 end
 
@@ -339,110 +355,143 @@ function SpellFlyout:LayoutTextures(direction, distance)
 	self.direction = direction
 	self.Background.End:ClearAllPoints()
 
-	if (direction == "UP") 
-	then
-		self.Background.End:SetPoint("TOP")
-		SetClampedTextureRotation(self.Background.End, 0)
-		self.Background.HorizontalMiddle:Hide()
-		self.Background.VerticalMiddle:Show()
-		self.Background.VerticalMiddle:ClearAllPoints()
-		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM")
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance)
-	elseif (direction == "DOWN") 
-	then
-		self.Background.End:SetPoint("BOTTOM")
-		SetClampedTextureRotation(self.Background.End, 180)
-		self.Background.HorizontalMiddle:Hide()
-		self.Background.VerticalMiddle:Show()
-		self.Background.VerticalMiddle:ClearAllPoints()
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP")
-		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance)
-	elseif (direction == "LEFT") 
-	then
-		self.Background.End:SetPoint("LEFT")
-		SetClampedTextureRotation(self.Background.End, 270)
-		self.Background.VerticalMiddle:Hide()
-		self.Background.HorizontalMiddle:Show()
-		self.Background.HorizontalMiddle:ClearAllPoints()
-		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT")
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0)
-	elseif (direction == "RIGHT")
-	then
-		self.Background.End:SetPoint("RIGHT")
-		SetClampedTextureRotation(self.Background.End, 90)
-		self.Background.VerticalMiddle:Hide()
-		self.Background.HorizontalMiddle:Show()
-		self.Background.HorizontalMiddle:ClearAllPoints()
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT")
-		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0)
+	if (direction == "UP") then
+		self.Background.End:SetPoint("TOP");
+		SetClampedTextureRotation(self.Background.End, 0);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM");
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance);
+	elseif (direction == "DOWN") then
+		self.Background.End:SetPoint("BOTTOM");
+		SetClampedTextureRotation(self.Background.End, 180);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP");
+		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance);
+	elseif (direction == "LEFT") then
+		self.Background.End:SetPoint("LEFT");
+		SetClampedTextureRotation(self.Background.End, 270);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT");
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0);
+	elseif (direction == "RIGHT") then
+		self.Background.End:SetPoint("RIGHT");
+		SetClampedTextureRotation(self.Background.End, 90);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT");
+		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0);
 	end
-	local r, g, b = 0.7, 0.7, 0.7
-	self.Background.HorizontalMiddle:SetVertexColor(r, g, b)
-	self.Background.VerticalMiddle:SetVertexColor(r, g, b)
-	self.Background.End:SetVertexColor(r, g, b)
+	
+	self:SetBorderColor(0.7, 0.7, 0.7);
 end
 
 SpellFlyout.SetBorderColor = SpellFlyout_SetBorderColor
 
--- this one is reliant upon self.direction
-SpellFlyout.SetBorderSize = SpellFlyout_SetBorderSize
-
 -- Bartender4 and Dominos implement roughly the same lookup here
 -- but we've chosen to precalculate the array because the ID list is fairly sparse (23 in total)
 function SpellFlyout:UpdateKnownFlyouts()
-	local maxSlots = 0
+	if InCombatLockdown() then
+		self.needsFlyoutUpdates = true
+		return
+	end
 
-	for _, flyoutID in ipairs(VALID_FLYOUT_IDS) do
-		local _, _, numSlots, isKnown = GetFlyoutInfo(flyoutID)
+	local slotsNeeded = 0
+
+	for i = 1, #VALID_FLYOUT_IDS do
+		local numSlots = self:UpdateFlyoutInfo(VALID_FLYOUT_IDS[i])
+
+		if numSlots > slotsNeeded then
+			slotsNeeded = numSlots
+		end
+	end
+
+	self:Embiggen(slotsNeeded)
+end
+
+function SpellFlyout:UpdateFlyout(flyoutID)
+	if InCombatLockdown() then
+		self.needsFlyoutUpdates = true
+		return
+	end
+
+	local numSlots = self:UpdateFlyoutInfo(flyoutID)
+
+	if numSlots > #self.buttons then
+		self:Embiggen(numSlots)
+		return true
+	end
+
+	return false
+end
+
+function SpellFlyout:UpdateFlyoutInfo(flyoutID)
+	local _, _, numSlots, isKnown = GetFlyoutInfo(flyoutID)
+
+	self:Execute(([[
+		local flyoutID = %d
+		local numSlots = %d
+		local isKnown = %q == "true"
+
+		local data = FLYOUT_INFO[flyoutID] or newtable()
+		data.numSlots = numSlots
+		data.isKnown = isKnown
+
+		FLYOUT_INFO[flyoutID] = data
+
+		-- clear the known state of any newly unused slots
+		for i = numSlots + 1, #data do
+			data[i].isKnown = false
+		end
+	]]):format(
+		flyoutID,
+		numSlots,
+		tostring(isKnown)
+	))
+
+	for slotID = 1, numSlots do
+		local spellID, _, isSlotKnown = GetFlyoutSlotInfo(flyoutID, slotID)
+
+		if isSlotKnown then
+			local petIndex, petName = GetCallPetSpellInfo(spellID)
+			if petIndex and not (petName and petName ~= "") then
+				isSlotKnown = false
+			end
+		end
 
 		self:Execute(([[
 			local flyoutID = %d
+			local slotID = %d
+			local spellID = %d
+			local isKnown = %q == "true"
 
-			local data = FLYOUT_INFO[flyoutID] or newtable()
-			data.numSlots = %d
-			data.isKnown = %q == "true"
+			local data = FLYOUT_INFO[flyoutID][slotID] or newtable()
+			data.spellID = spellID
+			data.isKnown = isKnown
 
-			FLYOUT_INFO[flyoutID] = data
+			FLYOUT_INFO[flyoutID][slotID] = data
 		]]):format(
 			flyoutID,
-			numSlots,
-			tostring(isKnown)
+			slotID,
+			spellID,
+			tostring(isSlotKnown)
 		))
-
-		for slotID = 1, numSlots do
-			local spellID, _, isSlotKnown = GetFlyoutSlotInfo(flyoutID, slotID)
-
-			-- if isSlotKnown then
-			-- 	local petIndex, petName = GetCallPetSpellInfo(spellID)
-			-- 	if petIndex and not (petName and petName ~= "") then
-			-- 		isSlotKnown = false
-			-- 	end
-			-- end
-
-			self:Execute(([[
-				local flyoutID = %d
-				local slotID = %d
-
-				local data = FLYOUT_INFO[flyoutID][slotID] or newtable()
-				data.spellID = %d
-				data.isKnown = %q == "true"
-
-				FLYOUT_INFO[flyoutID][slotID] = data
-			]]):format(
-				flyoutID,
-				slotID,
-				spellID,
-				tostring(isSlotKnown)
-			))
-		end
-
-		maxSlots = math.max(maxSlots, numSlots)
 	end
 
-	-- create any additional buttons we will need
+	return numSlots
+end
+
+-- create any additional flyout buttons that we need
+function SpellFlyout:Embiggen(size)
 	local buttons = self.buttons
 
-	for i = #buttons + 1, maxSlots do
+	for i = #buttons + 1, size do
 		local button = createSpellFlyoutButton(self, i)
 
 		self:SetFrameRef("flyoutSlotToAdd", button)

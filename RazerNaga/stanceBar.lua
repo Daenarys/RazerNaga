@@ -1,4 +1,3 @@
-local BlizzardStanceBar = _G.StanceBar
 if not StanceBar then return end
 --[[
 	stanceBar.lua
@@ -49,7 +48,7 @@ function StanceBar:NumButtons()
 end
 
 function StanceBar:AcquireButton(index)
-    return BlizzardStanceBar.actionButtons[index]
+    return _G.StanceBar.actionButtons[index]
 end
 
 function StanceBar:OnAttachButton(button)
@@ -108,9 +107,9 @@ end
 
 function StanceBarModule:OnFirstLoad()
     -- wipe buttons and spacers to avoid layout updates from the stock ui
-    table.wipe(BlizzardStanceBar.buttonsAndSpacers)
+    table.wipe(_G.StanceBar.buttonsAndSpacers)
 
-    for _, button in pairs(BlizzardStanceBar.actionButtons) do
+    for _, button in pairs(_G.StanceBar.actionButtons) do
         -- turn off cooldown edges
         button.cooldown:SetDrawEdge(false)
 
@@ -119,6 +118,15 @@ function StanceBarModule:OnFirstLoad()
 
         -- register mouse clicks
         button:EnableMouseWheel(true)
+
+        -- apply a custom button skin
+        button.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+        button.NormalTexture:SetPoint("TOPLEFT", -10, 10)
+        button.NormalTexture:SetPoint("BOTTOMRIGHT", 10, -10)
+        button.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+        button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+        button.HighlightTexture:SetSize(28, 28)
+        button.HighlightTexture:SetBlendMode("ADD")
 
         -- apply hooks for quick binding
         RazerNaga.BindableButton:AddQuickBindingSupport(button)

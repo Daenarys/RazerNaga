@@ -514,6 +514,8 @@ function ActionBarController:Load()
     for i = 1, RazerNaga:NumBars() do
         ActionBar:New(i)
     end
+
+    self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarController:Unload()
@@ -534,4 +536,8 @@ function ActionBarController:UpdateOverrideBar()
     for _, button in pairs(overrideBar.buttons) do
         button:Update()
     end
+end
+
+function ActionBarController:SPELLS_CHANGED()
+    RazerNaga.Frame:ForAll('ForButtons', 'UpdateShownInsecure')
 end

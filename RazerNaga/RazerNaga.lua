@@ -226,6 +226,18 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
+	-- removes some edit mode taint
+	local purgeKey = function(t, k)
+		t[k] = nil
+		local c = 42
+		repeat
+			if t[c] == nil then
+				t[c] = nil
+			end
+			c = c + 1
+		until issecurevariable(t, k)
+	end
+
 	-- move a frame to the hidden shadow UI parent
 	local function apply(func, ...)
 	    for i = 1, select('#', ...) do
@@ -241,6 +253,12 @@ function RazerNaga:HideBlizzard()
 	end
 
 	local function banish(frame)
+		-- Remove some EditMode hooks
+		if (frame.system) then
+			-- Purge the show state to avoid any taint concerns
+			purgeKey(frame, "isShownExternal")
+		end
+
 	    -- EditMode overrides the Hide function, avoid calling it as it can taint
 		if frame.HideBase then
 			frame:HideBase()
@@ -291,6 +309,7 @@ function RazerNaga:HideBlizzard()
 	    "MultiBar5",
 	    "MultiBar6",
 	    "MultiBar7",
+	    "StanceBar",
 	    "PossessActionBar",
 	    "MainMenuBarVehicleLeaveButton"
 	)
