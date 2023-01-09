@@ -168,9 +168,6 @@ function PetBarController:Unload()
 end
 
 function PetBarController:OnFirstLoad()
-    -- wipe buttons and spacers to avoid layout updates from the stock ui
-    table.wipe(_G.PetActionBar.buttonsAndSpacers)
-
     for _, button in pairs(_G.PetActionBar.actionButtons) do
         -- setup bindings
         RazerNaga.BindableButton:AddQuickBindingSupport(button)

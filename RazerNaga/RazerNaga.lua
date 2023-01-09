@@ -58,11 +58,6 @@ function RazerNaga:OnEnable()
 	self:CreateDataBrokerPlugin()
 	self:LoadRareDragon()
 	self:Load()
-	
-    -- watch for binding updates, updating all bars on the last one that happens
-    -- in rapid sequence
-    self.UPDATE_BINDINGS = self:Defer(function() self.Frame:ForAll('ForButtons', 'UpdateHotkeys') end, 0.01)
-    self:RegisterEvent('UPDATE_BINDINGS')
 end
 
 function RazerNaga:CreateDataBrokerPlugin()
@@ -238,99 +233,75 @@ function RazerNaga:HideBlizzard()
 		until issecurevariable(t, k)
 	end
 
-	-- move a frame to the hidden shadow UI parent
-	local function apply(func, ...)
-	    for i = 1, select('#', ...) do
-	        local name = (select(i, ...))
-	        local frame = _G[name]
+	local function hideActionBarFrame(frame, clearEvents)
+		if frame then
+			if clearEvents then
+				frame:UnregisterAllEvents()
+			end
 
-	        if frame then
-	            func(frame)
-	        else
-	            RazerNaga:Printf('Could not find frame %q', name)
-	        end
-	    end
-	end
+			-- Remove some EditMode hooks
+			if frame.system then
+				-- Purge the show state to avoid any taint concerns
+				purgeKey(frame, "isShownExternal")
+			end
 
-	local function banish(frame)
-		-- Remove some EditMode hooks
-		if (frame.system) then
-			-- Purge the show state to avoid any taint concerns
-			purgeKey(frame, "isShownExternal")
+		    -- EditMode overrides the Hide function, avoid calling it as it can taint
+			if frame.HideBase then
+				frame:HideBase()
+			else
+				frame:Hide()
+			end
+		    frame:SetParent(RazerNaga.ShadowUIParent)
 		end
-
-	    -- EditMode overrides the Hide function, avoid calling it as it can taint
-		if frame.HideBase then
-			frame:HideBase()
-		else
-			frame:Hide()
-		end
-	    frame:SetParent(RazerNaga.ShadowUIParent)
 	end
 
-	local function unregisterEvents(frame)
-	    frame:UnregisterAllEvents()
+	local function hideActionButton(button)
+	    if not button then return end
+
+		button:Hide()
+		button:UnregisterAllEvents()
+		button:SetAttribute("statehidden", true)
 	end
 
-	local function disableActionButtons(frame)
-	    local buttons = frame.actionButtons
-	    if type(buttons) ~= "table" then
-	        return
-	    end
+	hideActionBarFrame(MainMenuBar, false)
+	hideActionBarFrame(MultiBarBottomLeft, true)
+	hideActionBarFrame(MultiBarBottomRight, true)
+	hideActionBarFrame(MultiBarLeft, true)
+	hideActionBarFrame(MultiBarRight, true)
+	hideActionBarFrame(MultiBar5, true)
+	hideActionBarFrame(MultiBar6, true)
+	hideActionBarFrame(MultiBar7, true)
 
-	    for _, button in pairs(buttons) do
-	    	button:Hide()
-	        button:UnregisterAllEvents()
-	        button:SetAttribute('statehidden', true)
-	    end
+	-- Hide MultiBar Buttons, but keep the bars alive
+	for i=1,12 do
+		hideActionButton(_G["ActionButton" .. i])
+		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
+		hideActionButton(_G["MultiBarBottomRightButton" .. i])
+		hideActionButton(_G["MultiBarRightButton" .. i])
+		hideActionButton(_G["MultiBarLeftButton" .. i])
+		hideActionButton(_G["MultiBar5Button" .. i])
+		hideActionButton(_G["MultiBar6Button" .. i])
+		hideActionButton(_G["MultiBar7Button" .. i])
 	end
 
-	apply(banish,
-	    "MainMenuBar",
-	    "MicroButtonAndBagsBar",
-	    "MultiBarBottomLeft",
-	    "MultiBarBottomRight",
-	    "MultiBarLeft",
-	    "MultiBarRight",
-	    "MultiBar5",
-	    "MultiBar6",
-	    "MultiBar7",
-	    "StanceBar",
-	    "PetActionBar",
-	    "PossessActionBar",
-	    "MainMenuBarVehicleLeaveButton"
-	)
+	hideActionBarFrame(MicroButtonAndBagsBar, false)
+	hideActionBarFrame(StanceBar, true)
+	hideActionBarFrame(PossessActionBar, true)
+	hideActionBarFrame(MultiCastActionBarFrame, false)
+	hideActionBarFrame(PetActionBar, false)
+	hideActionBarFrame(StatusTrackingBarManager, false)
 
-	apply(unregisterEvents,
-	    "MultiBarBottomLeft",
-	    "MultiBarBottomRight",
-	    "MultiBarLeft",
-	    "MultiBarRight",
-	    "MultiBar5",
-	    "MultiBar6",
-	    "MultiBar7",
-	    "StanceBar",
-	    "PossessActionBar",
-	    "MainMenuBarVehicleLeaveButton"
-	)
-
-	apply(disableActionButtons,
-	    "MainMenuBar",
-	    "MultiBarBottomLeft",
-	    "MultiBarBottomRight",
-	    "MultiBarLeft",
-	    "MultiBarRight",
-	    "MultiBar5",
-	    "MultiBar6",
-	    "MultiBar7",
-	    "PossessActionBar"
-	)
-
-	-- don't reparent the tracking manager, as it assumes its parent has a callback
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:UnregisterAllEvents()
-		StatusTrackingBarManager:Hide()
-	end
+	table.wipe(MainMenuBar.buttonsAndSpacers)
+	table.wipe(MultiBarBottomLeft.buttonsAndSpacers)
+	table.wipe(MultiBarBottomRight.buttonsAndSpacers)
+	table.wipe(MultiBarLeft.buttonsAndSpacers)
+	table.wipe(MultiBarRight.buttonsAndSpacers)
+	table.wipe(MultiBar5.buttonsAndSpacers)
+	table.wipe(MultiBar6.buttonsAndSpacers)
+	table.wipe(MultiBar7.buttonsAndSpacers)
+	table.wipe(StanceBar.buttonsAndSpacers)
+	table.wipe(PossessActionBar.buttonsAndSpacers)
+	table.wipe(PetActionBar.buttonsAndSpacers)
 
 	-- hide the buff expand toggle
 	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)
@@ -364,10 +335,6 @@ end
 
 
 --[[ Keybound Events ]]--
-
-function RazerNaga:UPDATE_BINDINGS()
-    self:UpdateHotkeys()
-end
 
 function RazerNaga:LIBKEYBOUND_ENABLED()
     self.Frame:ForAll('KEYBOUND_ENABLED')

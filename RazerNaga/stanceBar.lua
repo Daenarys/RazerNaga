@@ -106,9 +106,6 @@ function StanceBarModule:Unload()
 end
 
 function StanceBarModule:OnFirstLoad()
-    -- wipe buttons and spacers to avoid layout updates from the stock ui
-    table.wipe(_G.StanceBar.buttonsAndSpacers)
-
     for _, button in pairs(_G.StanceBar.actionButtons) do
         -- turn off cooldown edges
         button.cooldown:SetDrawEdge(false)
