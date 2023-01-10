@@ -498,10 +498,6 @@ end
 
 local ActionBarsModule = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
 
-function ActionBarsModule:OnEnable()
-    self.UpdateActionSlots = RazerNaga:Defer(self.UpdateActionSlots, 0.1, self)
-end
-
 function ActionBarsModule:Load()
     self.slotsToUpdate = {}
 
@@ -517,9 +513,8 @@ function ActionBarsModule:Load()
 
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
-
-    self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+    self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarsModule:Unload()
@@ -561,12 +556,6 @@ end
 function ActionBarsModule:ACTIONBAR_SLOT_CHANGED(_event, slot)
     if not self.slotsToUpdate[slot] then
         self.slotsToUpdate[slot] = true
-        self:UpdateActionSlots()
-    end
-end
-
-function  ActionBarsModule:PLAYER_REGEN_ENABLED()
-    if next(self.slotsToUpdate) then
         self:UpdateActionSlots()
     end
 end
