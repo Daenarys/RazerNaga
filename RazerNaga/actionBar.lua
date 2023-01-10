@@ -114,11 +114,12 @@ end
 
 function ActionBar:ReleaseButton(button)
     button:SetAttribute('statehidden', true)
-    button:Hide()
+    button:SetShowGridInsecure("showgrid", 0, true)
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
+    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
     
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
@@ -215,33 +216,45 @@ function ActionBar:IsOverrideBar()
 end
 
 --Empty button display
-function ActionBar:ShowGrid(reason)
-    for _,b in pairs(self.buttons) do
-        b:ShowGrid(reason)
+local function hasFlag(value, flag)
+    return value % (2 * flag) >= flag
+end
+
+function ActionBar:SetShowGrid(reason, show, force)
+    if InCombatLockdown() then return end
+
+    local result = self:GetAttribute("showgrid") or 0
+    local updated = force and true
+
+    if show then
+        if not hasFlag(result, reason) then
+            result = result + reason
+            updated = true
+        end
+    elseif hasFlag(result, reason) then
+        result = result - reason
+        updated = true
+    end
+
+    if updated then
+        self:SetAttribute("showgrid", result)
+        self:ForButtons('SetShowGridInsecure', result, force)
     end
 end
 
-function ActionBar:HideGrid(reason)
-    for _,b in pairs(self.buttons) do
-        b:HideGrid(reason)
-    end
+function ActionBar:UpdateGrid(force)
+    local show = RazerNaga:ShowGrid()
+
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON, show, force)
 end
 
-function ActionBar:UpdateGrid()
-    if RazerNaga:ShowGrid() then
-        self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-    else
-        self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-    end
-end
-
---keybound support
+-- keybound support
 function ActionBar:KEYBOUND_ENABLED()
-    self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, true)
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-    self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, false)
 end
 
 --right click targeting support
@@ -483,53 +496,121 @@ end
 
 --[[ Action Bar Controller ]]--
 
-local ActionBarController = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
+local ActionBarsModule = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
 
-function ActionBarController:Load()
-    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'UpdateOverrideBar')
-    self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
-    self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
+function ActionBarsModule:OnEnable()
+    self.UpdateActionSlots = RazerNaga:Defer(self.UpdateActionSlots, 0.1, self)
+end
 
-    for i = 1, RazerNaga:NumBars() do
-        ActionBar:New(i)
+function ActionBarsModule:Load()
+    self.slotsToUpdate = {}
+
+    self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
+    self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'OnOverrideBarUpdated')
+
+    if OverrideActionBar then
+        self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'OnOverrideBarUpdated')
+        self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'OnOverrideBarUpdated')
     end
+
+    self:SetBarCount(RazerNaga:NumBars())
 
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
 
     self:RegisterEvent("SPELLS_CHANGED")
+    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
 end
 
-function ActionBarController:Unload()
+function ActionBarsModule:Unload()
     self:UnregisterAllEvents()
-
-    for i = 1, RazerNaga:NumBars() do
-        RazerNaga.Frame:ForFrame(i, 'Free')
-    end
+    self:ForActive('Free')
+    self.active = nil
 end
 
-function ActionBarController:UpdateOverrideBar()
-    if InCombatLockdown() or (not RazerNaga.OverrideController:OverrideBarActive()) then
+-- events
+function ActionBarsModule:OnOverrideBarUpdated()
+    if InCombatLockdown() or not (RazerNaga.OverrideController and RazerNaga.OverrideController:OverrideBarActive()) then
         return
     end
 
-    local overrideBar = RazerNaga:GetOverrideBar()
-
-    for _, button in pairs(overrideBar.buttons) do
-        button:Update()
+    local bar = RazerNaga:GetOverrideBar()
+    if bar then
+        bar:ForButtons('Update')
     end
 end
 
-function ActionBarController:ACTIONBAR_SHOWGRID()
-    RazerNaga.Frame:ForAll('ForButtons', 'ShowGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
+    if InCombatLockdown() then
+        return
+    end
+
+    self:ForActive('UpdateStateDriver')
 end
 
-function ActionBarController:ACTIONBAR_HIDEGRID()
+function ActionBarsModule:ACTIONBAR_SHOWGRID()
+    RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 1, true)
+end
+
+function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        RazerNaga.Frame:ForAll('ForButtons', 'HideGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+        RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 0, true)
     end
 end
 
-function ActionBarController:SPELLS_CHANGED()
-    RazerNaga.Frame:ForAll('ForButtons', 'UpdateShownInsecure')
+function ActionBarsModule:ACTIONBAR_SLOT_CHANGED(_event, slot)
+    if not self.slotsToUpdate[slot] then
+        self.slotsToUpdate[slot] = true
+        self:UpdateActionSlots()
+    end
+end
+
+function  ActionBarsModule:PLAYER_REGEN_ENABLED()
+    if next(self.slotsToUpdate) then
+        self:UpdateActionSlots()
+    end
+end
+
+function ActionBarsModule:SPELLS_CHANGED()
+    self:ForActive('ForButtons', 'UpdateShownInsecure')
+end
+
+function ActionBarsModule:SetBarCount(count)
+    self:ForActive('Free')
+
+    if count > 0 then
+        self.active = {}
+
+        for i = 1, count do
+            self.active[i] = ActionBar:New(i)
+        end
+    else
+        self.active = nil
+    end
+end
+
+function ActionBarsModule:ForActive(method, ...)
+    if self.active then
+        for _, bar in pairs(self.active) do
+            bar:CallMethod(method, ...)
+        end
+    end
+end
+
+function ActionBarsModule:UpdateActionSlots()
+    if InCombatLockdown() then return end
+
+    if not next(self.slotsToUpdate) then
+        return
+    end
+
+    for _, bar in pairs(self.active) do
+        for _, button in pairs(bar.buttons) do
+            if self.slotsToUpdate[button:GetAttribute("action")] then
+                button:UpdateShownInsecure()
+            end
+        end
+    end
+
+    table.wipe(self.slotsToUpdate)
 end

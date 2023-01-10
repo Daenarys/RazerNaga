@@ -291,6 +291,7 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(PetActionBar, false)
 	hideActionBarFrame(StatusTrackingBarManager, false)
 
+	-- wipe buttonsAndSpacers to prevent bar updates
 	table.wipe(MainMenuBar.buttonsAndSpacers)
 	table.wipe(MultiBarBottomLeft.buttonsAndSpacers)
 	table.wipe(MultiBarBottomRight.buttonsAndSpacers)
@@ -308,6 +309,12 @@ function RazerNaga:HideBlizzard()
 		self.CollapseAndExpandButton:Hide()
 	end)
 	BuffFrame.CollapseAndExpandButton:Hide()
+
+	-- these events drive visibility, we want the MainMenuBar to remain invisible
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
