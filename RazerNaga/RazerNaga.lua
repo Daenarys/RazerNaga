@@ -272,7 +272,6 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(MultiBar6, true)
 	hideActionBarFrame(MultiBar7, true)
 
-	-- Hide MultiBar Buttons, but keep the bars alive
 	for i=1,12 do
 		hideActionButton(_G["ActionButton" .. i])
 		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
@@ -291,15 +290,7 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(PetActionBar, false)
 	hideActionBarFrame(StatusTrackingBarManager, false)
 
-	-- wipe buttonsAndSpacers to prevent bar updates
-	table.wipe(MainMenuBar.buttonsAndSpacers)
-	table.wipe(MultiBarBottomLeft.buttonsAndSpacers)
-	table.wipe(MultiBarBottomRight.buttonsAndSpacers)
-	table.wipe(MultiBarLeft.buttonsAndSpacers)
-	table.wipe(MultiBarRight.buttonsAndSpacers)
-	table.wipe(MultiBar5.buttonsAndSpacers)
-	table.wipe(MultiBar6.buttonsAndSpacers)
-	table.wipe(MultiBar7.buttonsAndSpacers)
+	-- wipe buttonsAndSpacers to prevent layout updates
 	table.wipe(StanceBar.buttonsAndSpacers)
 	table.wipe(PossessActionBar.buttonsAndSpacers)
 	table.wipe(PetActionBar.buttonsAndSpacers)
@@ -309,12 +300,6 @@ function RazerNaga:HideBlizzard()
 		self.CollapseAndExpandButton:Hide()
 	end)
 	BuffFrame.CollapseAndExpandButton:Hide()
-
-	-- these events drive visibility, we want the MainMenuBar to remain invisible
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 end
 
 function RazerNaga:SetUseOverrideUI(enable)

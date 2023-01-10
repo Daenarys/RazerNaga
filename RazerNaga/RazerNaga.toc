@@ -18,6 +18,7 @@ settingsLoader.lua
 bindingsLoader.lua
 autoBinder.lua
 modifierHighlighter.lua
+secureEnv.lua
 shadowUIParent.lua
 drag.lua
 frame.lua

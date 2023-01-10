@@ -70,10 +70,11 @@ end)
 
 ActionBar:Extend('OnAcquire', function(self)
     self:LoadStateController()
+    self:LoadShowGridController()
     self:UpdateStateDriver()
     self:SetUnit(self:GetUnit())
     self:SetRightClickUnit(self:GetRightClickUnit())
-    self:UpdateGrid()
+    self:UpdateGrid(true)
     self:UpdateTransparent(true)
     self:UpdateFlyoutDirection()
 end)
@@ -113,11 +114,12 @@ end
 
 function ActionBar:ReleaseButton(button)
     button:SetAttribute('statehidden', true)
-    button:Hide()
+    button:SetShowGridInsecure("showgrid", 0, true)
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
+    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
     
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
@@ -203,6 +205,14 @@ function ActionBar:LoadStateController()
     self:UpdateOverrideBar()
 end
 
+-- watch for cursor changes, so that we can control action button visibility
+-- on pickup
+function ActionBar:LoadShowGridController()
+    self:SetAttribute("OnShowGridChanged", [[ control:ChildUpdate("showgrid", ...); ]])
+
+    RazerNaga:RegisterShowGridEvents(self)
+end
+
 function ActionBar:UpdateOverrideBar()
     self:SetAttribute('state-overridebar', self:IsOverrideBar())
 end
@@ -214,33 +224,45 @@ function ActionBar:IsOverrideBar()
 end
 
 --Empty button display
-function ActionBar:ShowGrid(reason)
-    for _,b in pairs(self.buttons) do
-        b:ShowGrid(reason)
+local function hasFlag(value, flag)
+    return value % (2 * flag) >= flag
+end
+
+function ActionBar:SetShowGrid(reason, show, force)
+    if InCombatLockdown() then return end
+
+    local result = self:GetAttribute("showgrid") or 0
+    local updated = force and true
+
+    if show then
+        if not hasFlag(result, reason) then
+            result = result + reason
+            updated = true
+        end
+    elseif hasFlag(result, reason) then
+        result = result - reason
+        updated = true
+    end
+
+    if updated then
+        self:SetAttribute("showgrid", result)
+        self:ForButtons('SetShowGridInsecure', result, force)
     end
 end
 
-function ActionBar:HideGrid(reason)
-    for _,b in pairs(self.buttons) do
-        b:HideGrid(reason)
-    end
-end
+function ActionBar:UpdateGrid(force)
+    local show = RazerNaga:ShowGrid()
 
-function ActionBar:UpdateGrid()
-    if RazerNaga:ShowGrid() then
-        self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-    else
-        self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-    end
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON, show, force)
 end
 
 --keybound support
 function ActionBar:KEYBOUND_ENABLED()
-    self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, true)
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-    self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, false)
 end
 
 --right click targeting support
@@ -530,20 +552,12 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
 end
 
 function ActionBarsModule:ACTIONBAR_SHOWGRID()
-    for _, bar in pairs(self.active) do
-        for _, button in pairs(bar.buttons) do
-            button:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-        end
-    end
+    RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 1, true)
 end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        for _, bar in pairs(self.active) do
-            for _, button in pairs(bar.buttons) do
-                button:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-            end
-        end
+        RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 0, true)
     end
 end
 
