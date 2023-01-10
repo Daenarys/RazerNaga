@@ -524,20 +524,26 @@ function ActionBarsModule:OnOverrideBarUpdated()
 end
 
 function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
-    if InCombatLockdown() then
-        return
-    end
+    if InCombatLockdown() then return end
 
     self:ForActive('UpdateStateDriver')
 end
 
 function ActionBarsModule:ACTIONBAR_SHOWGRID()
-    self:ForActive('ForButtons', 'ShowGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+    for _, bar in pairs(self.active) do
+        for _, button in pairs(bar.buttons) do
+            button:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+        end
+    end
 end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        self:ForActive('ForButtons', 'HideGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+        for _, bar in pairs(self.active) do
+            for _, button in pairs(bar.buttons) do
+                button:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+            end
+        end
     end
 end
 

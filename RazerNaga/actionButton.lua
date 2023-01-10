@@ -211,8 +211,6 @@ local ActionButtons = setmetatable({}, {
         -- reset the showgrid setting to default
         button:SetAttribute('showgrid', 0)
 
-        button:Hide()
-
         -- enable binding to mousewheel
         button:EnableMouseWheel(true)
 		
