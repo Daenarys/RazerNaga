@@ -6,14 +6,12 @@
 
 	<StatusBar name="RazerNagaCastingBarTemplate" mixin="CastingBarMixin, RazerNagaCastingBarExtensionMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="210" y="14"/>
-
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
-
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
@@ -22,7 +20,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-
 				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -30,7 +27,6 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
-
 				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size x="275" y="68"/>
 					<Anchors>
@@ -38,7 +34,6 @@
 					</Anchors>
 				</Texture>
 			</Layer>
-
 			<Layer level="OVERLAY">
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="275" y="68"/>
@@ -62,7 +57,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		
 		<Animations>
 			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
 				<Alpha fromAlpha="1" toAlpha="0" duration="0.06" startDelay="0.06"/>
@@ -71,7 +65,6 @@
 				</Scripts>
 			</AnimationGroup>
 		</Animations>
-
 		<Scripts>
 			<OnLoad>
 				self:OnLoad('player', true, false);
