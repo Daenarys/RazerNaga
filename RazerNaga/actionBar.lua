@@ -513,6 +513,7 @@ function ActionBarsModule:Load()
 
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
+
     self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
     self:RegisterEvent("SPELLS_CHANGED")
 end
