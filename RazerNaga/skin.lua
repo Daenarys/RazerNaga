@@ -618,6 +618,7 @@ function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
     self.EventFrame = CreateFrame("Frame")
     self.EventFrame:RegisterEvent("PET_UI_UPDATE")
     self.EventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self.EventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
     self.EventFrame:RegisterEvent("PLAYER_TOTEM_UPDATE");
     self.EventFrame:RegisterUnitEvent("UNIT_PET", "player");
     self.EventFrame:SetScript("OnEvent", PetFrame_OnEvent)
