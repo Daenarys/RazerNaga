@@ -24,7 +24,6 @@ frame.lua
 buttonBar.lua
 bindableButton.lua
 barStates.lua
-secureEnv.lua
 actionButton.lua
 actionButtonFlyout.lua
 actionButtonMap.lua

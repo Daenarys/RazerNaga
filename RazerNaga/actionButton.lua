@@ -49,6 +49,30 @@ function ActionButtonMixin:UpdateShownInsecure()
     self:SetShown(show)
 end
 
+--button visibility
+function ActionButtonMixin:ShowGrid(reason)
+    if InCombatLockdown() then return end
+
+    self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason))
+
+    if self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") then
+        self:Show()
+    end
+end
+
+function ActionButtonMixin:HideGrid(reason)
+    if InCombatLockdown() then return end
+
+    local showgrid = self:GetAttribute("showgrid");
+    if showgrid > 0 then
+        self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
+    end
+
+    if self:GetAttribute("showgrid") == 0 and not HasAction(self.action) then
+        self:Hide()
+    end
+end
+
 -- configuration commands
 function ActionButtonMixin:SetFlyoutDirection(direction)
     if InCombatLockdown() then
@@ -170,27 +194,7 @@ local actionButton_OnUpdateOffset = [[
     local id = self:GetAttribute('index') + offset
     if self:GetAttribute('action') ~= id then
         self:SetAttribute('action', id)
-        self:RunAttribute("UpdateShown")
         self:CallMethod('UpdateState')
-    end
-]]
-
-local actionButton_OnUpdateShowGrid = [[
-    local new = message or 0
-    local old = self:GetAttribute("showgrid") or 0
-    if old ~= new then
-        self:SetAttribute("showgrid", new)
-        self:RunAttribute("UpdateShown")
-    end
-]]
-
-local actionButton_UpdateShown = [[
-    local show = (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
-                 and not self:GetAttribute("statehidden")
-    if show then
-        self:Show(true)
-    else
-        self:Hide(true)
     end
 ]]
 
@@ -218,11 +222,6 @@ local ActionButtons = setmetatable({}, {
 
         -- set a handler for updating the action from a parent frame
         button:SetAttribute('_childupdate-offset', actionButton_OnUpdateOffset)
-
-        -- set a handler for updating showgrid status
-        button:SetAttribute('_childupdate-showgrid', actionButton_OnUpdateShowGrid)
-
-        button:SetAttribute("UpdateShown", actionButton_UpdateShown)
 
         -- reset the showgrid setting to default
         button:SetAttribute('showgrid', 0)
