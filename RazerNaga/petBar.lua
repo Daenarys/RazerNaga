@@ -8,6 +8,7 @@
 
 local RazerNaga = _G[...]
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
+local format = string.format
 local unused = {}
 
 
@@ -24,10 +25,10 @@ function PetButton:New(id)
 end
 
 function PetButton:Create(id)
-    local buttonName = ('PetActionButton%d'):format(id)
-
-    local b = self:Bind(_G[buttonName])
+    local b = self:Bind(_G['PetActionButton' .. id])
     b.buttonType = 'BONUSACTIONBUTTON'
+    
+    RazerNaga.BindableButton:AddQuickBindingSupport(b)
 
     b:Skin()
 
@@ -82,11 +83,13 @@ end
 
 --[[ Pet Bar ]]--
 
-local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function PetBar:New()
-    local f = PetBar.proto.New(self, 'pet')
+    local f = self.proto.New(self, 'pet')
     f:SetTooltipText(L.PetBarHelp)
+    f:LoadButtons()
+    f:Layout()
 
     return f
 end
@@ -99,6 +102,7 @@ function PetBar:GetShowStates()
         local eyeOfKilrogg = GetSpellInfo(126)
         return ('[channeling:%s]hide;[@pet,exists,nopossessbar]show;hide'):format(eyeOfKilrogg)
     end
+
     return '[@pet,exists,nopossessbar]show;hide'
 end
 
@@ -111,16 +115,25 @@ function PetBar:GetDefaults()
     }
 end
 
+--RazerNaga frame method overrides
 function PetBar:NumButtons()
     return NUM_PET_ACTION_SLOTS
 end
 
-function PetBar:AcquireButton(index)
-    return PetButton:New(index)
+function PetBar:AddButton(i)
+    local b = PetButton:New(i)
+    b:SetParent(self)
+    self.buttons[i] = b
+end
+
+function PetBar:RemoveButton(i)
+    local b = self.buttons[i]
+    self.buttons[i] = nil
+    b:Free()
 end
 
 
---[[ keybound support ]]--
+--[[ keybound  support ]]--
 
 function PetBar:KEYBOUND_ENABLED()
     self:SetAttribute('state-visibility', 'display')
@@ -147,32 +160,15 @@ end
 
 --[[ controller good times ]]--
 
-local PetBarController = RazerNaga:NewModule('PetBar', 'AceEvent-3.0')
+local PetBarController = RazerNaga:NewModule('PetBar')
 
 function PetBarController:Load()
-    if not self.loaded then
-        self:OnFirstLoad()
-        self.loaded = true
-    end
-
-    self.bar = PetBar:New()
+    self.frame = PetBar:New()
 end
 
 function PetBarController:Unload()
-    self:UnregisterAllEvents()
-
-    if self.bar then
-        self.bar:Free()
-        self.bar = nil
-    end
-end
-
-function PetBarController:OnFirstLoad()
-    for _, button in pairs(_G.PetActionBar.actionButtons) do
-        -- setup bindings
-        RazerNaga.BindableButton:AddQuickBindingSupport(button)
-
-        -- add support for mousewheel bindings
-        button:EnableMouseWheel(true)
+    if self.frame then
+        self.frame:Free()
+        self.frame = nil
     end
 end

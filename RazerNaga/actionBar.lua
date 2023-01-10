@@ -552,12 +552,12 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
 end
 
 function ActionBarsModule:ACTIONBAR_SHOWGRID()
-    RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 1, true)
+    self:ForActive('ForButtons', 'SetShowGridInsecure', 1, true)
 end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 0, true)
+        self:ForActive('ForButtons', 'SetShowGridInsecure', 0, true)
     end
 end
 
