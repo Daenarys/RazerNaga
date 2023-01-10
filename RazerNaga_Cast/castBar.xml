@@ -65,7 +65,7 @@
 		
 		<Animations>
 			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.075" startDelay="0.075"/>
+				<Alpha fromAlpha="1" toAlpha="0" duration="0.06" startDelay="0.06"/>
 				<Scripts>
 					<OnFinished function="CastingBarAnim_OnFadeOutFinish"/>
 				</Scripts>
