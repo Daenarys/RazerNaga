@@ -114,7 +114,6 @@ RazerNaga.ActionButtonMixin = ActionButtonMixin
 
 --[[ Buttons ]]--
 
-local createActionButton
 local SecureHandler = RazerNaga:CreateHiddenFrame('Frame', nil, nil, "SecureHandlerBaseTemplate")
     -- dragonflight hack: whenever a Dominos action button's action changes
     -- set the action of the corresponding blizzard action button
