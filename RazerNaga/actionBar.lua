@@ -6,6 +6,7 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
+local ActionButtons = RazerNaga.ActionButtons
 
 local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
@@ -15,9 +16,8 @@ local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
--- Metatable magic. Basically this says, "create a new table for this index"
--- I do this so that I only create page tables for classes the user is actually
--- playing
+--metatable magic.  Basically this says, 'create a new table for this index'
+--I do this so that I only create page tables for classes the user is actually playing
 ActionBar.defaultOffsets = {
     __index = function(t, i)
         t[i] = {}
@@ -25,9 +25,8 @@ ActionBar.defaultOffsets = {
     end
 }
 
--- Metatable magic. Basically this says, "create a new table for this index,
--- with these defaults" I do this so that I only create page tables for classes
--- the user is actually playing
+--metatable magic. Basically this says, 'create a new table for this index, with these defaults'
+--I do this so that I only create page tables for classes the user is actually playing
 ActionBar.mainbarOffsets = {
     __index = function(t, i)
         local pages = {
@@ -104,7 +103,7 @@ end
 
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
-    local button = RazerNaga.ActionButtons[id]
+    local button = ActionButtons[id]
 
     button:SetAttribute('index', index)
     button:SetAttribute('statehidden', nil)
@@ -114,12 +113,11 @@ end
 
 function ActionBar:ReleaseButton(button)
     button:SetAttribute('statehidden', true)
-    button:SetShowGridInsecure("showgrid", 0, true)
+    button:Hide()
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetActionOffsetInsecure(self:GetAttribute('actionOffset') or 0)
-    button:SetShowGridInsecure("showgrid", self:GetAttribute("showgrid") or 0, true)
     
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:UpdateHotkeys()
@@ -216,45 +214,33 @@ function ActionBar:IsOverrideBar()
 end
 
 --Empty button display
-local function hasFlag(value, flag)
-    return value % (2 * flag) >= flag
-end
-
-function ActionBar:SetShowGrid(reason, show, force)
-    if InCombatLockdown() then return end
-
-    local result = self:GetAttribute("showgrid") or 0
-    local updated = force and true
-
-    if show then
-        if not hasFlag(result, reason) then
-            result = result + reason
-            updated = true
-        end
-    elseif hasFlag(result, reason) then
-        result = result - reason
-        updated = true
-    end
-
-    if updated then
-        self:SetAttribute("showgrid", result)
-        self:ForButtons('SetShowGridInsecure', result, force)
+function ActionBar:ShowGrid(reason)
+    for _,b in pairs(self.buttons) do
+        b:ShowGrid(reason)
     end
 end
 
-function ActionBar:UpdateGrid(force)
-    local show = RazerNaga:ShowGrid()
-
-    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON, show, force)
+function ActionBar:HideGrid(reason)
+    for _,b in pairs(self.buttons) do
+        b:HideGrid(reason)
+    end
 end
 
--- keybound support
+function ActionBar:UpdateGrid()
+    if RazerNaga:ShowGrid() then
+        self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+    else
+        self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+    end
+end
+
+--keybound support
 function ActionBar:KEYBOUND_ENABLED()
-    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, true)
+    self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-    self:SetShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND, false)
+    self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
 end
 
 --right click targeting support
@@ -515,6 +501,7 @@ function ActionBarsModule:Load()
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
 
     self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
     self:RegisterEvent("SPELLS_CHANGED")
 end
 
@@ -545,18 +532,24 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
 end
 
 function ActionBarsModule:ACTIONBAR_SHOWGRID()
-    RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 1, true)
+    self:ForActive('ForButtons', 'ShowGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
 end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        RazerNaga.Frame:ForAll('ForButtons', 'SetShowGridInsecure', 0, true)
+        self:ForActive('ForButtons', 'HideGrid', ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
     end
 end
 
 function ActionBarsModule:ACTIONBAR_SLOT_CHANGED(_event, slot)
     if not self.slotsToUpdate[slot] then
         self.slotsToUpdate[slot] = true
+        self:UpdateActionSlots()
+    end
+end
+
+function ActionBarsModule:PLAYER_REGEN_ENABLED()
+    if next(self.slotsToUpdate) then
         self:UpdateActionSlots()
     end
 end

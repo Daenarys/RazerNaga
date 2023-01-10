@@ -25,19 +25,6 @@ function ActionButtonMixin:SetActionOffsetInsecure(offset)
     end
 end
 
-function ActionButtonMixin:SetShowGridInsecure(showgrid, force)
-    if InCombatLockdown() then
-        return
-    end
-
-    showgrid = tonumber(showgrid) or 0
-
-    if (self:GetAttribute("showgrid") ~= showgrid) or force then
-        self:SetAttribute("showgrid", showgrid)
-        self:UpdateShownInsecure()
-    end
-end
-
 function ActionButtonMixin:UpdateShownInsecure()
     if InCombatLockdown() then
         return
@@ -47,6 +34,29 @@ function ActionButtonMixin:UpdateShownInsecure()
         and not self:GetAttribute("statehidden")
 
     self:SetShown(show)
+end
+
+function ActionButtonMixin:ShowGrid(reason)
+    if InCombatLockdown() then return end
+
+    self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason))
+
+    if self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") then
+        self:Show()
+    end
+end
+
+function ActionButtonMixin:HideGrid(reason)
+    if InCombatLockdown() then return end
+
+    local showgrid = self:GetAttribute("showgrid");
+    if showgrid > 0 then
+        self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
+    end
+
+    if self:GetAttribute("showgrid") == 0 and not HasAction(self.action) then
+        self:Hide()
+    end
 end
 
 -- configuration commands
