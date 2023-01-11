@@ -39,7 +39,7 @@ end
 -- otherwise, apply the RazerNaga style to the button to make it pretty
 function PetButton:Skin()
     if not RazerNaga:Masque('Pet Bar', self) then
-        _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+        self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
         self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
         self.NormalTexture:SetSize(54, 54)
         self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)

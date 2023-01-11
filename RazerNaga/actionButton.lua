@@ -92,8 +92,7 @@ function ActionButtonMixin:Skin()
         self.Border:ClearAllPoints()
         self.Border:SetPoint("CENTER")
         self.Border:SetBlendMode("ADD")
-        self.HotKey:SetFont(self.HotKey:GetFont(), 13, "OUTLINE")
-        self.HotKey:SetPoint("TOPRIGHT", -1, -2)
+        self.HotKey:SetPoint("TOPRIGHT", -1, -3)
         self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
     end
 end
