@@ -557,7 +557,7 @@ end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
     if not RazerNaga:ShowGrid() then
-        self:ForActive('ForButtons', 'SetShowGridInsecure', 0, true)
+        self:ForActive('ForButtons', 'SetShowGridInsecure', 0, false)
     end
 end
 
