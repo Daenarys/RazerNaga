@@ -6,7 +6,7 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local ACTION_BUTTON_COUNT = 120
+local MAX_BUTTONS = 120
 
 local function proxyActionButton(owner, target)
     if not target then return end
@@ -82,8 +82,8 @@ local ActionButton = setmetatable({}, {
         -- validate the ID of the button we're getting is within an
         -- our expected range
         id = tonumber(id) or 0
-        if id < 1 or id > ACTION_BUTTON_COUNT then
-            error(('Usage: %s.ActionButton[1-%d]'):format("RazerNaga", ACTION_BUTTON_COUNT), 2)
+        if id < 1 or id > MAX_BUTTONS then
+            error(('Usage: %s.ActionButton[1-%d]'):format("RazerNaga", MAX_BUTTONS), 2)
         end
 
         local button = createActionButton(id)
