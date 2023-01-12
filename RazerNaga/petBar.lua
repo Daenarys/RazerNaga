@@ -77,11 +77,45 @@ function PetActionButtonMixin:Update()
 
         petActionIcon:SetTexture(isToken and _G[texture] or texture)
         petActionIcon:Show()
+
+        self:ShowButton()
+        if self.overlay then
+            self.overlay:Show()
+        end
     else
         petActionIcon:Hide()
+
+        self:HideButton()
+        if self.showgrid == 0 and not RazerNaga:ShowGrid() then
+            if self.overlay then
+                self.overlay:Hide()
+            end
+        end
     end
 
     SharedActionButton_RefreshSpellHighlight(self, PET_ACTION_HIGHLIGHT_MARKS[petActionID])
+end
+
+function PetActionButtonMixin:ShowButton()
+    self:SetAlpha(1.0)
+end
+
+function PetActionButtonMixin:HideButton()
+    if self.showgrid == 0 and not RazerNaga:ShowGrid() then
+        self:SetAlpha(0.0)
+    end
+end
+
+function PetActionButtonMixin:ShowGrid()
+    self.showgrid = self.showgrid + 1
+    self:SetAlpha(1.0)
+end
+
+function PetActionButtonMixin:HideGrid()
+    if self.showgrid > 0 then self.showgrid = self.showgrid - 1 end
+    if self.showgrid == 0  and not GetPetActionInfo(self:GetID()) and not RazerNaga:ShowGrid() then
+        self:SetAlpha(0.0)
+    end
 end
 
 function PetActionButtonMixin:UpdateCooldown()
@@ -97,14 +131,6 @@ function PetActionButtonMixin:UpdateCooldown()
     if GameTooltip and GameTooltip:IsOwned(self) then
         self:OnEnter()
     end
-end
-
-function PetActionButtonMixin:UpdateShownInsecure()
-    if InCombatLockdown() then
-        return
-    end
-
-    self:SetShown(self.watcher:IsVisible() and not self:GetAttribute("statehidden"))
 end
 
 -- if we have button facade support, then skin the button that way
@@ -135,6 +161,8 @@ end
 local function createPetActionButton(name, id)
     local button = CreateFrame('CheckButton', name, nil, 'PetActionButtonTemplate')
 
+    button.showgrid = 0
+
     Mixin(button, PetActionButtonMixin)
 
     -- get the stock button
@@ -142,13 +170,6 @@ local function createPetActionButton(name, id)
 
     -- copy its ID
     button:SetID(petActionButton:GetID())
-
-    -- copy its visibility state
-    local watcher = CreateFrame('Frame', nil, petActionButton, "SecureHandlerShowHideTemplate")
-    watcher:SetFrameRef("owner", button)
-    watcher:SetAttribute("_onshow", [[ self:GetFrameRef("owner"):Show(true) ]])
-    watcher:SetAttribute("_onhide", [[ self:GetFrameRef("owner"):Hide(true) ]])
-    button.watcher = watcher
 
     -- copy its pushed state
     hooksecurefunc(petActionButton, "SetButtonState", function(_, ...)
@@ -224,7 +245,6 @@ end
 
 function PetBar:OnAttachButton(button)
     button:UpdateHotkeys()
-    button:UpdateShownInsecure()
 
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
@@ -235,11 +255,11 @@ end
 
 -- keybound events
 function PetBar:KEYBOUND_ENABLED()
-    self:ForButtons("UpdateShownInsecure")
+    self:ForButtons("ShowButton")
 end
 
 function PetBar:KEYBOUND_DISABLED()
-    self:ForButtons("UpdateShownInsecure")
+    self:ForButtons("HideGrid")
 end
 
 
@@ -256,6 +276,8 @@ function PetBarModule:Load()
     self.bar = PetBar:New()
     self:UpdateActions()
     self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
+    self:RegisterEvent("PET_BAR_SHOWGRID")
+    self:RegisterEvent("PET_BAR_HIDEGRID")
 end
 
 function PetBarModule:Unload()
@@ -295,6 +317,18 @@ end
 
 function PetBarModule:PET_BAR_UPDATE_COOLDOWN()
     self:UpdateCooldowns()
+end
+
+function PetBarModule:PET_BAR_SHOWGRID()
+    if not (self.bar and PetHasActionBar() and UnitIsVisible("pet")) then return end
+
+    self.bar:ForButtons("ShowGrid")
+end
+
+function PetBarModule:PET_BAR_HIDEGRID()
+    if not (self.bar and PetHasActionBar() and UnitIsVisible("pet")) then return end
+
+    self.bar:ForButtons("HideGrid")
 end
 
 function PetBarModule:HighlightSystem()
