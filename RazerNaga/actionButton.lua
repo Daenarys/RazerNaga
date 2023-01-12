@@ -102,9 +102,6 @@ local ActionButton = setmetatable({}, {
 
         button:SetAttribute("UpdateShown", actionButton_UpdateShown)
 
-        -- reset the ID to zero to avoid paging issues
-        button:SetID(0)
-
         -- clear current position to avoid forbidden frame issues
         button:ClearAllPoints()
 
