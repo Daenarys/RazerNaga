@@ -97,6 +97,13 @@ function ExtraAbilityBarModule:OnFirstLoad()
         ExtraActionBarFrame:EnableMouse(false)
     end
 
+    -- remove EditMode hooks
+    ExtraAbilityContainer.ClearAllPoints = nil
+    ExtraAbilityContainer.SetPoint = nil
+    ExtraAbilityContainer.SetScale = nil
+    ExtraAbilityContainer:SetToplevel(false)
+    ExtraAbilityContainer:SetParent(self.frame)
+
     -- onshow/hide call UpdateManagedFramePositions on the blizzard end so
     -- turn that bit off
     ExtraAbilityContainer:SetScript("OnShow", nil)
@@ -106,16 +113,33 @@ function ExtraAbilityBarModule:OnFirstLoad()
     hooksecurefunc(ExtraAbilityContainer, 'ApplySystemAnchor', function()
         self:RepositionExtraAbilityContainer()
     end)
+
+    hooksecurefunc(ExtraAbilityContainer, 'HighlightSystem', function()
+        self:HighlightSystem()
+    end)
+
+    if UIParentBottomManagedFrameContainer then
+        UIParentBottomManagedFrameContainer.showingFrames[ExtraAbilityContainer] = nil
+    end
 end
 
 function ExtraAbilityBarModule:RepositionExtraAbilityContainer()
     if (not self.frame) then return end
+
+    if UIParentBottomManagedFrameContainer then
+        UIParentBottomManagedFrameContainer.showingFrames[ExtraAbilityContainer] = nil
+    end
 
     local _, relFrame = ExtraAbilityContainer:GetPoint()
 
     if self.frame ~= relFrame then
         self.frame:RepositionExtraAbilityContainer()
     end
+end
+
+function ExtraAbilityBarModule:HighlightSystem()
+    ExtraAbilityContainer.Selection:Hide()
+    EditModeMagnetismManager:UnregisterFrame(ExtraAbilityContainer)
 end
 
 
