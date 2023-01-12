@@ -223,6 +223,11 @@ function PetBar:UpdateOverrideBar()
 end
 
 function PetBar:GetShowStates()
+    if UnitClassBase("player") == "WARLOCK" then
+        local eyeOfKilrogg = GetSpellInfo(126)
+        return ('[channeling:%s]hide;[@pet,exists,nopossessbar]show;hide'):format(eyeOfKilrogg)
+    end
+
     return '[@pet,exists,nopossessbar]show;hide'
 end
 
