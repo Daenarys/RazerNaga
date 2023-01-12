@@ -1,25 +1,26 @@
 --[[ 
-	actionButton.lua
-		A pool of action buttons
+    actionButton.lua
+        A pool of action buttons
 --]]
 
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-
-local SecureHandler = RazerNaga:CreateHiddenFrame('Frame', nil, nil, "SecureHandlerBaseTemplate")
+local ACTION_BUTTON_COUNT = 120
 
 local function proxyActionButton(owner, target)
-	if not target then return end
+    if not target then return end
+
     -- disable paging on the target by giving the target an ID of zero
-     target:SetID(0)
+    target:SetID(0)
 
     -- display the target's binding action
     owner.commandName = target.commandName
 
-   -- mirror the owner's action on target whenever it changes
-    SecureHandlerSetFrameRef(owner, "ProxyTarget", target)
+    -- mirror the owner's action on target whenever it changes
+    local SecureHandler = RazerNaga:CreateHiddenFrame('Frame', nil, nil, "SecureHandlerBaseTemplate")
 
+    SecureHandlerSetFrameRef(owner, "ProxyTarget", target)
     SecureHandler:WrapScript(owner, "OnAttributeChanged", [[
         if name ~= "action" then return end
         local target = self:GetFrameRef("ProxyTarget")
@@ -35,31 +36,15 @@ local function proxyActionButton(owner, target)
 end
 
 local function createActionButton(id)
-    local buttonName = ('%sActionButton%d'):format('RazerNaga', id)
-    local button = CreateFrame('CheckButton', buttonName, nil, 'ActionBarButtonTemplate')
-
-    -- set the size of the buttons to the pre 10.0 default
-    button:SetSize(36, 36)
-
-    -- inject custom flyout handling
-    RazerNaga.SpellFlyout:WrapScript(button, "OnClick", [[
-        if not down then
-            local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
-            if actionType == "flyout" then
-                control:SetAttribute("caller", self)
-                control:RunAttribute("Toggle", actionID)
-                return false
-            end
-        end
-    ]])
+    local name = ('%sActionButton%d'):format("RazerNaga", id)
+    local button = CreateFrame('CheckButton', name, nil, 'ActionBarButtonTemplate')
 
     proxyActionButton(button, RazerNaga.BlizzardActionButtons[id])
 
     return button
 end
 
--- handle notifications from our parent bar about whate the action button
--- ID offset should be
+-- handle notifications what the action button ID offset should be
 local actionButton_OnUpdateOffset = [[
     local offset = message or 0
     local id = self:GetAttribute('index') + offset
@@ -97,8 +82,8 @@ local ActionButton = setmetatable({}, {
         -- validate the ID of the button we're getting is within an
         -- our expected range
         id = tonumber(id) or 0
-        if id < 1 then
-            error(('Usage: %s.ActionButtons[>0]'):format('RazerNaga'), 2)
+        if id < 1 or id > ACTION_BUTTON_COUNT then
+            error(('Usage: %s.ActionButton[1-%d]'):format("RazerNaga", ACTION_BUTTON_COUNT), 2)
         end
 
         local button = createActionButton(id)
@@ -117,14 +102,35 @@ local ActionButton = setmetatable({}, {
 
         button:SetAttribute("UpdateShown", actionButton_UpdateShown)
 
+        -- reset the ID to zero to avoid paging issues
+        button:SetID(0)
+
+        -- clear current position to avoid forbidden frame issues
+        button:ClearAllPoints()
+
         -- reset the showgrid setting to default
         button:SetAttribute('showgrid', 0)
 
-        -- enable binding to mousewheel
+        -- enable mousewheel clicks
         button:EnableMouseWheel(true)
-		
-        -- enable masque support
+
+        -- use the pre 10.0 button size
+        button:SetSize(36, 36)
+
+        -- apply the pre 10.0 button skin
         button:Skin()
+
+        -- inject custom flyout handling
+        RazerNaga.SpellFlyout:WrapScript(button, "OnClick", [[
+            if not down then
+                local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
+                if actionType == "flyout" then
+                    control:SetAttribute("caller", self)
+                    control:RunAttribute("Toggle", actionID)
+                    return false
+                end
+            end
+        ]])
 
         rawset(self, id, button)
         return button
@@ -132,7 +138,7 @@ local ActionButton = setmetatable({}, {
 
     -- newindex is set to block writes to prevent errors
     __newindex = function()
-        error(('%s.ActionButtons does not support writes'):format('RazerNaga'), 2)
+        error(('%s.ActionButton does not support writes'):format("RazerNaga"), 2)
     end
 })
 
