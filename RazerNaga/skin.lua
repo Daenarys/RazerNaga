@@ -31,6 +31,12 @@ end
 
 -- Function that executes functionalities of the 'ExtraFramesFunc' function that need to be executed after the first "PLAYER_ENTERING_WORLD" event
 function RazerNagaUI:EFF_PLAYER_ENTERING_WORLD()
+	-- hide the buff expand toggle
+	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)
+		self.CollapseAndExpandButton:Hide()
+	end)
+	BuffFrame.CollapseAndExpandButton:Hide()
+
 	-- [Minimap]
 	MinimapCluster:SetSize(192, 192)
 	MinimapCluster:SetHitRectInsets(30, 10, 0, 30)

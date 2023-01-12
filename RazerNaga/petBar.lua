@@ -290,27 +290,7 @@ function PetBarModule:Unload()
 end
 
 function PetBarModule:OnFirstLoad()
-    -- "hide" the pet bar (make invisible and non-interactive)
-    PetActionBar:SetAlpha(0)
-    PetActionBar:EnableMouse(false)
-    PetActionBar:SetScript("OnUpdate", nil)
-
-    -- and its buttons, too
-    for _, button in pairs(PetActionBar.actionButtons) do
-        button:EnableMouse(false)
-        button:SetScript("OnUpdate", nil)
-        button:UnregisterAllEvents()
-    end
-
-    -- unregister events that do not impact pet action bar visibility
-    PetActionBar:UnregisterEvent("PET_BAR_UPDATE_COOLDOWN")
-
-    -- disable the pet bar in edit mode
-    hooksecurefunc(PetActionBar, 'HighlightSystem', function()
-        self:HighlightSystem()
-    end)
-
-    -- an extremly lazy method of updating the Dominos pet bar when the
+    -- an extremly lazy method of updating the pet bar when the
     -- normal pet bar would be updated
     hooksecurefunc(PetActionBar, "Update", RazerNaga:Defer(function() self:UpdateActions() end, 0.01))
 end
@@ -329,11 +309,6 @@ function PetBarModule:PET_BAR_HIDEGRID()
     if not (self.bar and PetHasActionBar() and UnitIsVisible("pet")) then return end
 
     self.bar:ForButtons("HideGrid")
-end
-
-function PetBarModule:HighlightSystem()
-    PetActionBar.Selection:Hide()
-    EditModeMagnetismManager:UnregisterFrame(PetActionBar)
 end
 
 function PetBarModule:UpdateActions()

@@ -291,6 +291,7 @@ function RazerNaga:HideBlizzard()
 	    "MultiBar6",
 	    "MultiBar7",
 	    "StanceBar",
+	    "PetActionBar",
 	    "PossessActionBar",
 	    "StatusTrackingBarManager",
 	    "MainMenuBarVehicleLeaveButton"
@@ -319,12 +320,6 @@ function RazerNaga:HideBlizzard()
 	    "MultiBar7",
 	    "PossessActionBar"
 	)
-
-	-- hide the buff expand toggle
-	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)
-		self.CollapseAndExpandButton:Hide()
-	end)
-	BuffFrame.CollapseAndExpandButton:Hide()
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
