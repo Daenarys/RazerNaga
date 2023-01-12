@@ -6,7 +6,6 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
@@ -103,7 +102,7 @@ end
 
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
-    local button = ActionButton[id]
+    local button = RazerNaga.ActionButton[id]
 
     button:SetAttribute('index', index)
     button:SetAttribute('statehidden', nil)
