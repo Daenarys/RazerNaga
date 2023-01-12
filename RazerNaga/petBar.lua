@@ -8,7 +8,6 @@
 local RazerNaga = _G[...]
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-
 --[[ Pet Button ]]--
 
 local PetActionButtonMixin = {}
@@ -203,7 +202,6 @@ local function getOrCreatePetActionButton(id)
     return button
 end
 
-
 --[[ Pet Bar ]]--
 
 local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
@@ -266,7 +264,6 @@ end
 function PetBar:KEYBOUND_DISABLED()
     self:ForButtons("HideGrid")
 end
-
 
 --[[ controller good times ]]--
 

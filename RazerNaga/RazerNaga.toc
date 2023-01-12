@@ -19,12 +19,12 @@ bindingsLoader.lua
 autoBinder.lua
 modifierHighlighter.lua
 secureEnv.lua
-shadowUIParent.lua
 drag.lua
 frame.lua
 buttonBar.lua
 bindableButton.lua
 barStates.lua
+actionButtonMixin.lua
 actionButton.lua
 actionButtonFlyout.lua
 actionButtonMap.lua

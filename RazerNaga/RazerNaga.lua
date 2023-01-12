@@ -221,7 +221,11 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	-- removes some edit mode taint
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
+
+	-- remove some edit mode taint
 	local purgeKey = function(t, k)
 		t[k] = nil
 		local c = 42
@@ -233,7 +237,6 @@ function RazerNaga:HideBlizzard()
 		until issecurevariable(t, k)
 	end
 
-	-- move a frame to the hidden shadow UI parent
 	local function apply(func, ...)
 	    for i = 1, select('#', ...) do
 	        local name = (select(i, ...))
@@ -260,7 +263,7 @@ function RazerNaga:HideBlizzard()
 		else
 			frame:Hide()
 		end
-		frame:SetParent(RazerNaga.ShadowUIParent)
+		frame:SetParent(HiddenFrame)
 	end
 
 	local function unregisterEvents(frame)

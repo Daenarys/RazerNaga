@@ -7,111 +7,8 @@
 
 local RazerNaga = _G[...]
 
---[[ Mixin ]]--
-
-local ActionButtonMixin = {}
-
-function ActionButtonMixin:SetActionOffsetInsecure(offset)
-    if InCombatLockdown() then
-        return
-    end
-
-    local oldActionId = self:GetAttribute('action')
-    local newActionId = self:GetAttribute('index') + (offset or 0)
-
-    if oldActionId ~= newActionId then
-        self:SetAttribute('action', newActionId)
-        self:UpdateState()
-    end
-end
-
-function ActionButtonMixin:SetShowGridInsecure(showgrid, force)
-    if InCombatLockdown() then
-        return
-    end
-
-    showgrid = tonumber(showgrid) or 0
-
-    if (self:GetAttribute("showgrid") ~= showgrid) or force then
-        self:SetAttribute("showgrid", showgrid)
-        self:UpdateShownInsecure()
-    end
-end
-
-function ActionButtonMixin:UpdateShownInsecure()
-    if InCombatLockdown() then
-        return
-    end
-
-    local show = (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
-        and not self:GetAttribute("statehidden")
-
-    self:SetShown(show)
-end
-
--- configuration commands
-function ActionButtonMixin:SetFlyoutDirection(direction)
-    if InCombatLockdown() then
-        return
-    end
-
-    self:SetAttribute("flyoutDirection", direction)
-    self:UpdateFlyout()
-end
-
--- if we have button facade support, then skin the button that way
--- otherwise, apply the RazerNaga style to the button to make it pretty
-function ActionButtonMixin:Skin()
-    if not RazerNaga:Masque('Action Bar', self) then
-        self.SlotBackground:Hide()
-        self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-        self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-        self.NormalTexture:ClearAllPoints()
-        self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
-        self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
-        self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-        self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-        self.PushedTexture:SetSize(36, 36)
-        self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-        self.HighlightTexture:SetSize(36, 36)
-        self.HighlightTexture:SetBlendMode("ADD")
-        self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
-        self.CheckedTexture:ClearAllPoints()
-        self.CheckedTexture:SetAllPoints()
-        self.CheckedTexture:SetBlendMode("ADD")
-        self.SpellHighlightTexture:SetPoint("TOPLEFT", -2, 2)
-        self.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", 2, -2)
-        self.SpellHighlightTexture:SetBlendMode("ADD")
-        self.NewActionTexture:ClearAllPoints()
-        self.NewActionTexture:SetAllPoints()
-        self.cooldown:ClearAllPoints()
-        self.cooldown:SetAllPoints()
-        self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-        self.Flash:ClearAllPoints()
-        self.Flash:SetAllPoints()
-        self.Border:ClearAllPoints()
-        self.Border:SetPoint("CENTER")
-        self.Border:SetBlendMode("ADD")
-        self.HotKey:SetPoint("TOPRIGHT", -1, -3)
-        self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-    end
-end
-
---[[ exports ]]--
-
-RazerNaga.ActionButtonMixin = ActionButtonMixin
-
---[[ Buttons ]]--
-
 local SecureHandler = RazerNaga:CreateHiddenFrame('Frame', nil, nil, "SecureHandlerBaseTemplate")
-    -- dragonflight hack: whenever a Dominos action button's action changes
-    -- set the action of the corresponding blizzard action button
-    -- this ensures that pressing a blizzard keybinding does the same thing as
-    -- clicking a Dominos button would
-    --
-    -- We want to not remap blizzard keybindings in dragonflight, so that we can
-    -- use some behaviors only available to blizzard action buttons, mainly cast on
-    -- key down and press and hold casting
+
 local function proxyActionButton(owner, target)
 	if not target then return end
     -- disable paging on the target by giving the target an ID of zero
@@ -194,7 +91,7 @@ local actionButton_UpdateShown = [[
 
 -- action button creation is deferred so that we can avoid creating buttons for
 -- bars set to show less than the maximum
-local ActionButtons = setmetatable({}, {
+local ActionButton = setmetatable({}, {
     -- index creates & initializes buttons as we need them
     __index = function(self, id)
         -- validate the ID of the button we're getting is within an
@@ -210,8 +107,6 @@ local ActionButtons = setmetatable({}, {
         Mixin(button, RazerNaga.ActionButtonMixin)
 
         -- apply hooks for quick binding
-        -- this must be done before we reset the button ID, as we use it
-        -- to figure out the binding action for the button
         RazerNaga.BindableButton:AddQuickBindingSupport(button)
 
         -- set a handler for updating the action from a parent frame
@@ -243,4 +138,4 @@ local ActionButtons = setmetatable({}, {
 
 --[[ exports ]]--
 
-RazerNaga.ActionButtons = ActionButtons
+RazerNaga.ActionButton = ActionButton

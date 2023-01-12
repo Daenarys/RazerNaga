@@ -67,7 +67,6 @@ function ExtraAbilityBar:AddLayoutPanel(menu)
 	return panel
 end
 
-
 --[[ module ]]--
 
 local ExtraAbilityBarModule = RazerNaga:NewModule('ExtraAbilityBar')

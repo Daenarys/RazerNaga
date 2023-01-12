@@ -6,7 +6,7 @@
 --[[ globals ]]--
 
 local RazerNaga = _G[...]
-local ActionButtons = RazerNaga.ActionButtons
+local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
 local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
@@ -99,12 +99,11 @@ function ActionBar:MaxLength()
     return floor(MAX_BUTTONS / RazerNaga:NumBars())
 end
 
-
 --[[ button stuff]]--
 
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
-    local button = ActionButtons[id]
+    local button = ActionButton[id]
 
     button:SetAttribute('index', index)
     button:SetAttribute('statehidden', nil)
@@ -130,7 +129,6 @@ end
 function ActionBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
-
 
 --[[ Paging Code ]]--
 
@@ -318,7 +316,6 @@ function ActionBar:UpdateTransparent(force)
     end
 end
 
-
 --[[ flyout direction updating ]]--
 
 function ActionBar:GetFlyoutDirection()
@@ -501,7 +498,6 @@ do
     end
 end
 
-
 --[[ Action Bar Controller ]]--
 
 local ActionBarsModule = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
@@ -621,3 +617,7 @@ function ActionBarsModule:UpdateActionSlots()
 
     table.wipe(self.slotsToUpdate)
 end
+
+--[[ exports ]]--
+
+RazerNaga.ActionBar = ActionBar
