@@ -552,10 +552,14 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
 end
 
 function ActionBarsModule:ACTIONBAR_SHOWGRID()
+    if InCombatLockdown() then return end
+
     self:ForActive('ForButtons', 'SetShowGridInsecure', 1, true)
 end
 
 function ActionBarsModule:ACTIONBAR_HIDEGRID()
+    if InCombatLockdown() then return end
+    
     if not RazerNaga:ShowGrid() then
         self:ForActive('ForButtons', 'SetShowGridInsecure', 0, false)
     end
