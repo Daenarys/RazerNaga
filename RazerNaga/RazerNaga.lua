@@ -233,67 +233,92 @@ function RazerNaga:HideBlizzard()
 		until issecurevariable(t, k)
 	end
 
-	local function hideActionBarFrame(frame, clearEvents)
-		if frame then
-			if clearEvents then
-				frame:UnregisterAllEvents()
-			end
+	-- move a frame to the hidden shadow UI parent
+	local function apply(func, ...)
+	    for i = 1, select('#', ...) do
+	        local name = (select(i, ...))
+	        local frame = _G[name]
 
-			-- Remove some EditMode hooks
-			if frame.system then
-				-- Purge the show state to avoid any taint concerns
-				purgeKey(frame, "isShownExternal")
-			end
+	        if frame then
+	            func(frame)
+	        else
+	            RazerNaga:Printf('Could not find frame %q', name)
+	        end
+	    end
+	end
 
-		    -- EditMode overrides the Hide function, avoid calling it as it can taint
-			if frame.HideBase then
-				frame:HideBase()
-			else
-				frame:Hide()
-			end
-		    frame:SetParent(RazerNaga.ShadowUIParent)
+	local function banish(frame)
+	    -- remove some EditMode hooks
+		if frame.system then
+			-- purge the show state to avoid any taint concerns
+			purgeKey(frame, "isShownExternal")
 		end
+
+		-- EditMode overrides the Hide function, avoid calling it as it can taint
+		if frame.HideBase then
+			frame:HideBase()
+		else
+			frame:Hide()
+		end
+		frame:SetParent(RazerNaga.ShadowUIParent)
 	end
 
-	local function hideActionButton(button)
-	    if not button then return end
-
-		button:Hide()
-		button:UnregisterAllEvents()
-		button:SetAttribute("statehidden", true)
+	local function unregisterEvents(frame)
+	    frame:UnregisterAllEvents()
 	end
 
-	hideActionBarFrame(MainMenuBar, false)
-	hideActionBarFrame(MultiBarBottomLeft, true)
-	hideActionBarFrame(MultiBarBottomRight, true)
-	hideActionBarFrame(MultiBarLeft, true)
-	hideActionBarFrame(MultiBarRight, true)
-	hideActionBarFrame(MultiBar5, true)
-	hideActionBarFrame(MultiBar6, true)
-	hideActionBarFrame(MultiBar7, true)
+	local function disableActionButtons(frame)
+	    local buttons = frame.actionButtons
+	    if type(buttons) ~= "table" then
+	        return
+	    end
 
-	for i=1,12 do
-		hideActionButton(_G["ActionButton" .. i])
-		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
-		hideActionButton(_G["MultiBarBottomRightButton" .. i])
-		hideActionButton(_G["MultiBarRightButton" .. i])
-		hideActionButton(_G["MultiBarLeftButton" .. i])
-		hideActionButton(_G["MultiBar5Button" .. i])
-		hideActionButton(_G["MultiBar6Button" .. i])
-		hideActionButton(_G["MultiBar7Button" .. i])
+	    for _, button in pairs(buttons) do
+	        button:UnregisterAllEvents()
+	        button:SetAttribute('statehidden', true)
+	        button:Hide()
+	    end
 	end
 
-	hideActionBarFrame(MicroButtonAndBagsBar, false)
-	hideActionBarFrame(StanceBar, true)
-	hideActionBarFrame(PossessActionBar, true)
-	hideActionBarFrame(MultiCastActionBarFrame, false)
-	hideActionBarFrame(PetActionBar, false)
-	hideActionBarFrame(StatusTrackingBarManager, false)
+	apply(banish,
+	    "MainMenuBar",
+	    "MicroButtonAndBagsBar",
+	    "MultiBarBottomLeft",
+	    "MultiBarBottomRight",
+	    "MultiBarLeft",
+	    "MultiBarRight",
+	    "MultiBar5",
+	    "MultiBar6",
+	    "MultiBar7",
+	    "StanceBar",
+	    "PossessActionBar",
+	    "StatusTrackingBarManager",
+	    "MainMenuBarVehicleLeaveButton"
+	)
 
-	-- wipe buttonsAndSpacers to prevent layout updates
-	table.wipe(StanceBar.buttonsAndSpacers)
-	table.wipe(PossessActionBar.buttonsAndSpacers)
-	table.wipe(PetActionBar.buttonsAndSpacers)
+	apply(unregisterEvents,
+	    "MultiBarBottomLeft",
+	    "MultiBarBottomRight",
+	    "MultiBarLeft",
+	    "MultiBarRight",
+	    "MultiBar5",
+	    "MultiBar6",
+	    "MultiBar7",
+	    "PossessActionBar",
+	    "MainMenuBarVehicleLeaveButton"
+	)
+
+	apply(disableActionButtons,
+	    "MainMenuBar",
+	    "MultiBarBottomLeft",
+	    "MultiBarBottomRight",
+	    "MultiBarLeft",
+	    "MultiBarRight",
+	    "MultiBar5",
+	    "MultiBar6",
+	    "MultiBar7",
+	    "PossessActionBar"
+	)
 
 	-- hide the buff expand toggle
 	hooksecurefunc(BuffFrame, "RefreshCollapseExpandButtonState", function(self)

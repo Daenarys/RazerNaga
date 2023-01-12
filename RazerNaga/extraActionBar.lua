@@ -1,5 +1,3 @@
-if not ExtraAbilityContainer then return end
-
 --[[
 	extraActionBar.lua
 		The RazerNaga extra action bar
@@ -68,6 +66,7 @@ function ExtraAbilityBar:AddLayoutPanel(menu)
 
 	return panel
 end
+
 
 --[[ module ]]--
 
@@ -141,7 +140,6 @@ function ExtraAbilityBarModule:HighlightSystem()
     ExtraAbilityContainer.Selection:Hide()
     EditModeMagnetismManager:UnregisterFrame(ExtraAbilityContainer)
 end
-
 
 -- Titan panel will attempt to take control of the ExtraActionBarFrame and break
 -- its position and ability to be usable. This is because Titan Panel doesn't

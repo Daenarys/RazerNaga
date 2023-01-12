@@ -1,4 +1,3 @@
-if not PossessActionBar then return end
 --[[
 	vehicleBar.lua
 		Handles the exit button for vehicles and taxis
