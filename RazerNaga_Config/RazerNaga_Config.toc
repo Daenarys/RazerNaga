@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 100100
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Tuller
