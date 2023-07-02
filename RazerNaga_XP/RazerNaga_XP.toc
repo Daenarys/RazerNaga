@@ -1,0 +1,8 @@
+## Interface: 80300
+## Title: Razer Naga XP
+## Notes: A movable experience/reputation bar
+## Author: Tuller
+## Dependencies: RazerNaga
+## OptionalDeps: LibSharedMedia-3.0
+localization.xml
+xp.lua

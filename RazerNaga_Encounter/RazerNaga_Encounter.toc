@@ -1,0 +1,7 @@
+## Interface: 80300
+## Title: Razer Naga Encounter
+## Notes: Makes the PlayerPowerBarAlt movable
+## Author: Tuller
+## Dependencies: RazerNaga
+bar.lua
+controller.lua

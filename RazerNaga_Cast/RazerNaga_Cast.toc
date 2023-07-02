@@ -1,0 +1,7 @@
+﻿## Interface: 80300
+## Title: Razer Naga Cast
+## Notes: A movable casting bar, with timer
+## Author: Tuller
+## Dependencies: RazerNaga
+localization.lua
+castBar.xml
