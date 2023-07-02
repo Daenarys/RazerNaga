@@ -263,7 +263,7 @@ end
 function ActionBar:ShowGrid()
     for _,b in pairs(self.buttons) do
         if b:IsShown() then
-            b:SetAlpha(1)
+            b:SetAlpha(1.0)
         end
     end
 end
@@ -271,7 +271,7 @@ end
 function ActionBar:HideGrid()
     for _,b in pairs(self.buttons) do
         if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
-            b:SetAlpha(0)
+            b:SetAlpha(0.0)
         end
     end
 end
@@ -287,7 +287,7 @@ end
 function ActionBar:UpdateSlot()
     for _,b in pairs(self.buttons) do
         if b:IsShown() and b:HasAction() then
-            b:SetAlpha(1)
+            b:SetAlpha(1.0)
         end
     end
 end

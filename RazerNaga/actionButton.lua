@@ -68,9 +68,9 @@ function ActionButton:New(id)
 		    local show = (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
 		                 and not self:GetAttribute("statehidden")
 		    if show then
-		        self:SetAlpha(1)
+		        self:SetAlpha(1.0)
 		    else
-		        self:SetAlpha(0)
+		        self:SetAlpha(0.0)
 		    end
 		]])
 
