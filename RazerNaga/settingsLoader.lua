@@ -62,7 +62,7 @@ function SettingsLoader:LoadSettings(settings)
 	--reenable dominos
 	RazerNaga:Load()
 	RazerNaga.AutoBinder:EnforceBindings()
-
+	
 	--hack, need to do a slightly more advanced layout method for the class bar to place it properly across all resolutions
 	-- local classBar = RazerNaga.Frame:Get('class')
 	-- if classBar then
@@ -78,10 +78,10 @@ end
 
 function SettingsLoader:ReplaceSettings(toTbl, fromTbl)
 	if not fromTbl then return end
-
+	
 	for k, v in pairs(fromTbl) do
 		local prevVal = toTbl[k]
-
+	
 		if type(v) == 'table' and type(prevVal) == 'table' then
 			self:ReplaceSettings(toTbl[k], v)
 		elseif type(v) == 'table' then
@@ -116,7 +116,7 @@ function SettingsLoader:GetThreeByFour()
 		ab = {
 			count = 10,
 		},
-
+		
 		['frames'] = {
 			{
 				['isRightToLeft'] = false,
@@ -298,17 +298,6 @@ function SettingsLoader:GetThreeByFour()
 				['width'] = 0.75,
 				['x'] = 0,
 				['y'] = 38,
-			},
-			['artifact'] = {
-				['alwaysShowText'] = true,
-				['anchor'] = false,
-				['height'] = 14,
-				['hidden'] = false,
-				['point'] = 'TOP',
-				['texture'] = 'blizzard',
-				['width'] = 0.75,
-				['x'] = 0,
-				['y'] = 0,
 			},
 			['vehicle'] = {
 				['isRightToLeft'] = false,
@@ -574,17 +563,6 @@ function SettingsLoader:GetFourByThree()
 				['width'] = 0.75,
 				['x'] = 0,
 				['y'] = 38,
-			},
-			['artifact'] = {
-				['alwaysShowText'] = true,
-				['anchor'] = false,
-				['height'] = 14,
-				['hidden'] = false,
-				['point'] = 'TOP',
-				['texture'] = 'blizzard',
-				['width'] = 0.75,
-				['x'] = 0,
-				['y'] = 0,
 			},
 			['vehicle'] = {
 				['isRightToLeft'] = false,

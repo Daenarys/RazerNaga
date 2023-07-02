@@ -34,6 +34,22 @@ function PetButton:Create(id)
 	b:HookScript('OnEnter', self.OnEnter)
 	b:Skin()
 
+	--override keybinding display
+	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
+
+	--hook to prevent skin issues
+	hooksecurefunc(b, 'UpdateButtonArt', function(self)
+		if not RazerNaga:Masque('Pet Bar', self) then
+			self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+			self.NormalTexture:SetSize(54, 54)
+			self.NormalTexture:ClearAllPoints()
+			self.NormalTexture:SetPoint("CENTER", 0, -1)
+			self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+			self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+			self.PushedTexture:SetSize(30, 30)
+		end
+	end)
+
 	return b
 end
 
@@ -42,7 +58,23 @@ end
 function PetButton:Skin()
 	if not RazerNaga:Masque('Pet Bar', self) then
 		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+		self.IconMask:SetSize(64, 64)
+		self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+		self.NormalTexture:SetSize(54, 54)
+		self.NormalTexture:ClearAllPoints()
+		self.NormalTexture:SetPoint("CENTER", 0, -1)
+		self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+		self.PushedTexture:SetSize(30, 30)
+		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+		self.HighlightTexture:SetSize(30, 30)
+		self.HighlightTexture:SetBlendMode("ADD")
+		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+		self.CheckedTexture:ClearAllPoints()
+		self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
+		self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
+		self.CheckedTexture:SetBlendMode("ADD")
+		self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
 	end
 end
 
@@ -72,9 +104,6 @@ function PetButton:OnEnter()
 	KeyBound:Set(self)
 end
 
---override keybinding display
-hooksecurefunc('PetActionButton_SetHotkeys', PetButton.UpdateHotkey)
-
 
 --[[ Pet Bar ]]--
 
@@ -90,7 +119,12 @@ function PetBar:New()
 end
 
 function PetBar:GetShowStates()
-	return '[@pet,exists,nopossessbar]show;hide'
+    if UnitClassBase("player") == "WARLOCK" then
+        local eyeOfKilrogg = GetSpellInfo(126)
+        return ('[channeling:%s]hide;[@pet,exists,nopossessbar]show;hide'):format(eyeOfKilrogg)
+    end
+
+    return '[@pet,exists,nopossessbar]show;hide'
 end
 
 function PetBar:GetDefaults()

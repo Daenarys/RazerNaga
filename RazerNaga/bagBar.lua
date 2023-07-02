@@ -17,14 +17,69 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(36, 36)
-	b.IconBorder:SetSize(37, 37)
-
-	if b.IconOverlay ~= nil then
-		b.IconOverlay:SetSize(37, 37)
+	BaseBagSlotButton_UpdateTextures = function(self)
+		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
+		self:GetNormalTexture():SetSize(50, 50)
+		self:GetNormalTexture():SetAlpha(1)
+		self:GetNormalTexture():ClearAllPoints()
+		self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1)
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:GetPushedTexture():SetSize(30, 30)
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:GetHighlightTexture():SetSize(30, 30)
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		self.SlotHighlightTexture:SetBlendMode("ADD")
+		self.SlotHighlightTexture:SetSize(30, 30)
 	end
 
-	_G[b:GetName() .. "NormalTexture"]:SetSize(64, 64)
+	for i = 0, 3 do
+		local bagSlot = _G["CharacterBag"..i.."Slot"]
+		hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
+		hooksecurefunc(bagSlot, "UpdateTextures", BaseBagSlotButton_UpdateTextures)
+	end
+
+	ItemButtonMixin.SetItemButtonQuality(CharacterBag0Slot, GetInventoryItemQuality("player", CharacterBag0Slot:GetID()), GetInventoryItemID("player", CharacterBag0Slot:GetID()), CharacterBag0Slot.HasPaperDollAzeriteItemOverlay)
+	ItemButtonMixin.SetItemButtonQuality(CharacterBag1Slot, GetInventoryItemQuality("player", CharacterBag1Slot:GetID()), GetInventoryItemID("player", CharacterBag1Slot:GetID()), CharacterBag1Slot.HasPaperDollAzeriteItemOverlay)
+	ItemButtonMixin.SetItemButtonQuality(CharacterBag2Slot, GetInventoryItemQuality("player", CharacterBag2Slot:GetID()), GetInventoryItemID("player", CharacterBag2Slot:GetID()), CharacterBag2Slot.HasPaperDollAzeriteItemOverlay)
+	ItemButtonMixin.SetItemButtonQuality(CharacterBag3Slot, GetInventoryItemQuality("player", CharacterBag3Slot:GetID()), GetInventoryItemID("player", CharacterBag3Slot:GetID()), CharacterBag3Slot.HasPaperDollAzeriteItemOverlay)
+	C_Timer.After(8, function()
+		ItemButtonMixin.SetItemButtonQuality(CharacterBag0Slot, GetInventoryItemQuality("player", CharacterBag0Slot:GetID()), GetInventoryItemID("player", CharacterBag0Slot:GetID()), CharacterBag0Slot.HasPaperDollAzeriteItemOverlay)
+		ItemButtonMixin.SetItemButtonQuality(CharacterBag1Slot, GetInventoryItemQuality("player", CharacterBag1Slot:GetID()), GetInventoryItemID("player", CharacterBag1Slot:GetID()), CharacterBag1Slot.HasPaperDollAzeriteItemOverlay)
+		ItemButtonMixin.SetItemButtonQuality(CharacterBag2Slot, GetInventoryItemQuality("player", CharacterBag2Slot:GetID()), GetInventoryItemID("player", CharacterBag2Slot:GetID()), CharacterBag2Slot.HasPaperDollAzeriteItemOverlay)
+		ItemButtonMixin.SetItemButtonQuality(CharacterBag3Slot, GetInventoryItemQuality("player", CharacterBag3Slot:GetID()), GetInventoryItemID("player", CharacterBag3Slot:GetID()), CharacterBag3Slot.HasPaperDollAzeriteItemOverlay)
+	end)
+
+	CharacterBag0Slot.CircleMask:Hide()
+	BaseBagSlotButton_UpdateTextures(CharacterBag0Slot)
+	CharacterBag0Slot:SetSize(30, 30)
+	CharacterBag0Slot.IconBorder:SetSize(30, 30)
+	CharacterBag0Slot:ClearAllPoints()
+	CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -4, -4)
+	CharacterBag1Slot.CircleMask:Hide()
+	BaseBagSlotButton_UpdateTextures(CharacterBag1Slot)
+	CharacterBag1Slot:SetSize(30, 30)
+	CharacterBag1Slot.IconBorder:SetSize(30, 30)
+	CharacterBag1Slot:ClearAllPoints()
+	CharacterBag1Slot:SetPoint("RIGHT", CharacterBag0Slot, "LEFT", -2, 0)
+	CharacterBag2Slot.CircleMask:Hide()
+	BaseBagSlotButton_UpdateTextures(CharacterBag2Slot)
+	CharacterBag2Slot:SetSize(30, 30)
+	CharacterBag2Slot.IconBorder:SetSize(30, 30)
+	CharacterBag2Slot:ClearAllPoints()
+	CharacterBag2Slot:SetPoint("RIGHT", CharacterBag1Slot, "LEFT", -2, 0)
+	CharacterBag3Slot.CircleMask:Hide()
+	BaseBagSlotButton_UpdateTextures(CharacterBag3Slot)
+	CharacterBag3Slot:SetSize(30, 30)
+	CharacterBag3Slot.IconBorder:SetSize(30, 30)
+	CharacterBag3Slot:ClearAllPoints()
+	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
+	MainMenuBarBackpackButton.CircleMask:Hide()
+	BaseBagSlotButton_UpdateTextures(MainMenuBarBackpackButton)
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
+	MainMenuBarBackpackButton:SetSize(30, 30)
+	MainMenuBarBackpackButton:ClearAllPoints()
+	MainMenuBarBackpackButton:SetPoint("TOPRIGHT", -4, -4)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
@@ -123,7 +178,38 @@ end
 
 --[[ Bag Bar Controller ]]
 
-local BagBarController = RazerNaga:NewModule('BagBar')
+local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+
+function BagBarController:OnInitialize()
+	local noopFunc = function() end
+
+	CharacterReagentBag0Slot.SetBarExpanded = noopFunc
+	CharacterBag3Slot.SetBarExpanded = noopFunc
+	CharacterBag2Slot.SetBarExpanded = noopFunc
+	CharacterBag1Slot.SetBarExpanded = noopFunc
+	CharacterBag0Slot.SetBarExpanded = noopFunc
+
+	if BagBarExpandToggle then
+		BagBarExpandToggle:Hide()
+	end
+
+	if CharacterReagentBag0Slot then
+		CharacterReagentBag0Slot:Hide()
+	end
+
+	if MainMenuBarManager then
+		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", MainMenuBarManager)
+		EventRegistry:UnegisterFrameEventAndCallback("VARIABLES_LOADED", MainMenuBarManager)
+	end
+	if BagsBar then
+		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
+		hooksecurefunc(BagsBar, "Layout", function() 
+			self:LayoutBagBar() 
+		end)
+	end
+
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LayoutBagBar")
+end
 
 function BagBarController:Load()
 	self.frame = BagBar:New()
@@ -134,4 +220,17 @@ function BagBarController:Unload()
 		self.frame:Free()
 		self.frame = nil
 	end
+end
+
+function BagBarController:LayoutBagBar()
+    if InCombatLockdown() then
+        self.needsUpdate = true
+        return
+    end
+
+    if self.frame then
+        self.frame:Layout()
+    end
+
+    self.needsUpdate = nil
 end

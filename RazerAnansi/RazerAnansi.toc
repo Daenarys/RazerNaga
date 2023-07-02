@@ -1,4 +1,5 @@
 ## Interface: 100100
+## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Anansi
 ## Notes: Anansi keyboard enhancements to the Razer Naga addon
 ## Author: Tuller

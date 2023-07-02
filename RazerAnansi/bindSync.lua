@@ -108,7 +108,7 @@ function BindSync:SaveChanges()
 end
 
 function BindSync:CreatePromptFrame()
-	local f = CreateFrame('Button', 'AnansiBindSyncFrame', UIParent); f:Hide()
+	local f = CreateFrame('Button', 'AnansiBindSyncFrame', UIParent, BackdropTemplateMixin and 'BackdropTemplate'); f:Hide()
 
 	f:SetPoint('CENTER', UIParent)
 
@@ -149,6 +149,11 @@ function BindSync:CreatePromptFrame()
 
 	--close button
 	f.close = CreateFrame('Button', '$parentClose', f, 'UIPanelCloseButton')
+	f.close:SetSize(32, 32)
+	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 	f.close:SetScript('OnClick', function() self:CancelChanges() end)
 	f.close:SetPoint('TOPRIGHT', -5, -5)
 

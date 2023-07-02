@@ -6,7 +6,7 @@
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent)
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()
@@ -245,6 +245,12 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
+	exitConfig:SetSize(32, 32)
+	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
 	exitConfig:SetScript('OnEnter', function(self)

@@ -75,7 +75,7 @@ end
 
 --binding confirmation dialog
 local function CreateEnableAutomaticBindingsPrompt()
-	local f = CreateFrame('Frame', nil, UIParent)
+	local f = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 	f:SetFrameStrata('DIALOG')
 	f:SetToplevel(true)
 	f:EnableMouse(true)

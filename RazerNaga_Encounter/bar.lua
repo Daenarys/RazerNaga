@@ -1,10 +1,12 @@
-﻿local AddonName, Addon = ...
-local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
+﻿if not PlayerPowerBarAlt then return end
+
+local AddonName, Addon = ...
+local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 local EncounterBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame); Addon.EncounterBar = EncounterBar
 
 function EncounterBar:New()
-	local f = RazerNaga.Frame.New(self, 'encounter')
-	
+	local f = EncounterBar.super.New(self, 'encounter')
+
 	f:InitPlayerPowerBarAlt()
 	f:ShowInOverrideUI(true)
 	f:ShowInPetBattleUI(true)
@@ -13,45 +15,35 @@ function EncounterBar:New()
 	return f
 end
 
-function EncounterBar:OnEvent(self, event, ...)
-	local f = self[event]
-	if f then
-		f(self, event, ...)
-	end
-end
-
 function EncounterBar:GetDefaults()
 	return { point = 'CENTER' }
 end
 
-function EncounterBar:NumButtons()
-	return 1
-end
-
+-- always reparent + position the bar due to UIParent.lua moving it whenever its shown
 function EncounterBar:Layout()
-	if InCombatLockdown() then return end		
-
-	-- always reparent + position the bar due to UIParent.lua moving it whenever its shown
 	local bar = self.__PlayerPowerBarAlt
 	bar:ClearAllPoints()
 	bar:SetParent(self.header)
-	bar:SetPoint('CENTER', self.header)		
-	
-	local width, height = bar:GetSize()
-	local pW, pH = self:GetPadding()
+	bar:SetPoint('CENTER', self.header)
 
-	width = math.max(width, 36 * 6)
-	height = math.max(height, 36)
+	-- resize out of combat
+	if not InCombatLockdown() then
+		local width, height = bar:GetSize()
+		local pW, pH = self:GetPadding()
 
-	self:SetSize(width + pW, height + pH)
+		width = math.max(width, 36 * 6)
+		height = math.max(height, 36)
+
+		self:SetSize(width + pW, height + pH)
+	end
 end
 
 -- grab a reference to the bar
 -- and hook the scripts we need to hook
 function EncounterBar:InitPlayerPowerBarAlt()
 	if not self.__PlayerPowerBarAlt then
-		local bar = _G['PlayerPowerBarAlt']
-		
+		local bar = PlayerPowerBarAlt
+
 		if bar:GetScript('OnSizeChanged') then
 			bar:HookScript('OnSizeChanged', function() self:Layout() end)
 		else

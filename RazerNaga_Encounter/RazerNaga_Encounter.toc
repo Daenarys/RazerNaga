@@ -1,4 +1,5 @@
 ## Interface: 100100
+## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Encounter
 ## Notes: Makes the PlayerPowerBarAlt movable
 ## Author: Tuller

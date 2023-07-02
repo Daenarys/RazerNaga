@@ -29,7 +29,7 @@ function CastBar:New()
 		f.cast = CastingBar:New(f)
 		f.header:SetParent(nil)
 		f.header:ClearAllPoints()
-		f:SetWidth(240)
+		f:SetWidth(240) 
 		f:SetHeight(24)
 	end
 
@@ -97,35 +97,47 @@ function CastingBar:New(parent)
 	f:SetPoint('CENTER')
 
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnUpdate', f.OnUpdate)
-	f:SetScript('OnEvent', f.OnEvent)
+	f:SetScript('OnUpdate', self.OnUpdate)
+	f:SetScript('OnEvent', self.OnEvent)
 
 	return f
 end
 
 function CastingBar:OnEvent(event, ...)
-	CastingBarFrame_OnEvent(self, event, ...)
-
-	local unit, spell = ...
-	if unit == self.unit then
-		if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-			self.failed = true
-		elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-			self.failed = nil
-		end
-		self:UpdateColor(spell)
+	CastingBarMixin.OnEvent(self, event, ...)
+	
+	local unit = self.unit
+	local spell = UnitCastingInfo(unit)
+	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
+		self.failed = true
+	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
+		self.failed = nil
 	end
+	self:UpdateColor(spell)
 end
 
 function CastingBar:OnUpdate(elapsed)
-	CastingBarFrame_OnUpdate(self, elapsed)
+	CastingBarMixin.OnUpdate(self, elapsed)
 
 	if self.casting then
 		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
 		self:AdjustWidth()
+		if self.Spark then
+			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
+			self.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
+		end
 	elseif self.channeling then
 		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
+		self:HideSpark()
+	elseif self.value >= self.maxValue then
+		self:SetValue(self.maxValue)
+		self:SetStatusBarColor(0.0, 1.0, 0.0)
+		self:HideSpark()
+	else
+		self:SetValue(self.maxValue)
+		self:HideSpark()
 	end
 end
 
@@ -137,9 +149,9 @@ function CastingBar:AdjustWidth()
 	if width < self.normalWidth then
 		width = self.normalWidth
 	end
-
+	 	
 	local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
-
+	
 	if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
 		self:SetWidth(width)
 		self.Border:SetWidth(width * BORDER_SCALE)
@@ -162,5 +174,22 @@ function CastingBar:UpdateColor(spell)
 end
 
 --hide the old casting bar
-CastingBarFrame:UnregisterAllEvents()
-CastingBarFrame:Hide()
+PlayerCastingBarFrame:UnregisterAllEvents()
+PlayerCastingBarFrame:Hide()
+
+
+--[[ 10.0 stuff ]]--
+
+RazerNagaCastingBarMixin = {}
+
+-- default bars, will get overwritten from layouts
+local typeInfoTexture = "Interface\\TargetingFrame\\UI-StatusBar";
+RazerNagaCastingBarMixin.typeInfo = {
+    filling = typeInfoTexture,
+    full = typeInfoTexture,
+    glow = typeInfoTexture
+}
+
+function RazerNagaCastingBarMixin:GetTypeInfo(barType)
+    return self.typeInfo
+end

@@ -9,8 +9,6 @@ local RazerNaga = _G[...]
 local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
-local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
-local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 --[[ Action Bar ]]--
 
@@ -28,38 +26,30 @@ ActionBar.defaultOffsets = {
 --metatable magic.  Basically this says, 'create a new table for this index, with these defaults'
 --I do this so that I only create page tables for classes the user is actually playing
 ActionBar.mainbarOffsets = {
-	__index = function(t, i)
-		local pages = {
-			page2 = 1,
-			page3 = 2,
-			page4 = 3,
-			page5 = 4,
-			page6 = 5,
-		}
+    __index = function(t, i)
+        local pages = {
+            page2 = 1,
+            page3 = 2,
+            page4 = 3,
+            page5 = 4,
+            page6 = 5
+        }
 
-		if i == 'DRUID' then
-			pages.cat = 6
-			pages.bear = 8
-			pages.moonkin = 9
-			pages.tree = 7
-		elseif i == 'WARRIOR' then
-			pages.battle = 6
-			pages.defensive = 7
-			-- pages.berserker = 8
-		elseif i == 'PRIEST' then
-			pages.shadow = 6
-		elseif i == 'ROGUE' then
-			pages.stealth = 6
-			pages.shadowdance = 6
-		elseif i == 'MONK' then
-			pages.tiger = 6
-			pages.ox = 7
-			pages.serpent = 8
-		end
+        if i == 'DRUID' then
+            pages.cat = 6
+            pages.bear = 8
+            pages.moonkin = 9
+            pages.tree = 7
+        elseif i == 'EVOKER' then
+            pages.soar = 7
+        elseif i == 'ROGUE' then
+            pages.stealth = 6
+            pages.shadowdance = 6
+        end
 
-		t[i] = pages
-		return pages
-	end
+        t[i] = pages
+        return pages
+    end
 }
 
 ActionBar.class = select(2, UnitClass('player'))
@@ -181,7 +171,7 @@ function ActionBar:UpdateStateDriver()
 			condition = state.value
 		end
 
-		if self:GetOffset(stateId) then
+		if condition and self:GetOffset(stateId) then
 			header = header .. condition .. 'S' .. i .. ';'
 		end
 	end
@@ -270,33 +260,45 @@ end
 
 
 --Empty button display
-function ActionBar:ShowGrid(reason)
-	for _,b in pairs(self.buttons) do
-		b:ShowGrid(reason)
-	end
+function ActionBar:ShowGrid()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() then
+            b:SetAlpha(1)
+        end
+    end
 end
 
-function ActionBar:HideGrid(reason)
-	for _,b in pairs(self.buttons) do
-		b:HideGrid(reason)
-	end
+function ActionBar:HideGrid()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
+            b:SetAlpha(0)
+        end
+    end
 end
 
 function ActionBar:UpdateGrid()
-	if RazerNaga:ShowGrid() then
-		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-	else
-		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-	end
+    if RazerNaga:ShowGrid() then
+        self:ShowGrid()
+    else
+        self:HideGrid()
+    end
+end
+
+function ActionBar:UpdateSlot()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and b:HasAction() then
+            b:SetAlpha(1)
+        end
+    end
 end
 
 ---keybound support
 function ActionBar:KEYBOUND_ENABLED()
-	self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:ShowGrid()
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-	self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:HideGrid()
 end
 
 --right click targeting support
@@ -518,6 +520,11 @@ function ActionBarController:Load()
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
+
+	self:RegisterEvent("ACTIONBAR_SHOWGRID")
+	self:RegisterEvent("ACTIONBAR_HIDEGRID")
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+	self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarController:Unload()
@@ -536,6 +543,22 @@ function ActionBarController:UpdateOverrideBar()
 	local overrideBar = RazerNaga:GetOverrideBar()
 
 	for _, button in pairs(overrideBar.buttons) do
-		ActionButton_Update(button)
+		button:Update()
 	end
+end
+
+function ActionBarController:ACTIONBAR_SHOWGRID()
+    ActionBar:ForAll('ShowGrid')
+end
+
+function ActionBarController:ACTIONBAR_HIDEGRID()
+    ActionBar:ForAll('HideGrid')
+end
+
+function ActionBarController:ACTIONBAR_SLOT_CHANGED()
+    ActionBar:ForAll('UpdateSlot')
+end
+
+function ActionBarController:SPELLS_CHANGED()
+    ActionBar:ForAll('UpdateGrid')
 end
