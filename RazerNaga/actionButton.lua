@@ -45,7 +45,7 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttribute('showgrid', 1)
+		b:SetAttribute('showgrid', 0)
 		b:SetAttribute('action--base', id)
 		b:SetAttribute('_childupdate-action', [[
 			local state = message

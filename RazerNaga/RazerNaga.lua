@@ -371,7 +371,6 @@ function RazerNaga:HideBlizzard()
 	    end
 
 	    for _, button in pairs(buttons) do
-	        button:UnregisterAllEvents()
 	        button:SetAttribute('statehidden', true)
 	        button:Hide()
 	    end
@@ -400,10 +399,6 @@ function RazerNaga:HideBlizzard()
 	apply(unregisterEvents,
 		"BagsBar",
 		"MicroMenu",
-		"MultiBarBottomLeft",
-		"MultiBarBottomRight",
-		"MultiBarLeft",
-		"MultiBarRight",
 		"MultiBar5",
 		"MultiBar6",
 		"MultiBar7",
