@@ -21,21 +21,13 @@ local function GetOrCreateActionButton(id)
 	elseif id <= 24 then
 		return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-12), nil, 'ActionBarButtonTemplate')
 	elseif id <= 36 then
-		local b = _G['MultiBarRightButton' .. (id-24)]
-		b.noGrid = 1
-		return b
+		return _G['MultiBarRightButton' .. (id-24)]
 	elseif id <= 48 then
-		local b = _G['MultiBarLeftButton' .. (id-36)]
-		b.noGrid = 1
-		return b
+		return _G['MultiBarLeftButton' .. (id-36)]
 	elseif id <= 60 then
-		local b = _G['MultiBarBottomRightButton' .. (id-48)]
-		b.noGrid = 1
-		return b
+		return _G['MultiBarBottomRightButton' .. (id-48)]
 	elseif id <= 72 then
-		local b = _G['MultiBarBottomLeftButton' .. (id-60)]
-		b.noGrid = 1
-		return b
+		return _G['MultiBarBottomLeftButton' .. (id-60)]
 	end
 	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-60), nil, 'ActionBarButtonTemplate')
 end
@@ -261,18 +253,16 @@ function ActionButton:Skin()
 		end
 
         hooksecurefunc(self, "UpdateFlyout", function()
-        	if not self.FlyoutBorderShadow then
-				return;
+			if not self.FlyoutBorderShadow then
+				return
 			end
 
         	local actionType = GetActionInfo(self.action);
 			if (actionType == "flyout") then
 				local arrowDistance;
 				if ((RazerNaga.SpellFlyout and RazerNaga.SpellFlyout:IsShown() and RazerNaga.SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
-					self.FlyoutArrow:Show()
 					self.FlyoutBorderShadow:Show()
 				else
-					self.FlyoutArrow:Hide()
 					self.FlyoutBorderShadow:Hide()
 				end
 				self.FlyoutArrow:Show()
