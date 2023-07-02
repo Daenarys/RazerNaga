@@ -62,9 +62,10 @@ function MenuBar:SkinButton()
 
         self:HookScript("OnUpdate", function(self)
             if self.FlashBorder then
-                self.FlashBorder:SetAtlas("hud-microbutton-highlightalert", true)
-                self.FlashBorder:ClearAllPoints()
-                self.FlashBorder:SetPoint("TOPLEFT")
+				self.FlashBorder:SetSize(64, 64)
+				self.FlashBorder:SetTexture("Interface\\Buttons\\Micro-Highlight")
+				self.FlashBorder:ClearAllPoints()
+				self.FlashBorder:SetPoint("TOPLEFT", -2, -18)
             end
             if self.FlashContent then
                 UIFrameFlashStop(self.FlashContent);
