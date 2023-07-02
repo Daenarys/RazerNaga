@@ -237,7 +237,7 @@ function ActionButton:Skin()
         self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
         self.FlyoutBorderShadow:ClearAllPoints()
         self.FlyoutBorderShadow:SetPoint("CENTER")
-        self.FlyoutBorderShadow:SetDrawLayer("BACKGROUND")
+        self.FlyoutBorderShadow:SetDrawLayer("ARTWORK", 1)
 
 		if (self.FlyoutArrow == nil) then
 			self.FlyoutArrow = self:CreateTexture(nil, "OVERLAY")
@@ -261,38 +261,41 @@ function ActionButton:Skin()
 		end
 
         hooksecurefunc(self, "UpdateFlyout", function()
-        	self.FlyoutArrowContainer:Hide()
+        	if not self.FlyoutBorderShadow then
+				return;
+			end
 
         	local actionType = GetActionInfo(self.action);
 			if (actionType == "flyout") then
 				local arrowDistance;
 				if ((RazerNaga.SpellFlyout and RazerNaga.SpellFlyout:IsShown() and RazerNaga.SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
-					self.FlyoutBorderShadow:Show();
-					arrowDistance = 5;
+					self.FlyoutArrow:Show()
+					self.FlyoutBorderShadow:Show()
 				else
-					self.FlyoutBorderShadow:Hide();
-					arrowDistance = 2;
+					self.FlyoutArrow:Hide()
+					self.FlyoutBorderShadow:Hide()
 				end
-				self.FlyoutArrow:Show();
-				self.FlyoutArrow:ClearAllPoints();
+				self.FlyoutArrow:Show()
+				self.FlyoutArrow:ClearAllPoints()
 				local direction = self:GetAttribute("flyoutDirection");
 				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
+					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -2, 0);
 					SetClampedTextureRotation(self.FlyoutArrow, 270);
 				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
+					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", 2, 0);
 					SetClampedTextureRotation(self.FlyoutArrow, 90);
 				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
+					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -2);
 					SetClampedTextureRotation(self.FlyoutArrow, 180);
 				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
+					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 2);
 					SetClampedTextureRotation(self.FlyoutArrow, 0);
 				end
 			else
 				self.FlyoutArrow:Hide();
-				self.FlyoutBorderShadow:Hide();
+				self.FlyoutBorderShadow:Hide()
 			end
+			self.FlyoutArrowContainer:Hide()
 		end)
 
 		hooksecurefunc(self, "UpdateButtonArt", function()
