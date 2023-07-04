@@ -227,7 +227,7 @@ end
 
 function BindingsController:ACTIONBAR_UPDATE_STATE()
 	for button in pairs(self.surrogates) do
-		if not button:GetChecked() then
+		if button:GetChecked() then
 			button:SetButtonState('NORMAL')
 		end
 	end
