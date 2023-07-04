@@ -116,7 +116,9 @@ function ActionButton:Create(id)
         ]])
 
 		b:HookScript('OnDragStart', function()
-			RazerNaga.SpellFlyout:Hide();
+			if not InCombatLockdown() then
+				RazerNaga.SpellFlyout:Hide();
+			end
 		end)
 
 		if b.UpdateHotKeys then
