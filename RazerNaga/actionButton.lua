@@ -104,7 +104,6 @@ function ActionButton:Create(id)
 		b:SetSize(36, 36)
 		b:Skin()
 
-		-- inject custom flyout handling
         RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
             if not down then
                 local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
@@ -115,6 +114,10 @@ function ActionButton:Create(id)
                 end
             end
         ]])
+
+		b:HookScript('OnDragStart', function()
+			RazerNaga.SpellFlyout:Hide();
+		end)
 
 		if b.UpdateHotKeys then
 			hooksecurefunc(b, 'UpdateHotkeys', self.UpdateHotkey)
