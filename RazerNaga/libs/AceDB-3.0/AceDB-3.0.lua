@@ -261,7 +261,7 @@ local localeKey = GetLocale():lower()
 
 local regionTable = { "US", "KR", "EU", "TW", "CN" }
 local regionKey = regionTable[GetCurrentRegion()]
-local factionrealmregionKey = factionrealmKey .. " - " .. regionKey
+local factionrealmregionKey = factionrealmKey .. " - "
 
 -- Actual database initialization function
 local function initdb(sv, defaults, defaultProfile, olddb, parent)
