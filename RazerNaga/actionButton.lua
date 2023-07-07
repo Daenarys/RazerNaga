@@ -257,6 +257,17 @@ function ActionButton:Skin()
 			self.SlotBackground:Hide()
 		end
 
+		self:HookScript("OnUpdate", function(self)
+			self.CooldownFlash:Hide()
+			self.InterruptDisplay:Hide()
+			self.SpellCastAnimFrame:Hide()
+			self.TargetReticleAnimFrame:Hide()
+		end)
+
+		hooksecurefunc("StartChargeCooldown", function(self)
+			self.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
+		end)
+
 		hooksecurefunc(self, "UpdateFlyout", function()
 			if not self.FlyoutBorderShadow then
 				return
