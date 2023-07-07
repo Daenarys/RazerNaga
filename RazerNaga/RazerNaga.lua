@@ -399,9 +399,6 @@ function RazerNaga:HideBlizzard()
 	apply(unregisterEvents,
 		"BagsBar",
 		"MicroMenu",
-		"MultiBar5",
-		"MultiBar6",
-		"MultiBar7",
 		"PossessActionBar",
 		"MainMenuBarVehicleLeaveButton"
 	)

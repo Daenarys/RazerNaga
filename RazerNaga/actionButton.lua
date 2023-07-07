@@ -1,9 +1,8 @@
---[[
+--[[ 
 	Action Button.lua
 		A RazerNaga action button
 --]]
 
-local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 local Bindings = RazerNaga.BindingsController
 local Tooltips = RazerNaga:GetModule('Tooltips')
@@ -19,7 +18,7 @@ local function GetOrCreateActionButton(id)
 		b.buttonType = 'ACTIONBUTTON'
 		return b
 	elseif id <= 24 then
-		return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-12), nil, 'ActionBarButtonTemplate')
+		return _G['MultiBar5Button' .. (id-12)]
 	elseif id <= 36 then
 		return _G['MultiBarRightButton' .. (id-24)]
 	elseif id <= 48 then
@@ -28,8 +27,12 @@ local function GetOrCreateActionButton(id)
 		return _G['MultiBarBottomRightButton' .. (id-48)]
 	elseif id <= 72 then
 		return _G['MultiBarBottomLeftButton' .. (id-60)]
+	elseif id <= 84 then
+		return _G['MultiBar6Button' .. (id-72)]
+	elseif id <= 96 then
+		return _G['MultiBar7Button' .. (id-84)]
 	end
-	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-60), nil, 'ActionBarButtonTemplate')
+	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-96), nil, 'ActionBarButtonTemplate')
 end
 
 --constructor
@@ -43,13 +46,13 @@ function ActionButton:New(id)
 			local state = message
 			local overridePage = self:GetParent():GetAttribute('state-overridepage')
 			local newActionID
-
+			
 			if state == 'override' then
 				newActionID = (self:GetAttribute('button--index') or 1) + (overridePage - 1) * 12
 			else
 				newActionID = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
 			end
-
+			
 			if newActionID ~= self:GetAttribute('action') then
 				self:SetAttribute('action', newActionID)
 				self:RunAttribute("UpdateShown")
@@ -73,14 +76,14 @@ function ActionButton:New(id)
 		local hotkey = b.HotKey
 		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
 			hotkey:SetText('')
-		end
+		end		
 
 		b:UpdateMacro()
 
 		self.active[id] = b
 	end
 
-	return b
+	return b	
 end
 
 function ActionButton:Create(id)
@@ -104,7 +107,11 @@ function ActionButton:Create(id)
 		b:SetSize(36, 36)
 		b:Skin()
 
-        RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
+		if b.UpdateHotKeys then
+			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
+		end
+
+		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
             if not down then
                 local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
                 if actionType == "flyout" then
@@ -114,10 +121,6 @@ function ActionButton:Create(id)
                 end
             end
         ]])
-
-		if b.UpdateHotKeys then
-			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
-		end
 	end
 	return b
 end
@@ -173,18 +176,21 @@ end
 
 function ActionButton:SetFlyoutDirection(direction)
 	if InCombatLockdown() then return end
-
+	
 	self:SetAttribute('flyoutDirection', direction)
 	self:UpdateFlyout()
+end
+
+function ActionButton:UpdateState()
+	self:UpdateState()
 end
 
 --utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
 	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
-
+	
 	self:SetAttribute('action', id)
-	self:UpdateState()
 end
 
 function ActionButton:Skin()
@@ -251,7 +257,7 @@ function ActionButton:Skin()
 			self.SlotBackground:Hide()
 		end
 
-        hooksecurefunc(self, "UpdateFlyout", function()
+		hooksecurefunc(self, "UpdateFlyout", function()
 			if not self.FlyoutBorderShadow then
 				return
 			end
@@ -296,7 +302,7 @@ function ActionButton:Skin()
 	        self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
 	        self.PushedTexture:SetSize(36, 36)
 
-        	if (self.RightDivider:IsShown()) then
+			if (self.RightDivider:IsShown()) then
 				self.RightDivider:Hide()
 			end
 			if (self.BottomDivider:IsShown()) then
@@ -308,7 +314,7 @@ function ActionButton:Skin()
 			if (self.SlotBackground:IsShown()) then
 				self.SlotBackground:Hide()
 			end
-        end)
+		end)
 
 		hooksecurefunc(self, "Update", function(self)
 			if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
