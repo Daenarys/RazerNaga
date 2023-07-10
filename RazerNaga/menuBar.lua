@@ -61,6 +61,23 @@ function MenuBar:SkinButton()
         self:SetDisabledTexture(prefix..name.."-Disabled");
 
         self:HookScript("OnUpdate", function(self)
+			local normalTexture = self:GetNormalTexture();
+			if(normalTexture) then 
+				normalTexture:SetAlpha(1); 
+			end 
+
+			if self.Background then
+				self.Background:Hide()
+			end
+			if self.PushedBackground then
+				self.PushedBackground:Hide()
+			end
+			if self.Shadow then
+				self.Shadow:Hide()
+			end
+			if self.PushedShadow then
+				self.PushedShadow:Hide()
+			end
             if self.FlashBorder then
 				self.FlashBorder:SetSize(64, 64)
 				self.FlashBorder:SetTexture("Interface\\Buttons\\Micro-Highlight")
@@ -70,8 +87,17 @@ function MenuBar:SkinButton()
             if self.FlashContent then
                 UIFrameFlashStop(self.FlashContent);
             end
+
             self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
         end)
+
+        self:HookScript("OnMouseDown", function()
+        	if ( self.down ) then
+        		self:SetButtonState("PUSHED", true);
+        	else
+        		self:SetButtonState("NORMAL");
+        	end
+    	end)
     end
 
     local function replaceAllAtlases()
@@ -80,6 +106,8 @@ function MenuBar:SkinButton()
         end
     end
     replaceAllAtlases()
+
+    CharacterMicroButton.Portrait:Hide()
 
     CharacterMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
     CharacterMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
@@ -125,18 +153,15 @@ function MenuBar:SkinButton()
             if ( self.down ) then
                 CharacterMicroButton_SetPushed();
             end
+	        MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
+	        MicroButtonPortrait:SetAlpha(0.5);
         end
     end)
 
     CharacterMicroButton:HookScript("OnMouseUp", function(self, button)
-        if ( KeybindFrames_InQuickKeybindMode() ) then
-        else
-            if ( self.down ) then
-            elseif ( self:GetButtonState() == "NORMAL" ) then
-                CharacterMicroButton_SetNormal();
-            else
-                CharacterMicroButton_SetPushed();
-            end
+        if ( not KeybindFrames_InQuickKeybindMode() ) then
+	        MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
+	        MicroButtonPortrait:SetAlpha(1.0);
         end
     end)
 
