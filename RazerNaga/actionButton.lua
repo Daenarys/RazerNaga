@@ -60,7 +60,7 @@ function ActionButton:New(id)
 			end
 		]])
 		b:SetAttribute("UpdateShown", [[
-		    local show = (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
+		    local show = (HasAction(self:GetAttribute("action")))
 		                 and not self:GetAttribute("statehidden")
 		    if show then
 		        self:SetAlpha(1.0)
