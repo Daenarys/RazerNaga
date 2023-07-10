@@ -367,5 +367,15 @@ function ActionButton:Skin()
                 end
             end
         end)
+
+        hooksecurefunc("ActionButton_SetupOverlayGlow", function(self)
+        	self.SpellActivationAlert:ClearAllPoints()
+			self.SpellActivationAlert:SetPoint("TOPLEFT", -7.20, 7.20)
+			self.SpellActivationAlert:SetPoint("BOTTOMRIGHT", 7.20, -7.20)
+
+			self.SpellActivationAlert.ProcStartFlipbook:ClearAllPoints()
+			self.SpellActivationAlert.ProcStartFlipbook:SetPoint("TOPLEFT", -37, 37)
+			self.SpellActivationAlert.ProcStartFlipbook:SetPoint("BOTTOMRIGHT", 37, -37)
+        end)
     end
 end
