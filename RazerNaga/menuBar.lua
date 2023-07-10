@@ -60,6 +60,8 @@ function MenuBar:SkinButton()
         self:SetPushedTexture(prefix..name.."-Down");
         self:SetDisabledTexture(prefix..name.."-Disabled");
 
+        self:SetHitRectInsets(0,0,18,0);
+
         self:HookScript("OnUpdate", function(self)
 			local normalTexture = self:GetNormalTexture();
 			if(normalTexture) then 
