@@ -59,11 +59,7 @@ function PetButton:Skin()
 	if not RazerNaga:Masque('Pet Bar', self) then
 		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 		self.IconMask:SetSize(64, 64)
-		self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-		self.NormalTexture:SetSize(54, 54)
-		self.NormalTexture:ClearAllPoints()
-		self.NormalTexture:SetPoint("CENTER", 0, -1)
-		self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+		self.SlotBackground:Hide()
 		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
 		self.PushedTexture:SetSize(30, 30)
 		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
@@ -75,6 +71,24 @@ function PetButton:Skin()
 		self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
 		self.CheckedTexture:SetBlendMode("ADD")
 		self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
+
+		--simulate old floatingbg
+		hooksecurefunc(PetActionBar, 'Update', function()
+			local petActionID = self:GetID()
+			local texture = GetPetActionInfo(petActionID);
+			if ( texture ) then
+				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+				self.NormalTexture:SetSize(54, 54)
+				self.NormalTexture:ClearAllPoints()
+				self.NormalTexture:SetPoint("CENTER", 0, -1)
+				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+			else
+				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
+				self.NormalTexture:SetSize(54, 54)
+				self.NormalTexture:ClearAllPoints()
+				self.NormalTexture:SetPoint("CENTER", 0, -1)
+			end
+		end)
 	end
 end
 
