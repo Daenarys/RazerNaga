@@ -243,15 +243,15 @@ function MenuBar:SkinButton()
         else
             CharacterMicroButton_SetNormal();
         end
-        GuildMicroButton_UpdateTabard(true)
         if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -2);
+            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
             GuildMicroButtonTabard:SetAlpha(0.70);
         else
             GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
             GuildMicroButtonTabard:SetAlpha(1);
         end
     end
+    hooksecurefunc(GuildMicroButton, "UpdateTabard", GuildMicroButton_UpdateTabard)
     hooksecurefunc("UpdateMicroButtons", updateButtons)
 end
 
