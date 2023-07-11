@@ -229,11 +229,6 @@ function ActionButton:Skin()
         self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
         self.Count:ClearAllPoints()
         self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-        self.FlyoutBorderShadow:SetSize(48, 48)
-        self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-        self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
-        self.FlyoutBorderShadow:ClearAllPoints()
-        self.FlyoutBorderShadow:SetPoint("CENTER")
 
 		if (self.FlyoutArrow == nil) then
 			self.FlyoutArrow = self:CreateTexture(nil, "OVERLAY")
@@ -242,16 +237,6 @@ function ActionButton:Skin()
 		self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
 		self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
 		self.FlyoutArrow:Hide()
-
-		if (self.FlyoutBorder == nil) then
-			self.FlyoutBorder = self:CreateTexture(nil, "OVERLAY")
-		end
-		self.FlyoutBorder:SetSize(42, 42)
-		self.FlyoutBorder:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-		self.FlyoutBorder:SetTexCoord(0.01562500, 0.67187500, 0.39843750, 0.72656250)
-		self.FlyoutBorder:ClearAllPoints()
-		self.FlyoutBorder:SetPoint("CENTER")
-		self.FlyoutBorder:Hide()
 
 		if (self.RightDivider:IsShown()) then
 			self.RightDivider:Hide()
@@ -278,20 +263,11 @@ function ActionButton:Skin()
 		end)
 
 		hooksecurefunc(self, "UpdateFlyout", function()
-			if not self.FlyoutBorderShadow then
-				return
-			end
+			if not self.FlyoutArrow then return end
 
         	local actionType = GetActionInfo(self.action);
 			if (actionType == "flyout") then
 				local arrowDistance;
-				if ((RazerNaga.SpellFlyout and RazerNaga.SpellFlyout:IsShown() and RazerNaga.SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
-					self.FlyoutBorder:Show()
-					self.FlyoutBorderShadow:Show()
-				else
-					self.FlyoutBorder:Hide()
-					self.FlyoutBorderShadow:Hide()
-				end
 				self.FlyoutArrow:Show()
 				self.FlyoutArrow:ClearAllPoints()
 				local direction = self:GetAttribute("flyoutDirection");
@@ -310,10 +286,10 @@ function ActionButton:Skin()
 				end
 			else
 				self.FlyoutArrow:Hide()
-				self.FlyoutBorder:Hide()
-				self.FlyoutBorderShadow:Hide()
+
 			end
 			self.FlyoutArrowContainer:Hide()
+			self.FlyoutBorderShadow:Hide()
 		end)
 
 		hooksecurefunc(self, "UpdateButtonArt", function()
