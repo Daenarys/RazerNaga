@@ -56,10 +56,6 @@ function MenuBar:SkinButton()
 
     local function replaceAtlases(self, name)
         local prefix = "Interface\\Buttons\\UI-MicroButton-";
-        self:SetNormalTexture(prefix..name.."-Up");
-        self:SetPushedTexture(prefix..name.."-Down");
-        self:SetDisabledTexture(prefix..name.."-Disabled");
-
         self:SetHitRectInsets(0,0,18,0);
 
         self:HookScript("OnUpdate", function(self)
@@ -90,7 +86,10 @@ function MenuBar:SkinButton()
                 UIFrameFlashStop(self.FlashContent);
             end
 
-            self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
+			self:SetNormalTexture(prefix..name.."-Up");
+			self:SetPushedTexture(prefix..name.."-Down");
+			self:SetDisabledTexture(prefix..name.."-Disabled");
+			self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight");
         end)
 
         self:HookScript("OnMouseDown", function()
