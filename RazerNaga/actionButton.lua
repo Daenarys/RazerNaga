@@ -286,7 +286,6 @@ function ActionButton:Skin()
 				end
 			else
 				self.FlyoutArrow:Hide()
-
 			end
 			self.FlyoutArrowContainer:Hide()
 			self.FlyoutBorderShadow:Hide()
