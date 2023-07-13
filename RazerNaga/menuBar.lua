@@ -162,7 +162,7 @@ function MenuBar:SkinButton()
 		end
 	end)
 
-	CharacterMicroButton:HookScript("OnMouseUp", function(self, button)
+	CharacterMicroButton:HookScript("OnMouseUp", function(self)
 		if ( not KeybindFrames_InQuickKeybindMode() ) then
 			MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
 			MicroButtonPortrait:SetAlpha(1.0);
@@ -216,7 +216,7 @@ function MenuBar:SkinButton()
 			GuildMicroButtonTabard:SetAlpha(0.5);
 	end)
 
-	GuildMicroButton:HookScript("OnMouseUp", function(self, button)
+	GuildMicroButton:HookScript("OnMouseUp", function(self)
 			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
 			GuildMicroButtonTabard:SetAlpha(1.0);
 	end)
