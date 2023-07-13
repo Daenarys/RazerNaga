@@ -96,6 +96,7 @@ function PetButton:Skin()
 				self.NormalTexture:SetSize(54, 54)
 				self.NormalTexture:ClearAllPoints()
 				self.NormalTexture:SetPoint("CENTER", 0, -1)
+				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
 			end
 		end)
 	end
