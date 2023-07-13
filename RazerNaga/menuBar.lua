@@ -211,6 +211,16 @@ function MenuBar:SkinButton()
 	GuildMicroButtonTabardEmblem:SetTexture("Interface\\GuildFrame\\GuildEmblems_01")
 	GuildMicroButtonTabardEmblem:SetPoint("CENTER", 0, -9)
 
+	GuildMicroButton:HookScript("OnMouseDown", function(self)
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
+			GuildMicroButtonTabard:SetAlpha(0.5);
+	end)
+
+	GuildMicroButton:HookScript("OnMouseUp", function(self, button)
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
+			GuildMicroButtonTabard:SetAlpha(1.0);
+	end)
+
     local function GuildMicroButton_UpdateTabard(forceUpdate)
         local tabard = GuildMicroButtonTabard;
         if ( not tabard.needsUpdate and not forceUpdate ) then
@@ -248,6 +258,7 @@ function MenuBar:SkinButton()
 		end
 		GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
+		GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
 		if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
 			GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
 			GuildMicroButtonTabard:SetAlpha(0.70);
@@ -256,13 +267,13 @@ function MenuBar:SkinButton()
 			GuildMicroButtonTabard:SetAlpha(1);
 		end
 	end
-	hooksecurefunc("UpdateMicroButtons", updateButtons)
+	
 	hooksecurefunc(GuildMicroButton, "UpdateTabard", GuildMicroButton_UpdateTabard)
+	hooksecurefunc("UpdateMicroButtons", updateButtons)
 	hooksecurefunc("LoadMicroButtonTextures", function(self)
 		if not self == _G.GuildMicroButton then return end
 
-		local emblemFilename = select(10, GetGuildLogoInfo());
-		if ( emblemFilename ) then
+		if _G.IsInGuild() then
 			self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up");
 			self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down");
 		else
