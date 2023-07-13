@@ -1060,7 +1060,7 @@ function RazerNaga:IsLinkedOpacityEnabled()
 end
 
 --load and position the lfg eye
-if not (IsAddOnLoaded("ClassicMinimap")) then
+if not (IsAddOnLoaded("ClassicFrames")) then
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
