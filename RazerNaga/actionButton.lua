@@ -339,8 +339,6 @@ function ActionButton:Skin()
                 end
             end
         end)
-
-
     end
 end
 
@@ -375,13 +373,260 @@ hooksecurefunc("StartChargeCooldown", function(parent)
 end)
 
 hooksecurefunc("ActionButton_SetupOverlayGlow", function(parent)
-	if parent.SpellActivationAlert then
-		parent.SpellActivationAlert:ClearAllPoints()
-		parent.SpellActivationAlert:SetPoint("TOPLEFT", -7.20, 7.20)
-		parent.SpellActivationAlert:SetPoint("BOTTOMRIGHT", 7.20, -7.20)
+	if (parent.SpellActivationAlert) then
+		parent.SpellActivationAlert:SetAlpha(0)
+	end
 
-		parent.SpellActivationAlert.ProcStartFlipbook:ClearAllPoints()
-		parent.SpellActivationAlert.ProcStartFlipbook:SetPoint("TOPLEFT", -37, 37)
-		parent.SpellActivationAlert.ProcStartFlipbook:SetPoint("BOTTOMRIGHT", 37, -37)
+	if (not parent.ActionButtonOverlay) then
+		local name = parent:GetName()
+		local overlay = CreateFrame("Frame", nil, parent)
+		
+		-- spark
+		overlay.spark = overlay:CreateTexture(name .. "Spark", "BACKGROUND")
+		overlay.spark:SetPoint("CENTER")
+		overlay.spark:SetAlpha(0)
+		overlay.spark:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+		overlay.spark:SetTexCoord(0.00781250, 0.61718750, 0.00390625, 0.26953125)
+		
+		-- inner glow
+		overlay.innerGlow = overlay:CreateTexture(name .. "InnerGlow", "ARTWORK")
+		overlay.innerGlow:SetPoint("CENTER")
+		overlay.innerGlow:SetAlpha(0)
+		overlay.innerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+		overlay.innerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
+		
+		-- inner glow over
+		overlay.innerGlowOver = overlay:CreateTexture(name .. "InnerGlowOver", "ARTWORK")
+		overlay.innerGlowOver:SetPoint("TOPLEFT", overlay.innerGlow, "TOPLEFT")
+		overlay.innerGlowOver:SetPoint("BOTTOMRIGHT", overlay.innerGlow, "BOTTOMRIGHT")
+		overlay.innerGlowOver:SetAlpha(0)
+		overlay.innerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+		overlay.innerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
+		
+		-- outer glow
+		overlay.outerGlow = overlay:CreateTexture(name .. "OuterGlow", "ARTWORK")
+		overlay.outerGlow:SetPoint("CENTER")
+		overlay.outerGlow:SetAlpha(0)
+		overlay.outerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+		overlay.outerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
+		
+		-- outer glow over
+		overlay.outerGlowOver = overlay:CreateTexture(name .. "OuterGlowOver", "ARTWORK")
+		overlay.outerGlowOver:SetPoint("TOPLEFT", overlay.outerGlow, "TOPLEFT")
+		overlay.outerGlowOver:SetPoint("BOTTOMRIGHT", overlay.outerGlow, "BOTTOMRIGHT")
+		overlay.outerGlowOver:SetAlpha(0)
+		overlay.outerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+		overlay.outerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
+		
+		-- ants
+		overlay.ants = overlay:CreateTexture(name .. "Ants", "OVERLAY")
+		overlay.ants:SetPoint("CENTER")
+		overlay.ants:SetAlpha(0)
+		overlay.ants:SetTexture([[Interface\SpellActivationOverlay\IconAlertAnts]])
+		
+		overlay.OnUpdate = function(parent, elapsed)
+			AnimateTexCoords(parent.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
+			local cooldown = parent:GetParent().cooldown
+			-- we need some threshold to avoid dimming the glow during the gdc
+			-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
+			if(cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000) then
+				parent:SetAlpha(0.5)
+			else
+				parent:SetAlpha(1.0)
+			end
+		end
+		overlay:SetScript("OnUpdate", overlay.OnUpdate)
+		
+		overlay.OnHide = function(parent)
+			if ( parent.animOut:IsPlaying() ) then
+				parent.animOut:Stop()
+				parent.animOut:OnFinished()
+			end
+		end
+		overlay:SetScript("OnHide", overlay.OnHide)
+		
+		local tmpanim
+		overlay.animIn = overlay:CreateAnimationGroup()
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.spark)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetScale(1.5, 1.5)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.spark)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(0)
+		tmpanim:SetToAlpha(1)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.innerGlow)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetScale(2, 2)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.innerGlowOver)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetScale(2, 2)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.innerGlowOver)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.outerGlow)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetScale(0.5, 0.5)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.outerGlowOver)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetScale(0.5, 0.5)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.outerGlowOver)
+		tmpanim:SetDuration(0.3)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Scale")
+		tmpanim:SetTarget(overlay.spark)
+		tmpanim:SetStartDelay(0.2)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetScale(0.666666, 0.666666)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.spark)
+		tmpanim:SetStartDelay(0.2)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.innerGlow)
+		tmpanim:SetStartDelay(0.3)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animIn:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.ants)
+		tmpanim:SetStartDelay(0.3)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(0)
+		tmpanim:SetToAlpha(1)
+		tmpanim:SetOrder(1)
+		
+		overlay.animIn.OnPlay = function(parent)
+			local frame = parent:GetParent()
+			local frameWidth, frameHeight = frame:GetSize()
+			frame.spark:SetSize(frameWidth, frameHeight)
+			frame.spark:SetAlpha(0.3)
+			frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2)
+			frame.innerGlow:SetAlpha(1.0)
+			frame.innerGlowOver:SetAlpha(1.0)
+			frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2)
+			frame.outerGlow:SetAlpha(1.0)
+			frame.outerGlowOver:SetAlpha(1.0)
+			frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
+			frame.ants:SetAlpha(0)
+			frame:Show()
+		end
+		overlay.animIn:SetScript("OnPlay", overlay.animIn.OnPlay)
+		
+		overlay.animIn.OnFinished = function(parent)
+			local frame = parent:GetParent()
+			local frameWidth, frameHeight = frame:GetSize()
+			frame.spark:SetAlpha(0)
+			frame.innerGlow:SetAlpha(0)
+			frame.innerGlow:SetSize(frameWidth, frameHeight)
+			frame.innerGlowOver:SetAlpha(0.0)
+			frame.outerGlow:SetSize(frameWidth, frameHeight)
+			frame.outerGlowOver:SetAlpha(0.0)
+			frame.outerGlowOver:SetSize(frameWidth, frameHeight)
+			frame.ants:SetAlpha(1.0)
+		end
+		overlay.animIn:SetScript("OnFinished", overlay.animIn.OnFinished)
+		
+		overlay.animOut = overlay:CreateAnimationGroup()
+		
+		tmpanim = overlay.animOut:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.outerGlowOver)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(0)
+		tmpanim:SetToAlpha(1)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animOut:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.ants)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(1)
+		
+		tmpanim = overlay.animOut:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.outerGlowOver)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(2)
+		
+		tmpanim = overlay.animOut:CreateAnimation("Alpha")
+		tmpanim:SetTarget(overlay.outerGlow)
+		tmpanim:SetDuration(0.2)
+		tmpanim:SetFromAlpha(1)
+		tmpanim:SetToAlpha(0)
+		tmpanim:SetOrder(2)
+		
+		overlay.animOut.OnFinished = function(parent)
+			local frame = parent:GetParent()
+			frame:Hide()
+		end
+		overlay.animOut:SetScript("OnFinished", overlay.animOut.OnFinished)
+		
+		parent.ActionButtonOverlay = overlay
+		local frameWidth, frameHeight = parent:GetSize()
+		overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
+		overlay:SetPoint("CENTER", parent, "CENTER", 0, 0)
+		overlay:Hide()
+		
+		hooksecurefunc("ActionButton_ShowOverlayGlow", function(parent)
+			if not(parent.ActionButtonOverlay) then
+				return
+			end
+			if parent.ActionButtonOverlay.animOut:IsPlaying() then
+				parent.ActionButtonOverlay.animOut:Stop()
+			end
+			if not parent.ActionButtonOverlay:IsShown() then
+				parent.ActionButtonOverlay.animIn:Play()
+			end
+		end)
+
+		hooksecurefunc("ActionButton_HideOverlayGlow", function(parent)
+			if not(parent.ActionButtonOverlay) then
+				return
+			end
+			if parent.ActionButtonOverlay.animIn:IsPlaying() then
+				parent.ActionButtonOverlay.animIn:Stop()
+			end
+			if parent:IsVisible() then
+				parent.ActionButtonOverlay.animOut:Play()
+			else
+				parent.ActionButtonOverlay.animOut:OnFinished()
+			end
+		end)
 	end
 end)
