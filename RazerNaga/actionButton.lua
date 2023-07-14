@@ -231,7 +231,6 @@ function ActionButton:Skin()
 		self.Border:SetPoint("BOTTOMRIGHT", 3, -3)
 		self.cooldown:ClearAllPoints()
 		self.cooldown:SetAllPoints()
-		self.cooldown:SetDrawBling(true)
 		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
 		self.Flash:ClearAllPoints()
 		self.Flash:SetAllPoints()
@@ -259,17 +258,6 @@ function ActionButton:Skin()
 		if (self.SlotBackground:IsShown()) then
 			self.SlotBackground:Hide()
 		end
-
-		self:HookScript("OnUpdate", function(self)
-			self.CooldownFlash:Hide()
-			self.InterruptDisplay:Hide()
-			self.SpellCastAnimFrame:Hide()
-			self.TargetReticleAnimFrame:Hide()
-		end)
-
-		hooksecurefunc("StartChargeCooldown", function(self)
-			self.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
-		end)
 
 		hooksecurefunc(self, "UpdateFlyout", function()
 			if not self.FlyoutArrow then return end
@@ -352,14 +340,48 @@ function ActionButton:Skin()
             end
         end)
 
-        hooksecurefunc("ActionButton_SetupOverlayGlow", function(self)
-        	self.SpellActivationAlert:ClearAllPoints()
-			self.SpellActivationAlert:SetPoint("TOPLEFT", -7.20, 7.20)
-			self.SpellActivationAlert:SetPoint("BOTTOMRIGHT", 7.20, -7.20)
 
-			self.SpellActivationAlert.ProcStartFlipbook:ClearAllPoints()
-			self.SpellActivationAlert.ProcStartFlipbook:SetPoint("TOPLEFT", -37, 37)
-			self.SpellActivationAlert.ProcStartFlipbook:SetPoint("BOTTOMRIGHT", 37, -37)
-        end)
     end
 end
+
+if (ActionBarActionEventsFrame) then
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
+end
+
+hooksecurefunc("ActionButton_UpdateCooldown", function(parent)
+    parent.cooldown:SetDrawBling(true)
+end)
+
+hooksecurefunc("ActionButtonCooldown_OnCooldownDone", function(cooldown)
+    local flash = cooldown:GetParent().CooldownFlash
+    if flash then
+        flash:Hide()
+    end
+end)
+
+hooksecurefunc("StartChargeCooldown", function(parent)
+	parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
+end)
+
+hooksecurefunc("ActionButton_SetupOverlayGlow", function(parent)
+	if parent.SpellActivationAlert then
+		parent.SpellActivationAlert:ClearAllPoints()
+		parent.SpellActivationAlert:SetPoint("TOPLEFT", -7.20, 7.20)
+		parent.SpellActivationAlert:SetPoint("BOTTOMRIGHT", 7.20, -7.20)
+
+		parent.SpellActivationAlert.ProcStartFlipbook:ClearAllPoints()
+		parent.SpellActivationAlert.ProcStartFlipbook:SetPoint("TOPLEFT", -37, 37)
+		parent.SpellActivationAlert.ProcStartFlipbook:SetPoint("BOTTOMRIGHT", 37, -37)
+	end
+end)
