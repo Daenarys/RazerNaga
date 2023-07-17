@@ -35,7 +35,7 @@ function RazerNaga:OnInitialize()
 	end
 
 	--slash command support
-	--self:RegisterSlashCommands()
+	self:RegisterSlashCommands()
 
 	--create a loader for the options menu
 	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
