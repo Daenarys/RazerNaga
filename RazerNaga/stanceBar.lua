@@ -4,11 +4,12 @@
 
 -- don't bother loading the module if the player is currently playing something without a stance
 if not ({
-    DRUID = true,
-    PALADIN = true,
-    PRIEST = true,
-    ROGUE = true,
-    WARRIOR = true,
+	DRUID = true,
+	EVOKER = true,
+	PALADIN = true,
+	PRIEST = true,
+	ROGUE = true,
+	WARRIOR = true,
 })[UnitClassBase('player')] then
     return
 end
@@ -80,7 +81,6 @@ do
 			self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
 			self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
 			self.CheckedTexture:SetBlendMode("ADD")
-			self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
 		end
 	end
 

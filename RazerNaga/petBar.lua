@@ -79,7 +79,6 @@ function PetButton:Skin()
 		self.AutoCastable:SetSize(58, 58)
 		self.AutoCastable:ClearAllPoints()
 		self.AutoCastable:SetPoint("CENTER", 0, 0)
-		self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
 
 		--simulate old floatingbg
 		hooksecurefunc(PetActionBar, 'Update', function()

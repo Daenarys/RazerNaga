@@ -72,12 +72,6 @@ function ActionButton:New(id)
 		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
 		Tooltips:Register(b)
 
-		--get rid of range indicator text
-		local hotkey = b.HotKey
-		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
-			hotkey:SetText('')
-		end		
-
 		b:UpdateMacro()
 
 		self.active[id] = b
@@ -108,19 +102,19 @@ function ActionButton:Create(id)
 		b:Skin()
 
 		if b.UpdateHotKeys then
-			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
+			hooksecurefunc(b, 'UpdateHotkeys', self.UpdateHotkey)
 		end
 
 		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
-            if not down then
-                local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
-                if actionType == "flyout" then
-                    control:SetAttribute("caller", self)
-                    control:RunAttribute("Toggle", actionID)
-                    return false
-                end
-            end
-        ]])
+			if not down then
+				local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
+				if actionType == "flyout" then
+					control:SetAttribute("caller", self)
+					control:RunAttribute("Toggle", actionID)
+					return false
+				end
+			end
+		]])
 	end
 	return b
 end
@@ -158,6 +152,11 @@ do
 
 		self.unused[id] = self
 	end
+end
+
+--override the old update hotkeys function
+if ActionButton_UpdateHotkeys then
+	hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
 end
 
 --keybound support
@@ -234,7 +233,6 @@ function ActionButton:Skin()
 		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
 		self.Flash:ClearAllPoints()
 		self.Flash:SetAllPoints()
-		self.HotKey:SetFont('FONTS\\ARIALN.TTF', 12, 'THICKOUTLINE, MONOCHROME')
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
@@ -310,35 +308,6 @@ function ActionButton:Skin()
 				self.SlotBackground:Hide()
 			end
 		end)
-
-		hooksecurefunc(self, "Update", function(self)
-			if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
-				self.HotKey:Hide();
-			else
-				self.HotKey:SetVertexColor(0.6, 0.6, 0.6);
-			end
-		end)
-
-        hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
-            if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
-                if ( checksRange ) then
-                    self.HotKey:Show();
-                    if ( inRange ) then
-                        self.HotKey:SetVertexColor(0.6, 0.6, 0.6)
-                    else
-                        self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
-                    end
-                else
-                    self.HotKey:Hide();
-                end
-            else
-                if ( checksRange and not inRange ) then
-                    self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB());
-                else
-                    self.HotKey:SetVertexColor(0.6, 0.6, 0.6)
-                end
-            end
-        end)
     end
 end
 

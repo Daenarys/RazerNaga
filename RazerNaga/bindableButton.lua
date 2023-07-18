@@ -18,24 +18,35 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 --the call here is wacky because this functionality is actually called for the blizzard buttons _before_ I'm able to bind the action button methods to them
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
-	
-    if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
-        self.HotKey:SetText(key)
-        self.HotKey:SetPoint("TOPRIGHT", 4, -3)
-        self.HotKey:Show()
-    elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
-        self.HotKey:SetText(key)
-        self.HotKey:SetPoint("TOPRIGHT", 3, -3)
-        self.HotKey:Show()
-    elseif key ~= '' and RazerNaga:ShowBindingText() then
-        self.HotKey:SetText(key)
-        self.HotKey:SetPoint("TOPRIGHT", 1, -3)
-        self.HotKey:Show()
-    else
-        --blank out non blank text, such as RANGE_INDICATOR
-        self.HotKey:SetText('')
-        self.HotKey:Hide()
-    end
+
+	local hotkey = self.HotKey;
+	if ( hotkey:GetText() == RANGE_INDICATOR ) then
+		hotkey:Hide();
+	else
+		hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
+	end
+
+	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
+		hotkey:SetText(key)
+		hotkey:ClearAllPoints();
+		hotkey:SetPoint("TOPLEFT", -2, -3)
+		hotkey:Show()
+	elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
+		hotkey:SetText(key)
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPLEFT", -2, -3)
+		hotkey:Show()
+	elseif key ~= '' and RazerNaga:ShowBindingText() then
+		hotkey:SetText(key)
+		hotkey:SetSize(32, 10)
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPLEFT", 3, -3)
+		hotkey:Show()
+	else
+		--blank out non blank text, such as RANGE_INDICATOR
+		hotkey:SetText('')
+		hotkey:Hide()
+	end
 end
 
 --returns what hotkey to display for the button
