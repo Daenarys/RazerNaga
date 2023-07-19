@@ -326,19 +326,8 @@ if (ActionBarActionEventsFrame) then
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 end
 
-hooksecurefunc("ActionButton_UpdateCooldown", function(parent)
-    parent.cooldown:SetDrawBling(true)
-end)
-
 hooksecurefunc("ActionButtonCooldown_OnCooldownDone", function(cooldown)
-    local flash = cooldown:GetParent().CooldownFlash
-    if flash then
-        flash:Hide()
-    end
-end)
-
-hooksecurefunc("StartChargeCooldown", function(parent)
-	parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
+	cooldown:SetDrawBling(true)
 end)
 
 hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
