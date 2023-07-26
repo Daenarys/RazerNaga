@@ -249,8 +249,6 @@ function BagBarController:OnInitialize()
 			self:LayoutBagBar() 
 		end)
 	end
-
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "LayoutBagBar")
 end
 
 function BagBarController:Load()
@@ -265,14 +263,7 @@ function BagBarController:Unload()
 end
 
 function BagBarController:LayoutBagBar()
-    if InCombatLockdown() then
-        self.needsUpdate = true
-        return
-    end
-
     if self.frame then
         self.frame:Layout()
     end
-
-    self.needsUpdate = nil
 end
