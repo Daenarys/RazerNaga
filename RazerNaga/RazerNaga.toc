@@ -3,7 +3,7 @@
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Tuller
-## Version: 3.1.9.2
+## Version: 3.1.9.3
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
 ## OptionalDeps: Ace3, LibKeyBound-1.0, Masque, FlyPaper
 embeds.xml
