@@ -254,13 +254,11 @@ function ActionButton:Skin()
 		self.FlyoutBorder:SetTexCoord(0.01562500, 0.67187500, 0.39843750, 0.72656250)
 		self.FlyoutBorder:Hide()
 
-		self.FlyoutShadow = self:CreateTexture()
-		self.FlyoutShadow:SetSize(48, 48)
-		self.FlyoutShadow:SetPoint("CENTER")
-		self.FlyoutShadow:SetDrawLayer("ARTWORK", 1)
-		self.FlyoutShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-		self.FlyoutShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
-		self.FlyoutShadow:Hide()
+		self.FlyoutBorderShadow:SetSize(48, 48)
+		self.FlyoutBorderShadow:SetPoint("CENTER")
+		self.FlyoutBorderShadow:SetDrawLayer("ARTWORK", 1)
+		self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+		self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
 
 		if (self.RightDivider:IsShown()) then
 			self.RightDivider:Hide()
@@ -284,11 +282,11 @@ function ActionButton:Skin()
 
 				if ((RazerNaga.SpellFlyout and RazerNaga.SpellFlyout:IsShown() and RazerNaga.SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
 					self.FlyoutBorder:Show();
-					self.FlyoutShadow:Show();
+					self.FlyoutBorderShadow:Show();
 					arrowDistance = 5;
 				else
 					self.FlyoutBorder:Hide();
-					self.FlyoutShadow:Hide();
+					self.FlyoutBorderShadow:Hide();
 					arrowDistance = 2;
 				end
 				self.FlyoutArrow:Show();
@@ -310,10 +308,9 @@ function ActionButton:Skin()
 			else
 				self.FlyoutArrow:Hide()
 				self.FlyoutBorder:Hide()
-				self.FlyoutShadow:Hide()
+				self.FlyoutBorderShadow:Hide()
 			end
 			self.FlyoutArrowContainer:Hide()
-			self.FlyoutBorderShadow:Hide()
 		end)
 
 		hooksecurefunc(self, "UpdateButtonArt", function()
