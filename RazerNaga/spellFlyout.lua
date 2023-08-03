@@ -113,7 +113,7 @@ local function createSpellFlyoutButton(parent, id)
 	local button = CreateFrame('CheckButton', name, parent, template); button:Hide()
 
 	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
-	button.NormalTexture:Hide()
+	button.NormalTexture:SetAlpha(0)
 	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
 	button.HighlightTexture:SetBlendMode("ADD")
 

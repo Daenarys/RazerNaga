@@ -236,13 +236,31 @@ function ActionButton:Skin()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
-		if (self.FlyoutArrow == nil) then
-			self.FlyoutArrow = self:CreateTexture(nil, "OVERLAY")
-		end
+		self.FlyoutContainer = CreateFrame("Frame", nil, self)
+		self.FlyoutContainer:SetAllPoints()
+
+		self.FlyoutArrow = self.FlyoutContainer:CreateTexture()
 		self.FlyoutArrow:SetSize(23, 11)
+		self.FlyoutArrow:SetDrawLayer("ARTWORK", 2)
 		self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
 		self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
 		self.FlyoutArrow:Hide()
+
+		self.FlyoutBorder = self.FlyoutContainer:CreateTexture()
+		self.FlyoutBorder:SetSize(42, 42)
+		self.FlyoutBorder:SetPoint("CENTER")
+		self.FlyoutBorder:SetDrawLayer("ARTWORK", 1)
+		self.FlyoutBorder:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+		self.FlyoutBorder:SetTexCoord(0.01562500, 0.67187500, 0.39843750, 0.72656250)
+		self.FlyoutBorder:Hide()
+
+		self.FlyoutShadow = self:CreateTexture()
+		self.FlyoutShadow:SetSize(48, 48)
+		self.FlyoutShadow:SetPoint("CENTER")
+		self.FlyoutShadow:SetDrawLayer("ARTWORK", 1)
+		self.FlyoutShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+		self.FlyoutShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
+		self.FlyoutShadow:Hide()
 
 		if (self.RightDivider:IsShown()) then
 			self.RightDivider:Hide()
@@ -263,24 +281,36 @@ function ActionButton:Skin()
         	local actionType = GetActionInfo(self.action);
 			if (actionType == "flyout") then
 				local arrowDistance;
-				self.FlyoutArrow:Show()
-				self.FlyoutArrow:ClearAllPoints()
+
+				if ((RazerNaga.SpellFlyout and RazerNaga.SpellFlyout:IsShown() and RazerNaga.SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+					self.FlyoutBorder:Show();
+					self.FlyoutShadow:Show();
+					arrowDistance = 5;
+				else
+					self.FlyoutBorder:Hide();
+					self.FlyoutShadow:Hide();
+					arrowDistance = 2;
+				end
+				self.FlyoutArrow:Show();
+				self.FlyoutArrow:ClearAllPoints();
 				local direction = self:GetAttribute("flyoutDirection");
 				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -2, 0);
+					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
 					SetClampedTextureRotation(self.FlyoutArrow, 270);
 				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", 2, 0);
+					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
 					SetClampedTextureRotation(self.FlyoutArrow, 90);
 				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -2);
+					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
 					SetClampedTextureRotation(self.FlyoutArrow, 180);
 				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 2);
+					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
 					SetClampedTextureRotation(self.FlyoutArrow, 0);
 				end
 			else
 				self.FlyoutArrow:Hide()
+				self.FlyoutBorder:Hide()
+				self.FlyoutShadow:Hide()
 			end
 			self.FlyoutArrowContainer:Hide()
 			self.FlyoutBorderShadow:Hide()
