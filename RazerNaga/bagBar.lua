@@ -83,48 +83,6 @@ function BagBar:SkinButton(b)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
-	local function Disable_BagButtons()
-		MainMenuBarBackpackButton:Disable();
-		SetDesaturation(MainMenuBarBackpackButtonIconTexture, true);
-		CharacterBag0Slot:Disable();
-		SetDesaturation(CharacterBag0SlotIconTexture, true);
-		CharacterBag0Slot.IconBorder:Hide()
-		CharacterBag1Slot:Disable();
-		SetDesaturation(CharacterBag1SlotIconTexture, true);
-		CharacterBag1Slot.IconBorder:Hide()
-		CharacterBag2Slot:Disable();
-		SetDesaturation(CharacterBag2SlotIconTexture, true);
-		CharacterBag2Slot.IconBorder:Hide()
-		CharacterBag3Slot:Disable();
-		SetDesaturation(CharacterBag3SlotIconTexture, true);
-		CharacterBag3Slot.IconBorder:Hide()
-	end
-
-	local function Enable_BagButtons()
-		MainMenuBarBackpackButton:Enable();
-		SetDesaturation(MainMenuBarBackpackButtonIconTexture, false);
-		CharacterBag0Slot:Enable();
-		SetDesaturation(CharacterBag0SlotIconTexture, false);
-		CharacterBag0Slot.IconBorder:Show()
-		CharacterBag1Slot:Enable();
-		SetDesaturation(CharacterBag1SlotIconTexture, false);
-		CharacterBag1Slot.IconBorder:Show()
-		CharacterBag2Slot:Enable();
-		SetDesaturation(CharacterBag2SlotIconTexture, false);
-		CharacterBag2Slot.IconBorder:Show()
-		CharacterBag3Slot:Enable();
-		SetDesaturation(CharacterBag3SlotIconTexture, false);
-		CharacterBag3Slot.IconBorder:Show()
-	end
-
-	GameMenuFrame:HookScript("OnShow", function(self)
-		Disable_BagButtons()
-	end)
-
-	GameMenuFrame:HookScript("OnHide", function(self)
-		Enable_BagButtons()
-	end)
-
 	b.skinned = true
 end
 
@@ -217,6 +175,28 @@ function BagBar:CreateMenu()
 	menu:AddAdvancedPanel()
 	self.menu = menu
 end
+
+local function Disable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Disable();
+		SetDesaturation(bagButton.icon, true);
+	end
+end
+
+local function Enable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Enable();
+		SetDesaturation(bagButton.icon, false);
+	end
+end
+
+GameMenuFrame:HookScript("OnShow", function(self)
+	Disable_BagButtons()
+end)
+
+GameMenuFrame:HookScript("OnHide", function(self)
+	Enable_BagButtons()
+end)
 
 --[[ Bag Bar Controller ]]
 
