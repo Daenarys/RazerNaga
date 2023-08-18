@@ -1053,15 +1053,17 @@ function RazerNaga:IsLinkedOpacityEnabled()
 end
 
 --load and position the lfg eye
-hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-	self:SetParent(MinimapBackdrop)
-	self:SetFrameLevel(6)
-	self:SetScale(0.85)
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", 45, -217)
-end)
+if not (IsAddOnLoaded("ClassicFrames")) then
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetScale(0.85)
+	end)
+end
 
---adjust queuestatus position
+--adjust the queuestatus position
 hooksecurefunc("QueueStatusDropDown_Show", function()
 	DropDownList1:ClearAllPoints()
 	DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -62)
@@ -1070,11 +1072,6 @@ end)
 hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
 	self:ClearAllPoints();
 	self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
-end)
-
--- hide the buff expand toggle
-hooksecurefunc(BuffFrame.CollapseAndExpandButton, "UpdateOrientation", function(self)
-	self:Hide()
 end)
 
 --first load of profile
