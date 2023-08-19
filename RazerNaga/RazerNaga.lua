@@ -408,6 +408,11 @@ function RazerNaga:HideBlizzard()
 		"PossessActionBar"
 	)
 
+	-- hide the buff expand toggle
+	hooksecurefunc(BuffFrame.CollapseAndExpandButton, "UpdateOrientation", function(self)
+		self:Hide()
+	end)
+
 	self:UpdateUseOverrideUI()
 end
 
