@@ -245,7 +245,12 @@ function MenuBar:SkinButton(button)
 	end)
 
 	hooksecurefunc("UpdateMicroButtons", function()
-		CharacterMicroButton.Portrait:Hide()
+		if CharacterMicroButton.Portrait then
+			CharacterMicroButton.Portrait:Hide()
+		end
+		if CharacterMicroButton.PortraitMask then
+			CharacterMicroButton.PortraitMask:Hide()
+		end
 		if ( CharacterFrame and CharacterFrame:IsShown() ) then
 			CharacterMicroButton_SetPushed();
 		else
