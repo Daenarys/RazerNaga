@@ -193,7 +193,6 @@ function MenuBar:SkinButton(button)
 		GuildMicroButtonTabard:SetSize(28, 36)
 		GuildMicroButtonTabard:SetPoint("TOPLEFT")
 		GuildMicroButtonTabard:Hide()
-		GuildMicroButtonTabard.needsUpdate = true
 	end
 
 	if not GuildMicroButtonTabardBackground then
@@ -256,6 +255,7 @@ function MenuBar:SkinButton(button)
 		else
 			CharacterMicroButton_SetNormal();
 		end
+		GuildMicroButtonTabard.needsUpdate = true
 		GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
