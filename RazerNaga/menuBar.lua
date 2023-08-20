@@ -108,10 +108,12 @@ function MenuBar:SkinButton(button)
 		end
 	end)
 	
-	local portrait = CharacterMicroButton:CreateTexture("MicroButtonPortrait", "OVERLAY")
-	portrait:SetSize(16, 22)
-	portrait:SetPoint("TOP", 0, -8)
-	portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
+	if not MicroButtonPortrait then
+		local portrait = CharacterMicroButton:CreateTexture("MicroButtonPortrait", "OVERLAY")
+		portrait:SetSize(16, 22)
+		portrait:SetPoint("TOP", 0, -8)
+		portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
+	end
 
 	CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
 		if (event == "UNIT_PORTRAIT_UPDATE") then
