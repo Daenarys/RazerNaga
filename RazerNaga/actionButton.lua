@@ -245,13 +245,13 @@ function ActionButton:Skin()
 		end
 
 		hooksecurefunc(self, "UpdateButtonArt", function()
-	        self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-	        self.NormalTexture:ClearAllPoints()
-	        self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
-	        self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
-	        self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-	        self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-	        self.PushedTexture:SetSize(36, 36)
+			self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+			self.NormalTexture:ClearAllPoints()
+			self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+			self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+			self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+			self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+			self.PushedTexture:SetSize(36, 36)
 
 			if (self.RightDivider:IsShown()) then
 				self.RightDivider:Hide()
@@ -270,6 +270,7 @@ function ActionButton:Skin()
 		if not self.FlyoutContainer then
 			self.FlyoutContainer = CreateFrame("Frame", nil, self)
 			self.FlyoutContainer:SetAllPoints()
+			self.FlyoutContainer:Hide()
 		end
 
 		if not self.FlyoutArrow then
@@ -300,7 +301,7 @@ function ActionButton:Skin()
 		hooksecurefunc(self, "UpdateFlyout", function()
 			if not self.FlyoutContainer then return end
 
-        	local actionType = GetActionInfo(self.action);
+			local actionType = GetActionInfo(self.action);
 			if (actionType == "flyout") then
 				local arrowDistance;
 

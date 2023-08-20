@@ -62,7 +62,7 @@ function SettingsLoader:LoadSettings(settings)
 	--reenable dominos
 	RazerNaga:Load()
 	RazerNaga.AutoBinder:EnforceBindings()
-
+	
 	--hack, need to do a slightly more advanced layout method for the class bar to place it properly across all resolutions
 	-- local classBar = RazerNaga.Frame:Get('class')
 	-- if classBar then
@@ -78,10 +78,10 @@ end
 
 function SettingsLoader:ReplaceSettings(toTbl, fromTbl)
 	if not fromTbl then return end
-
+	
 	for k, v in pairs(fromTbl) do
 		local prevVal = toTbl[k]
-
+	
 		if type(v) == 'table' and type(prevVal) == 'table' then
 			self:ReplaceSettings(toTbl[k], v)
 		elseif type(v) == 'table' then
@@ -116,7 +116,7 @@ function SettingsLoader:GetThreeByFour()
 		ab = {
 			count = 10,
 		},
-
+		
 		['frames'] = {
 			{
 				['isRightToLeft'] = false,
@@ -272,11 +272,10 @@ function SettingsLoader:GetThreeByFour()
 				['isBottomToTop'] = false,
 				['anchor'] = false,
 				['hidden'] = false,
-				['scale'] = 0.95,
 				['point'] = 'BOTTOM',
+				['spacing'] = -2,
 				['x'] = 0,
 				['y'] = 0,
-				['spacing'] = -4,
 			},
 			['itemroll'] = {
 				['isRightToLeft'] = false,
@@ -318,9 +317,8 @@ function SettingsLoader:GetThreeByFour()
 				['anchor'] = false,
 				['hidden'] = false,
 				['numButtons'] = 6,
-				['scale'] = 0.95,
 				['point'] = 'BOTTOM',
-				['spacing'] = 0,
+				['spacing'] = 2,
 				['x'] = 250,
 				['y'] = 0,
 			},
@@ -540,11 +538,10 @@ function SettingsLoader:GetFourByThree()
 				['isBottomToTop'] = false,
 				['anchor'] = false,
 				['hidden'] = false,
-				['scale'] = 0.95,
 				['point'] = 'BOTTOM',
+				['spacing'] = -2,
 				['x'] = 0,
 				['y'] = 0,
-				['spacing'] = -4,
 			},
 			['itemroll'] = {
 				['isRightToLeft'] = false,
@@ -586,9 +583,8 @@ function SettingsLoader:GetFourByThree()
 				['anchor'] = false,
 				['hidden'] = false,
 				['numButtons'] = 6,
-				['scale'] = 0.95,
 				['point'] = 'BOTTOM',
-				['spacing'] = 0,
+				['spacing'] = 2,
 				['x'] = 250,
 				['y'] = 0,
 			},

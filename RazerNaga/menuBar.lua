@@ -35,6 +35,242 @@ local MICRO_BUTTON_NAMES = {
 
 --[[ Menu Bar ]] --
 
+function MenuBar:SkinButton()
+	local buttons = {
+		{button = CharacterMicroButton, name = "Character"},
+		{button = SpellbookMicroButton, name = "Spellbook"},
+		{button = TalentMicroButton, name = "Talents"},
+		{button = AchievementMicroButton, name = "Achievement"},
+		{button = QuestLogMicroButton, name = "Quest"},
+		{button = GuildMicroButton, name = "Socials"},
+		{button = LFDMicroButton, name = "LFG"},
+		{button = CollectionsMicroButton, name = "Mounts"},
+		{button = EJMicroButton, name = "EJ"},
+		{button = StoreMicroButton, name = "BStore"},  
+		{button = MainMenuMicroButton, name = "MainMenu"},
+	}
+
+	local function replaceAtlases(self, name)
+		local prefix = "hud-microbutton-";
+		self:SetNormalAtlas(prefix..name.."-Up", true);
+		self:SetPushedAtlas(prefix..name.."-Down", true);
+		self:SetDisabledAtlas(prefix..name.."-Disabled", true);
+
+		self:HookScript("OnUpdate", function(self)
+			local normalTexture = self:GetNormalTexture();
+			if(normalTexture) then 
+				normalTexture:SetAlpha(1); 
+			end 
+			if self.Background then
+				self.Background:Hide()
+			end
+			if self.PushedBackground then
+				self.PushedBackground:Hide()
+			end
+			if self.Shadow then
+				self.Shadow:Hide()
+			end
+			if self.PushedShadow then
+				self.PushedShadow:Hide()
+			end
+			if self.FlashBorder then
+				self.FlashBorder:SetAtlas("hud-microbutton-highlightalert", true)
+				self.FlashBorder:ClearAllPoints()
+				self.FlashBorder:SetPoint("TOPLEFT", -2, 2)
+			end
+			if self.FlashContent then
+				UIFrameFlashStop(self.FlashContent);
+			end
+			if self.Emblem then
+				self.Emblem:Hide();
+			end
+			if self.HighlightEmblem then
+				self.HighlightEmblem:Hide();
+			end
+			self:SetHighlightAtlas("hud-microbutton-highlight");
+		end)
+
+		self:HookScript("OnMouseDown", function()
+			if ( self.down ) then
+				self:SetButtonState("PUSHED", true);
+			else
+				self:SetButtonState("NORMAL");
+			end
+		end)
+	end
+
+	local function replaceAllAtlases()
+		for _, data in pairs(buttons) do
+			replaceAtlases(data.button, data.name)
+		end
+	end
+	replaceAllAtlases()
+	
+	local portrait = CharacterMicroButton:CreateTexture("MicroButtonPortrait", "OVERLAY")
+	portrait:SetSize(16, 22)
+	portrait:SetPoint("TOP", 0, -8)
+	portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
+
+	CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
+		if (event == "UNIT_PORTRAIT_UPDATE") then
+			local unit = ...
+			if (unit == "player") then
+				SetPortraitTexture(MicroButtonPortrait, "player")
+			end
+		elseif (event == "PORTRAITS_UPDATED") then
+			SetPortraitTexture(MicroButtonPortrait, "player")
+		elseif (event == "PLAYER_ENTERING_WORLD") then
+			SetPortraitTexture(MicroButtonPortrait, "player")
+		end
+	end)
+	CharacterMicroButton:RegisterEvent("PLAYER_ENTERING_WORLD")
+	CharacterMicroButton:RegisterEvent("UNIT_PORTRAIT_UPDATE")
+	CharacterMicroButton:RegisterEvent("PORTRAITS_UPDATED")
+
+	local function CharacterMicroButton_SetPushed()
+		SetPortraitTexture(MicroButtonPortrait, "player")
+		MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
+		MicroButtonPortrait:SetAlpha(0.5);
+		CharacterMicroButton:SetButtonState("PUSHED", true);
+	end
+    
+	local function CharacterMicroButton_SetNormal()
+		SetPortraitTexture(MicroButtonPortrait, "player")
+		MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
+		MicroButtonPortrait:SetAlpha(1.0);
+		CharacterMicroButton:SetButtonState("NORMAL");
+	end
+
+	CharacterMicroButton:HookScript("OnMouseDown", function(self)
+		if ( not KeybindFrames_InQuickKeybindMode() ) then
+			if ( self.down ) then
+				CharacterMicroButton_SetPushed();
+			end
+			MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
+			MicroButtonPortrait:SetAlpha(0.5);
+		end
+	end)
+
+	CharacterMicroButton:HookScript("OnMouseUp", function(self)
+		if ( not KeybindFrames_InQuickKeybindMode() ) then
+			MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
+			MicroButtonPortrait:SetAlpha(1.0);
+		end
+	end)
+
+	MainMenuMicroButton:CreateTexture("MainMenuBarDownload", "OVERLAY")
+	MainMenuBarDownload:SetPoint("BOTTOM", "StoreMicroButton", "BOTTOMRIGHT", -2, 0)
+	MainMenuBarDownload:SetSize(28, 28)
+
+	MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
+		local status = GetFileStreamingStatus();
+		if ( status == 0 ) then
+			MainMenuBarDownload:Hide();
+			self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true);
+			self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true);
+			self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true);
+		else
+			self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
+			self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
+			self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
+		if ( status == 1 ) then
+			MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
+		elseif ( status == 2 ) then
+			MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
+		elseif ( status == 3 ) then
+			MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
+		end
+			MainMenuBarDownload:Show();
+		end
+	end)
+
+	local GuildMicroButtonTabard = CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
+	GuildMicroButtonTabard:SetSize(28, 36)
+	GuildMicroButtonTabard:SetPoint("TOPLEFT")
+	GuildMicroButtonTabard:Hide()
+
+	GuildMicroButtonTabard.background = GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardBackground", "ARTWORK")
+	GuildMicroButtonTabardBackground:SetAtlas("hud-microbutton-Guild-Banner", true)
+	GuildMicroButtonTabardBackground:SetPoint("CENTER", 0, 0)
+
+	GuildMicroButtonTabard.emblem = GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardEmblem", "OVERLAY")
+	GuildMicroButtonTabardEmblem:SetSize(14, 14)
+	GuildMicroButtonTabardEmblem:SetTexture("Interface\\GuildFrame\\GuildEmblems_01")
+	GuildMicroButtonTabardEmblem:SetPoint("CENTER", 0, 0)
+
+	GuildMicroButton:HookScript("OnMouseDown", function(self)
+		GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
+		GuildMicroButtonTabard:SetAlpha(0.5);
+	end)
+
+	GuildMicroButton:HookScript("OnMouseUp", function(self)
+		GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
+		GuildMicroButtonTabard:SetAlpha(1.0);
+	end)
+
+    local function GuildMicroButton_UpdateTabard(forceUpdate)
+        local tabard = GuildMicroButtonTabard;
+        if ( not tabard.needsUpdate and not forceUpdate ) then
+            return;
+        end
+        -- switch textures if the guild has a custom tabard
+        local emblemFilename = select(10, GetGuildLogoInfo());
+        if ( emblemFilename ) then
+            if ( not tabard:IsShown() ) then
+				local button = GuildMicroButton;
+				button:SetNormalAtlas("hud-microbutton-Character-Up", true);
+				button:SetPushedAtlas("hud-microbutton-Character-Down", true);
+				-- no need to change disabled texture, should always be available if you're in a guild
+				tabard:Show();
+            end
+            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
+        else
+            if ( tabard:IsShown() ) then
+				local button = GuildMicroButton;
+				button:SetNormalAtlas("hud-microbutton-Socials-Up", true);
+				button:SetPushedAtlas("hud-microbutton-Socials-Down", true);
+				button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
+				tabard:Hide();
+            end
+        end
+        tabard.needsUpdate = nil;
+    end
+
+	local function updateButtons()
+		CharacterMicroButton.Portrait:Hide()
+		if ( CharacterFrame and CharacterFrame:IsShown() ) then
+			CharacterMicroButton_SetPushed();
+		else
+			CharacterMicroButton_SetNormal();
+		end
+		GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
+		GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
+		GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
+		if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
+			GuildMicroButtonTabard:SetAlpha(0.70);
+		else
+			GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
+			GuildMicroButtonTabard:SetAlpha(1);
+		end
+	end
+	
+	hooksecurefunc(GuildMicroButton, "UpdateTabard", GuildMicroButton_UpdateTabard)
+	hooksecurefunc("UpdateMicroButtons", updateButtons)
+	hooksecurefunc("LoadMicroButtonTextures", function(self)
+		if not self == _G.GuildMicroButton then return end
+
+		if _G.IsInGuild() then
+			_G.GuildMicroButton:SetNormalAtlas("hud-microbutton-Character-Up", true);
+			_G.GuildMicroButton:SetPushedAtlas("hud-microbutton-Character-Down", true);
+		else
+			_G.GuildMicroButton:SetNormalAtlas("hud-microbutton-Socials-Up", true);
+			_G.GuildMicroButton:SetPushedAtlas("hud-microbutton-Socials-Down", true);
+			_G.GuildMicroButton:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
+		end
+	end)
+end
+
 function MenuBar:New()
 	local bar = MenuBar.super.New(self, 'menu')
 
@@ -124,7 +360,9 @@ function MenuBar:AddButton(i)
 
     if button then
         button:SetParent(self.header)
+        button:SetSize(28, 36)
         button:Show()
+        self:SkinButton()
 
         self.buttons[i] = button
     end
