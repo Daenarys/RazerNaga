@@ -142,11 +142,6 @@ QuestFrameRewardPanel:HookScript("OnShow", function(self)
 	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
 end)
 
-QuestLogPopupDetailFrame:HookScript("OnShow", function(self)
-	self.Bg:SetSize(defaultXSize, defaultYSize);
-	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
-end)
-
 hooksecurefunc(_G.CampaignCollapseButtonMixin, 'UpdateState', function(self, isCollapsed)
 	if isCollapsed then
 		self:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-Up")

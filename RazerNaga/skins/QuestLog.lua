@@ -42,3 +42,11 @@ QuestLogPopupDetailFrameScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", QuestLogPop
 ApplyScrollBarArrow(QuestLogPopupDetailFrameScrollFrame.ScrollBar)
 ApplyScrollBarTrack(QuestLogPopupDetailFrameScrollFrame.ScrollBar.Track)
 ApplyScrollBarThumb(QuestLogPopupDetailFrameScrollFrame.ScrollBar.Track.Thumb)
+
+local defaultXSize = 510;
+local defaultYSize = 620;
+
+QuestLogPopupDetailFrame:HookScript("OnShow", function(self)
+	self.Bg:SetSize(defaultXSize, defaultYSize);
+	self.Bg:SetTexture("Interface/QuestFrame/QuestBG");
+end)
