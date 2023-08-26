@@ -23,7 +23,7 @@ f:SetScript("OnEvent", function(self, event, name)
 		IslandsQueueFrame.TutorialFrame.CloseButton:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
 		IslandsQueueFrame.TutorialFrame.CloseButton:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
-		IslandsQueueFrame.HelpButton.Ring:SetTexture("Interface\\AddOns\\ClassicFrames\\icons\\MiniMap-TrackingBorder.png")
+		IslandsQueueFrame.HelpButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
 
 		ApplyNineSlicePortrait(IslandsQueueFrame.NineSlice)
 	end

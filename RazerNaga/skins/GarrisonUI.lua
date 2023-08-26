@@ -11,7 +11,7 @@ f:SetScript("OnEvent", function(self, event, name)
 			GarrisonBuildingFrame.CloseButton:ClearAllPoints()
 			GarrisonBuildingFrame.CloseButton:SetPoint("TOPRIGHT", 5, 5)
 
-			GarrisonBuildingFrameTutorialButton.Ring:SetTexture("Interface\\AddOns\\ClassicFrames\\icons\\MiniMap-TrackingBorder.png")
+			GarrisonBuildingFrameTutorialButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
 		end
 		if _G.GarrisonMissionFrame then
 			GarrisonMissionFrame.CloseButton:SetSize(32, 32)
