@@ -34,7 +34,7 @@ f:SetScript("OnEvent", function(self, event, name)
 		AzeriteEssenceUI.TopTileStreaks:SetPoint("TOPLEFT", 0, -21)
 		AzeriteEssenceUI.TopTileStreaks:SetPoint("TOPRIGHT", -2, -21)
 
-		AzeriteEssenceUI.PowerLevelBadgeFrame.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		AzeriteEssenceUI.PowerLevelBadgeFrame.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 
 		ApplyNineSlicePortrait(AzeriteEssenceUI.NineSlice)
 

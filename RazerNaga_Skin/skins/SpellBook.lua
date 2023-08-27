@@ -32,7 +32,7 @@ SpellBookFrame.TopTileStreaks:ClearAllPoints()
 SpellBookFrame.TopTileStreaks:SetPoint("TOPLEFT", 0, -21)
 SpellBookFrame.TopTileStreaks:SetPoint("TOPRIGHT", -2, -21)
 
-SpellBookFrameTutorialButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+SpellBookFrameTutorialButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 
 ApplyNineSlicePortrait(SpellBookFrame.NineSlice)
 

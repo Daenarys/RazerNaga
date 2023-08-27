@@ -167,7 +167,7 @@ Minimap:HookScript("OnEvent", function(self, event, ...)
 		MinimapCluster.Tracking.ButtonBorder = MiniMapTrackingButtonBorder
 		MinimapCluster.Tracking.ButtonBorder:ClearAllPoints()
 		MinimapCluster.Tracking.ButtonBorder:SetPoint("TOPLEFT", MinimapCluster.Tracking.Button, "TOPLEFT", 0, 0)
-		MinimapCluster.Tracking.ButtonBorder:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		MinimapCluster.Tracking.ButtonBorder:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 		MinimapCluster.Tracking.ButtonBorder:SetSize(54, 54)
 		MinimapCluster.Tracking.ButtonBorder:SetDrawLayer("BORDER", 0)
 		MinimapCluster.Tracking:CreateTexture("MiniMapTrackingIcon", "ARTWORK")
@@ -273,14 +273,14 @@ Minimap:HookScript("OnEvent", function(self, event, ...)
 		MinimapCluster.IndicatorFrame.MailFrame:CreateTexture("MiniMapMailBorder", "OVERLAY")
 		MiniMapMailBorder:ClearAllPoints()
 		MiniMapMailBorder:SetPoint("TOPLEFT", MinimapCluster.IndicatorFrame.MailFrame, "TOPLEFT", 0, 0)
-		MiniMapMailBorder:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		MiniMapMailBorder:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 		MiniMapMailBorder:SetSize(52, 52)
 		MiniMapMailBorder:SetDrawLayer("OVERLAY", 0)
 
 		MinimapCluster.IndicatorFrame.CraftingOrderFrame:CreateTexture("MiniMapMailBorder2", "OVERLAY")
 		MiniMapMailBorder2:ClearAllPoints()
 		MiniMapMailBorder2:SetPoint("TOPLEFT", MinimapCluster.IndicatorFrame.CraftingOrderFrame, "TOPLEFT", 0, 0)
-		MiniMapMailBorder2:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		MiniMapMailBorder2:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 		MiniMapMailBorder2:SetSize(52, 52)
 		MiniMapMailBorder2:SetDrawLayer("OVERLAY", 0)
 
@@ -639,36 +639,27 @@ local function MinimapButton_OnMouseUp(self)
 	self.isDown = nil;
 end
 
-local LFG_EYE_TEXTURES = { };
-LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
-LFG_EYE_TEXTURES["raid"] = { file = "Interface\\LFGFrame\\LFR-Anim", width = 256, height = 256, frames = 16, iconSize = 64, delay = 0.05 };
-LFG_EYE_TEXTURES["unknown"] = { file = "Interface\\LFGFrame\\WaitAnim", width = 128, height = 128, frames = 4, iconSize = 64, delay = 0.25 };
-
-QueueStatusButton:SetParent(MinimapBackdrop)
-QueueStatusButton:SetFrameLevel(6)
-QueueStatusButton:SetSize(33, 33)
-QueueStatusButton:ClearAllPoints()
-QueueStatusButton:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 22, -101)
-
-QueueStatusButton:CreateTexture("QueueStatusButtonBorder")
-QueueStatusButton.ButtonBorder = QueueStatusButtonBorder
-QueueStatusButton.ButtonBorder:ClearAllPoints()
-QueueStatusButton.ButtonBorder:SetPoint("TOPLEFT", QueueStatusButton, "TOPLEFT", 1, 0)
-QueueStatusButton.ButtonBorder:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
-QueueStatusButton.ButtonBorder:SetSize(52, 52)
-
-hooksecurefunc("QueueStatusDropDown_Show", function()
-	DropDownList1:ClearAllPoints()
-	DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -61)
-end)
-
 hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 	self:SetParent(MinimapBackdrop)
 	self:SetFrameLevel(6)
 	self:SetSize(33, 33)
+	self:SetScale(1)
 	self:ClearAllPoints()
 	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 22, -101)
 end)
+
+if (QueueStatusButtonBorder == nil) then
+	QueueStatusButton:CreateTexture("QueueStatusButtonBorder")
+	QueueStatusButtonBorder:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
+	QueueStatusButtonBorder:SetSize(52, 52)
+	QueueStatusButtonBorder:ClearAllPoints()
+	QueueStatusButtonBorder:SetPoint("TOPLEFT", QueueStatusButton, "TOPLEFT", 1, 0)
+end
+
+local LFG_EYE_TEXTURES = { };
+LFG_EYE_TEXTURES["default"] = { file = "Interface\\LFGFrame\\LFG-Eye", width = 512, height = 256, frames = 29, iconSize = 64, delay = 0.1 };
+LFG_EYE_TEXTURES["raid"] = { file = "Interface\\LFGFrame\\LFR-Anim", width = 256, height = 256, frames = 16, iconSize = 64, delay = 0.05 };
+LFG_EYE_TEXTURES["unknown"] = { file = "Interface\\LFGFrame\\WaitAnim", width = 128, height = 128, frames = 4, iconSize = 64, delay = 0.25 };
 
 local function EyeTemplate_OnUpdate(self, elapsed)
 	local textureInfo = LFG_EYE_TEXTURES[self.queueType or "default"];
@@ -802,4 +793,9 @@ hooksecurefunc(QueueStatusFrame, "Update", function(self)
 	else
 		EyeTemplate_StopAnimating(QueueStatusButton.Eye);
 	end
+end)
+
+hooksecurefunc("QueueStatusDropDown_Show", function()
+	DropDownList1:ClearAllPoints()
+	DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -61)
 end)

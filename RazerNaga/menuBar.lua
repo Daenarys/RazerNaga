@@ -38,6 +38,8 @@ local MICRO_BUTTON_NAMES = {
 function MenuBar:SkinButton(button)
 	if button.skinned then return end
 
+	button:SetSize(28, 36)
+
 	local buttons = {
 		{button = CharacterMicroButton, name = "Character"},
 		{button = SpellbookMicroButton, name = "Spellbook"},
@@ -373,9 +375,11 @@ function MenuBar:AddButton(i)
 
     if button then
         button:SetParent(self.header)
-        button:SetSize(28, 36)
         button:Show()
-        self:SkinButton(button)
+
+        if (IsAddOnLoaded("RazerNaga_Skin")) then
+        	self:SkinButton(button)
+        end
 
         self.buttons[i] = button
     end

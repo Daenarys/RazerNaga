@@ -34,7 +34,7 @@ f:SetScript("OnEvent", function(self, event, name)
 		EncounterJournal.TopTileStreaks:SetPoint("TOPLEFT", 0, -21)
 		EncounterJournal.TopTileStreaks:SetPoint("TOPRIGHT", -2, -21)
 
-		EncounterJournalMonthlyActivitiesFrame.HelpButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		EncounterJournalMonthlyActivitiesFrame.HelpButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 
 		ApplyNineSlicePortrait(EncounterJournal.NineSlice)
 

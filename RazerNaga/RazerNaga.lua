@@ -1061,6 +1061,28 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
+if not (IsAddOnLoaded("RazerNaga_Skin")) then
+	--load and position the lfg eye
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetScale(0.85)
+	end)
+
+	--adjust the queuestatus position
+	hooksecurefunc("QueueStatusDropDown_Show", function()
+		DropDownList1:ClearAllPoints()
+		DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -62)
+	end)
+
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints();
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
+	end)
+end
+
 --[[ Masque Support ]]--
 
 function RazerNaga:Masque(group, button, buttonData)

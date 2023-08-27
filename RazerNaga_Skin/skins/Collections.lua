@@ -34,8 +34,8 @@ f:SetScript("OnEvent", function(self, event, name)
 		CollectionsJournal.TopTileStreaks:SetPoint("TOPLEFT", 0, -21)
 		CollectionsJournal.TopTileStreaks:SetPoint("TOPRIGHT", -2, -21)
 
-		PetJournalTutorialButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
-		WardrobeCollectionFrame.InfoButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+		PetJournalTutorialButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
+		WardrobeCollectionFrame.InfoButton.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 
 		ApplyNineSlicePortrait(CollectionsJournal.NineSlice)
 

@@ -8,7 +8,7 @@ EditModeManagerFrame.CloseButton:SetHighlightTexture("Interface\\Buttons\\UI-Pan
 EditModeManagerFrame.CloseButton:ClearAllPoints()
 EditModeManagerFrame.CloseButton:SetPoint("TOPRIGHT", -2, -3)
 
-EditModeManagerFrame.Tutorial.Ring:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+EditModeManagerFrame.Tutorial.Ring:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
 
 EditModeManagerFrame.Title:Hide()
 

@@ -227,7 +227,11 @@ local function createButton(name, object, db)
 	button:SetHighlightTexture(136477) --"Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight"
 	local overlay = button:CreateTexture(nil, "OVERLAY")
 	overlay:SetSize(53, 53)
-	overlay:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder.png")
+	if (IsAddOnLoaded("RazerNaga_Skin")) then
+		overlay:SetTexture("Interface\\AddOns\\RazerNaga_Skin\\icons\\MiniMap-TrackingBorder.png")
+	else
+		overlay:SetTexture(136430) --"Interface\\Minimap\\MiniMap-TrackingBorder"
+	end
 	overlay:SetPoint("TOPLEFT")
 	local background = button:CreateTexture(nil, "BACKGROUND")
 	background:SetSize(20, 20)
