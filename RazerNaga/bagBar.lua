@@ -17,60 +17,56 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	if not (IsAddOnLoaded("RazerNaga_Skin")) then
-		b:SetSize(34, 34)
-	else
-		b:SetSize(30, 30)
-		b.IconBorder:SetSize(30, 30)
+	b:SetSize(30, 30)
+	b.IconBorder:SetSize(30, 30)
 
-		if b.IconOverlay ~= nil then
-			b.IconOverlay:SetSize(30, 30)
-		end
-
-		local function updateTextures(self)
-			self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
-			self:GetNormalTexture():SetSize(50, 50)
-			self:GetNormalTexture():SetAlpha(1)
-			self:GetNormalTexture():ClearAllPoints()
-			self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1)
-			self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
-			self:GetPushedTexture():SetSize(30, 30)
-			self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-			self:GetHighlightTexture():SetSize(30, 30)
-			self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-			self.SlotHighlightTexture:SetBlendMode("ADD")
-			self.SlotHighlightTexture:SetSize(30, 30)
-
-			if self.CircleMask then
-				self.CircleMask:Hide()
-			end
-		end
-
-		for i = 0, 3 do
-			local bagSlot = _G["CharacterBag"..i.."Slot"]
-			hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
-			hooksecurefunc(bagSlot, "UpdateTextures", updateTextures)
-		end
-
-		updateTextures(CharacterBag0Slot)
-		CharacterBag0Slot:ClearAllPoints()
-		CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -4, -4)
-		updateTextures(CharacterBag1Slot)
-		CharacterBag1Slot:ClearAllPoints()
-		CharacterBag1Slot:SetPoint("RIGHT", CharacterBag0Slot, "LEFT", -2, 0)
-		updateTextures(CharacterBag2Slot)
-		CharacterBag2Slot:ClearAllPoints()
-		CharacterBag2Slot:SetPoint("RIGHT", CharacterBag1Slot, "LEFT", -2, 0)
-		updateTextures(CharacterBag3Slot)
-		CharacterBag3Slot:ClearAllPoints()
-		CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
-		updateTextures(MainMenuBarBackpackButton)
-		MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
-		MainMenuBarBackpackButton:ClearAllPoints()
-		MainMenuBarBackpackButton:SetPoint("TOPRIGHT", -4, -4)
-		MainMenuBarBackpackButtonCount:ClearAllPoints()
-		MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
 	end
+
+	local function updateTextures(self)
+		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
+		self:GetNormalTexture():SetSize(50, 50)
+		self:GetNormalTexture():SetAlpha(1)
+		self:GetNormalTexture():ClearAllPoints()
+		self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1)
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:GetPushedTexture():SetSize(30, 30)
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:GetHighlightTexture():SetSize(30, 30)
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		self.SlotHighlightTexture:SetBlendMode("ADD")
+		self.SlotHighlightTexture:SetSize(30, 30)
+
+		if self.CircleMask then
+			self.CircleMask:Hide()
+		end
+	end
+
+	for i = 0, 3 do
+		local bagSlot = _G["CharacterBag"..i.."Slot"]
+		hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
+		hooksecurefunc(bagSlot, "UpdateTextures", updateTextures)
+	end
+
+	updateTextures(CharacterBag0Slot)
+	CharacterBag0Slot:ClearAllPoints()
+	CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -4, -4)
+	updateTextures(CharacterBag1Slot)
+	CharacterBag1Slot:ClearAllPoints()
+	CharacterBag1Slot:SetPoint("RIGHT", CharacterBag0Slot, "LEFT", -2, 0)
+	updateTextures(CharacterBag2Slot)
+	CharacterBag2Slot:ClearAllPoints()
+	CharacterBag2Slot:SetPoint("RIGHT", CharacterBag1Slot, "LEFT", -2, 0)
+	updateTextures(CharacterBag3Slot)
+	CharacterBag3Slot:ClearAllPoints()
+	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
+	updateTextures(MainMenuBarBackpackButton)
+	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
+	MainMenuBarBackpackButton:ClearAllPoints()
+	MainMenuBarBackpackButton:SetPoint("TOPRIGHT", -4, -4)
+	MainMenuBarBackpackButtonCount:ClearAllPoints()
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
