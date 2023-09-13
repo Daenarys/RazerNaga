@@ -364,7 +364,7 @@ function MenuBarController:OnInitialize()
 	if perf then
 		perf:SetSize(28, 58)
 		perf:ClearAllPoints()
-		perf:SetPoint('BOTTOM')
+		perf:SetPoint('BOTTOM', 0, -1)
 	end
 end
 
