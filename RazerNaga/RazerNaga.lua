@@ -1061,7 +1061,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
-if (_G.QueueStatusButton) then
+if not (IsAddOnLoaded("ClassicFrames")) then
 	--load and position the lfg eye
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
