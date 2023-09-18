@@ -17,30 +17,30 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(30, 30)
-	b.IconBorder:SetSize(30, 30)
+	b:SetSize(36, 36)
+
+	if b.CircleMask then
+		b.CircleMask:Hide()
+	end
+
+	if b.IconBorder ~= nil then
+		b.IconBorder:SetSize(37, 37)
+	end
 
 	if b.IconOverlay ~= nil then
-		b.IconOverlay:SetSize(30, 30)
+		b.IconOverlay:SetSize(37, 37)
 	end
 
 	local function updateTextures(self)
+		self:GetNormalTexture():SetSize(64, 64)
 		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
-		self:GetNormalTexture():SetSize(50, 50)
-		self:GetNormalTexture():SetAlpha(1)
 		self:GetNormalTexture():ClearAllPoints()
-		self:GetNormalTexture():SetPoint("CENTER", self, "CENTER", 0, -1)
-		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
-		self:GetPushedTexture():SetSize(30, 30)
-		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-		self:GetHighlightTexture():SetSize(30, 30)
+		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
+		self:GetPushedTexture():SetTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:GetHighlightTexture():SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:GetHighlightTexture():SetAlpha(1)
 		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
 		self.SlotHighlightTexture:SetBlendMode("ADD")
-		self.SlotHighlightTexture:SetSize(30, 30)
-
-		if self.CircleMask then
-			self.CircleMask:Hide()
-		end
 	end
 
 	for i = 0, 3 do
@@ -66,7 +66,7 @@ function BagBar:SkinButton(b)
 	MainMenuBarBackpackButton:ClearAllPoints()
 	MainMenuBarBackpackButton:SetPoint("TOPRIGHT", -4, -4)
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -10)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
@@ -212,6 +212,7 @@ function BagBarController:OnInitialize()
 		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", MainMenuBarManager)
 		EventRegistry:UnegisterFrameEventAndCallback("VARIABLES_LOADED", MainMenuBarManager)
 	end
+
 	if BagsBar then
 		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
 		hooksecurefunc(BagsBar, "Layout", function() 
