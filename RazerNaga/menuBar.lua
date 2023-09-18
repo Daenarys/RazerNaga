@@ -67,9 +67,9 @@ function MenuBar:SkinButton(button)
 	replaceAllAtlases()
 
 	button:HookScript("OnUpdate", function(self)
-		local normalTexture = self:GetNormalTexture();
-		if(normalTexture) then 
-			normalTexture:SetAlpha(1); 
+		local normalTexture = self:GetNormalTexture()
+		if (normalTexture) then 
+			normalTexture:SetAlpha(1);
 		end 
 		if self.Background then
 			self.Background:Hide()
@@ -89,15 +89,15 @@ function MenuBar:SkinButton(button)
 			self.FlashBorder:SetPoint("TOPLEFT", -2, 2)
 		end
 		if self.FlashContent then
-			UIFrameFlashStop(self.FlashContent);
+			UIFrameFlashStop(self.FlashContent)
 		end
 		if self.Emblem then
-			self.Emblem:Hide();
+			self.Emblem:Hide()
 		end
 		if self.HighlightEmblem then
-			self.HighlightEmblem:Hide();
+			self.HighlightEmblem:Hide()
 		end
-		self:SetHighlightAtlas("hud-microbutton-highlight");
+		self:SetHighlightAtlas("hud-microbutton-highlight")
 	end)
 
 	button:HookScript("OnMouseDown", function(self)
@@ -115,21 +115,20 @@ function MenuBar:SkinButton(button)
 		portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
 	end
 
-	CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
-		if (event == "UNIT_PORTRAIT_UPDATE") then
-			local unit = ...
-			if (unit == "player") then
-				SetPortraitTexture(MicroButtonPortrait, "player")
+	CharacterMicroButton:HookScript("OnEvent", function(event, ...)
+		if ( event == "UNIT_PORTRAIT_UPDATE" ) then
+			local unit = ...;
+			if ( unit == "player" ) then
+				SetPortraitTexture(MicroButtonPortrait, "player");
 			end
-		elseif (event == "PORTRAITS_UPDATED") then
-			SetPortraitTexture(MicroButtonPortrait, "player")
-		elseif (event == "PLAYER_ENTERING_WORLD") then
-			SetPortraitTexture(MicroButtonPortrait, "player")
+		elseif ( event == "PORTRAITS_UPDATED" ) then
+			SetPortraitTexture(MicroButtonPortrait, "player");
+		elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+			SetPortraitTexture(MicroButtonPortrait, "player");
+		elseif ( event == "UPDATE_BINDINGS" ) then
+			self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 		end
 	end)
-	CharacterMicroButton:RegisterEvent("PLAYER_ENTERING_WORLD")
-	CharacterMicroButton:RegisterEvent("UNIT_PORTRAIT_UPDATE")
-	CharacterMicroButton:RegisterEvent("PORTRAITS_UPDATED")
 
 	local function CharacterMicroButton_SetPushed()
 		SetPortraitTexture(MicroButtonPortrait, "player")
@@ -218,29 +217,38 @@ function MenuBar:SkinButton(button)
 		GuildMicroButtonTabard:SetAlpha(1.0);
 	end)
 	
-	hooksecurefunc(GuildMicroButton, "UpdateTabard", function(forceUpdate)
-		if not GuildMicroButtonTabard.needsUpdate then return end
-
+	hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
 		local tabard = GuildMicroButtonTabard;
-        local emblemFilename = select(10, GetGuildLogoInfo());
-        if ( emblemFilename ) then
-            if ( not tabard:IsShown() ) then
+		if ( not tabard.needsUpdate ) then
+			return;
+		end
+		-- switch textures if the guild has a custom tabard
+		local emblemFilename = select(10, GetGuildLogoInfo());
+		if ( emblemFilename ) then
+			if ( not tabard:IsShown() ) then
 				local button = GuildMicroButton;
 				button:SetNormalAtlas("hud-microbutton-Character-Up", true);
 				button:SetPushedAtlas("hud-microbutton-Character-Down", true);
+				-- no need to change disabled texture, should always be available if you're in a guild
 				tabard:Show();
-            end
-            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
-        else
-            if ( tabard:IsShown() ) then
+			end
+			SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
+		else
+			if ( tabard:IsShown() ) then
 				local button = GuildMicroButton;
 				button:SetNormalAtlas("hud-microbutton-Socials-Up", true);
 				button:SetPushedAtlas("hud-microbutton-Socials-Down", true);
 				button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
 				tabard:Hide();
-            end
-        end
-        GuildMicroButtonTabard.needsUpdate = false
+			end
+		end
+		tabard.needsUpdate = nil;
+	end)
+
+	GuildMicroButton:HookScript("OnEvent", function(self, event, ...)
+		if ( event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
+			GuildMicroButtonTabard.needsUpdate = true;
+		end
 	end)
 
 	hooksecurefunc("UpdateMicroButtons", function()
@@ -255,7 +263,6 @@ function MenuBar:SkinButton(button)
 		else
 			CharacterMicroButton_SetNormal();
 		end
-		GuildMicroButtonTabard.needsUpdate = true
 		GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
