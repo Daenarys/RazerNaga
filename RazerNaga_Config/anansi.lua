@@ -1,5 +1,6 @@
 --[[
-	Anansi specific options for the Razer Naga addon
+	anansi.lua
+		Anansi specific options for the Razer Naga addon
 --]]
 
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')

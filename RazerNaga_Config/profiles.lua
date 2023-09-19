@@ -1,5 +1,6 @@
 --[[
-	A profile selector panel
+	profiles.lua
+		A profile selector panel
 --]]
 
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
@@ -8,7 +9,6 @@ local _G = getfenv(0)
 --profile options
 local NUM_ITEMS = 19
 local width, height, offset = 580, 22, 2
-
 
 --[[ Profile Button ]]--
 
@@ -79,6 +79,7 @@ local function Panel_Highlight(self, profile)
 		end
 	end
 end
+
 
 --[[ Make the Panel ]]--
 
