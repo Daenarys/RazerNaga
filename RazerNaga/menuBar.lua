@@ -115,7 +115,7 @@ function MenuBar:SkinButton(button)
 		portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
 	end
 
-	CharacterMicroButton:HookScript("OnEvent", function(event, ...)
+	CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
 		if ( event == "UNIT_PORTRAIT_UPDATE" ) then
 			local unit = ...;
 			if ( unit == "player" ) then
@@ -125,8 +125,6 @@ function MenuBar:SkinButton(button)
 			SetPortraitTexture(MicroButtonPortrait, "player");
 		elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 			SetPortraitTexture(MicroButtonPortrait, "player");
-		elseif ( event == "UPDATE_BINDINGS" ) then
-			self.tooltipText = MicroButtonTooltipText(CHARACTER_BUTTON, "TOGGLECHARACTER0");
 		end
 	end)
 

@@ -128,7 +128,6 @@ function VehicleBar:Update()
     icon:SetVertexColor(1, 1, 1)
     icon:SetDesaturated(false)
 	
-    -- hide the actionbutton texture
     button.NormalTexture:SetTexture()
 
     button:SetChecked(false)

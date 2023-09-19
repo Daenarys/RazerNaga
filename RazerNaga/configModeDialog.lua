@@ -64,7 +64,6 @@ function ConfigModeDialog:Load()
 	local uiMenu = self:CreateUIMenuButton()
 	uiMenu:SetPoint('LEFT', bindingMode, 'RIGHT', 2, 0)
 
-
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
 	bindingSetPicker:SetPoint('BOTTOMLEFT', 0, 66)
@@ -181,7 +180,6 @@ function ConfigModeDialog:CreateBindingSetPicker()
 	dd:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
-
 
 	local function Item_OnClick(self)
 		RazerNaga.BindingsLoader:SetBindingSetID(self.value)
