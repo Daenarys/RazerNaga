@@ -1,6 +1,5 @@
 --[[
-	menu.lua
-		Code for the RazerNaga config menu
+	Menu.lua
 --]]
 
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
@@ -11,6 +10,7 @@ local Menu = RazerNaga:CreateClass('Frame'); RazerNaga.Menu = Menu
 
 local max = math.max
 local min = math.min
+
 
 Menu.bg = {
 	bgFile = 'Interface\\DialogFrame\\UI-DialogBox-Background',
@@ -207,6 +207,7 @@ function Menu:AddBindingSelectorPanel()
 	return panel
 end
 
+
 do
 	local info = {}
 	local function AddItem(text, value, func, checked)
@@ -254,8 +255,9 @@ do
 	end
 end
 
-
---[[ Panel Components ]]--
+--[[
+	Panel Components
+--]]
 
 --a panel is a subframe of a menu, basically
 local Panel = RazerNaga:CreateClass('Frame')

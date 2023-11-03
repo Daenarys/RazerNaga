@@ -1,5 +1,5 @@
 --[[
-	panel.lua
+	menu.lua
 		Code for the RazerNaga options panel
 --]]
 

@@ -37,19 +37,9 @@ function PetButton:Create(id)
 	--override keybinding display
 	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
 
-	--hook to prevent skin issues
-	hooksecurefunc(b, 'UpdateButtonArt', function(self)
-		if not RazerNaga:Masque('Pet Bar', self) then
-			self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-			self.NormalTexture:SetSize(54, 54)
-			self.NormalTexture:ClearAllPoints()
-			self.NormalTexture:SetPoint("CENTER", 0, -1)
-			self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-			self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-			self.PushedTexture:ClearAllPoints()
-			self.PushedTexture:SetAllPoints()
-		end
-	end)
+	if b.UpdateButtonArt then
+		b.UpdateButtonArt = function() end
+	end
 
 	return b
 end

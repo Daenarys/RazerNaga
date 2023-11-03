@@ -19,33 +19,26 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
 
-	local hotkey = self.HotKey;
-	if ( hotkey:GetText() == RANGE_INDICATOR ) then
-		hotkey:Hide();
-	else
-		hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
-	end
-
 	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
-		hotkey:SetText(key)
-		hotkey:ClearAllPoints();
-		hotkey:SetPoint("TOPLEFT", -2, -3)
-		hotkey:Show()
+		self.HotKey:SetText(key)
+		self.HotKey:ClearAllPoints();
+		self.HotKey:SetPoint("TOPLEFT", -2, -3)
+		self.HotKey:Show()
 	elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
-		hotkey:SetText(key)
-		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPLEFT", -2, -3)
-		hotkey:Show()
+		self.HotKey:SetText(key)
+		self.HotKey:ClearAllPoints()
+		self.HotKey:SetPoint("TOPLEFT", -2, -3)
+		self.HotKey:Show()
 	elseif key ~= '' and RazerNaga:ShowBindingText() then
-		hotkey:SetText(key)
-		hotkey:SetSize(32, 10)
-		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPLEFT", 3, -3)
-		hotkey:Show()
+		self.HotKey:SetText(key)
+		self.HotKey:SetSize(32, 10)
+		self.HotKey:ClearAllPoints()
+		self.HotKey:SetPoint("TOPLEFT", 3, -3)
+		self.HotKey:Show()
 	else
 		--blank out non blank text, such as RANGE_INDICATOR
-		hotkey:SetText('')
-		hotkey:Hide()
+		self.HotKey:SetText('')
+		self.HotKey:Hide()
 	end
 end
 

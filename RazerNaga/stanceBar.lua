@@ -45,17 +45,9 @@ do
 		if button then
 			button:HookScript('OnEnter', self.OnEnter)
 			button:Skin()
-			hooksecurefunc(button, 'UpdateButtonArt', function()
-				if not RazerNaga:Masque('Class Bar', button) then
-					button.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-					button.NormalTexture:SetSize(54, 54)
-					button.NormalTexture:ClearAllPoints()
-					button.NormalTexture:SetPoint("CENTER", 0, -1)
-					button.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-					button.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-					button.PushedTexture:SetSize(30, 30)
-				end
-			end)
+			if button.UpdateButtonArt then
+				button.UpdateButtonArt = function() end
+			end
 		end
 
 		return button

@@ -19,10 +19,6 @@ function BagBar:SkinButton(b)
 
 	b:SetSize(36, 36)
 
-	if b.CircleMask then
-		b.CircleMask:Hide()
-	end
-
 	if b.IconBorder ~= nil then
 		b.IconBorder:SetSize(37, 37)
 	end
@@ -31,13 +27,18 @@ function BagBar:SkinButton(b)
 		b.IconOverlay:SetSize(37, 37)
 	end
 
+	if b.CircleMask then
+		b.CircleMask:Hide()
+	end
+
 	local function updateTextures(self)
-		self:GetNormalTexture():SetSize(64, 64)
 		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
+		self:GetNormalTexture():SetSize(64, 64)
+		self:GetNormalTexture():SetAlpha(1)
 		self:GetNormalTexture():ClearAllPoints()
 		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
-		self:GetPushedTexture():SetTexture("Interface\\Buttons\\UI-Quickslot-Depress")
-		self:GetHighlightTexture():SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
 		self:GetHighlightTexture():SetAlpha(1)
 		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
 		self.SlotHighlightTexture:SetBlendMode("ADD")
@@ -63,8 +64,7 @@ function BagBar:SkinButton(b)
 	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
 	updateTextures(MainMenuBarBackpackButton)
 	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
-	MainMenuBarBackpackButton:ClearAllPoints()
-	MainMenuBarBackpackButton:SetPoint("TOPRIGHT", -4, -4)
+
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -10)
 
@@ -192,13 +192,27 @@ end
 local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
 function BagBarController:OnInitialize()
-	local noopFunc = function() end
+	if not self.frame then
+		local noopFunc = function() end
 
-	CharacterReagentBag0Slot.SetBarExpanded = noopFunc
-	CharacterBag3Slot.SetBarExpanded = noopFunc
-	CharacterBag2Slot.SetBarExpanded = noopFunc
-	CharacterBag1Slot.SetBarExpanded = noopFunc
-	CharacterBag0Slot.SetBarExpanded = noopFunc
+		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
+		CharacterBag3Slot.SetBarExpanded = noopFunc
+		CharacterBag2Slot.SetBarExpanded = noopFunc
+		CharacterBag1Slot.SetBarExpanded = noopFunc
+		CharacterBag0Slot.SetBarExpanded = noopFunc
+		BagsBar.Layout = noopFunc
+	end
+
+    if BagsBar and BagsBar.Layout then
+    	hooksecurefunc(BagsBar, "Layout", function()
+    		if InCombatLockdown() then return end
+
+			if self.frame then
+				self.frame:Layout()
+			end
+    	end)
+        EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
+    end
 
 	if BagBarExpandToggle then
 		BagBarExpandToggle:Hide()
@@ -206,18 +220,6 @@ function BagBarController:OnInitialize()
 
 	if CharacterReagentBag0Slot then
 		CharacterReagentBag0Slot:Hide()
-	end
-
-	if MainMenuBarManager then
-		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", MainMenuBarManager)
-		EventRegistry:UnegisterFrameEventAndCallback("VARIABLES_LOADED", MainMenuBarManager)
-	end
-
-	if BagsBar then
-		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
-		hooksecurefunc(BagsBar, "Layout", function() 
-			self:LayoutBagBar() 
-		end)
 	end
 end
 
@@ -230,10 +232,4 @@ function BagBarController:Unload()
 		self.frame:Free()
 		self.frame = nil
 	end
-end
-
-function BagBarController:LayoutBagBar()
-    if self.frame then
-        self.frame:Layout()
-    end
 end

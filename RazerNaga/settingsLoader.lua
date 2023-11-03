@@ -276,18 +276,6 @@ function SettingsLoader:GetThreeByFour()
 				['x'] = 0,
 				['y'] = 0,
 			},
-			['itemroll'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['numButtons'] = 4,
-				['point'] = 'BOTTOM',
-				['x'] = 0,
-				['y'] = 100,
-				['spacing'] = 2,
-			},
 			['xp'] = {
 				['alwaysShowText'] = true,
 				['anchor'] = false,
@@ -334,17 +322,6 @@ function SettingsLoader:GetThreeByFour()
 				['y'] = 110,
 				['enableAutoBinding'] = true,
 				['autoBindingModifier'] = 'CTRL'
-			},
-			['extra'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 6,
-				['x'] = -400,
-				['y'] = 305,
 			},
 			['class'] = {
 				['isRightToLeft'] = false,
@@ -541,18 +518,6 @@ function SettingsLoader:GetFourByThree()
 				['x'] = 0,
 				['y'] = 0,
 			},
-			['itemroll'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['numButtons'] = 4,
-				['point'] = 'BOTTOM',
-				['x'] = 0,
-				['y'] = 100,
-				['spacing'] = 2,
-			},
 			['xp'] = {
 				['alwaysShowText'] = true,
 				['anchor'] = false,
@@ -599,17 +564,6 @@ function SettingsLoader:GetFourByThree()
 				['y'] = 110,
 				['enableAutoBinding'] = true,
 				['autoBindingModifier'] = 'CTRL'
-			},
-			['extra'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 6,
-				['x'] = -480,
-				['y'] = 265,
 			},
 			['class'] = {
 				['isRightToLeft'] = false,

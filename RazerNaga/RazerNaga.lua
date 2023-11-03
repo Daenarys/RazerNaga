@@ -51,6 +51,7 @@ function RazerNaga:OnEnable()
 	end
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -309,11 +310,11 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-	HiddenFrame:SetAllPoints(UIParent)
-	HiddenFrame:Hide()
+	local UIHider = CreateFrame("Frame")
+	UIHider:Hide()
+	self.UIHider = UIHider
 
-	local purgeKey = function(t, k)
+	local function purgeKey(t, k)
 		t[k] = nil
 		local c = 42
 		repeat
@@ -324,91 +325,74 @@ function RazerNaga:HideBlizzard()
 		until issecurevariable(t, k)
 	end
 
-	local function apply(func, ...)
-	    for i = 1, select('#', ...) do
-	        local name = (select(i, ...))
-	        local frame = _G[name]
+	local function hideActionBarFrame(frame, clearEvents)
+		if frame then
+			if clearEvents then
+				frame:UnregisterAllEvents()
+			end
 
-	        if frame then
-	            func(frame)
-	        else
-	            RazerNaga:Printf('Could not find frame %q', name)
-	        end
-	    end
-	end
+			if frame.system then
+				purgeKey(frame, "isShownExternal")
+			end
 
-	local function banish(frame)
-	    -- remove some EditMode hooks
-		if frame.system then
-			-- purge the show state to avoid any taint concerns
-			purgeKey(frame, "isShownExternal")
+			if frame.HideBase then
+				frame:HideBase()
+			else
+				frame:Hide()
+			end
+			frame:SetParent(UIHider)
 		end
-
-		-- EditMode overrides the Hide function, avoid calling it as it can taint
-		if frame.HideBase then
-			frame:HideBase()
-		else
-			frame:Hide()
-		end
-		frame:SetParent(HiddenFrame)
 	end
 
-	local function unregisterEvents(frame)
-	    frame:UnregisterAllEvents()
+	local function hideActionButton(button)
+		if not button then return end
+
+		button:Hide()
+		button:UnregisterAllEvents()
+		button:SetAttribute("statehidden", true)
 	end
 
-	local function disableActionButtons(frame)
-	    local buttons = frame.actionButtons
-	    if type(buttons) ~= "table" then
-	        return
-	    end
+	hideActionBarFrame(MainMenuBar, false)
+	hideActionBarFrame(MultiBarBottomLeft, true)
+	hideActionBarFrame(MultiBarBottomRight, true)
+	hideActionBarFrame(MultiBarLeft, true)
+	hideActionBarFrame(MultiBarRight, true)
+	hideActionBarFrame(MultiBar5, true)
+	hideActionBarFrame(MultiBar6, true)
+	hideActionBarFrame(MultiBar7, true)
 
-	    for _, button in pairs(buttons) do
-	        button:SetAttribute('statehidden', true)
-	        button:Hide()
-	    end
+	-- Hide MultiBar Buttons, but keep the bars alive
+	for i=1,12 do
+		hideActionButton(_G["ActionButton" .. i])
+		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
+		hideActionButton(_G["MultiBarBottomRightButton" .. i])
+		hideActionButton(_G["MultiBarRightButton" .. i])
+		hideActionButton(_G["MultiBarLeftButton" .. i])
+		hideActionButton(_G["MultiBar5Button" .. i])
+		hideActionButton(_G["MultiBar6Button" .. i])
+		hideActionButton(_G["MultiBar7Button" .. i])
 	end
 
-	apply(banish,
-		"MainMenuBar",
-		"MicroButtonAndBagsBar",
-		"BagsBar",
-		"MicroMenu",
-		"MicroMenuContainer",
-		"MultiBarBottomLeft",
-		"MultiBarBottomRight",
-		"MultiBarLeft",
-		"MultiBarRight",
-		"MultiBar5",
-		"MultiBar6",
-		"MultiBar7",
-		"StanceBar",
-		"PetActionBar",
-		"PossessActionBar",
-		"StatusTrackingBarManager",
-		"MainMenuBarVehicleLeaveButton"
-	)
+	hideActionBarFrame(MicroButtonAndBagsBar, false)
+	hideActionBarFrame(StanceBar, true)
+	hideActionBarFrame(PossessActionBar, true)
+	hideActionBarFrame(MultiCastActionBarFrame, false)
+	hideActionBarFrame(PetActionBar, false)
+	hideActionBarFrame(StatusTrackingBarManager, false)
+	hideActionBarFrame(MainMenuBarVehicleLeaveButton, true)
+	hideActionBarFrame(BagsBar, true)
+	hideActionBarFrame(MicroMenu, true)
+	hideActionBarFrame(MicroMenuContainer, true)
 
-	apply(unregisterEvents,
-		"BagsBar",
-		"MicroMenu",
-		"PossessActionBar",
-		"MainMenuBarVehicleLeaveButton"
-	)
+	-- these events drive visibility, we want the MainMenuBar to remain invisible
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
-	apply(disableActionButtons,
-		"MainMenuBar",
-		"MultiBarBottomLeft",
-		"MultiBarBottomRight",
-		"MultiBarLeft",
-		"MultiBarRight",
-		"MultiBar5",
-		"MultiBar6",
-		"MultiBar7",
-		"PossessActionBar"
-	)
-
-	self:UpdateUseOverrideUI()
+	-- these functions drive visibility so disable them
+	MultiActionBar_ShowAllGrids = function() return; end;
+	MultiActionBar_HideAllGrids = function() return; end;
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -1061,6 +1045,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
+--queuestatusbutton
 if not (IsAddOnLoaded("ClassicFrames")) then
 	--load and position the lfg eye
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)

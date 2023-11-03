@@ -30,6 +30,7 @@ do
 	InterfaceOptions_AddCategory(Options)
 end
 
+
 local GeneralOptions = RazerNaga.Options:NewPanel(L.General, L.GeneralPanelDesc, [[Interface\Addons\RazerNaga\Icons\RazerNaga]])
 
 --[[ Buttons ]]--
@@ -54,6 +55,7 @@ bind:SetPoint('LEFT', lock, 'RIGHT', 4, 0)
 --[[ Check Buttons ]]--
 
 --[[ General Settings ]]--
+
 
 local stickyBars = GeneralOptions:NewCheckButton(L.StickyBars)
 stickyBars:SetScript('OnShow', function(self)

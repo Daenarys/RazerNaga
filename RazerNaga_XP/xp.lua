@@ -3,6 +3,8 @@
 			The dominos xp bar
 --]]
 
+local REP_FORMAT = '%s:  %s / %s (%s)'
+local FRIEND_ID_FACTION_COLOR_INDEX = 5 --color index to use for friend factions
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-XP')
 local DEFAULT_STATUSBAR_TEXTURE = [[Interface\TargetingFrame\UI-StatusBar]]
 
@@ -235,6 +237,7 @@ function XP:GetXPFormat()
 end
 
 
+
 --[[ Reputation ]]--
 
 function XP:WatchReputation()
@@ -408,7 +411,9 @@ function XP:ToggleText(enable)
 end
 
 
---[[ Layout Panel ]]--
+--[[
+	Layout Panel
+--]]
 
 local function CreateWidthSlider(p)
 	local s = p:NewSlider(L.Width, 1, 100, 1)
@@ -457,7 +462,9 @@ local function AddLayoutPanel(menu)
 end
 
 
---[[ Texture Picker ]]--
+--[[
+	Texture Picker
+--]]
 
 --yeah I know I'm bad in that I didn't capitialize some constants
 local NUM_ITEMS = 9

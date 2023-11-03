@@ -1,11 +1,13 @@
 --[[
-	radioGroup.lua
+	RadioGroup.lua
 		Defines a radio button group
 --]]
 
 local RadioButton = RazerNaga:CreateClass('CheckButton')
 
---[[ Define Radio Button Logic Here ]]--
+--[[
+	Define Radio Button Logic Here
+--]]
 
 function RadioButton:New(title, value, parent)
 	local f = self:Bind(CreateFrame('CheckButton', '$parent' .. title, parent, 'UIRadioButtonTemplate'))
@@ -32,7 +34,10 @@ function RadioButton:OnClick()
 end
 
 
---[[ Radio Group Widget ]]--
+
+--[[
+	Radio Group Widget
+--]]
 
 local RadioGroup = RazerNaga:CreateClass('Frame')
 RadioGroup.columns = 1
@@ -53,7 +58,6 @@ function RadioGroup:New(title, parent)
 	
 	return f
 end
-
 
 --[[ Frame Events ]]--
 
@@ -125,7 +129,6 @@ function RadioGroup:Layout()
 	self:SetWidth(max(width, 8))
 	self:SetHeight(max(height, 8))
 end
-
 
 --[[ Accessors ]]--
 
