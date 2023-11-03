@@ -3,8 +3,6 @@
 			The dominos xp bar
 --]]
 
-local REP_FORMAT = '%s:  %s / %s (%s)'
-local FRIEND_ID_FACTION_COLOR_INDEX = 5 --color index to use for friend factions
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-XP')
 local DEFAULT_STATUSBAR_TEXTURE = [[Interface\TargetingFrame\UI-StatusBar]]
 
