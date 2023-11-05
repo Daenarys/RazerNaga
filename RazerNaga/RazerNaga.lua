@@ -1045,7 +1045,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---queuestatusbutton
+--extra's
 if not (IsAddOnLoaded("ClassicFrames")) then
 	--load and position the lfg eye
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
@@ -1066,6 +1066,31 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		self:ClearAllPoints();
 		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
 	end)
+
+    -- rare/elite dragon portrait improvements
+    hooksecurefunc(TargetFrame, "CheckClassification", function(self)
+        local classification = UnitClassification(self.unit)
+
+        local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture
+        if (classification == "rare") then
+            bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Silver", TextureKitConstants.UseAtlasSize)
+            bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8)
+            bossPortraitFrameTexture:Show()
+        elseif (classification == "elite") then
+            bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize)
+            bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -7)
+        end
+        self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide()
+    end)
+
+    -- rare dragon on nameplates
+    hooksecurefunc("CompactUnitFrame_UpdateClassificationIndicator", function(frame)
+        local classification = UnitClassification(frame.unit);
+        if ( classification == "rare" ) then
+            frame.classificationIndicator:SetAtlas("nameplates-icon-elite-silver");
+            frame.classificationIndicator:Show();
+        end
+    end)
 end
 
 --[[ Masque Support ]]--
