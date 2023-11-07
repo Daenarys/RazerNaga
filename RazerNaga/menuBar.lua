@@ -100,14 +100,6 @@ function MenuBar:SkinButton(button)
         self:SetHighlightAtlas("hud-microbutton-highlight")
     end)
 
-    button:HookScript("OnMouseDown", function(self)
-        if ( self.down ) then
-            self:SetButtonState("PUSHED", true);
-        else
-            self:SetButtonState("NORMAL");
-        end
-    end)
-
     if not MicroButtonPortrait then
         local portrait = CharacterMicroButton:CreateTexture("MicroButtonPortrait", "OVERLAY")
         portrait:SetSize(16, 22)
@@ -287,6 +279,24 @@ function MenuBar:SkinButton(button)
             _G.GuildMicroButton:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
         end
     end)
+
+    local function EnableMicroButtons()
+        if GameMenuFrame and GameMenuFrame:IsShown() then
+            CharacterMicroButton:Enable();
+            SpellbookMicroButton:Enable();
+            TalentMicroButton:Enable();
+            QuestLogMicroButton:Enable();
+            GuildMicroButton:Enable();
+            LFDMicroButton:Enable();
+            AchievementMicroButton:Enable();
+            EJMicroButton:Enable();
+            CollectionsMicroButton:Enable();
+            MainMenuMicroButton:Enable();
+        end
+    end
+
+    -- don't disable them when blizz wants too
+    hooksecurefunc(button, 'UpdateMicroButton', EnableMicroButtons)
 
     button.skinned = true
 end
