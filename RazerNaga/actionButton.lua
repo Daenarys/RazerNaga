@@ -101,10 +101,6 @@ function ActionButton:Create(id)
 		b:SetSize(36, 36)
 		b:Skin()
 
-		if b.cooldown then
-			b.cooldown:SetDrawBling(true)
-		end
-
 		if b.UpdateButtonArt then
 			b.UpdateButtonArt = function() end
 		end
@@ -504,4 +500,13 @@ hooksecurefunc("ActionButton_HideOverlayGlow", function(button)
 			OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
 		end
 	end
+end)
+
+hooksecurefunc("ActionButton_UpdateCooldown", function(self)
+    self.cooldown:SetDrawBling(true)
+end)
+
+hooksecurefunc("StartChargeCooldown", function(parent)
+    parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
+    parent.chargeCooldown:SetAllPoints(parent)
 end)
