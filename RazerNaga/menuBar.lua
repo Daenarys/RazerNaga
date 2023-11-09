@@ -120,32 +120,11 @@ function MenuBar:SkinButton(button)
         end
     end)
 
-    local function CharacterMicroButton_SetPushed()
-        SetPortraitTexture(MicroButtonPortrait, "player")
-        MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
-        MicroButtonPortrait:SetAlpha(0.5);
-        CharacterMicroButton:SetButtonState("PUSHED", true);
-    end
-
-    local function CharacterMicroButton_SetNormal()
-        SetPortraitTexture(MicroButtonPortrait, "player")
-        MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
-        MicroButtonPortrait:SetAlpha(1.0);
-        CharacterMicroButton:SetButtonState("NORMAL");
-    end
-
-    CharacterMicroButton:HookScript("OnMouseDown", function(self)
-        if ( not KeybindFrames_InQuickKeybindMode() ) then
-            if ( self.down ) then
-                CharacterMicroButton_SetPushed();
-            end
+    hooksecurefunc(CharacterMicroButton, "UpdateMicroButton", function()
+        if ( CharacterFrame and CharacterFrame:IsShown() ) then
             MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333);
             MicroButtonPortrait:SetAlpha(0.5);
-        end
-    end)
-
-    CharacterMicroButton:HookScript("OnMouseUp", function(self)
-        if ( not KeybindFrames_InQuickKeybindMode() ) then
+        else
             MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9);
             MicroButtonPortrait:SetAlpha(1.0);
         end
@@ -244,16 +223,14 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc("UpdateMicroButtons", function()
+        if AchievementMicroButton:IsEnabled() then
+            AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
+        end
         if CharacterMicroButton.Portrait then
             CharacterMicroButton.Portrait:Hide()
         end
         if CharacterMicroButton.PortraitMask then
             CharacterMicroButton.PortraitMask:Hide()
-        end
-        if ( CharacterFrame and CharacterFrame:IsShown() ) then
-            CharacterMicroButton_SetPushed();
-        else
-            CharacterMicroButton_SetNormal();
         end
         GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
         GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
@@ -281,15 +258,35 @@ function MenuBar:SkinButton(button)
     end)
 
     local function EnableMicroButtons()
+        local factionGroup = UnitFactionGroup("player");
+
         if GameMenuFrame and GameMenuFrame:IsShown() then
             CharacterMicroButton:Enable();
             SpellbookMicroButton:Enable();
-            TalentMicroButton:Enable();
+            if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
+                TalentMicroButton:Disable();
+            else
+                TalentMicroButton:Enable();
+            end
             QuestLogMicroButton:Enable();
-            GuildMicroButton:Enable();
-            LFDMicroButton:Enable();
+            if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
+                GuildMicroButton:Disable();
+            elseif ( C_Club.IsEnabled() and not BNConnected() ) then
+                GuildMicroButton:Disable();
+            else
+                GuildMicroButton:Enable();
+            end
+            if not LFDMicroButton:IsActive() then
+                LFDMicroButton:Disable();
+            else
+                LFDMicroButton:Enable();
+            end
             AchievementMicroButton:Enable();
-            EJMicroButton:Enable();
+            if ( not AdventureGuideUtil.IsAvailable() ) then
+                EJMicroButton:Disable();
+            else
+                EJMicroButton:Enable();
+            end
             CollectionsMicroButton:Enable();
             MainMenuMicroButton:Enable();
         end
