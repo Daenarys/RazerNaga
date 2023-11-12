@@ -111,6 +111,7 @@ function CastingBar:OnEvent(event, ...)
 	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
 		self.failed = true
 	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
+		self.Flash:SetVertexColor(1.0, 0.7, 0.0)
 		self.failed = nil
 	end
 	self:UpdateColor(spell)
