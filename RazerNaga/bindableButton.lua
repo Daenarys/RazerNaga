@@ -19,6 +19,12 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
 
+	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
+		self.HotKey:Hide();
+	else
+		self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
+	end
+
 	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
 		self.HotKey:SetText(key)
 		self.HotKey:ClearAllPoints();
