@@ -15,9 +15,8 @@ function Drag:New(owner)
 
 	f:EnableMouseWheel(true)
 	f:SetClampedToScreen(true)
-	f:SetFrameStrata(owner:GetFrameStrata())
+	f:SetFrameStrata("HIGH")
 	f:SetAllPoints(owner)
-	f:SetFrameLevel(owner:GetFrameLevel() + 5)
 
 	local bg = f:CreateTexture(nil, 'BACKGROUND')
 	bg:SetColorTexture(1, 1, 1, 0.4)
