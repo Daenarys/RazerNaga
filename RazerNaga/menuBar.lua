@@ -324,6 +324,10 @@ function MenuBar:SkinButton(button)
     -- don't disable them when blizz wants too
     hooksecurefunc(button, 'UpdateMicroButton', EnableMicroButtons)
 
+    HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
+    HelpOpenWebTicketButton:ClearAllPoints()
+    HelpOpenWebTicketButton:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
+
     button.skinned = true
 end
 
