@@ -65,7 +65,7 @@ function BagBar:SkinButton(b)
 	updateTextures(MainMenuBarBackpackButton)
 	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", -2, 2)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
