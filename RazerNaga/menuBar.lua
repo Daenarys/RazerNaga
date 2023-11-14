@@ -289,9 +289,9 @@ function MenuBar:SkinButton(button)
     local function EnableMicroButtons()
         local factionGroup = UnitFactionGroup("player")
 
-        if( ( GameMenuFrame and GameMenuFrame:IsShown() )
-            or ( SettingsPanel:IsShown() ) ) 
-            or ( StoreFrame and StoreFrame_IsShown() ) then
+        if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
+            or ( SettingsPanel:IsShown() )
+            or ( StoreFrame and StoreFrame_IsShown() ) ) then
             CharacterMicroButton:Enable()
             SpellbookMicroButton:Enable()
             if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
