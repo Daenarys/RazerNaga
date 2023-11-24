@@ -72,6 +72,12 @@ function ActionButton:New(id)
 		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
 		Tooltips:Register(b)
 
+		--get rid of range indicator text
+		local hotkey = b.HotKey
+		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
+			hotkey:SetText('')
+		end
+
 		b:UpdateMacro()
 
 		self.active[id] = b
