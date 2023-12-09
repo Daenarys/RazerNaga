@@ -127,13 +127,15 @@ function CastingBar:OnUpdate(elapsed)
 			self.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
 			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
 		end
+		self.Flash:SetVertexColor(1, 0.7, 0)
 	elseif self.channeling then
 		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
 		self:HideSpark()
+		self.Flash:SetVertexColor(0, 1, 0)
 	elseif self.value >= self.maxValue then
 		self:SetValue(self.maxValue)
-		self:SetStatusBarColor(0.0, 1.0, 0.0)
+		self:SetStatusBarColor(0, 1, 0)
 		self:HideSpark()
 	else
 		self:SetValue(self.maxValue)
