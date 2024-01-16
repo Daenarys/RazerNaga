@@ -241,15 +241,10 @@ function ActionButton:Skin()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
-		if (self.RightDivider:IsShown()) then
-			self.RightDivider:Hide()
-		end
-		if (self.BottomDivider:IsShown()) then
-			self.BottomDivider:Hide()
-		end
 		if (self.SlotArt:IsShown()) then
 			self.SlotArt:Hide()
 		end
+		
 		if (self.SlotBackground:IsShown()) then
 			self.SlotBackground:Hide()
 		end
