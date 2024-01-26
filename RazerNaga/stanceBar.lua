@@ -44,9 +44,6 @@ do
 
 		if button then
 			button:HookScript('OnEnter', self.OnEnter)
-			if button.UpdateButtonArt then
-				button.UpdateButtonArt = function() end
-			end
 		end
 
 		return button

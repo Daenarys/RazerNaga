@@ -109,10 +109,6 @@ function ActionButton:Create(id)
 			b.cooldown:SetDrawBling(true)
 		end
 
-		if b.UpdateButtonArt then
-			b.UpdateButtonArt = function() end
-		end
-
 		if b.UpdateHotKeys then
 			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
 		end

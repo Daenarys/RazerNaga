@@ -36,10 +36,6 @@ function PetButton:Create(id)
 	--override keybinding display
 	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
 
-	if b.UpdateButtonArt then
-		b.UpdateButtonArt = function() end
-	end
-
 	return b
 end
 
