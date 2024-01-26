@@ -29,7 +29,9 @@ UI_shared.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Background" atlas="ui-castingbar-background" setAllPoints="true"/>
+				<Texture parentKey="Background" atlas="ui-castingbar-background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.5"/>
+				</Texture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="EnergyGlow" alpha="0" alphaMode="ADD" atlas="Cast_Standard_GlowLine" useAtlasSize="true" scale="0.51">
