@@ -115,10 +115,8 @@ function ActionButton:Create(id)
 			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
 		end
 
-		for k, v in pairs(BaseActionButtonMixin) do
-			if type(v) == "function" then
-				self[k] = nil
-			end
+		if b.UpdateButtonArt then
+			b.UpdateButtonArt = function() end
 		end
 	end
 	return b
