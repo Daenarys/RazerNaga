@@ -116,17 +116,6 @@ function ActionButton:Create(id)
 		if b.UpdateHotKeys then
 			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
 		end
-
-		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
-			if not down then
-				local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
-				if actionType == "flyout" then
-					control:SetAttribute("caller", self)
-					control:RunAttribute("Toggle", actionID)
-					return false
-				end
-			end
-		]])
 	end
 	return b
 end
@@ -178,13 +167,6 @@ function ActionButton:UpdateMacro()
 	else
 		self.Name:Hide()
 	end
-end
-
-function ActionButton:SetFlyoutDirection(direction)
-	if InCombatLockdown() then return end
-	
-	self:SetAttribute('flyoutDirection', direction)
-	self:UpdateFlyout()
 end
 
 --utility function, resyncs the button's current action, modified by state

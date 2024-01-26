@@ -69,18 +69,10 @@ function ActionBar:New(id)
 	f:Layout()
 	f:UpdateGrid()
 	f:UpdateRightClickUnit()
-	f:SetScript('OnSizeChanged', self.OnSizeChanged)
-	f:UpdateFlyoutDirection()
 
 	active[id] = f
 
 	return f
-end
-
-function ActionBar:OnSizeChanged()
-	if not InCombatLockdown() then
-		self:UpdateFlyoutDirection()
-	end
 end
 
 --TODO: change the position code to be based more on the number of action bars
@@ -116,7 +108,6 @@ function ActionBar:LoadButtons()
 		local b = ActionButton:New(self.baseID + i)
 		if b then
 			b:SetParent(self.header)
-			b:SetFlyoutDirection(self:GetFlyoutDirection())
 			self.buttons[i] = b
 		else
 			break
@@ -130,10 +121,8 @@ function ActionBar:AddButton(i)
 	if b then
 		self.buttons[i] = b
 		b:SetParent(self.header)
-		b:SetFlyoutDirection(self:GetFlyoutDirection())
 		b:LoadAction()
 		self:UpdateAction(i)
-		self:UpdateGrid()
 	end
 end
 
@@ -312,43 +301,6 @@ function ActionBar:ForAll(method, ...)
 		f[method](f, ...)
 	end
 end
-
---[[ flyout direction updating ]]--
-
-function ActionBar:GetFlyoutDirection()
-	local w, h = self:GetSize()
-	local isVertical = w < h
-	local anchor = self:GetPoint()
-
-	if isVertical then
-		if anchor and anchor:match('LEFT') then
-			return 'RIGHT'
-		end
-		return 'LEFT'
-	end
-
-	if anchor and anchor:match('TOP') then
-		return 'DOWN'
-	end
-	return 'UP'
-end
-
-function ActionBar:UpdateFlyoutDirection()
-	if self.buttons then
-		local direction = self:GetFlyoutDirection()
-
-		--dear blizzard, I'd like to be able to use the useparent-* attribute stuff for this
-		for _,b in pairs(self.buttons) do
-			b:SetFlyoutDirection(direction)
-		end
-	end
-end
-
-function ActionBar:SavePosition()
-	RazerNaga.Frame.SavePosition(self)
-	self:UpdateFlyoutDirection()
-end
-
 
 --right click menu code for action bars
 --TODO: Probably enable the showstate stuff for other bars, since every bar basically has showstate functionality for 'free'
