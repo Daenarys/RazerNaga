@@ -216,6 +216,12 @@ function ActionButton:Skin()
 		self.Flash:SetAllPoints()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+		if self.SlotArt then
+			self.SlotArt:Hide()
+		end
+		if self.SlotBackground then
+			self.SlotBackground:Hide()
+		end
     end
 end
 
