@@ -349,7 +349,7 @@ function RazerNaga:HideBlizzard()
 
 		button:Hide()
 		button:UnregisterAllEvents()
-		button:SetAttribute("statehidden", true)
+		button:SetAttributeNoHandler("statehidden", true)
 	end
 
 	hideActionBarFrame(MainMenuBar, false)
@@ -965,7 +965,6 @@ function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
 
-
 --tooltips
 function RazerNaga:ShowTooltips()
 	return self.db.profile.showTooltips
@@ -984,7 +983,6 @@ end
 function RazerNaga:ShowCombatTooltips()
 	return self.db.profile.showTooltipsCombat
 end
-
 
 --minimap button
 function RazerNaga:SetShowMinimap(enable)

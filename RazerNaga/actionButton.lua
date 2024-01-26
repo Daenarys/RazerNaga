@@ -40,9 +40,9 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttribute('showgrid', 1)
-		b:SetAttribute('action--base', id)
-		b:SetAttribute('_childupdate-action', [[
+		b:SetAttributeNoHandler('showgrid', 1)
+		b:SetAttributeNoHandler('action--base', id)
+		b:SetAttributeNoHandler('_childupdate-action', [[
 			local state = message
 			local overridePage = self:GetParent():GetAttribute('state-overridepage')
 			local newActionID
@@ -59,7 +59,7 @@ function ActionButton:New(id)
 				self:CallMethod('UpdateState')
 			end
 		]])
-		b:SetAttribute("UpdateShown", [[
+		b:SetAttributeNoHandler("UpdateShown", [[
 		    local show = (HasAction(self:GetAttribute("action")))
 		                 and not self:GetAttribute("statehidden")
 		    if show then
@@ -99,9 +99,9 @@ function ActionButton:Create(id)
 		b:SetID(0)
 
 		b:ClearAllPoints()
-		b:SetAttribute('useparent-actionpage', nil)
-		b:SetAttribute('useparent-unit', true)
-		b:SetAttribute("statehidden", nil)
+		b:SetAttributeNoHandler('useparent-actionpage', nil)
+		b:SetAttributeNoHandler('useparent-unit', true)
+		b:SetAttributeNoHandler("statehidden", nil)
 		b:EnableMouseWheel(true)
 		b:HookScript('OnEnter', self.OnEnter)
 		b:SetSize(36, 36)
@@ -128,7 +128,7 @@ function ActionButton:Restore(id)
 	if b then
 		self.unused[id] = nil
 
-		b:SetAttribute("statehidden", nil)
+		b:SetAttributeNoHandler("statehidden", nil)
 
 		self.active[id] = b
 		return b
@@ -148,7 +148,7 @@ do
 		Tooltips:Unregister(self)
 		Bindings:Unregister(self)
 
-		self:SetAttribute("statehidden", true)
+		self:SetAttributeNoHandler("statehidden", true)
 		self:SetParent(HiddenActionButtonFrame)
 		self:Hide()
 		self.action = 0
@@ -176,7 +176,7 @@ function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
 	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
 	
-	self:SetAttribute('action', id)
+	self:SetAttributeNoHandler('action', id)
 end
 
 function ActionButton:Skin()

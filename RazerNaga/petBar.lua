@@ -3,7 +3,6 @@
 		A RazerNaga pet bar
 --]]
 
-
 --[[ Globals ]]--
 
 local RazerNaga = _G[...]
