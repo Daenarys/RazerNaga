@@ -582,7 +582,7 @@ end
 
 function RazerNaga:NewMenu(id)
     if self:IsConfigAddonEnabled() and self:LoadConfigAddon() then
-        return self.Menu:New()
+        return self.Menu and self.Menu:New(id)
     end
 end
 
