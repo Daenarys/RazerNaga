@@ -132,7 +132,7 @@ UI_shared.xsd">
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
-					<Size x="8" y="20"/>
+					<Size x="8" y="24"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
