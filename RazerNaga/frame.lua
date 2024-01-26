@@ -905,18 +905,23 @@ function Frame:CreateMenu()
 end
 
 function Frame:ShowMenu()
-    local menu = self.menu
-    if not menu then
-        menu = self:CreateMenu()
-        self.menu = menu
-    end
+	if RazerNaga:IsConfigAddonEnabled() then
+		if not self.menu then
+			self:CreateMenu()
+		end
 
-    if menu then
-        menu:Hide()
-        menu:SetOwner(self)
-        menu:ShowFirstPanel()
-        menu:Show()
-    end
+		local menu = self.menu
+		if menu then
+			if menu:IsShown() and menu:GetOwner() == self then
+				menu:Hide()
+			else
+				menu:Hide()
+				menu:SetOwner(self)
+				menu:ShowFirstPanel()
+				menu:Show()
+			end
+		end
+	end
 end
 
 
