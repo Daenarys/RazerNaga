@@ -229,82 +229,10 @@ function ActionButton:Skin()
 			self.SlotBackground:Hide()
 		end
 
-		if not self.FlyoutContainer then
-			self.FlyoutContainer = CreateFrame("Frame", nil, self)
-			self.FlyoutContainer:SetAllPoints()
-			self.FlyoutContainer:Hide()
-		end
-
-		if not self.FlyoutArrow then
-			self.FlyoutArrow = self.FlyoutContainer:CreateTexture()
-			self.FlyoutArrow:SetSize(23, 11)
-			self.FlyoutArrow:SetDrawLayer("ARTWORK", 2)
-			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
-			self.FlyoutArrow:Hide()
-		end
-
-		if not self.FlyoutBorder then
-			self.FlyoutBorder = self.FlyoutContainer:CreateTexture()
-			self.FlyoutBorder:SetSize(42, 42)
-			self.FlyoutBorder:SetPoint("CENTER")
-			self.FlyoutBorder:SetDrawLayer("ARTWORK", 1)
-			self.FlyoutBorder:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-			self.FlyoutBorder:SetTexCoord(0.01562500, 0.67187500, 0.39843750, 0.72656250)
-			self.FlyoutBorder:Hide()
-		end
-
 		if self.FlyoutBorderShadow then
 			self.FlyoutBorderShadow:SetSize(48, 48)
 			self.FlyoutBorderShadow:SetPoint("CENTER")
-			self.FlyoutBorderShadow:SetDrawLayer("ARTWORK", 1)
-			self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-			self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
 		end
-
-		hooksecurefunc(self, "UpdateFlyout", function()
-			if not self.FlyoutArrowContainer then return end
-
-			local actionType = GetActionInfo(self.action);
-			if (actionType == "flyout") then
-				self.FlyoutContainer:Show()
-				-- Update border and determine arrow position
-				local arrowDistance;
-				if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
-					self.FlyoutBorder:Show();
-					self.FlyoutBorderShadow:Show();
-					arrowDistance = 5;
-				else
-					self.FlyoutBorder:Hide();
-					self.FlyoutBorderShadow:Hide();
-					arrowDistance = 2;
-				end
-
-				-- Update arrow
-				self.FlyoutArrow:Show();
-				self.FlyoutArrow:ClearAllPoints();
-				local direction = self:GetAttribute("flyoutDirection");
-				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -arrowDistance, 0);
-					SetClampedTextureRotation(self.FlyoutArrow, 270);
-				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", arrowDistance, 0);
-					SetClampedTextureRotation(self.FlyoutArrow, 90);
-				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -arrowDistance);
-					SetClampedTextureRotation(self.FlyoutArrow, 180);
-				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, arrowDistance);
-					SetClampedTextureRotation(self.FlyoutArrow, 0);
-				end
-			else
-				self.FlyoutArrow:Hide()
-				self.FlyoutBorder:Hide()
-				self.FlyoutBorderShadow:Hide()
-				self.FlyoutContainer:Hide()
-			end
-			self.FlyoutArrowContainer:Hide()
-		end)
     end
 end
 
