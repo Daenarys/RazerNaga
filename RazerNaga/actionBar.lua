@@ -82,7 +82,7 @@ function ActionBar:GetDefaults()
 	defaults.x = 0
 	defaults.y = 40*(self.id-1)
 	defaults.pages = {}
-	defaults.spacing = 4
+	defaults.spacing = 0
 	defaults.padW = 2
 	defaults.padH = 2
 	defaults.numButtons = self:MaxLength()
@@ -123,7 +123,6 @@ function ActionBar:AddButton(i)
 		b:SetParent(self.header)
 		b:LoadAction()
 		self:UpdateAction(i)
-		self:UpdateGrid()
 	end
 end
 
@@ -184,7 +183,7 @@ do
 		local b = self.buttons[i]
 		local maxSize = self:MaxLength()
 
-		b:SetAttribute('button--index', i)
+		b:SetAttributeNoHandler('button--index', i)
 
 		for i, state in RazerNaga.BarStates:getAll() do
 			local offset = self:GetOffset(state.id)
@@ -194,7 +193,7 @@ do
 				actionId = ToValidID(b:GetAttribute('action--base') + offset * maxSize)
 			end
 
-			b:SetAttribute('action--S' .. i, actionId)
+			b:SetAttributeNoHandler('action--S' .. i, actionId)
 		end
 	end
 end

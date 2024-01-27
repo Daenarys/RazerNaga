@@ -45,7 +45,6 @@ local function copyDefaults(tbl, defaults)
 	return tbl
 end
 
-
 --[[ Methods ]]--
 
 --loads the given set of settings into the current dominos profile
@@ -62,16 +61,6 @@ function SettingsLoader:LoadSettings(settings)
 	--reenable dominos
 	RazerNaga:Load()
 	RazerNaga.AutoBinder:EnforceBindings()
-
-	--hack, need to do a slightly more advanced layout method for the class bar to place it properly across all resolutions
-	-- local classBar = RazerNaga.Frame:Get('class')
-	-- if classBar then
-	-- 	if self:GetLayoutType() == '3x4' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -370, 270)
-	-- 	elseif self:GetLayoutType() == '4x3' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -450, 230)
-	-- 	end
-	-- end
 end
 
 --replace any items in toTble that are in fromTbl
@@ -96,7 +85,6 @@ end
 function SettingsLoader:GetLayoutType()
 	return RazerNaga.db.profile.layoutType
 end
-
 
 --[[
 	3x4 layout settings
@@ -128,7 +116,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 110,
 				['enableAutoBinding'] = true,
@@ -143,7 +130,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 110,
 			}, -- [2]
@@ -157,7 +143,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0,
 			}, -- [3]
@@ -171,7 +156,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
 				['x'] = -40,
 				['y'] = 0,
 			}, -- [4]
@@ -185,7 +169,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
 				['x'] = 270,
 				['y'] = 52,
 			}, -- [5]
@@ -199,7 +182,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
 				['x'] = -270,
 				['y'] = 52,
 			}, -- [6]
@@ -213,7 +195,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 305,
 			}, -- [7]
@@ -227,7 +208,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 305,
 			}, -- [8]
@@ -241,7 +221,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 500,
 			}, -- [9]
@@ -255,7 +234,6 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 500,
 			}, -- [10]
@@ -305,7 +283,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = 2,
+				['spacing'] = -2,
 				['x'] = 250,
 				['y'] = 0,
 			},
@@ -369,7 +347,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 110,
 				['enableAutoBinding'] = true,
@@ -384,7 +361,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 110,
 			}, -- [2]
@@ -398,7 +374,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0,
 			}, -- [3]
@@ -412,7 +387,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
 				['x'] = -40,
 				['y'] = 0,
 			}, -- [4]
@@ -426,7 +400,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
 				['x'] = 270,
 				['y'] = 52,
 			}, -- [5]
@@ -440,7 +413,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
 				['x'] = -270,
 				['y'] = 52,
 			}, -- [6]
@@ -454,7 +426,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 265,
 			}, -- [7]
@@ -468,7 +439,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 265,
 			}, -- [8]
@@ -482,7 +452,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 420,
 			}, -- [9]
@@ -497,7 +466,6 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 420,
 			}, -- [10]
@@ -547,7 +515,7 @@ function SettingsLoader:GetFourByThree()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = 2,
+				['spacing'] = -2,
 				['x'] = 250,
 				['y'] = 0,
 			},
