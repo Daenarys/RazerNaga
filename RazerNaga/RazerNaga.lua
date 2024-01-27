@@ -330,9 +330,11 @@ function RazerNaga:HideBlizzard()
 			if clearEvents then
 				frame:UnregisterAllEvents()
 			end
+
 			if frame.system then
 				purgeKey(frame, "isShownExternal")
 			end
+
 			if frame.HideBase then
 				frame:HideBase()
 			else
@@ -347,7 +349,7 @@ function RazerNaga:HideBlizzard()
 
 		button:Hide()
 		button:UnregisterAllEvents()
-		button:SetAttributeNoHandler("statehidden", true)
+		button:SetAttribute("statehidden", true)
 	end
 
 	hideActionBarFrame(MainMenuBar, false)
@@ -359,15 +361,16 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(MultiBar6, true)
 	hideActionBarFrame(MultiBar7, true)
 
+	-- Hide MultiBar Buttons, but keep the bars alive
 	for i=1,12 do
-		hideActionButton(_G["ActionButton"..i])
-		hideActionButton(_G["MultiBarBottomLeftButton"..i])
-		hideActionButton(_G["MultiBarBottomRightButton"..i])
-		hideActionButton(_G["MultiBarRightButton"..i])
-		hideActionButton(_G["MultiBarLeftButton"..i])
-		hideActionButton(_G["MultiBar5Button"..i])
-		hideActionButton(_G["MultiBar6Button"..i])
-		hideActionButton(_G["MultiBar7Button"..i])
+		hideActionButton(_G["ActionButton" .. i])
+		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
+		hideActionButton(_G["MultiBarBottomRightButton" .. i])
+		hideActionButton(_G["MultiBarRightButton" .. i])
+		hideActionButton(_G["MultiBarLeftButton" .. i])
+		hideActionButton(_G["MultiBar5Button" .. i])
+		hideActionButton(_G["MultiBar6Button" .. i])
+		hideActionButton(_G["MultiBar7Button" .. i])
 	end
 
 	hideActionBarFrame(MicroButtonAndBagsBar, false)
@@ -381,13 +384,15 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(MicroMenu, true)
 	hideActionBarFrame(MicroMenuContainer, true)
 
+	-- these events drive visibility, we want the MainMenuBar to remain invisible
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
 	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
-	MultiActionBar_ShowAllGrids = function() end
-	MultiActionBar_HideAllGrids = function() end
+	-- these functions drive visibility so disable them
+	MultiActionBar_ShowAllGrids = function() return; end;
+	MultiActionBar_HideAllGrids = function() return; end;
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -1051,15 +1056,15 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		self:SetScale(0.85)
 	end)
 
-	--queuestatusframe
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
-
+	--adjust the queuestatus position
 	hooksecurefunc("QueueStatusDropDown_Show", function()
 		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
+		DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -62)
+	end)
+
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints();
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
 	end)
 end
 

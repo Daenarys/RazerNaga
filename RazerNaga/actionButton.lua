@@ -40,9 +40,9 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttributeNoHandler('showgrid', 1)
-		b:SetAttributeNoHandler('action--base', id)
-		b:SetAttributeNoHandler('_childupdate-action', [[
+		b:SetAttribute('showgrid', 1)
+		b:SetAttribute('action--base', id)
+		b:SetAttribute('_childupdate-action', [[
 			local state = message
 			local overridePage = self:GetParent():GetAttribute('state-overridepage')
 			local newActionID
@@ -95,13 +95,13 @@ function ActionButton:Create(id)
 		--this is used to preserve the button's old id
 		--we cannot simply keep a button's id at > 0 or blizzard code will take control of paging
 		--but we need the button's id for the old bindings system
-		b:SetAttributeNoHandler('bindingid', b:GetID())
+		b:SetAttribute('bindingid', b:GetID())
 		b:SetID(0)
 
 		b:ClearAllPoints()
-		b:SetAttributeNoHandler('useparent-actionpage', nil)
-		b:SetAttributeNoHandler('useparent-unit', true)
-		b:SetAttributeNoHandler("statehidden", nil)
+		b:SetAttribute('useparent-actionpage', nil)
+		b:SetAttribute('useparent-unit', true)
+		b:SetAttribute("statehidden", nil)
 		b:EnableMouseWheel(true)
 		b:HookScript('OnEnter', self.OnEnter)
 		b:SetSize(36, 36)
@@ -118,6 +118,17 @@ function ActionButton:Create(id)
 		if b.UpdateHotKeys then
 			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
 		end
+
+		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
+			if not down then
+				local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
+				if actionType == "flyout" then
+					control:SetAttribute("caller", self)
+					control:RunAttribute("Toggle", actionID)
+					return false
+				end
+			end
+		]])
 	end
 	return b
 end
@@ -128,7 +139,7 @@ function ActionButton:Restore(id)
 	if b then
 		self.unused[id] = nil
 
-		b:SetAttributeNoHandler("statehidden", nil)
+		b:SetAttribute("statehidden", nil)
 
 		self.active[id] = b
 		return b
@@ -148,7 +159,7 @@ do
 		Tooltips:Unregister(self)
 		Bindings:Unregister(self)
 
-		self:SetAttributeNoHandler("statehidden", true)
+		self:SetAttribute("statehidden", true)
 		self:SetParent(HiddenActionButtonFrame)
 		self:Hide()
 		self.action = 0
@@ -171,12 +182,19 @@ function ActionButton:UpdateMacro()
 	end
 end
 
+function ActionButton:SetFlyoutDirection(direction)
+	if InCombatLockdown() then return end
+	
+	self:SetAttribute('flyoutDirection', direction)
+	self:UpdateFlyout()
+end
+
 --utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
 	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
 	
-	self:SetAttributeNoHandler('action', id)
+	self:SetAttribute('action', id)
 end
 
 function ActionButton:Skin()
@@ -223,18 +241,57 @@ function ActionButton:Skin()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
-		if (self.FlyoutBorderShadow) then
-			self.FlyoutBorderShadow:SetSize(48, 48)
-			self.FlyoutBorderShadow:SetPoint("CENTER")
-		end
-
-		if (self.SlotArt) then
+		if (self.SlotArt:IsShown()) then
 			self.SlotArt:Hide()
 		end
-
-		if (self.SlotBackground) then
+		
+		if (self.SlotBackground:IsShown()) then
 			self.SlotBackground:Hide()
 		end
+
+		if not self.FlyoutContainer then
+			self.FlyoutContainer = CreateFrame("Frame", nil, self)
+			self.FlyoutContainer:SetAllPoints()
+			self.FlyoutContainer:Hide()
+		end
+
+		if not self.FlyoutArrow then
+			self.FlyoutArrow = self.FlyoutContainer:CreateTexture()
+			self.FlyoutArrow:SetSize(23, 11)
+			self.FlyoutArrow:SetDrawLayer("ARTWORK", 2)
+			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
+			self.FlyoutArrow:Hide()
+		end
+
+		hooksecurefunc(self, "UpdateFlyout", function()
+			if not self.FlyoutArrowContainer then return end
+
+			local actionType = GetActionInfo(self.action);
+			if (actionType == "flyout") then
+				self.FlyoutContainer:Show()
+				self.FlyoutArrow:Show()
+				self.FlyoutArrow:ClearAllPoints()
+				local direction = self:GetAttribute("flyoutDirection")
+				if (direction == "LEFT") then
+					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
+					SetClampedTextureRotation(self.FlyoutArrow, 270)
+				elseif (direction == "RIGHT") then
+					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
+					SetClampedTextureRotation(self.FlyoutArrow, 90)
+				elseif (direction == "DOWN") then
+					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
+					SetClampedTextureRotation(self.FlyoutArrow, 180)
+				else
+					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
+				end
+			else
+				self.FlyoutContainer:Hide()
+				self.FlyoutArrow:Hide()
+			end
+			self.FlyoutArrowContainer:Hide()
+			self.FlyoutBorderShadow:Hide()
+		end)
     end
 end
 
@@ -270,6 +327,8 @@ end
 local function OverlayGlow_OnUpdate(self, elapsed)
 	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
 	local cooldown = self:GetParent().cooldown
+	-- we need some threshold to avoid dimming the glow during the gdc
+	-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
 	if cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000 then
 		self:SetAlpha(0.5)
 	else
@@ -418,6 +477,7 @@ hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
 	overlay:SetParent(button)
 	overlay:SetFrameLevel(button:GetFrameLevel() + 5)
 	overlay:ClearAllPoints()
+	--Make the height/width available before the next frame:
 	overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
 	overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
 	overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
@@ -448,13 +508,6 @@ hooksecurefunc("ActionButton_HideOverlayGlow", function(button)
 end)
 
 hooksecurefunc("StartChargeCooldown", function(parent)
-	if parent.chargeCooldown then
-		parent.chargeCooldown:SetAllPoints(parent)
-	end
-end)
-
-hooksecurefunc("CooldownFrame_Set", function(self)
-	if not self:IsForbidden() then
-		self:SetEdgeTexture("Interface\\Cooldown\\edge");
-	end
+    parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
+    parent.chargeCooldown:SetAllPoints(parent)
 end)

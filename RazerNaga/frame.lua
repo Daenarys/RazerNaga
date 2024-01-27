@@ -461,6 +461,9 @@ function Frame:IsFocus()
 	if self:IsMouseOver(1, -1, -1, 1) then
 		return (GetMouseFocus() == WorldFrame) or isChildFocus(self:GetChildren())
 	end
+	if SpellFlyout and SpellFlyout:IsMouseOver(1, -1, -1, 1) and isDescendant(SpellFlyout:GetParent(), self) then
+		return true
+	end
 	return RazerNaga:IsLinkedOpacityEnabled() and self:IsDockedFocus()
 end
 
