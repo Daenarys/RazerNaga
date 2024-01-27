@@ -156,7 +156,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['x'] = -40,
+				['x'] = -49,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -169,7 +169,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = 270,
+				['x'] = 280,
 				['y'] = 52,
 			}, -- [5]
 			{
@@ -182,7 +182,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = -270,
+				['x'] = -280,
 				['y'] = 52,
 			}, -- [6]
 			{
@@ -387,7 +387,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['x'] = -40,
+				['x'] = -49,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -400,7 +400,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = 270,
+				['x'] = 280,
 				['y'] = 52,
 			}, -- [5]
 			{
@@ -413,7 +413,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = -270,
+				['x'] = -280,
 				['y'] = 52,
 			}, -- [6]
 			{
