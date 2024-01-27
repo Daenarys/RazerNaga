@@ -82,7 +82,7 @@ function ActionBar:GetDefaults()
 	defaults.x = 0
 	defaults.y = 40*(self.id-1)
 	defaults.pages = {}
-	defaults.spacing = 0
+	defaults.spacing = 4
 	defaults.padW = 2
 	defaults.padH = 2
 	defaults.numButtons = self:MaxLength()
@@ -123,6 +123,7 @@ function ActionBar:AddButton(i)
 		b:SetParent(self.header)
 		b:LoadAction()
 		self:UpdateAction(i)
+		self:UpdateGrid()
 	end
 end
 

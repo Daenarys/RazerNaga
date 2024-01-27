@@ -116,6 +116,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 110,
 				['enableAutoBinding'] = true,
@@ -130,6 +131,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 110,
 			}, -- [2]
@@ -143,6 +145,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
+				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0,
 			}, -- [3]
@@ -156,7 +159,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['x'] = -49,
+				['spacing'] = 4,
+				['x'] = -40,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -169,7 +173,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = 280,
+				['spacing'] = 4,
+				['x'] = 270,
 				['y'] = 52,
 			}, -- [5]
 			{
@@ -182,7 +187,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = -280,
+				['spacing'] = 4,
+				['x'] = -270,
 				['y'] = 52,
 			}, -- [6]
 			{
@@ -195,6 +201,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 305,
 			}, -- [7]
@@ -208,6 +215,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 305,
 			}, -- [8]
@@ -221,6 +229,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 500,
 			}, -- [9]
@@ -234,6 +243,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 500,
 			}, -- [10]
@@ -283,7 +293,6 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = -2,
 				['x'] = 250,
 				['y'] = 0,
 			},
@@ -318,7 +327,6 @@ function SettingsLoader:GetThreeByFour()
 	}
 end
 
-
 --[[
 	4x3 layout settings
 --]]
@@ -347,6 +355,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 110,
 				['enableAutoBinding'] = true,
@@ -361,6 +370,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 110,
 			}, -- [2]
@@ -374,6 +384,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
+				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0,
 			}, -- [3]
@@ -387,7 +398,8 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['x'] = -49,
+				['spacing'] = 4,
+				['x'] = -40,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -400,7 +412,8 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = 280,
+				['spacing'] = 4,
+				['x'] = 270,
 				['y'] = 52,
 			}, -- [5]
 			{
@@ -413,7 +426,8 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['x'] = -280,
+				['spacing'] = 4,
+				['x'] = -270,
 				['y'] = 52,
 			}, -- [6]
 			{
@@ -426,6 +440,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 265,
 			}, -- [7]
@@ -439,6 +454,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 265,
 			}, -- [8]
@@ -452,6 +468,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 420,
 			}, -- [9]
@@ -466,6 +483,7 @@ function SettingsLoader:GetFourByThree()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 420,
 			}, -- [10]
@@ -515,7 +533,6 @@ function SettingsLoader:GetFourByThree()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = -2,
 				['x'] = 250,
 				['y'] = 0,
 			},
