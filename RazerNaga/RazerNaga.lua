@@ -1056,15 +1056,15 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		self:SetScale(0.85)
 	end)
 
-	--adjust the queuestatus position
-	hooksecurefunc("QueueStatusDropDown_Show", function()
-		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -62)
+	--queuestatusframe
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 	end)
 
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints();
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
+	hooksecurefunc("QueueStatusDropDown_Show", function()
+		DropDownList1:ClearAllPoints()
+		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
 	end)
 end
 
