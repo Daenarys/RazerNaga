@@ -391,8 +391,8 @@ function RazerNaga:HideBlizzard()
 	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 	-- these functions drive visibility so disable them
-	MultiActionBar_ShowAllGrids = function() return; end;
-	MultiActionBar_HideAllGrids = function() return; end;
+	MultiActionBar_ShowAllGrids = function() return end
+	MultiActionBar_HideAllGrids = function() return end
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -1058,8 +1058,8 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 
 	--queuestatusframe
 	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints();
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", 0, 0);
+		self:ClearAllPoints()
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 	end)
 
 	hooksecurefunc("QueueStatusDropDown_Show", function()
