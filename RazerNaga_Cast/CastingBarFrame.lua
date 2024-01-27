@@ -50,14 +50,6 @@ function CastingBarFrame_SetUseStartColorForFlash(self, flashColorSameAsStart)
 	self.flashColorSameAsStart = flashColorSameAsStart;
 end
 
--- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
-function CastingBarFrame_AddWidgetForFade(self, widget)
-	if not self.additionalFadeWidgets then
-		self.additionalFadeWidgets = {};
-	end
-	self.additionalFadeWidgets[widget] = true;
-end
-
 function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 	if self.unit ~= unit then
 		self.unit = unit;
@@ -97,22 +89,6 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
 
 			self:Hide();
-		end
-	end
-end
-
-function CastingBarFrame_OnShow(self)
-	if ( self.unit ) then
-		if ( self.casting ) then
-			local _, _, _, startTime = UnitCastingInfo(self.unit);
-			if ( startTime ) then
-				self.value = (GetTime() - (startTime / 1000));
-			end
-		else
-			local _, _, _, _, endTime = UnitChannelInfo(self.unit);
-			if ( endTime ) then
-				self.value = ((endTime / 1000) - GetTime());
-			end
 		end
 	end
 end
