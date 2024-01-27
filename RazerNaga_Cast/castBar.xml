@@ -2,20 +2,9 @@
 UI_shared.xsd">
 	<Script file="castBar.lua"/>
 	<StatusBar name="RazerNagaCastingBarTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" hidden="true" virtual="true">
-		<Size x="210" y="16"/>
+		<Size x="210" y="14"/>
 		<BarTexture atlas="ui-castingbar-filling-standard" useAtlasSize="true"/>
-		<KeyValues>
-			<KeyValue key="playCastFX" value="true" type="boolean"/>
-		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="DropShadow" atlas="castbar_shadow_embedded" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture parentKey="InterruptGlow" alpha="0" alphaMode="ADD" atlas="cast_interrupt_outerglow" useAtlasSize="true" scale="0.5">
 					<Anchors>
@@ -29,7 +18,7 @@ UI_shared.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="2">
-				<Texture parentKey="Background" atlas="ui-castingbar-background" setAllPoints="true">
+				<Texture parentKey="Background" setAllPoints="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
@@ -55,10 +44,10 @@ UI_shared.xsd">
 						<Anchor point="TOPLEFT" x="-27" y="4"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Border" atlas="ui-castingbar-frame">
+				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
+					<Size x="282" y="74"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="3"/>
-						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -117,16 +106,12 @@ UI_shared.xsd">
 				<Texture parentKey="ChargeFlash" alpha="0" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" setAllPoints="true"/>
 				<FontString parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="CENTER">
-							<Offset x="0" y="0"/>
-						</Anchor>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
+				<FontString parentKey="Time" inherits="GameFontHighlight">
 					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-4" y="0"/>
-						</Anchor>
+						<Anchor point="RIGHT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -192,6 +177,9 @@ UI_shared.xsd">
 				</MaskTexture>
 			</Layer>
 		</Layers>
+		<KeyValues>
+			<KeyValue key="playCastFX" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad>
 				self:OnLoad("player", true, false);
