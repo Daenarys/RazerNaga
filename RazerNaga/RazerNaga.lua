@@ -330,11 +330,9 @@ function RazerNaga:HideBlizzard()
 			if clearEvents then
 				frame:UnregisterAllEvents()
 			end
-
 			if frame.system then
 				purgeKey(frame, "isShownExternal")
 			end
-
 			if frame.HideBase then
 				frame:HideBase()
 			else
@@ -361,16 +359,15 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(MultiBar6, true)
 	hideActionBarFrame(MultiBar7, true)
 
-	-- Hide MultiBar Buttons, but keep the bars alive
 	for i=1,12 do
-		hideActionButton(_G["ActionButton" .. i])
-		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
-		hideActionButton(_G["MultiBarBottomRightButton" .. i])
-		hideActionButton(_G["MultiBarRightButton" .. i])
-		hideActionButton(_G["MultiBarLeftButton" .. i])
-		hideActionButton(_G["MultiBar5Button" .. i])
-		hideActionButton(_G["MultiBar6Button" .. i])
-		hideActionButton(_G["MultiBar7Button" .. i])
+		hideActionButton(_G["ActionButton"..i])
+		hideActionButton(_G["MultiBarBottomLeftButton"..i])
+		hideActionButton(_G["MultiBarBottomRightButton"..i])
+		hideActionButton(_G["MultiBarRightButton"..i])
+		hideActionButton(_G["MultiBarLeftButton"..i])
+		hideActionButton(_G["MultiBar5Button"..i])
+		hideActionButton(_G["MultiBar6Button"..i])
+		hideActionButton(_G["MultiBar7Button"..i])
 	end
 
 	hideActionBarFrame(MicroButtonAndBagsBar, false)
@@ -384,15 +381,13 @@ function RazerNaga:HideBlizzard()
 	hideActionBarFrame(MicroMenu, true)
 	hideActionBarFrame(MicroMenuContainer, true)
 
-	-- these events drive visibility, we want the MainMenuBar to remain invisible
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
 	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
 	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
-	-- these functions drive visibility so disable them
-	MultiActionBar_ShowAllGrids = function() return end
-	MultiActionBar_HideAllGrids = function() return end
+	MultiActionBar_ShowAllGrids = function() end
+	MultiActionBar_HideAllGrids = function() end
 end
 
 function RazerNaga:SetUseOverrideUI(enable)

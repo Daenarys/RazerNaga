@@ -222,16 +222,18 @@ function ActionButton:Skin()
 		self.Flash:SetAllPoints()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+
+		if (self.FlyoutBorderShadow) then
+			self.FlyoutBorderShadow:SetSize(48, 48)
+			self.FlyoutBorderShadow:SetPoint("CENTER")
+		end
+
 		if (self.SlotArt) then
 			self.SlotArt:Hide()
 		end
+
 		if (self.SlotBackground) then
 			self.SlotBackground:Hide()
-		end
-
-		if self.FlyoutBorderShadow then
-			self.FlyoutBorderShadow:SetSize(48, 48)
-			self.FlyoutBorderShadow:SetPoint("CENTER")
 		end
     end
 end
@@ -416,7 +418,6 @@ hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
 	overlay:SetParent(button)
 	overlay:SetFrameLevel(button:GetFrameLevel() + 5)
 	overlay:ClearAllPoints()
-	--Make the height/width available before the next frame:
 	overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
 	overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
 	overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
