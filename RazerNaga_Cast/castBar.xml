@@ -45,7 +45,7 @@ UI_shared.xsd">
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
-					<Size x="282" y="74"/>
+					<Size x="282" y="70"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
