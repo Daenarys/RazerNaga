@@ -448,6 +448,13 @@ hooksecurefunc("ActionButton_HideOverlayGlow", function(button)
 end)
 
 hooksecurefunc("StartChargeCooldown", function(parent)
-    parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
-    parent.chargeCooldown:SetAllPoints(parent)
+	if parent.chargeCooldown then
+		parent.chargeCooldown:SetAllPoints(parent)
+	end
+end)
+
+hooksecurefunc("CooldownFrame_Set", function(self)
+	if not self:IsForbidden() then
+		self:SetEdgeTexture("Interface\\Cooldown\\edge");
+	end
 end)
