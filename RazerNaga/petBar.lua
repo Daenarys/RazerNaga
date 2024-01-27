@@ -3,13 +3,16 @@
 		A RazerNaga pet bar
 --]]
 
+
 --[[ Globals ]]--
 
-local RazerNaga = _G[...]
+local _G = _G
+local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 local format = string.format
 local unused = {}
+
 
 --[[ Pet Button ]]--
 
@@ -114,6 +117,7 @@ function PetButton:OnEnter()
 	KeyBound:Set(self)
 end
 
+
 --[[ Pet Bar ]]--
 
 local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
@@ -161,6 +165,7 @@ function PetBar:RemoveButton(i)
 	self.buttons[i] = nil
 	b:Free()
 end
+
 
 --[[ keybound  support ]]--
 

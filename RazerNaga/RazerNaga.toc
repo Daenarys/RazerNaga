@@ -3,7 +3,7 @@
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Tuller
-## Version: 3.2.1
+## Version: 3.2.0
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
 ## OptionalDeps: Ace3, LibKeyBound-1.0, Masque, FlyPaper
 embeds.xml
@@ -31,5 +31,6 @@ stanceBar.lua
 bagBar.lua
 menuBar.lua
 vehicleBar.lua
+spellFlyout.lua
 configModeDialog.lua
 hoverMenu.lua

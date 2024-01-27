@@ -16,8 +16,10 @@ end
 
 --[[ Globals ]]--
 
-local RazerNaga = _G[...]
+local _G = _G
+local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
+
 
 --[[ Button ]]--
 
@@ -101,6 +103,7 @@ do
 	end
 end
 
+
 --[[ Bar ]]--
 
 local StanceBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
@@ -140,6 +143,7 @@ do
 		RazerNaga.Frame.Free(self)
 	end
 
+
 	--[[ Events/Messages ]]--
 
 	function StanceBar:OnEvent(event, ...)
@@ -161,6 +165,7 @@ do
 	function StanceBar:PLAYER_ENTERING_WORLD()
 		self:UpdateNumForms()
 	end
+
 
 	--[[ button stuff]]--
 
@@ -213,6 +218,7 @@ do
 		StanceBar.menu = menu
 	end
 end
+
 
 --[[ Module ]]--
 

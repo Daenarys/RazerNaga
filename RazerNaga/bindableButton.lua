@@ -5,8 +5,10 @@
 
 --[[ Globals ]]--
 
-local RazerNaga = _G[...]
+local _G = _G
+local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
+
 
 --[[ Class ]]--
 
@@ -128,6 +130,7 @@ function BindableButton:ClearBindings()
 	ClearBindings(self:GetBlizzBindings())
 	ClearBindings(self:GetClickBindings())
 end
+
 
 --[[ lynn auto binding settings, for display override purposes ]]--
 
