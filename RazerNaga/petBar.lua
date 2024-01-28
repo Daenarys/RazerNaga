@@ -6,8 +6,7 @@
 
 --[[ Globals ]]--
 
-local _G = _G
-local RazerNaga = _G['RazerNaga']
+local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 local format = string.format

@@ -551,14 +551,17 @@ function MenuBar:FixButtonPositions()
     local l, r, t, b = self.overrideButtons[1]:GetHitRectInsets()
 
     for i, button in ipairs(self.overrideButtons) do
-    	button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
-    	button:ClearAllPoints()
+        local PetMicroButtonFrame = PetBattleFrame and PetBattleFrame.BottomFrame.MicroButtonFrame
+        button:ClearAllPoints()
+        button:SetParent(PetMicroButtonFrame)
+        button:SetScale(1)
+
         if i == 1 then
-        	button:SetPoint('BOTTOMLEFT', -9, button:GetHeight())
+            button:SetPoint('TOPLEFT', -4, 3)
         elseif i == 7 then
-            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, (t - b) - 3)
+            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
         else
-        	button:SetPoint('BOTTOMLEFT', self.overrideButtons[i - 1], 'BOTTOMRIGHT', (l - r) + 8, 0)
+            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
         end
 
         button:Show()

@@ -16,8 +16,7 @@ end
 
 --[[ Globals ]]--
 
-local _G = _G
-local RazerNaga = _G['RazerNaga']
+local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 
 
