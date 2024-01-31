@@ -95,7 +95,7 @@ function ActionButton:Create(id)
 		--this is used to preserve the button's old id
 		--we cannot simply keep a button's id at > 0 or blizzard code will take control of paging
 		--but we need the button's id for the old bindings system
-		b:SetAttributeNoHandler('bindingid', b:GetID())
+		b:SetAttribute('bindingid', b:GetID())
 		b:SetID(0)
 
 		b:ClearAllPoints()
