@@ -230,6 +230,37 @@ function ActionButton:Skin()
 		if (self.SlotBackground:IsShown()) then
 			self.SlotBackground:Hide()
 		end
+
+		if not self.FlyoutBorder then
+			self.FlyoutBorder = self:CreateTexture(nil, "OVERLAY", nil, 1)
+			self.FlyoutBorder:SetSize(42, 42)
+			self.FlyoutBorder:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+			self.FlyoutBorder:SetTexCoord(0.01562500, 0.67187500, 0.39843750, 0.72656250)
+			self.FlyoutBorder:ClearAllPoints()
+			self.FlyoutBorder:SetPoint("CENTER")
+			self.FlyoutBorder:Hide()
+		end
+
+		self.FlyoutBorderShadow:SetSize(48, 48)
+		self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+		self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
+		self.FlyoutBorderShadow:ClearAllPoints()
+		self.FlyoutBorderShadow:SetPoint("CENTER")
+
+		hooksecurefunc(self, "UpdateFlyout", function()
+			if not self.FlyoutArrowContainer then return end
+
+			local actionType = GetActionInfo(self.action)
+			if (actionType == "flyout") then
+				if ((SpellFlyout and SpellFlyout:IsShown() and SpellFlyout:GetParent() == self) or GetMouseFocus() == self) then
+					self.FlyoutBorder:Show()
+				else
+					self.FlyoutBorder:Hide()
+				end
+			else
+				self.FlyoutBorder:Hide()
+			end
+		end)
     end
 end
 
