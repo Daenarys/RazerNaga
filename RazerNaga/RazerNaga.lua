@@ -349,7 +349,7 @@ function RazerNaga:HideBlizzard()
 
 		button:Hide()
 		button:UnregisterAllEvents()
-		button:SetAttribute("statehidden", true)
+		button:SetAttributeNoHandler("statehidden", true)
 	end
 
 	hideActionBarFrame(MainMenuBar, false)
@@ -391,8 +391,8 @@ function RazerNaga:HideBlizzard()
 	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 	-- these functions drive visibility so disable them
-	MultiActionBar_ShowAllGrids = function() return; end;
-	MultiActionBar_HideAllGrids = function() return; end;
+	MultiActionBar_ShowAllGrids = function() end
+	MultiActionBar_HideAllGrids = function() end
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
