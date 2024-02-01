@@ -118,6 +118,8 @@ function ActionButton:Create(id)
 		if b.UpdateHotKeys then
 			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
 		end
+
+		RazerNaga.SpellFlyout:Register(b)
 	end
 	return b
 end
@@ -171,6 +173,13 @@ function ActionButton:UpdateMacro()
 	end
 end
 
+function ActionButton:SetFlyoutDirection(direction)
+	if InCombatLockdown() then return end
+	
+	self:SetAttribute('flyoutDirection', direction)
+	self:UpdateFlyout()
+end
+
 --utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
@@ -222,15 +231,49 @@ function ActionButton:Skin()
 		self.Flash:SetAllPoints()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-		self.FlyoutBorderShadow:SetSize(48, 48)
-		self.FlyoutBorderShadow:ClearAllPoints()
-		self.FlyoutBorderShadow:SetPoint("CENTER")
+
 		if (self.SlotArt:IsShown()) then
 			self.SlotArt:Hide()
 		end
+		
 		if (self.SlotBackground:IsShown()) then
 			self.SlotBackground:Hide()
 		end
+
+		if not self.FlyoutArrow then
+			self.FlyoutArrow = self:CreateTexture(nil, "OVERLAY")
+			self.FlyoutArrow:SetSize(23, 11)
+			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
+			self.FlyoutArrow:Hide()
+		end
+
+		hooksecurefunc(self, "UpdateFlyout", function()
+			if not self.FlyoutArrowContainer then return end
+
+			local actionType = GetActionInfo(self.action)
+			if (actionType == "flyout") then
+				self.FlyoutArrow:Show()
+				self.FlyoutArrow:ClearAllPoints()
+				local direction = self:GetAttribute("flyoutDirection")
+				if (direction == "LEFT") then
+					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
+					SetClampedTextureRotation(self.FlyoutArrow, 270)
+				elseif (direction == "RIGHT") then
+					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
+					SetClampedTextureRotation(self.FlyoutArrow, 90)
+				elseif (direction == "DOWN") then
+					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
+					SetClampedTextureRotation(self.FlyoutArrow, 180)
+				else
+					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
+				end
+			else
+				self.FlyoutArrow:Hide()
+			end
+			self.FlyoutArrowContainer:Hide()
+			self.FlyoutBorderShadow:Hide()
+		end)
     end
 end
 

@@ -69,6 +69,7 @@ function ActionBar:New(id)
 	f:Layout()
 	f:UpdateGrid()
 	f:UpdateRightClickUnit()
+	f:UpdateFlyoutDirection()
 
 	active[id] = f
 
@@ -108,6 +109,7 @@ function ActionBar:LoadButtons()
 		local b = ActionButton:New(self.baseID + i)
 		if b then
 			b:SetParent(self.header)
+			b:SetFlyoutDirection(self:GetFlyoutDirection())
 			self.buttons[i] = b
 		else
 			break
@@ -121,6 +123,7 @@ function ActionBar:AddButton(i)
 	if b then
 		self.buttons[i] = b
 		b:SetParent(self.header)
+		b:SetFlyoutDirection(self:GetFlyoutDirection())
 		b:LoadAction()
 		self:UpdateAction(i)
 		self:UpdateGrid()
@@ -299,6 +302,36 @@ end
 function ActionBar:ForAll(method, ...)
 	for _,f in pairs(active) do
 		f[method](f, ...)
+	end
+end
+
+--[[ flyout direction updating ]]--
+
+function ActionBar:GetFlyoutDirection()
+	local w, h = self:GetSize()
+	local isVertical = w < h
+	local anchor = self:GetPoint()
+
+	if isVertical then
+		if anchor and anchor:match('LEFT') then
+			return 'RIGHT'
+		end
+		return 'LEFT'
+	end
+
+	if anchor and anchor:match('TOP') then
+		return 'DOWN'
+	end
+	return 'UP'
+end
+
+function ActionBar:UpdateFlyoutDirection()
+	if self.buttons then
+		local direction = self:GetFlyoutDirection()
+
+		for _,b in pairs(self.buttons) do
+			b:SetFlyoutDirection(direction)
+		end
 	end
 end
 
