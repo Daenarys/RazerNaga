@@ -6,7 +6,7 @@ local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 RazerNaga.MenuBar = MenuBar
 
 local WIDTH_OFFSET = 2
-local HEIGHT_OFFSET = 20
+local HEIGHT_OFFSET = 1
 
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
