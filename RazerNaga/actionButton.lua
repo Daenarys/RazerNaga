@@ -241,10 +241,11 @@ function ActionButton:Skin()
 		end
 
 		if not self.FlyoutArrow then
-			self.FlyoutArrow = self:CreateTexture(nil, "OVERLAY")
+			self.FlyoutArrow = self:CreateTexture()
 			self.FlyoutArrow:SetSize(23, 11)
 			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
 			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
+			self.FlyoutArrow:SetDrawLayer("OVERLAY", 2)
 			self.FlyoutArrow:Hide()
 		end
 
