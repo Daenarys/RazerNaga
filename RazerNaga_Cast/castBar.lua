@@ -108,15 +108,14 @@ end
 function CastingBar:OnEvent(event, ...)
 	CastingBarFrame_OnEvent(self, event, ...)
 
-	local unit, spell = ...
-	if unit == self.unit then
-		if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-			self.failed = true
-		elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-			self.failed = nil
-		end
-		self:UpdateColor(spell)
+	local unit = self.unit
+	local spell = UnitCastingInfo(unit)
+	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
+		self.failed = true
+	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
+		self.failed = nil
 	end
+	self:UpdateColor(spell)
 end
 
 function CastingBar:OnUpdate(elapsed)
@@ -158,8 +157,6 @@ function CastingBar:UpdateColor(spell)
 		self:SetStatusBarColor(0.31, 0.78, 0.47)
 	elseif spell and IsHarmfulSpell(spell) then
 		self:SetStatusBarColor(0.63, 0.36, 0.94)
-	else
-		self:SetStatusBarColor(1, 0.7, 0)
 	end
 end
 
