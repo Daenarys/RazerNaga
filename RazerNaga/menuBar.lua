@@ -561,11 +561,11 @@ function MenuBar:FixButtonPositions()
     	button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
     	button:ClearAllPoints()
         if i == 1 then
-        	button:SetPoint('BOTTOMLEFT', -9, button:GetHeight())
+            button:SetPoint('TOPLEFT', -12, 25)
         elseif i == 7 then
-            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, (t - b) - 3)
+            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 25)
         else
-        	button:SetPoint('BOTTOMLEFT', self.overrideButtons[i - 1], 'BOTTOMRIGHT', (l - r) + 8, 0)
+            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', 0, 0)
         end
 
         button:Show()
