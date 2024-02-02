@@ -119,22 +119,26 @@ end
 
 --[[ Bag Bar Controller ]]
 
-
 local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
 function BagBarController:OnInitialize()
 	if not self.frame then
-		local noopFunc = function() end
-
-		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
-		CharacterBag3Slot.SetBarExpanded = noopFunc
-		CharacterBag2Slot.SetBarExpanded = noopFunc
-		CharacterBag1Slot.SetBarExpanded = noopFunc
-		CharacterBag0Slot.SetBarExpanded = noopFunc
-		BagsBar.Layout = noopFunc
+		CharacterReagentBag0Slot.SetBarExpanded = function() end
+		CharacterBag3Slot.SetBarExpanded = function() end
+		CharacterBag2Slot.SetBarExpanded = function() end
+		CharacterBag1Slot.SetBarExpanded = function() end
+		CharacterBag0Slot.SetBarExpanded = function() end
+		BagsBar.Layout = function() end
 	end
 
     if BagsBar and BagsBar.Layout then
+    	hooksecurefunc(BagsBar, "Layout", function()
+    		if InCombatLockdown() then return end
+
+			if self.frame then
+				self.frame:Layout()
+			end
+    	end)
         EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
     end
 
