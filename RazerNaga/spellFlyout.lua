@@ -7,7 +7,7 @@
 
 local RazerNaga = _G[...]
 
--- A precalculated list of all known valid flyout ids. Not robust, but also sparse.
+-- A precalculated list of all known valid flyout ids
 local VALID_FLYOUT_IDS = { 1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229 }
 
 -- layout constants from SpellFlyout.lua
@@ -393,8 +393,6 @@ end
 
 SpellFlyout.SetBorderColor = SpellFlyout_SetBorderColor
 
--- Bartender4 and Dominos implement roughly the same lookup here
--- but we've chosen to precalculate the array because the ID list is fairly sparse (23 in total)
 function SpellFlyout:UpdateKnownFlyouts()
 	if InCombatLockdown() then
 		self.needsFlyoutUpdates = true
