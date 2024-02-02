@@ -107,7 +107,6 @@ function SpellFlyoutButtonMixin:UpdateUsable()
 	elseif oom then
 		icon:SetVertexColor(0.5, 0.5, 1)
 	else
-		icon:SetDesaturated(true)
 		icon:SetVertexColor(0.4, 0.4, 0.4)
 	end
 end
