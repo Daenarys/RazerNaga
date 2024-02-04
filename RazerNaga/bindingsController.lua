@@ -75,11 +75,11 @@ function SurrogateButton:SetOwner(owner)
 			error(2, 'owner must have a name')
 		end
 
-		self:SetAttributeNoHandler('owner', ownerName)
-		self:SetAttributeNoHandler('clickbutton', owner)	
+		self:SetAttribute('owner', ownerName)
+		self:SetAttribute('clickbutton', owner)	
 	else
-		self:SetAttributeNoHandler('owner', nil)
-		self:SetAttributeNoHandler('clickbutton', nil)
+		self:SetAttribute('owner', nil)
+		self:SetAttribute('clickbutton', nil)
 	end
 end
 
@@ -124,7 +124,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 
 	--[[ usage: LoadBindings() ]]--
-	self:SetAttributeNoHandler('LoadBindings', [[	
+	self:SetAttribute('LoadBindings', [[	
 		self:ClearBindings() 
 				
 		for i, frame in ipairs(myFrames) do
@@ -133,7 +133,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 
 	--[[ usage: LoadFrameBindings(frameID) ]]--
-	self:SetAttributeNoHandler('LoadFrameBindings', [[
+	self:SetAttribute('LoadFrameBindings', [[
 		local frame = myFrames[...]
 		local frameName = frame:GetName()
 		local targetName = frame:GetAttribute('owner')
@@ -143,7 +143,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 	
 	--[[ usage: SetBindings(frameName, [binding1, binding2, ...]) ]]--
-	self:SetAttributeNoHandler('SetBindings', [[
+	self:SetAttribute('SetBindings', [[
 		local frameName = (...)
 
 		for i = 2, select('#', ...) do
@@ -154,21 +154,21 @@ function BindingsController:SetupAttributeMethods()
 	]])
 	
 	--[[ usage: GetBindings(frameName) ]]--
-	self:SetAttributeNoHandler('GetBindings', [[
+	self:SetAttribute('GetBindings', [[
 		local frameName = (...)
 		
 		return GetBindingKey(frameName)
 	]])		
 
 	--[[ usage: GetClickBindings(frameName) ]]--
-	self:SetAttributeNoHandler('GetClickBindings', [[
+	self:SetAttribute('GetClickBindings', [[
 		local frameName = (...)
 
 		return GetBindingKey(format('CLICK %s:LeftButton', frameName))
 	]])
 
 	--[[ usage: ClearOverrideBindings([key1, key2, ...]) ]]--
-	self:SetAttributeNoHandler('ClearOverrideBindings', [[
+	self:SetAttribute('ClearOverrideBindings', [[
 		for i = 1, select('#', ...) do
 			local key = (select(i, ...))
 

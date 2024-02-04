@@ -349,7 +349,7 @@ function RazerNaga:HideBlizzard()
 
 		button:Hide()
 		button:UnregisterAllEvents()
-		button:SetAttributeNoHandler("statehidden", true)
+		button:SetAttribute("statehidden", true)
 	end
 
 	hideActionBarFrame(MainMenuBar, false)
