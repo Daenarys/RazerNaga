@@ -16,6 +16,12 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 --the call here is wacky because this functionality is actually called for the blizzard buttons _before_ I'm able to bind the action button methods to them
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
+
+	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
+		self.HotKey:Hide();
+	else
+		self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
+	end
 	
 	if key ~= ''  and RazerNaga:ShowBindingText() then
 		self.HotKey:SetText(key)
