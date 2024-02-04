@@ -2,7 +2,7 @@
 UI_shared.xsd">
 	<Script file="castBar.lua"/>
 	<StatusBar name="RazerNagaCastingBarTemplate" mixin="CastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" hidden="true" virtual="true">
-		<Size x="210" y="14"/>
+		<Size x="204" y="14"/>
 		<BarTexture atlas="ui-castingbar-filling-standard" useAtlasSize="true"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
@@ -38,14 +38,8 @@ UI_shared.xsd">
 				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="4">
-				<Texture parentKey="BorderShield" atlas="ui-castingbar-shield" hidden="true">
-					<Size x="29" y="33"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-27" y="4"/>
-					</Anchors>
-				</Texture>
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
-					<Size x="282" y="70"/>
+					<Size x="275" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -117,7 +111,7 @@ UI_shared.xsd">
 			</Layer>
 			<Layer level="OVERLAY" textureSubLevel="2">
 				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
-					<Size x="8" y="24"/>
+					<Size x="8" y="23"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>

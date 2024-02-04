@@ -100,6 +100,7 @@ L.ClassBarHelp_WARLOCK = 'Displays Warlock Metamorphosis, if available.'
 L.ClassBarHelp_DEATHKNIGHT = 'Displays available Deathknight presences.'
 L.ClassBarHelp_HUNTER = 'Displays available Hunter aspects.'
 L.ClassBarHelp_MONK = 'Displays available Monk stances.'
+L.ClassBarHelp_EVOKER = 'Displays Evoker Soar, if available.'
 
 L.CastBarHelp = 'Displays a progress bar when casting a spell\nor performing a tradeskill.'
 L.RollBarHelp = 'Displays items to roll on when in a group.'
