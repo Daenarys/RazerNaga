@@ -170,6 +170,13 @@ function ActionButton:UpdateMacro()
 	end
 end
 
+function ActionButton:SetFlyoutDirection(direction)
+	if InCombatLockdown() then return end
+	
+	self:SetAttribute('flyoutDirection', direction)
+	self:UpdateFlyout()
+end
+
 --utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
