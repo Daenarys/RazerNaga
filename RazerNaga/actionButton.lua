@@ -35,7 +35,6 @@ local function GetOrCreateActionButton(id)
 	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-96), nil, 'ActionBarButtonTemplate')
 end
 
---constructor
 function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
@@ -72,7 +71,6 @@ function ActionButton:New(id)
 		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
 		Tooltips:Register(b)
 
-		--get rid of range indicator text
 		local hotkey = b.HotKey
 		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
 			hotkey:SetText('')
@@ -92,9 +90,6 @@ function ActionButton:Create(id)
 	if b then
 		self:Bind(b)
 
-		--this is used to preserve the button's old id
-		--we cannot simply keep a button's id at > 0 or blizzard code will take control of paging
-		--but we need the button's id for the old bindings system
 		b:SetAttribute('bindingid', b:GetID())
 		b:SetID(0)
 
@@ -134,7 +129,6 @@ function ActionButton:Restore(id)
 	end
 end
 
---destructor
 do
 	local HiddenActionButtonFrame = CreateFrame('Frame')
 	HiddenActionButtonFrame:Hide()
@@ -156,7 +150,6 @@ do
 	end
 end
 
---keybound support
 function ActionButton:OnEnter()
 	KeyBound:Set(self)
 end
@@ -170,7 +163,6 @@ function ActionButton:UpdateMacro()
 	end
 end
 
---utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()
 	local state = self:GetParent():GetAttribute('state-page')
 	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
