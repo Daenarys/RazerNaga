@@ -11,6 +11,9 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
+-- setup custom callbacks
+RazerNaga.callbacks = LibStub('CallbackHandler-1.0'):New(RazerNaga)
+
 
 --[[ Startup ]]--
 
@@ -51,7 +54,6 @@ function RazerNaga:OnEnable()
 	end
 
 	self:HideBlizzard()
-	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -396,28 +398,13 @@ function RazerNaga:HideBlizzard()
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
-	self.db.profile.useOverrideUI = enable and true or false
-	self:UpdateUseOverrideUI()
+    self.db.profile.useOverrideUI = enable and true
+    self.callbacks:Fire("USE_OVERRRIDE_UI_CHANGED", self:UsingOverrideUI())
 end
 
 function RazerNaga:UsingOverrideUI()
 	return self.db.profile.useOverrideUI
 end
-
-function RazerNaga:UpdateUseOverrideUI()
-	local usingOverrideUI = self:UsingOverrideUI()
-
-	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
-
-	local oab = _G['OverrideActionBar']
-	oab:ClearAllPoints()
-	if usingOverrideUI then
-		oab:SetPoint('BOTTOM')
-	else
-		oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
-	end
-end
-
 
 --[[ Keybound Events ]]--
 
@@ -929,14 +916,16 @@ function RazerNaga:ShowMacroText()
 	return self.db.profile.showMacroText
 end
 
---possess bar settings
+-- override action bar selection
 function RazerNaga:SetOverrideBar(id)
-	local prevBar = self:GetOverrideBar()
-	self.db.profile.possessBar = id
-	local newBar = self:GetOverrideBar()
+    local prevBar = self:GetOverrideBar()
+    self.db.profile.possessBar = id
+    local newBar = self:GetOverrideBar()
 
-	prevBar:UpdateOverrideBar()
-	newBar:UpdateOverrideBar()
+    prevBar:UpdateOverrideBar()
+    newBar:UpdateOverrideBar()
+
+    self.callbacks:Fire('OVERRIDE_BAR_UPDATED', newBar)
 end
 
 function RazerNaga:GetOverrideBar()

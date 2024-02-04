@@ -48,7 +48,7 @@ do
 		local button = self:Bind(CreateFrame('Button', getNextName(), nil, 'SecureActionButtonTemplate'))
 
 		button:Hide()
-		button:SetAttribute('type', 'click')
+		button:SetAttributeNoHandler('type', 'click')
 		button:SetScript('OnMouseUp', button.OnMouseUp)
 		button:SetScript('OnMouseDown', button.OnMouseDown)
 
@@ -75,11 +75,11 @@ function SurrogateButton:SetOwner(owner)
 			error(2, 'owner must have a name')
 		end
 
-		self:SetAttribute('owner', ownerName)
-		self:SetAttribute('clickbutton', owner)	
+		self:SetAttributeNoHandler('owner', ownerName)
+		self:SetAttributeNoHandler('clickbutton', owner)	
 	else
-		self:SetAttribute('owner', nil)
-		self:SetAttribute('clickbutton', nil)
+		self:SetAttributeNoHandler('owner', nil)
+		self:SetAttributeNoHandler('clickbutton', nil)
 	end
 end
 
@@ -124,7 +124,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 
 	--[[ usage: LoadBindings() ]]--
-	self:SetAttribute('LoadBindings', [[	
+	self:SetAttributeNoHandler('LoadBindings', [[	
 		self:ClearBindings() 
 				
 		for i, frame in ipairs(myFrames) do
@@ -133,7 +133,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 
 	--[[ usage: LoadFrameBindings(frameID) ]]--
-	self:SetAttribute('LoadFrameBindings', [[
+	self:SetAttributeNoHandler('LoadFrameBindings', [[
 		local frame = myFrames[...]
 		local frameName = frame:GetName()
 		local targetName = frame:GetAttribute('owner')
@@ -143,7 +143,7 @@ function BindingsController:SetupAttributeMethods()
 	]])
 	
 	--[[ usage: SetBindings(frameName, [binding1, binding2, ...]) ]]--
-	self:SetAttribute('SetBindings', [[
+	self:SetAttributeNoHandler('SetBindings', [[
 		local frameName = (...)
 
 		for i = 2, select('#', ...) do
@@ -154,21 +154,21 @@ function BindingsController:SetupAttributeMethods()
 	]])
 	
 	--[[ usage: GetBindings(frameName) ]]--
-	self:SetAttribute('GetBindings', [[
+	self:SetAttributeNoHandler('GetBindings', [[
 		local frameName = (...)
 		
 		return GetBindingKey(frameName)
 	]])		
 
 	--[[ usage: GetClickBindings(frameName) ]]--
-	self:SetAttribute('GetClickBindings', [[
+	self:SetAttributeNoHandler('GetClickBindings', [[
 		local frameName = (...)
 
 		return GetBindingKey(format('CLICK %s:LeftButton', frameName))
 	]])
 
 	--[[ usage: ClearOverrideBindings([key1, key2, ...]) ]]--
-	self:SetAttribute('ClearOverrideBindings', [[
+	self:SetAttributeNoHandler('ClearOverrideBindings', [[
 		for i = 1, select('#', ...) do
 			local key = (select(i, ...))
 
