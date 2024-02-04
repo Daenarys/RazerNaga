@@ -31,5 +31,6 @@ stanceBar.lua
 bagBar.lua
 menuBar.lua
 vehicleBar.lua
+spellFlyout.lua
 configModeDialog.lua
 hoverMenu.lua
