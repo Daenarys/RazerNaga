@@ -92,26 +92,13 @@ function CastingBar:New(parent)
 	f:SetPoint('CENTER')
 
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnEvent', f.OnEvent)
-	f:SetScript('OnUpdate', f.OnUpdate)
+	f:SetScript('OnUpdate', self.OnUpdate)
 
 	return f
 end
 
-function CastingBar:OnEvent(event, ...)
-	CastingBarFrame_OnEvent(self, event, ...)
-
-	local spell = UnitCastingInfo(self.unit)
-	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-		self.failed = true
-	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-		self.failed = nil
-	end
-	self:UpdateColor(spell)
-end
-
 function CastingBar:OnUpdate(elapsed)
-	CastingBarFrame_OnUpdate(self, elapsed)
+	CastingBarMixin.OnUpdate(self, elapsed)
 
 	if self.casting then
 		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
@@ -130,23 +117,15 @@ function CastingBar:AdjustWidth()
 	if width < self.normalWidth then
 		width = self.normalWidth
 	end
-
+	 	
 	local diff = math.abs(width - self:GetWidth())
-
+	
 	if diff > TEXT_PADDING then
 		self:SetWidth(width)
 		self.Border:SetWidth(width * BORDER_SCALE)
 		self.Flash:SetWidth(width * BORDER_SCALE)
 
 		self:GetParent():Layout()
-	end
-end
-
-function CastingBar:UpdateColor(spell)
-	if spell and IsHelpfulSpell(spell) then
-		self:SetStatusBarColor(0.31, 0.78, 0.47)
-	elseif spell and IsHarmfulSpell(spell) then
-		self:SetStatusBarColor(0.63, 0.36, 0.94)
 	end
 end
 
