@@ -53,6 +53,7 @@ function RazerNaga:OnEnable()
 	self:RegisterEvent('PLAYER_REGEN_DISABLED')
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -219,11 +220,12 @@ function RazerNaga:HideBlizzard()
 			return
 		end
 
-		frame:Hide()
+		if frame.HideBase then
+			frame:HideBase()
+		else
+			frame:Hide()
+		end
 		frame:SetParent(HiddenFrame)
-		frame.ignoreFramePositionManager = true
-		frame:ClearAllPoints()
-		frame:SetPoint('CENTER')
 	end
 
 	apply(hide,
@@ -250,6 +252,7 @@ function RazerNaga:HideBlizzard()
 	local function disableActionButton(name)
 		local button = _G[name]
 		if button then
+			button:UnregisterAllEvents()
 			button:SetAttribute('statehidden', true)
 			button:Hide()
 		else
@@ -267,8 +270,6 @@ function RazerNaga:HideBlizzard()
 		disableActionButton(('MultiBar6Button%d'):format(id))
 		disableActionButton(('MultiBar7Button%d'):format(id))
 	end
-
-	self:UpdateUseOverrideUI()
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
