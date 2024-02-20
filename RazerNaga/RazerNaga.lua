@@ -276,7 +276,6 @@ function RazerNaga:UpdateVersion()
 	self:Print(string.format(L.Updated, RazerNagaVersion))
 end
 
-
 --Load is called  when the addon is first enabled, and also whenever a profile is loaded
 function RazerNaga:Load()
 	for i, module in self:IterateModules() do
