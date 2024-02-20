@@ -26,7 +26,6 @@ function RazerNaga:OnInitialize()
 	--version update
 	if RazerNagaVersion then
 		if RazerNagaVersion ~= CURRENT_VERSION then
-			self:UpdateSettings(RazerNagaVersion:match('(%w+)%.(%w+)%.(%w+)'))
 			self:UpdateVersion()
 		end
 	--new user
@@ -172,105 +171,11 @@ function RazerNaga:GetDefaults()
 	return defaults
 end
 
-function RazerNaga:UpdateSettings(major, minor, bugfix)
-	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
-		self:UpgradePagingSettings()
-	end
-
-	if self:ShouldFixRogueSettings(major, minor, bugfix) then
-		self:FixRoguePagingSettings()
-	end
-end
-
-function RazerNaga:ShouldUpgradePagingSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 6)
-end
-
-function RazerNaga:ShouldFixRogueSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 7)
-end
-
-function RazerNaga:UpgradePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, oldStates in pairs(frameSets.pages) do
-						local newStates = {}
-
-						--convert class states
-						if class == 'WARRIOR' then
-							newStates['battle'] = oldStates['[bonusbar:1]']
-							newStates['defensive'] = oldStates['[bonusbar:2]']
-							newStates['berserker'] = oldStates['[bonusbar:3]']
-						elseif class == 'DRUID' then
-							newStates['moonkin'] = oldStates['[bonusbar:4]']
-							newStates['bear'] = oldStates['[bonusbar:3]']
-							newStates['tree'] = oldStates['[bonusbar:2]']
-							newStates['prowl'] = oldStates['[bonusbar:1,stealth]']
-							newStates['cat'] = oldStates['[bonusbar:1]']
-						elseif class == 'PRIEST' then
-							newStates['shadow'] = oldStates['[bonusbar:1]']
-						elseif class == 'ROGUE' then
-							newStates['vanish'] = oldStates['[bonusbar:1,form:3]']
-							newStates['shadowdance'] = oldStates['[bonusbar:2]'] or oldStates['form:3']
-							newStates['stealth'] = oldStates['[bonusbar:1]']
-						elseif class == 'WARLOCK' then
-							newStates['meta'] = oldStates['[form:2]']
-						end
-
-						--modifier states
-						for i, state in RazerNaga.BarStates:getAll('modifier') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--possess states
-						for i, state in RazerNaga.BarStates:getAll('possess') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--page states
-						for i, state in RazerNaga.BarStates:getAll('page') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--targeting states
-						for i, state in RazerNaga.BarStates:getAll('target') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						frameSets.pages[class] = newStates
-					end
-				end
-			end
-		end
-	end
-end
-
-function RazerNaga:FixRoguePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, states in pairs(frameSets.pages) do
-						if class == 'ROGUE' then
-							states['shadowdance'] = (states['shadowdance'] or states['stealth'])
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
 function RazerNaga:UpdateVersion()
 	RazerNagaVersion = CURRENT_VERSION
 
 	self:Print(string.format(L.Updated, RazerNagaVersion))
 end
-
 
 --Load is called  when the addon is first enabled, and also whenever a profile is loaded
 function RazerNaga:Load()
@@ -324,124 +229,31 @@ function RazerNaga:HideBlizzard()
 		frame:Hide()
 		frame:SetParent(HiddenFrame)
 		frame.ignoreFramePositionManager = true
-
-		-- with 8.2, there's more restrictions on frame anchoring if something
-		-- happens to be attached to a restricted frame. This causes issues with
-		-- moving the action bars around, so we perform a clear all points to avoid
-		-- some frame dependency issues
-		-- we then follow it up with a SetPoint to handle the cases of bits of the
-		-- UI code assuming that this element has a position
 		frame:ClearAllPoints()
 		frame:SetPoint('CENTER')
 	end
 
-	-- disables override bar transition animations
-	local function disableSlideOutAnimations(frame)
-		if not (frame and frame.slideOut) then
-			return
-		end
-
-		local animation = (frame.slideOut:GetAnimations())
-		if animation then
-			animation:SetOffset(0, 0)
-		end
-	end
-
 	apply(hide,
-		ActionBarDownButton,
-		ActionBarUpButton,
-		MainMenuBarPerformanceBarFrame,
-		MicroButtonAndBagsBar,
+		MainMenuBar,
 		MultiBarBottomLeft,
 		MultiBarBottomRight,
 		MultiBarLeft,
 		MultiBarRight,
+		MultiBar5,
+		MultiBar6,
+		MultiBar7,
+		MicroButtonAndBagsBar,
+		StanceBar,
+		PossessActionBar,
 		MultiCastActionBarFrame,
-		PetActionBarFrame,
-		StanceBarFrame
+		PetActionBar,
+		StatusTrackingBarManager,
+		MainMenuBarVehicleLeaveButton,
+		BagsBar,
+		MicroMenu,
+		MicroMenuContainer
 	)
 
-	apply(disableSlideOutAnimations,
-		MainMenuBar,
-		MultiBarLeft,
-		MultiBarRight,
-		OverrideActionBar
-	)
-
-	-- we don't completely disable the main menu bar, as there's some logic
-	-- dependent on it being visible
-	if MainMenuBar then
-		MainMenuBar:EnableMouse(false)
-
-		-- the main menu bar is responsible for updating the micro buttons
-		-- so we don't disable all events for it
-		MainMenuBar:UnregisterEvent('ACTIONBAR_PAGE_CHANGED')
-		MainMenuBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
-		MainMenuBar:UnregisterEvent('DISPLAY_SIZE_CHANGED')
-		MainMenuBar:UnregisterEvent('UI_SCALE_CHANGED')
-	end
-
-	-- don't hide the art frame, as the multi action bars are dependent on GetLeft
-	-- or similar calls returning a value
-	if MainMenuBarArtFrame then
-		MainMenuBarArtFrame:SetAlpha(0)
-	end
-
-	-- don't reparent the tracking manager, as it assumes its parent has a callback
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:UnregisterAllEvents()
-		StatusTrackingBarManager:Hide()
-	end
-
-	if MainMenuExpBar then
-		MainMenuExpBar:UnregisterAllEvents()
-		hide(MainMenuExpBar)
-	end
-
-	if ReputationWatchBar then
-		ReputationWatchBar:UnregisterAllEvents()
-		hide(ReputationWatchBar)
-
-		hooksecurefunc(
-			'MainMenuBar_UpdateExperienceBars',
-			function()
-				ReputationWatchBar:Hide()
-			end
-		)
-	end
-
-	if VerticalMultiBarsContainer then
-		VerticalMultiBarsContainer:UnregisterAllEvents()
-		hide(VerticalMultiBarsContainer)
-
-		-- a hack to preserve the multi action bar spacing behavior for the quest log
-		hooksecurefunc(
-			'MultiActionBar_Update',
-			function()
-				local width = 0
-				local showLeft = SHOW_MULTI_ACTIONBAR_3
-				local showRight = SHOW_MULTI_ACTIONBAR_4
-				local stack = GetCVarBool('multiBarRightVerticalLayout')
-
-				if showLeft then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				if showRight and not stack then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				VerticalMultiBarsContainer:SetWidth(width)
-			end
-		)
-	end
-
-	if PossessBarFrame then
-		PossessBarFrame:UnregisterAllEvents()
-		hide(PossessBarFrame)
-	end
-
-	-- set the stock action buttons to hidden by default
 	local function disableActionButton(name)
 		local button = _G[name]
 		if button then
@@ -458,6 +270,9 @@ function RazerNaga:HideBlizzard()
 		disableActionButton(('MultiBarLeftButton%d'):format(id))
 		disableActionButton(('MultiBarBottomRightButton%d'):format(id))
 		disableActionButton(('MultiBarBottomLeftButton%d'):format(id))
+		disableActionButton(('MultiBar5Button%d'):format(id))
+		disableActionButton(('MultiBar6Button%d'):format(id))
+		disableActionButton(('MultiBar7Button%d'):format(id))
 	end
 
 	self:UpdateUseOverrideUI()

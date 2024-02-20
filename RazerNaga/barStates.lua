@@ -136,7 +136,6 @@ addState('target', 'help', '[help]')
 addState('target', 'harm', '[harm]')
 addState('target', 'notarget', '[noexists]')
 
-
 --automatic updating for UPDATE_SHAPESHIFT_FORMS
 do
 	local f = CreateFrame('Frame'); f:Hide()
