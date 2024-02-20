@@ -36,13 +36,6 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
-	--create a loader for the options menu
-	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
-	f:SetScript('OnShow', function(self)
-		self:SetScript('OnShow', nil)
-		LoadAddOn('RazerNaga_Config')
-	end)
-
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
@@ -471,11 +464,12 @@ end
 
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
 	if LoadAddOn('RazerNaga_Config') then
-		InterfaceOptionsFrame_Show()
+		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
 	end
@@ -548,8 +542,6 @@ function RazerNaga:OnCmd(args)
 		self:PrintVersion()
 	elseif cmd == 'help' or cmd == '?' then
 		self:PrintHelp()
-	elseif cmd == 'statedump' then
-		self.OverrideController:DumpStates()
 	elseif cmd == 'configstatus' then
 		local status = self:IsConfigAddonEnabled() and 'ENABLED' or 'DISABLED'
 		print(('Config Mode Status: %s'):format(status))
@@ -653,14 +645,12 @@ StaticPopupDialogs['RAZER_NAGA_CONFIRM_BIND_MANUALLY'] = {
 	exclusive = 1,
 }
 
-
 function RazerNaga:ToggleBindingMode()
 	if self.AutoBinder:IsAutoBindingEnabled() then
 		StaticPopup_Show('RAZER_NAGA_CONFIRM_BIND_MANUALLY')
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
-		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
