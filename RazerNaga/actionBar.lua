@@ -260,8 +260,7 @@ function ActionBar:IsOverrideBar()
 	return self == RazerNaga:GetOverrideBar()
 end
 
-
---Empty button display
+--empty button display
 function ActionBar:ShowGrid(reason)
 	for _,b in pairs(self.buttons) do
 		b:ShowGrid(reason)
@@ -371,8 +370,6 @@ do
 		s.UpdateValue = ConditionSlider_UpdateValue
 		s.UpdateText = ConditionSlider_UpdateText
 		s.stateId = stateId
-
-
 
 		s:SetWidth(s:GetWidth() + 28)
 

@@ -1,5 +1,5 @@
 --[[
-	Action Button.lua
+	actionButton.lua
 		A RazerNaga action button
 --]]
 
