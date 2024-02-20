@@ -11,7 +11,6 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
-
 --[[ Startup ]]--
 
 function RazerNaga:OnInitialize()
@@ -306,7 +305,6 @@ function RazerNaga:Unload()
 	end
 end
 
-
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
@@ -395,30 +393,6 @@ function RazerNaga:HideBlizzard()
 	MultiActionBar_HideAllGrids = function() end
 end
 
-function RazerNaga:SetUseOverrideUI(enable)
-	self.db.profile.useOverrideUI = enable and true or false
-	self:UpdateUseOverrideUI()
-end
-
-function RazerNaga:UsingOverrideUI()
-	return self.db.profile.useOverrideUI
-end
-
-function RazerNaga:UpdateUseOverrideUI()
-	local usingOverrideUI = self:UsingOverrideUI()
-
-	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
-
-	local oab = _G['OverrideActionBar']
-	oab:ClearAllPoints()
-	if usingOverrideUI then
-		oab:SetPoint('BOTTOM')
-	else
-		oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
-	end
-end
-
-
 --[[ Keybound Events ]]--
 
 function RazerNaga:LIBKEYBOUND_ENABLED()
@@ -436,7 +410,6 @@ function RazerNaga:LIBKEYBOUND_DISABLED()
 		end
 	end
 end
-
 
 --[[ Profile Functions ]]--
 
@@ -528,7 +501,6 @@ function RazerNaga:MatchProfileExact(name)
 	end
 end
 
-
 --[[ Profile Events ]]--
 
 function RazerNaga:OnNewProfile(msg, db, name)
@@ -552,7 +524,6 @@ function RazerNaga:OnProfileReset(msg, db)
 	self:Print(format(L.ProfileReset, db:GetCurrentProfile()))
 end
 
-
 --[[ Settings...Setting ]]--
 
 function RazerNaga:SetFrameSets(id, sets)
@@ -565,7 +536,6 @@ end
 function RazerNaga:GetFrameSets(id)
 	return self.db.profile.frames[tonumber(id) or id]
 end
-
 
 --[[ Options Menu Display ]]--
 
@@ -590,7 +560,6 @@ function RazerNaga:NewMenu(id)
 
 	return self.Menu and self.Menu:New(id)
 end
-
 
 --[[ Slash Commands ]]--
 
@@ -649,8 +618,6 @@ function RazerNaga:OnCmd(args)
 		self:PrintVersion()
 	elseif cmd == 'help' or cmd == '?' then
 		self:PrintHelp()
-	elseif cmd == 'statedump' then
-		self.OverrideController:DumpStates()
 	elseif cmd == 'configstatus' then
 		local status = self:IsConfigAddonEnabled() and 'ENABLED' or 'DISABLED'
 		print(('Config Mode Status: %s'):format(status))
@@ -699,7 +666,6 @@ function RazerNaga:IsConfigAddonEnabled()
 	return GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
 end
 
-
 --[[ Configuration Functions ]]--
 
 --moving
@@ -739,7 +705,6 @@ end
 function RazerNaga:ToggleLockedFrames()
 	self:SetLock(not self:Locked())
 end
-
 
 --[[ Bindings Mode ]]--
 
@@ -930,6 +895,33 @@ function RazerNaga:ShowMacroText()
 end
 
 --possess bar settings
+function RazerNaga:SetUseOverrideUI(enable)
+	self.db.profile.useOverrideUI = enable and true or false
+	self:UpdateUseOverrideUI()
+end
+
+function RazerNaga:UsingOverrideUI()
+	return self.db.profile.useOverrideUI
+end
+
+function RazerNaga:UpdateUseOverrideUI()
+    if not self.OverrideController then return end
+
+    local useOverrideUi = self:UsingOverrideUI()
+
+    self.OverrideController:SetAttribute('state-useoverrideui', useOverrideUi)
+
+    local oab = _G.OverrideActionBar
+    if oab then
+        oab:ClearAllPoints()
+        if useOverrideUi then
+            oab:SetPoint('BOTTOM')
+        else
+            oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
+        end
+    end
+end
+
 function RazerNaga:SetOverrideBar(id)
 	local prevBar = self:GetOverrideBar()
 	self.db.profile.possessBar = id
@@ -945,7 +937,7 @@ end
 
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-	count = max(min(count, 120), 1) --sometimes, I do entertaininig things
+	count = max(min(count, 120), 1)
 
 	if count ~= self:NumBars() then
 		self.ActionBar:ForAll('Delete')
@@ -965,7 +957,6 @@ function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
 
-
 --tooltips
 function RazerNaga:ShowTooltips()
 	return self.db.profile.showTooltips
@@ -984,7 +975,6 @@ end
 function RazerNaga:ShowCombatTooltips()
 	return self.db.profile.showTooltipsCombat
 end
-
 
 --minimap button
 function RazerNaga:SetShowMinimap(enable)
@@ -1086,7 +1076,6 @@ function RazerNaga:RemoveMasque(group, button)
 	end
 end
 
-
 --[[ Incompatibility Check ]]--
 
 local INCOMPATIBLE_ADDONS = {
@@ -1118,7 +1107,6 @@ function RazerNaga:ShowIncompatibleAddonDialog(addonName)
 	StaticPopupDialogs['RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED'].text = string.format(L.IncompatibleAddonLoaded, addonName)
 	StaticPopup_Show('RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED')
 end
-
 
 --[[ Utility Functions ]]--
 
