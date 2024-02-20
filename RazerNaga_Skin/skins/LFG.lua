@@ -1,9 +1,5 @@
 if not _G.PVEFrame then return end
 
-GroupFinderFrame:HookScript("OnShow", function()
-	SetPortraitToTexture(PVEFramePortrait, "Interface\\LFGFrame\\UI-LFG-PORTRAIT")
-end)
-
 LFDQueueFrameSpecific.ScrollBar:SetSize(25, 560)
 LFDQueueFrameSpecific.ScrollBar:ClearAllPoints()
 LFDQueueFrameSpecific.ScrollBar:SetPoint("TOPLEFT", LFDQueueFrameSpecific.ScrollBox, "TOPRIGHT", 2, 3)

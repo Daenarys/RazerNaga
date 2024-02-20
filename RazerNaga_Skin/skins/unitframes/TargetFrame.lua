@@ -13,18 +13,3 @@ hooksecurefunc(TargetFrame, "CheckClassification", function(self)
 	end
 	self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide()
 end)
-
-if TargetFrame.TargetFrameContent.TargetFrameContentContextual.LeaderIcon then
-	TargetFrame.TargetFrameContent.TargetFrameContentContextual.LeaderIcon:ClearAllPoints()
-	TargetFrame.TargetFrameContent.TargetFrameContentContextual.LeaderIcon:SetPoint("TOPRIGHT", -86, -10)
-end
-
-if TargetFrame.TargetFrameContent.TargetFrameContentContextual.GuideIcon then
-	TargetFrame.TargetFrameContent.TargetFrameContentContextual.GuideIcon:ClearAllPoints()
-	TargetFrame.TargetFrameContent.TargetFrameContentContextual.GuideIcon:SetPoint("TOPRIGHT", -86, -10)
-end
-
-if TargetFrame.totFrame then
-    TargetFrame.totFrame:ClearAllPoints()
-    TargetFrame.totFrame:SetPoint("TOPRIGHT", TargetFrame, "BOTTOMRIGHT", 12, 21)
-end

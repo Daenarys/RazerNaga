@@ -82,3 +82,11 @@ QuestRewardScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", QuestRewardScrollFrame, 
 ApplyScrollBarArrow(QuestRewardScrollFrame.ScrollBar)
 ApplyScrollBarTrack(QuestRewardScrollFrame.ScrollBar.Track)
 ApplyScrollBarThumb(QuestRewardScrollFrame.ScrollBar.Track.Thumb)
+
+hooksecurefunc(_G.QuestSessionManager, 'NotifyDialogShow', function(_, dialog)
+	if dialog.isSkinned then return end
+
+	ApplyDialogBorder(dialog.Border)
+
+	dialog.isSkinned = true
+end)
