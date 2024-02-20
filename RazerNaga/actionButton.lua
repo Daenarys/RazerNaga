@@ -40,7 +40,6 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttributeNoHandler("action", 0)
 		b:SetAttributeNoHandler('showgrid', 1)
 		b:SetAttributeNoHandler('action--base', id)
 		b:SetAttributeNoHandler('_childupdate-action', [[
