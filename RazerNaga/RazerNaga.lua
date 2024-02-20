@@ -1066,26 +1066,6 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		DropDownList1:ClearAllPoints()
 		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
 	end)
-
-	--hide buff expand toggle
-	hooksecurefunc(BuffFrame.CollapseAndExpandButton, "UpdateOrientation", function(self)
-		self:Hide()
-	end)
-
-	--frametexture improvements
-	hooksecurefunc(TargetFrame, "CheckClassification", function(self)
-		local classification = UnitClassification(self.unit)
-		local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture
-		if (classification == "rare") then
-			bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Silver", TextureKitConstants.UseAtlasSize)
-			bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8)
-			bossPortraitFrameTexture:Show()
-		elseif (classification == "elite") then
-			bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize)
-			bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -7)
-		end
-		self.TargetFrameContent.TargetFrameContentContextual.BossIcon:Hide()
-	end)
 end
 
 --[[ Masque Support ]]--
