@@ -1,7 +1,7 @@
 ## Interface: 100205
 ## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Skin
-## Notes: A RazerNaga UI skin
+## Notes: A Razer Naga UI skin
 ## Author: Tuller
 ## Dependencies: RazerNaga
 skins\ApplySkin.lua
