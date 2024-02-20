@@ -25,7 +25,6 @@ function RazerNaga:OnInitialize()
 	--version update
 	if RazerNagaVersion then
 		if RazerNagaVersion ~= CURRENT_VERSION then
-			self:UpdateSettings(RazerNagaVersion:match('(%w+)%.(%w+)%.(%w+)'))
 			self:UpdateVersion()
 		end
 	--new user
@@ -175,99 +174,6 @@ function RazerNaga:GetDefaults()
 	self.SettingsLoader:ReplaceSettings(defaults.profile, self.SettingsLoader:GetThreeByFour())
 
 	return defaults
-end
-
-function RazerNaga:UpdateSettings(major, minor, bugfix)
-	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
-		self:UpgradePagingSettings()
-	end
-
-	if self:ShouldFixRogueSettings(major, minor, bugfix) then
-		self:FixRoguePagingSettings()
-	end
-end
-
-function RazerNaga:ShouldUpgradePagingSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 6)
-end
-
-function RazerNaga:ShouldFixRogueSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 7)
-end
-
-function RazerNaga:UpgradePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, oldStates in pairs(frameSets.pages) do
-						local newStates = {}
-
-						--convert class states
-						if class == 'WARRIOR' then
-							newStates['battle'] = oldStates['[bonusbar:1]']
-							newStates['defensive'] = oldStates['[bonusbar:2]']
-							newStates['berserker'] = oldStates['[bonusbar:3]']
-						elseif class == 'DRUID' then
-							newStates['moonkin'] = oldStates['[bonusbar:4]']
-							newStates['bear'] = oldStates['[bonusbar:3]']
-							newStates['tree'] = oldStates['[bonusbar:2]']
-							newStates['prowl'] = oldStates['[bonusbar:1,stealth]']
-							newStates['cat'] = oldStates['[bonusbar:1]']
-						elseif class == 'PRIEST' then
-							newStates['shadow'] = oldStates['[bonusbar:1]']
-						elseif class == 'ROGUE' then
-							newStates['vanish'] = oldStates['[bonusbar:1,form:3]']
-							newStates['shadowdance'] = oldStates['[bonusbar:2]'] or oldStates['form:3']
-							newStates['stealth'] = oldStates['[bonusbar:1]']
-						elseif class == 'WARLOCK' then
-							newStates['meta'] = oldStates['[form:2]']
-						end
-
-						--modifier states
-						for i, state in RazerNaga.BarStates:getAll('modifier') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--possess states
-						for i, state in RazerNaga.BarStates:getAll('possess') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--page states
-						for i, state in RazerNaga.BarStates:getAll('page') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--targeting states
-						for i, state in RazerNaga.BarStates:getAll('target') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						frameSets.pages[class] = newStates
-					end
-				end
-			end
-		end
-	end
-end
-
-function RazerNaga:FixRoguePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, states in pairs(frameSets.pages) do
-						if class == 'ROGUE' then
-							states['shadowdance'] = (states['shadowdance'] or states['stealth'])
-						end
-					end
-				end
-			end
-		end
-	end
 end
 
 function RazerNaga:UpdateVersion()
