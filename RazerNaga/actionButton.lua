@@ -153,11 +153,6 @@ function ActionButton:OnEnter()
 	KeyBound:Set(self)
 end
 
---override the old update hotkeys function
-if ActionButton_UpdateHotkeys then
-	hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
-end
-
 --button visibility
 function ActionButton:ShowGrid(reason)
 	if InCombatLockdown() then return end

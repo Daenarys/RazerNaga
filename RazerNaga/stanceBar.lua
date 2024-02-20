@@ -1,5 +1,6 @@
 --[[
-	StanceBar.lua: A RazerNaga stance bar
+	stanceBar.lua 
+		A RazerNaga stance bar
 --]]
 
 -- don't bother loading the module if the player is currently playing something without a stance
@@ -18,7 +19,6 @@ end
 
 local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
-
 
 --[[ Button ]]--
 
@@ -102,7 +102,6 @@ do
 	end
 end
 
-
 --[[ Bar ]]--
 
 local StanceBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
@@ -142,7 +141,6 @@ do
 		RazerNaga.Frame.Free(self)
 	end
 
-
 	--[[ Events/Messages ]]--
 
 	function StanceBar:OnEvent(event, ...)
@@ -164,7 +162,6 @@ do
 	function StanceBar:PLAYER_ENTERING_WORLD()
 		self:UpdateNumForms()
 	end
-
 
 	--[[ button stuff]]--
 
@@ -217,7 +214,6 @@ do
 		StanceBar.menu = menu
 	end
 end
-
 
 --[[ Module ]]--
 
