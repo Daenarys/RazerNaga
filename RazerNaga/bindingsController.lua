@@ -9,9 +9,7 @@
 
 --[[ globals ]]--
 
-local _G = _G
-local AddonName, Addon = ...
-local RazerNaga = _G['RazerNaga']
+local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 local Timer_After = _G['C_Timer'].After
 
@@ -38,7 +36,7 @@ do
 	local id = 1
 
 	local function getNextName()
-		local name = string.format('%sVirtualBindingButton%d', AddonName, id)		
+		local name = string.format('%sVirtualBindingButton%d', "RazerNaga", id)		
 
 		id = id + 1
 

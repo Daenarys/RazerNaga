@@ -606,6 +606,7 @@ end
 
 function RazerNaga:SetLock(enable)
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
@@ -932,6 +933,29 @@ end
 
 function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
+end
+
+--queuestatusbutton
+if not (IsAddOnLoaded("ClassicFrames")) then
+	--load and position the lfg eye
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetScale(0.85)
+	end)
+
+	--queuestatusframe
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+	end)
+
+	hooksecurefunc("QueueStatusDropDown_Show", function()
+		DropDownList1:ClearAllPoints()
+		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
+	end)
 end
 
 --[[ Masque Support ]]--
