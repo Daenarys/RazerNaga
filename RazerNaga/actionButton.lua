@@ -241,11 +241,11 @@ function ActionButton:Skin()
 		self.Count:ClearAllPoints()
 		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
-		if (self.SlotArt:IsShown()) then
+		if self.SlotArt then
 			self.SlotArt:Hide()
 		end
 		
-		if (self.SlotBackground:IsShown()) then
+		if self.SlotBackground then
 			self.SlotBackground:Hide()
 		end
 
@@ -267,16 +267,17 @@ function ActionButton:Skin()
 				self.FlyoutArrow:ClearAllPoints()
 				local direction = self:GetAttribute("flyoutDirection")
 				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
+					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -4, 0)
 					SetClampedTextureRotation(self.FlyoutArrow, 270)
 				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
+					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", 4, 0)
 					SetClampedTextureRotation(self.FlyoutArrow, 90)
 				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
+					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, -4)
 					SetClampedTextureRotation(self.FlyoutArrow, 180)
 				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
+					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 4)
+					SetClampedTextureRotation(self.FlyoutArrow, 0)
 				end
 			else
 				self.FlyoutArrow:Hide()
