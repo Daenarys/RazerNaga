@@ -1066,6 +1066,11 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		DropDownList1:ClearAllPoints()
 		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
 	end)
+
+	--hide buff expand toggle
+	hooksecurefunc(BuffFrame.CollapseAndExpandButton, "UpdateOrientation", function(self)
+		self:Hide()
+	end)
 end
 
 --[[ Masque Support ]]--
