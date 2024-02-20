@@ -111,9 +111,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...;
 	
 	local unit = self.unit;
+	local nameChannel = UnitChannelInfo(unit);
+	local nameSpell = UnitCastingInfo(unit);
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel = UnitChannelInfo(unit);
-		local nameSpell = UnitCastingInfo(unit);
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START";
 			arg1 = unit;
@@ -124,26 +124,28 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		    CastingBarFrame_FinishSpell(self);
 		end
 	end
-
 	if ( arg1 ~= unit ) then
 		return;
 	end
-	
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
 		end
-
 		local startColor = CastingBarFrame_GetEffectiveStartColor(self, false, notInterruptible);
-		self:SetStatusBarColor(startColor:GetRGB());
+		if nameSpell and IsHelpfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.31, 0.78, 0.47)
+		elseif nameSpell and IsHarmfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.63, 0.36, 0.94)
+		else
+			self:SetStatusBarColor(startColor:GetRGB());
+		end
 		if self.flashColorSameAsStart then
 			self.Flash:SetVertexColor(startColor:GetRGB());
 		else
 			self.Flash:SetVertexColor(1, 1, 1);
 		end
-		
 		if ( self.Spark ) then
 			self.Spark:Show();
 		end
@@ -166,7 +168,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		self.castID = castID;
 		self.channeling = nil;
 		self.fadeOut = nil;
-
 		if ( self.BorderShield ) then
 			if ( self.showShield and notInterruptible ) then
 				self.BorderShield:Show();
@@ -183,7 +184,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self.showCastbar ) then
 			self:Show();
 		end
-
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
 		if ( not self:IsVisible() ) then
 			self:Hide();
@@ -365,6 +365,8 @@ function CastingBarFrame_OnUpdate(self, elapsed)
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
 			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 2);
 		end
+		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
+		self:AdjustWidth()
 	elseif ( self.channeling ) then
 		self.value = self.value - elapsed;
 		if ( self.value <= 0 ) then
@@ -375,6 +377,8 @@ function CastingBarFrame_OnUpdate(self, elapsed)
 		if ( self.Flash ) then
 			self.Flash:Hide();
 		end
+		self.Time:SetFormattedText('%.1f', self.value)
+		self:AdjustWidth()
 	elseif ( GetTime() < self.holdTime ) then
 		return;
 	elseif ( self.flash ) then
