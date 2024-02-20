@@ -11,6 +11,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
+
 --[[ Startup ]]--
 
 function RazerNaga:OnInitialize()
@@ -25,6 +26,7 @@ function RazerNaga:OnInitialize()
 	--version update
 	if RazerNagaVersion then
 		if RazerNagaVersion ~= CURRENT_VERSION then
+			self:UpdateSettings(RazerNagaVersion:match('(%w+)%.(%w+)%.(%w+)'))
 			self:UpdateVersion()
 		end
 	--new user
@@ -34,6 +36,13 @@ function RazerNaga:OnInitialize()
 
 	--slash command support
 	self:RegisterSlashCommands()
+
+	--create a loader for the options menu
+	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
+	f:SetScript('OnShow', function(self)
+		self:SetScript('OnShow', nil)
+		LoadAddOn('RazerNaga_Config')
+	end)
 
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
@@ -48,8 +57,10 @@ function RazerNaga:OnEnable()
 		return
 	end
 
+	self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	self:RegisterEvent('PLAYER_REGEN_DISABLED')
+
 	self:HideBlizzard()
-	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -151,22 +162,7 @@ function RazerNaga:GetDefaults()
 			firstLoad = true,
 			autoBindKeys = false,
 			highlightModifiers = false,
-			bindingSet = 'Simple',
-
-			--anansi settings
-			showTPanel = 'always',
-
-			tKeyNames = {
-				'T1',
-				'T2',
-				'T3',
-				'T4',
-				'T5',
-				'T6',
-				'T7'
-			},
-
-			enableTKeyNotifications = true,
+			bindingSet = 'Simple'
 		}
 	}
 
@@ -176,11 +172,105 @@ function RazerNaga:GetDefaults()
 	return defaults
 end
 
+function RazerNaga:UpdateSettings(major, minor, bugfix)
+	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
+		self:UpgradePagingSettings()
+	end
+
+	if self:ShouldFixRogueSettings(major, minor, bugfix) then
+		self:FixRoguePagingSettings()
+	end
+end
+
+function RazerNaga:ShouldUpgradePagingSettings(major, minor, bugfix)
+	return (tonumber(major) == 1 and tonumber(minor) < 6)
+end
+
+function RazerNaga:ShouldFixRogueSettings(major, minor, bugfix)
+	return (tonumber(major) == 1 and tonumber(minor) < 7)
+end
+
+function RazerNaga:UpgradePagingSettings()
+	--perform state translation to handle updates from older versions
+	for profile,sets in pairs(self.db.sv.profiles) do
+		if sets.frames then
+			for frameId, frameSets in pairs(sets.frames) do
+				if frameSets.pages then
+					for class, oldStates in pairs(frameSets.pages) do
+						local newStates = {}
+
+						--convert class states
+						if class == 'WARRIOR' then
+							newStates['battle'] = oldStates['[bonusbar:1]']
+							newStates['defensive'] = oldStates['[bonusbar:2]']
+							newStates['berserker'] = oldStates['[bonusbar:3]']
+						elseif class == 'DRUID' then
+							newStates['moonkin'] = oldStates['[bonusbar:4]']
+							newStates['bear'] = oldStates['[bonusbar:3]']
+							newStates['tree'] = oldStates['[bonusbar:2]']
+							newStates['prowl'] = oldStates['[bonusbar:1,stealth]']
+							newStates['cat'] = oldStates['[bonusbar:1]']
+						elseif class == 'PRIEST' then
+							newStates['shadow'] = oldStates['[bonusbar:1]']
+						elseif class == 'ROGUE' then
+							newStates['vanish'] = oldStates['[bonusbar:1,form:3]']
+							newStates['shadowdance'] = oldStates['[bonusbar:2]'] or oldStates['form:3']
+							newStates['stealth'] = oldStates['[bonusbar:1]']
+						elseif class == 'WARLOCK' then
+							newStates['meta'] = oldStates['[form:2]']
+						end
+
+						--modifier states
+						for i, state in RazerNaga.BarStates:getAll('modifier') do
+							newStates[state.id] = oldStates[state.value]
+						end
+
+						--possess states
+						for i, state in RazerNaga.BarStates:getAll('possess') do
+							newStates[state.id] = oldStates[state.value]
+						end
+
+						--page states
+						for i, state in RazerNaga.BarStates:getAll('page') do
+							newStates[state.id] = oldStates[state.value]
+						end
+
+						--targeting states
+						for i, state in RazerNaga.BarStates:getAll('target') do
+							newStates[state.id] = oldStates[state.value]
+						end
+
+						frameSets.pages[class] = newStates
+					end
+				end
+			end
+		end
+	end
+end
+
+function RazerNaga:FixRoguePagingSettings()
+	--perform state translation to handle updates from older versions
+	for profile,sets in pairs(self.db.sv.profiles) do
+		if sets.frames then
+			for frameId, frameSets in pairs(sets.frames) do
+				if frameSets.pages then
+					for class, states in pairs(frameSets.pages) do
+						if class == 'ROGUE' then
+							states['shadowdance'] = (states['shadowdance'] or states['stealth'])
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 function RazerNaga:UpdateVersion()
 	RazerNagaVersion = CURRENT_VERSION
 
 	self:Print(string.format(L.Updated, RazerNagaVersion))
 end
+
 
 --Load is called  when the addon is first enabled, and also whenever a profile is loaded
 function RazerNaga:Load()
@@ -210,93 +300,192 @@ function RazerNaga:Unload()
 	end
 end
 
+
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local UIHider = CreateFrame("Frame")
-	UIHider:Hide()
-	self.UIHider = UIHider
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
 
-	local function purgeKey(t, k)
-		t[k] = nil
-		local c = 42
-		repeat
-			if t[c] == nil then
-				t[c] = nil
-			end
-			c = c + 1
-		until issecurevariable(t, k)
+	local function apply(func, arg, ...)
+		if select('#', ...) > 0 then
+			return func(arg), apply(func, ...)
+		end
+
+		return func(arg)
 	end
 
-	local function hideActionBarFrame(frame, clearEvents)
-		if frame then
-			if clearEvents then
-				frame:UnregisterAllEvents()
-			end
+	local function hide(frame)
+		if not frame then
+			return
+		end
 
-			if frame.system then
-				purgeKey(frame, "isShownExternal")
-			end
+		frame:Hide()
+		frame:SetParent(HiddenFrame)
+		frame.ignoreFramePositionManager = true
 
-			if frame.HideBase then
-				frame:HideBase()
-			else
-				frame:Hide()
-			end
-			frame:SetParent(UIHider)
+		-- with 8.2, there's more restrictions on frame anchoring if something
+		-- happens to be attached to a restricted frame. This causes issues with
+		-- moving the action bars around, so we perform a clear all points to avoid
+		-- some frame dependency issues
+		-- we then follow it up with a SetPoint to handle the cases of bits of the
+		-- UI code assuming that this element has a position
+		frame:ClearAllPoints()
+		frame:SetPoint('CENTER')
+	end
+
+	-- disables override bar transition animations
+	local function disableSlideOutAnimations(frame)
+		if not (frame and frame.slideOut) then
+			return
+		end
+
+		local animation = (frame.slideOut:GetAnimations())
+		if animation then
+			animation:SetOffset(0, 0)
 		end
 	end
 
-	local function hideActionButton(button)
-		if not button then return end
+	apply(hide,
+		ActionBarDownButton,
+		ActionBarUpButton,
+		MainMenuBarPerformanceBarFrame,
+		MicroButtonAndBagsBar,
+		MultiBarBottomLeft,
+		MultiBarBottomRight,
+		MultiBarLeft,
+		MultiBarRight,
+		MultiCastActionBarFrame,
+		PetActionBarFrame,
+		StanceBarFrame
+	)
 
-		button:Hide()
-		button:UnregisterAllEvents()
-		button:SetAttributeNoHandler("statehidden", true)
+	apply(disableSlideOutAnimations,
+		MainMenuBar,
+		MultiBarLeft,
+		MultiBarRight,
+		OverrideActionBar
+	)
+
+	-- we don't completely disable the main menu bar, as there's some logic
+	-- dependent on it being visible
+	if MainMenuBar then
+		MainMenuBar:EnableMouse(false)
+
+		-- the main menu bar is responsible for updating the micro buttons
+		-- so we don't disable all events for it
+		MainMenuBar:UnregisterEvent('ACTIONBAR_PAGE_CHANGED')
+		MainMenuBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
+		MainMenuBar:UnregisterEvent('DISPLAY_SIZE_CHANGED')
+		MainMenuBar:UnregisterEvent('UI_SCALE_CHANGED')
 	end
 
-	hideActionBarFrame(MainMenuBar, false)
-	hideActionBarFrame(MultiBarBottomLeft, true)
-	hideActionBarFrame(MultiBarBottomRight, true)
-	hideActionBarFrame(MultiBarLeft, true)
-	hideActionBarFrame(MultiBarRight, true)
-	hideActionBarFrame(MultiBar5, true)
-	hideActionBarFrame(MultiBar6, true)
-	hideActionBarFrame(MultiBar7, true)
-
-	-- Hide MultiBar Buttons, but keep the bars alive
-	for i=1,12 do
-		hideActionButton(_G["ActionButton" .. i])
-		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
-		hideActionButton(_G["MultiBarBottomRightButton" .. i])
-		hideActionButton(_G["MultiBarRightButton" .. i])
-		hideActionButton(_G["MultiBarLeftButton" .. i])
-		hideActionButton(_G["MultiBar5Button" .. i])
-		hideActionButton(_G["MultiBar6Button" .. i])
-		hideActionButton(_G["MultiBar7Button" .. i])
+	-- don't hide the art frame, as the multi action bars are dependent on GetLeft
+	-- or similar calls returning a value
+	if MainMenuBarArtFrame then
+		MainMenuBarArtFrame:SetAlpha(0)
 	end
 
-	hideActionBarFrame(MicroButtonAndBagsBar, false)
-	hideActionBarFrame(StanceBar, true)
-	hideActionBarFrame(PossessActionBar, true)
-	hideActionBarFrame(MultiCastActionBarFrame, false)
-	hideActionBarFrame(PetActionBar, false)
-	hideActionBarFrame(StatusTrackingBarManager, false)
-	hideActionBarFrame(MainMenuBarVehicleLeaveButton, true)
-	hideActionBarFrame(BagsBar, true)
-	hideActionBarFrame(MicroMenu, true)
-	hideActionBarFrame(MicroMenuContainer, true)
+	-- don't reparent the tracking manager, as it assumes its parent has a callback
+	if StatusTrackingBarManager then
+		StatusTrackingBarManager:UnregisterAllEvents()
+		StatusTrackingBarManager:Hide()
+	end
 
-	-- these events drive visibility, we want the MainMenuBar to remain invisible
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
+	if MainMenuExpBar then
+		MainMenuExpBar:UnregisterAllEvents()
+		hide(MainMenuExpBar)
+	end
 
-	-- these functions drive visibility so disable them
-	MultiActionBar_ShowAllGrids = function() end
-	MultiActionBar_HideAllGrids = function() end
+	if ReputationWatchBar then
+		ReputationWatchBar:UnregisterAllEvents()
+		hide(ReputationWatchBar)
+
+		hooksecurefunc(
+			'MainMenuBar_UpdateExperienceBars',
+			function()
+				ReputationWatchBar:Hide()
+			end
+		)
+	end
+
+	if VerticalMultiBarsContainer then
+		VerticalMultiBarsContainer:UnregisterAllEvents()
+		hide(VerticalMultiBarsContainer)
+
+		-- a hack to preserve the multi action bar spacing behavior for the quest log
+		hooksecurefunc(
+			'MultiActionBar_Update',
+			function()
+				local width = 0
+				local showLeft = SHOW_MULTI_ACTIONBAR_3
+				local showRight = SHOW_MULTI_ACTIONBAR_4
+				local stack = GetCVarBool('multiBarRightVerticalLayout')
+
+				if showLeft then
+					width = width + VERTICAL_MULTI_BAR_WIDTH
+				end
+
+				if showRight and not stack then
+					width = width + VERTICAL_MULTI_BAR_WIDTH
+				end
+
+				VerticalMultiBarsContainer:SetWidth(width)
+			end
+		)
+	end
+
+	if PossessBarFrame then
+		PossessBarFrame:UnregisterAllEvents()
+		hide(PossessBarFrame)
+	end
+
+	-- set the stock action buttons to hidden by default
+	local function disableActionButton(name)
+		local button = _G[name]
+		if button then
+			button:SetAttribute('statehidden', true)
+			button:Hide()
+		else
+			self:Printf('Action Button %q could not be found', name)
+		end
+	end
+
+	for id = 1, NUM_ACTIONBAR_BUTTONS do
+		disableActionButton(('ActionButton%d'):format(id))
+		disableActionButton(('MultiBarRightButton%d'):format(id))
+		disableActionButton(('MultiBarLeftButton%d'):format(id))
+		disableActionButton(('MultiBarBottomRightButton%d'):format(id))
+		disableActionButton(('MultiBarBottomLeftButton%d'):format(id))
+	end
+
+	self:UpdateUseOverrideUI()
 end
+
+function RazerNaga:SetUseOverrideUI(enable)
+	self.db.profile.useOverrideUI = enable and true or false
+	self:UpdateUseOverrideUI()
+end
+
+function RazerNaga:UsingOverrideUI()
+	return self.db.profile.useOverrideUI
+end
+
+function RazerNaga:UpdateUseOverrideUI()
+	local usingOverrideUI = self:UsingOverrideUI()
+
+	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
+
+	local oab = _G['OverrideActionBar']
+	oab:ClearAllPoints()
+	if usingOverrideUI then
+		oab:SetPoint('BOTTOM')
+	else
+		oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
+	end
+end
+
 
 --[[ Keybound Events ]]--
 
@@ -315,6 +504,24 @@ function RazerNaga:LIBKEYBOUND_DISABLED()
 		end
 	end
 end
+
+-- lock frame positions when entering combat
+function RazerNaga:PLAYER_REGEN_DISABLED()
+	self.wasUnlocked = not self:Locked()
+
+	if self.wasUnlocked then
+		self:SetLock(true)
+	end
+end
+
+-- unlock when resuming
+function RazerNaga:PLAYER_REGEN_ENABLED()
+	if self.wasUnlocked then
+		self:SetLock(false)
+		self.wasUnlocked = nil
+	end
+end
+
 
 --[[ Profile Functions ]]--
 
@@ -406,6 +613,7 @@ function RazerNaga:MatchProfileExact(name)
 	end
 end
 
+
 --[[ Profile Events ]]--
 
 function RazerNaga:OnNewProfile(msg, db, name)
@@ -429,6 +637,7 @@ function RazerNaga:OnProfileReset(msg, db)
 	self:Print(format(L.ProfileReset, db:GetCurrentProfile()))
 end
 
+
 --[[ Settings...Setting ]]--
 
 function RazerNaga:SetFrameSets(id, sets)
@@ -442,16 +651,16 @@ function RazerNaga:GetFrameSets(id)
 	return self.db.profile.frames[tonumber(id) or id]
 end
 
+
 --[[ Options Menu Display ]]--
 
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
-		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
 	if LoadAddOn('RazerNaga_Config') then
-		InterfaceOptionsFrame_OpenToCategory(self.Options)
+		InterfaceOptionsFrame_Show()
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
 	end
@@ -465,6 +674,7 @@ function RazerNaga:NewMenu(id)
 
 	return self.Menu and self.Menu:New(id)
 end
+
 
 --[[ Slash Commands ]]--
 
@@ -523,6 +733,8 @@ function RazerNaga:OnCmd(args)
 		self:PrintVersion()
 	elseif cmd == 'help' or cmd == '?' then
 		self:PrintHelp()
+	elseif cmd == 'statedump' then
+		self.OverrideController:DumpStates()
 	elseif cmd == 'configstatus' then
 		local status = self:IsConfigAddonEnabled() and 'ENABLED' or 'DISABLED'
 		print(('Config Mode Status: %s'):format(status))
@@ -571,6 +783,7 @@ function RazerNaga:IsConfigAddonEnabled()
 	return GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
 end
 
+
 --[[ Configuration Functions ]]--
 
 --moving
@@ -586,7 +799,6 @@ end
 
 function RazerNaga:SetLock(enable)
 	if InCombatLockdown() then
-		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
@@ -611,6 +823,7 @@ function RazerNaga:ToggleLockedFrames()
 	self:SetLock(not self:Locked())
 end
 
+
 --[[ Bindings Mode ]]--
 
 --binding confirmation dialog
@@ -632,6 +845,7 @@ function RazerNaga:ToggleBindingMode()
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
+		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
@@ -800,33 +1014,6 @@ function RazerNaga:ShowMacroText()
 end
 
 --possess bar settings
-function RazerNaga:SetUseOverrideUI(enable)
-	self.db.profile.useOverrideUI = enable and true or false
-	self:UpdateUseOverrideUI()
-end
-
-function RazerNaga:UsingOverrideUI()
-	return self.db.profile.useOverrideUI
-end
-
-function RazerNaga:UpdateUseOverrideUI()
-    if not self.OverrideController then return end
-
-    local useOverrideUi = self:UsingOverrideUI()
-
-    self.OverrideController:SetAttribute('state-useoverrideui', useOverrideUi)
-
-    local oab = _G.OverrideActionBar
-    if oab then
-        oab:ClearAllPoints()
-        if useOverrideUi then
-            oab:SetPoint('BOTTOM')
-        else
-            oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
-        end
-    end
-end
-
 function RazerNaga:SetOverrideBar(id)
 	local prevBar = self:GetOverrideBar()
 	self.db.profile.possessBar = id
@@ -842,7 +1029,7 @@ end
 
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-	count = max(min(count, 120), 1)
+	count = max(min(count, 120), 1) --sometimes, I do entertaininig things
 
 	if count ~= self:NumBars() then
 		self.ActionBar:ForAll('Delete')
@@ -862,6 +1049,7 @@ function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
 
+
 --tooltips
 function RazerNaga:ShowTooltips()
 	return self.db.profile.showTooltips
@@ -880,6 +1068,7 @@ end
 function RazerNaga:ShowCombatTooltips()
 	return self.db.profile.showTooltipsCombat
 end
+
 
 --minimap button
 function RazerNaga:SetShowMinimap(enable)
@@ -940,29 +1129,6 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---queuestatusbutton
-if not (IsAddOnLoaded("ClassicFrames")) then
-	--load and position the lfg eye
-	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-		self:SetParent(MinimapBackdrop)
-		self:SetFrameLevel(6)
-		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
-		self:SetScale(0.85)
-	end)
-
-	--queuestatusframe
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
-
-	hooksecurefunc("QueueStatusDropDown_Show", function()
-		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
-	end)
-end
-
 --[[ Masque Support ]]--
 
 function RazerNaga:Masque(group, button, buttonData)
@@ -980,6 +1146,7 @@ function RazerNaga:RemoveMasque(group, button)
 		return true
 	end
 end
+
 
 --[[ Incompatibility Check ]]--
 
@@ -1012,6 +1179,7 @@ function RazerNaga:ShowIncompatibleAddonDialog(addonName)
 	StaticPopupDialogs['RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED'].text = string.format(L.IncompatibleAddonLoaded, addonName)
 	StaticPopup_Show('RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED')
 end
+
 
 --[[ Utility Functions ]]--
 

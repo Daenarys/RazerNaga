@@ -3,7 +3,6 @@
 --]]
 
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
-local Anansi = RazerNaga:GetModule('Anansi', true)
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 
 local Menu = RazerNaga:CreateClass('Frame'); RazerNaga.Menu = Menu
@@ -44,11 +43,6 @@ function Menu:New(name)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetSize(32, 32)
-	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 	f.close:SetPoint('TOPRIGHT', -5, -5)
 
 	return f
@@ -191,14 +185,14 @@ function Menu:AddBindingSelectorPanel()
 		end
 		self:SetChecked(RazerNaga.BindingsLoader:IsAutoBindingEnabled(self:GetParent().owner))
 	end)
-	
+
 	RazerNaga.Envoy:Register(enabler, 'UPDATE_AUTO_BINDINGS', function(self)
 		if RazerNaga.AutoBinder:IsAutoBindingEnabled() then
 			self:Enable()
 		else
 			self:Disable()
 		end
-	end)	
+	end)
 
 	local selector = panel:NewBindingModifierSelector()
 	selector:SetPoint('TOPLEFT', enabler, 'BOTTOMLEFT', 2, -12)
@@ -293,23 +287,23 @@ function Panel:NewCheckButton(name, getter, setter)
 	else
 		button:SetPoint('TOPLEFT', 2, 0)
 	end
-	
+
 	if getter then
-		button:SetScript('OnShow', function(self) 
+		button:SetScript('OnShow', function(self)
 			local owner = self:GetParent().owner
 			local f = owner[getter]
 			self:SetChecked(f(owner))
 		end)
 	end
-	
+
 	if setter then
-		button:SetScript('OnClick', function(self) 
+		button:SetScript('OnClick', function(self)
 			local owner = self:GetParent().owner
 			local f = owner[setter]
 			f(owner, self:GetChecked())
 		end)
 	end
-	
+
 	self.height = self.height + 28
 	self.checkbutton = button
 
@@ -328,7 +322,7 @@ do
 
 		local closestValue = minVal
 		local closestValueDistance = math.huge
-		
+
 		for sliderValue = minVal, maxVal, step do
 			local distance = math.abs(value - sliderValue)
 
@@ -393,6 +387,7 @@ do
 		slider:SetMinMaxValues(low, high)
 		slider:SetValueStep(step)
 		slider:EnableMouseWheel(true)
+		BlizzardOptionsPanel_Slider_Enable(slider) --colors the slider properly
 
 		_G[name .. 'Text']:SetText(text)
 		_G[name .. 'Low']:SetText('')
@@ -505,8 +500,10 @@ do
 	local function Slider_OnShow(self)
 		local min, max = 1, self:GetParent().owner:NumButtons()
 		if max > min then
+			BlizzardOptionsPanel_Slider_Enable(self)
 			self:SetMinMaxValues(min, max)
 		else
+			BlizzardOptionsPanel_Slider_Disable(self)
 			self:SetMinMaxValues(1, 1)
 		end
 		self:SetValue(self:GetParent().owner:NumColumns())
@@ -538,36 +535,10 @@ local function BindingModifier_GetSelectedValue(self)
 end
 
 function Panel:NewBindingModifierSelector()
-	local f
+	local f = self:NewRadioGroup(L.BindingSetModifier)
 
-	if Anansi then
-		f = self:NewRadioGroup(L.AnansiTKey)
-
-		f:Add(NONE, 'NONE')
-		for key = 1, Anansi.Config:NumTKeys() do
-			f:Add('T' .. key)
-		end
-
-		f:SetScript('OnShow', function(self)
-			for key = 1, Anansi.Config:NumTKeys() do
-				local button = self.buttons[key + 1]
-				local keyName = Anansi.Config:GetTKeyName(key)
-				local defaultKeyName = 'T' .. key
-				if keyName and keyName ~= defaultKeyName then
-					button:SetText(defaultKeyName .. ' - ' .. keyName)
-				else
-					button:SetText(defaultKeyName)
-				end
-				button:SetValue(Anansi.Config:GetTKeyBinding(key))
-			end
-			self:OnShow()
-		end)
-	else
-		f = self:NewRadioGroup(L.BindingSetModifier)
-
-		for i, modifier in RazerNaga.BindingsLoader:GetAvailableModifiers() do
-			f:Add(RazerNaga.BindingsLoader:GetLocalizedModiferName(modifier), modifier)
-		end
+	for _, modifier in RazerNaga.BindingsLoader:GetAvailableModifiers() do
+		f:Add(RazerNaga.BindingsLoader:GetLocalizedModiferName(modifier), modifier)
 	end
 
 	f.OnSelect = BindingModifier_OnSelect
@@ -584,20 +555,20 @@ do
 	function Panel:NewLeftToRightCheckbox()
 		return self:NewCheckButton(L.LeftToRight, 'GetLeftToRight', 'SetLeftToRight')
 	end
-	
-	function Panel:NewTopToBottomCheckbox()			
+
+	function Panel:NewTopToBottomCheckbox()
 		return self:NewCheckButton(L.TopToBottom, 'GetTopToBottom', 'SetTopToBottom')
 	end
-	
-	function Panel:NewClickThroughCheckbox()			
+
+	function Panel:NewClickThroughCheckbox()
 		return self:NewCheckButton(L.ClickThrough, 'GetClickThrough', 'SetClickThrough')
 	end
-	
-	function Panel:NewShowInOverrideUICheckbox()			
+
+	function Panel:NewShowInOverrideUICheckbox()
 		return self:NewCheckButton(L.ShowInOverrideUI, 'ShowingInOverrideUI', 'ShowInOverrideUI')
 	end
-	
-	function Panel:NewShowInPetBattleUICheckbox()			
+
+	function Panel:NewShowInPetBattleUICheckbox()
 		return self:NewCheckButton(L.ShowInPetBattleUI, 'ShowingInPetBattleUI', 'ShowInPetBattleUI')
 	end
 end

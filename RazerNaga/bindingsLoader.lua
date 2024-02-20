@@ -1,5 +1,5 @@
 --[[
-	bindingsLoader.lua
+	settingsLoader.lua
 		Methods for loading RazerNaga bindings
 --]]
 

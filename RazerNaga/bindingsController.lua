@@ -9,8 +9,9 @@
 
 --[[ globals ]]--
 
+local _G = _G
 local AddonName, Addon = ...
-local RazerNaga = _G[...]
+local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
 local Timer_After = _G['C_Timer'].After
 

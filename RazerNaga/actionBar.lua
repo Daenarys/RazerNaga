@@ -9,6 +9,8 @@ local RazerNaga = _G[...]
 local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
+local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
+local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 --[[ Action Bar ]]--
 
@@ -26,30 +28,38 @@ ActionBar.defaultOffsets = {
 --metatable magic.  Basically this says, 'create a new table for this index, with these defaults'
 --I do this so that I only create page tables for classes the user is actually playing
 ActionBar.mainbarOffsets = {
-    __index = function(t, i)
-        local pages = {
-            page2 = 1,
-            page3 = 2,
-            page4 = 3,
-            page5 = 4,
-            page6 = 5
-        }
+	__index = function(t, i)
+		local pages = {
+			page2 = 1,
+			page3 = 2,
+			page4 = 3,
+			page5 = 4,
+			page6 = 5,
+		}
 
-        if i == 'DRUID' then
-            pages.cat = 6
-            pages.bear = 8
-            pages.moonkin = 9
-            pages.tree = 7
-        elseif i == 'EVOKER' then
-            pages.soar = 7
-        elseif i == 'ROGUE' then
-            pages.stealth = 6
-            pages.shadowdance = 6
-        end
+		if i == 'DRUID' then
+			pages.cat = 6
+			pages.bear = 8
+			pages.moonkin = 9
+			pages.tree = 7
+		elseif i == 'WARRIOR' then
+			pages.battle = 6
+			pages.defensive = 7
+			-- pages.berserker = 8
+		elseif i == 'PRIEST' then
+			pages.shadow = 6
+		elseif i == 'ROGUE' then
+			pages.stealth = 6
+			pages.shadowdance = 6
+		elseif i == 'MONK' then
+			pages.tiger = 6
+			pages.ox = 7
+			pages.serpent = 8
+		end
 
-        t[i] = pages
-        return pages
-    end
+		t[i] = pages
+		return pages
+	end
 }
 
 ActionBar.class = select(2, UnitClass('player'))
@@ -69,11 +79,18 @@ function ActionBar:New(id)
 	f:Layout()
 	f:UpdateGrid()
 	f:UpdateRightClickUnit()
+	f:SetScript('OnSizeChanged', self.OnSizeChanged)
 	f:UpdateFlyoutDirection()
 
 	active[id] = f
 
 	return f
+end
+
+function ActionBar:OnSizeChanged()
+	if not InCombatLockdown() then
+		self:UpdateFlyoutDirection()
+	end
 end
 
 --TODO: change the position code to be based more on the number of action bars
@@ -187,7 +204,7 @@ do
 		local b = self.buttons[i]
 		local maxSize = self:MaxLength()
 
-		b:SetAttributeNoHandler('button--index', i)
+		b:SetAttribute('button--index', i)
 
 		for i, state in RazerNaga.BarStates:getAll() do
 			local offset = self:GetOffset(state.id)
@@ -197,7 +214,7 @@ do
 				actionId = ToValidID(b:GetAttribute('action--base') + offset * maxSize)
 			end
 
-			b:SetAttributeNoHandler('action--S' .. i, actionId)
+			b:SetAttribute('action--S' .. i, actionId)
 		end
 	end
 end
@@ -251,46 +268,35 @@ function ActionBar:IsOverrideBar()
 	return self == RazerNaga:GetOverrideBar()
 end
 
+
 --Empty button display
-function ActionBar:ShowGrid()
-    for _,b in pairs(self.buttons) do
-        if b:IsShown() then
-            b:SetAlpha(1.0)
-        end
-    end
+function ActionBar:ShowGrid(reason)
+	for _,b in pairs(self.buttons) do
+		b:ShowGrid(reason)
+	end
 end
 
-function ActionBar:HideGrid()
-    for _,b in pairs(self.buttons) do
-        if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
-            b:SetAlpha(0.0)
-        end
-    end
+function ActionBar:HideGrid(reason)
+	for _,b in pairs(self.buttons) do
+		b:HideGrid(reason)
+	end
 end
 
 function ActionBar:UpdateGrid()
-    if RazerNaga:ShowGrid() then
-        self:ShowGrid()
-    else
-        self:HideGrid()
-    end
+	if RazerNaga:ShowGrid() then
+		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+	else
+		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+	end
 end
 
-function ActionBar:UpdateSlot()
-    for _,b in pairs(self.buttons) do
-        if b:IsShown() and b:HasAction() then
-            b:SetAlpha(1.0)
-        end
-    end
-end
-
---keybound support
+---keybound support
 function ActionBar:KEYBOUND_ENABLED()
-    self:ShowGrid()
+	self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-    self:HideGrid()
+	self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
 end
 
 --right click targeting support
@@ -329,11 +335,18 @@ function ActionBar:UpdateFlyoutDirection()
 	if self.buttons then
 		local direction = self:GetFlyoutDirection()
 
+		--dear blizzard, I'd like to be able to use the useparent-* attribute stuff for this
 		for _,b in pairs(self.buttons) do
 			b:SetFlyoutDirection(direction)
 		end
 	end
 end
+
+function ActionBar:SavePosition()
+	RazerNaga.Frame.SavePosition(self)
+	self:UpdateFlyoutDirection()
+end
+
 
 --right click menu code for action bars
 --TODO: Probably enable the showstate stuff for other bars, since every bar basically has showstate functionality for 'free'
@@ -505,11 +518,6 @@ function ActionBarController:Load()
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
-
-	self:RegisterEvent("ACTIONBAR_SHOWGRID")
-	self:RegisterEvent("ACTIONBAR_HIDEGRID")
-	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
-	self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarController:Unload()
@@ -530,20 +538,4 @@ function ActionBarController:UpdateOverrideBar()
 	for _, button in pairs(overrideBar.buttons) do
 		button:Update()
 	end
-end
-
-function ActionBarController:ACTIONBAR_SHOWGRID()
-    ActionBar:ForAll('ShowGrid')
-end
-
-function ActionBarController:ACTIONBAR_HIDEGRID()
-    ActionBar:ForAll('HideGrid')
-end
-
-function ActionBarController:ACTIONBAR_SLOT_CHANGED()
-    ActionBar:ForAll('UpdateSlot')
-end
-
-function ActionBarController:SPELLS_CHANGED()
-    ActionBar:ForAll('UpdateGrid')
 end

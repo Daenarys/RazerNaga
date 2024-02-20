@@ -100,7 +100,6 @@ L.ClassBarHelp_WARLOCK = 'Displays Warlock Metamorphosis, if available.'
 L.ClassBarHelp_DEATHKNIGHT = 'Displays available Deathknight presences.'
 L.ClassBarHelp_HUNTER = 'Displays available Hunter aspects.'
 L.ClassBarHelp_MONK = 'Displays available Monk stances.'
-L.ClassBarHelp_EVOKER = 'Displays Evoker Soar, if available.'
 
 L.CastBarHelp = 'Displays a progress bar when casting a spell\nor performing a tradeskill.'
 L.RollBarHelp = 'Displays items to roll on when in a group.'
@@ -109,6 +108,7 @@ Displays the vehicle pitch up, pitch down, and
 exit buttons. What items are displayed is dependent 
 on the type of vehicle you are in. All other 
 vehicle actions are displayed on the possess bar.]]
+L.ExtraBarHelp = 'Displays actions specific to certain raid encounters.'
 
 --hover menu tooltips
 L.ConfigureBarHelp = 'Configure this bar.'

@@ -1,9 +1,8 @@
-## Interface: 100205
-## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
+## Interface: 90002
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Tuller
-## Version: 3.2.1
+## Version: 3.1.5
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
 ## OptionalDeps: Ace3, LibKeyBound-1.0, Masque, FlyPaper
 embeds.xml
@@ -30,7 +29,7 @@ petBar.lua
 stanceBar.lua
 bagBar.lua
 menuBar.lua
+extraActionBar.lua
 vehicleBar.lua
-spellFlyout.lua
 configModeDialog.lua
 hoverMenu.lua
