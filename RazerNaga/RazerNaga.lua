@@ -49,9 +49,6 @@ function RazerNaga:OnEnable()
 		return
 	end
 
-	self:RegisterEvent('PLAYER_REGEN_ENABLED')
-	self:RegisterEvent('PLAYER_REGEN_DISABLED')
-
 	self:HideBlizzard()
 	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
@@ -206,7 +203,7 @@ function RazerNaga:HideBlizzard()
 	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
 	HiddenFrame:SetAllPoints(UIParent)
 	HiddenFrame:Hide()
-	
+
 	local function purgeKey(t, k)
 		t[k] = nil
 		local c = 42
@@ -320,24 +317,6 @@ function RazerNaga:LIBKEYBOUND_DISABLED()
 		end
 	end
 end
-
--- lock frame positions when entering combat
-function RazerNaga:PLAYER_REGEN_DISABLED()
-	self.wasUnlocked = not self:Locked()
-
-	if self.wasUnlocked then
-		self:SetLock(true)
-	end
-end
-
--- unlock when resuming
-function RazerNaga:PLAYER_REGEN_ENABLED()
-	if self.wasUnlocked then
-		self:SetLock(false)
-		self.wasUnlocked = nil
-	end
-end
-
 
 --[[ Profile Functions ]]--
 
