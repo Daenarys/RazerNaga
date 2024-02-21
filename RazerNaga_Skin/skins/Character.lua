@@ -1,44 +1,7 @@
 if not _G.CharacterFrame then return end
 
-ReputationFrame.ScrollBar:SetSize(25, 560)
-ReputationFrame.ScrollBar:ClearAllPoints()
-ReputationFrame.ScrollBar:SetPoint("TOPLEFT", ReputationFrame.ScrollBox, "TOPRIGHT", -1, 3)
-ReputationFrame.ScrollBar:SetPoint("BOTTOMLEFT", ReputationFrame.ScrollBox, "BOTTOMRIGHT", 2, -1)
-
-ApplyScrollBarArrow(ReputationFrame.ScrollBar)
-ApplyScrollBarTrack(ReputationFrame.ScrollBar.Track)
-ApplyScrollBarThumb(ReputationFrame.ScrollBar.Track.Thumb)
-
 ApplyDialogBorder(ReputationDetailFrame.Border)
-
-TokenFrame.ScrollBar:SetSize(25, 560)
-TokenFrame.ScrollBar:ClearAllPoints()
-TokenFrame.ScrollBar:SetPoint("TOPLEFT", TokenFrame.ScrollBox, "TOPRIGHT", -1, 3)
-TokenFrame.ScrollBar:SetPoint("BOTTOMLEFT", TokenFrame.ScrollBox, "BOTTOMRIGHT", 2, -1)
-
-ApplyScrollBarArrow(TokenFrame.ScrollBar)
-ApplyScrollBarTrack(TokenFrame.ScrollBar.Track)
-ApplyScrollBarThumb(TokenFrame.ScrollBar.Track.Thumb)
-
 ApplyDialogBorder(TokenFramePopup.Border)
-
-PaperDollFrame.TitleManagerPane.ScrollBar:SetSize(25, 560)
-PaperDollFrame.TitleManagerPane.ScrollBar:ClearAllPoints()
-PaperDollFrame.TitleManagerPane.ScrollBar:SetPoint("TOPLEFT", PaperDollFrame.TitleManagerPane.ScrollBox, "TOPRIGHT", 1, 1)
-PaperDollFrame.TitleManagerPane.ScrollBar:SetPoint("BOTTOMLEFT", PaperDollFrame.TitleManagerPane.ScrollBox, "BOTTOMRIGHT", 4, -1)
-
-ApplyScrollBarArrow(PaperDollFrame.TitleManagerPane.ScrollBar)
-ApplyScrollBarTrack(PaperDollFrame.TitleManagerPane.ScrollBar.Track)
-ApplyScrollBarThumb(PaperDollFrame.TitleManagerPane.ScrollBar.Track.Thumb)
-
-PaperDollFrame.EquipmentManagerPane.ScrollBar:SetSize(25, 560)
-PaperDollFrame.EquipmentManagerPane.ScrollBar:ClearAllPoints()
-PaperDollFrame.EquipmentManagerPane.ScrollBar:SetPoint("TOPLEFT", PaperDollFrame.EquipmentManagerPane.ScrollBox, "TOPRIGHT", 1, 24)
-PaperDollFrame.EquipmentManagerPane.ScrollBar:SetPoint("BOTTOMLEFT", PaperDollFrame.EquipmentManagerPane.ScrollBox, "BOTTOMRIGHT", 4, -1)
-
-ApplyScrollBarArrow(PaperDollFrame.EquipmentManagerPane.ScrollBar)
-ApplyScrollBarTrack(PaperDollFrame.EquipmentManagerPane.ScrollBar.Track)
-ApplyScrollBarThumb(PaperDollFrame.EquipmentManagerPane.ScrollBar.Track.Thumb)
 
 _G.PaperDollFrame:HookScript("OnShow", function()
 	CharacterModelScene.ControlFrame:Hide()

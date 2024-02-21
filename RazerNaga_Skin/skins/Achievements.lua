@@ -2,51 +2,6 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(self, event, name)
 	if name == "Blizzard_AchievementUI" then
-		AchievementFrameCategories.ScrollBar:SetSize(25, 560)
-		AchievementFrameCategories.ScrollBar:ClearAllPoints()
-		AchievementFrameCategories.ScrollBar:SetPoint("TOPLEFT", AchievementFrameCategories.ScrollBox, "TOPRIGHT", -1, 3)
-		AchievementFrameCategories.ScrollBar:SetPoint("BOTTOMLEFT", AchievementFrameCategories.ScrollBox, "BOTTOMRIGHT", 1, -5)
-
-		if (AchievementFrameCategories.ScrollBar.BG == nil) then
-			AchievementFrameCategories.ScrollBar.BG = AchievementFrameCategories.ScrollBar:CreateTexture(nil, "BACKGROUND");
-			AchievementFrameCategories.ScrollBar.BG:SetColorTexture(0, 0, 0, .85)
-			AchievementFrameCategories.ScrollBar.BG:SetAllPoints()
-		end
-
-		ApplyScrollBarArrow(AchievementFrameCategories.ScrollBar)
-		ApplyScrollBarTrack(AchievementFrameCategories.ScrollBar.Track)
-		ApplyScrollBarThumb(AchievementFrameCategories.ScrollBar.Track.Thumb)
-
-		AchievementFrameAchievements.ScrollBar:SetSize(25, 560)
-		AchievementFrameAchievements.ScrollBar:ClearAllPoints()
-		AchievementFrameAchievements.ScrollBar:SetPoint("TOPLEFT", AchievementFrameAchievements.ScrollBox, "TOPRIGHT", -1, 3)
-		AchievementFrameAchievements.ScrollBar:SetPoint("BOTTOMLEFT", AchievementFrameAchievements.ScrollBox, "BOTTOMRIGHT", 1, -5)
-
-		if (AchievementFrameAchievements.ScrollBar.BG == nil) then
-			AchievementFrameAchievements.ScrollBar.BG = AchievementFrameAchievements.ScrollBar:CreateTexture(nil, "BACKGROUND");
-			AchievementFrameAchievements.ScrollBar.BG:SetColorTexture(0, 0, 0, .85)
-			AchievementFrameAchievements.ScrollBar.BG:SetAllPoints()
-		end
-
-		ApplyScrollBarArrow(AchievementFrameAchievements.ScrollBar)
-		ApplyScrollBarTrack(AchievementFrameAchievements.ScrollBar.Track)
-		ApplyScrollBarThumb(AchievementFrameAchievements.ScrollBar.Track.Thumb)
-
-		AchievementFrameStats.ScrollBar:SetSize(25, 560)
-		AchievementFrameStats.ScrollBar:ClearAllPoints()
-		AchievementFrameStats.ScrollBar:SetPoint("TOPLEFT", AchievementFrameStats.ScrollBox, "TOPRIGHT", -1, 3)
-		AchievementFrameStats.ScrollBar:SetPoint("BOTTOMLEFT", AchievementFrameStats.ScrollBox, "BOTTOMRIGHT", 1, -5)
-
-		if (AchievementFrameStats.ScrollBar.BG == nil) then
-			AchievementFrameStats.ScrollBar.BG = AchievementFrameStats.ScrollBar:CreateTexture(nil, "BACKGROUND");
-			AchievementFrameStats.ScrollBar.BG:SetColorTexture(0, 0, 0, .85)
-			AchievementFrameStats.ScrollBar.BG:SetAllPoints()
-		end
-
-		ApplyScrollBarArrow(AchievementFrameStats.ScrollBar)
-		ApplyScrollBarTrack(AchievementFrameStats.ScrollBar.Track)
-		ApplyScrollBarThumb(AchievementFrameStats.ScrollBar.Track.Thumb)
-
 		hooksecurefunc('AchievementFrameSummary_Refresh', function()
 			for i = 1, ACHIEVEMENTUI_MAX_SUMMARY_ACHIEVEMENTS do
 				local button = _G["AchievementFrameSummaryAchievement"..i];
