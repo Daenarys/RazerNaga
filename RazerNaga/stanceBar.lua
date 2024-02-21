@@ -43,6 +43,9 @@ do
 
 		if button then
 			button:HookScript('OnEnter', self.OnEnter)
+			if button.cooldown then
+				button.cooldown:SetDrawBling(true)
+			end
 		end
 
 		return button

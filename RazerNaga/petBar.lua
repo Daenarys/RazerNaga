@@ -30,6 +30,10 @@ function PetButton:Create(id)
 	
 	b:HookScript('OnEnter', self.OnEnter)
 
+	if b.cooldown then
+		b.cooldown:SetDrawBling(true)
+	end
+
 	--override keybinding display
 	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
 
