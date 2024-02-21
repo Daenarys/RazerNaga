@@ -373,8 +373,6 @@ function MenuBarController:OnInitialize()
 	local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
 	if perf then
 		perf:SetSize(28, 58)
-		perf:ClearAllPoints()
-		perf:SetPoint('BOTTOM', 0, 0)
 	end
 end
 
