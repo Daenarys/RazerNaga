@@ -220,11 +220,14 @@ function RazerNaga:HideBlizzard()
 			return
 		end
 
+		frame:UnregisterAllEvents()
+
 		if frame.HideBase then
 			frame:HideBase()
 		else
 			frame:Hide()
 		end
+		
 		frame:SetParent(HiddenFrame)
 	end
 

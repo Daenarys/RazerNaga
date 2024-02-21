@@ -9,8 +9,6 @@ local RazerNaga = _G[...]
 local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
-local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
-local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 --[[ Action Bar ]]--
 
@@ -71,18 +69,11 @@ function ActionBar:New(id)
 	f:Layout()
 	f:UpdateGrid()
 	f:UpdateRightClickUnit()
-	f:SetScript('OnSizeChanged', self.OnSizeChanged)
 	f:UpdateFlyoutDirection()
 
 	active[id] = f
 
 	return f
-end
-
-function ActionBar:OnSizeChanged()
-	if not InCombatLockdown() then
-		self:UpdateFlyoutDirection()
-	end
 end
 
 --TODO: change the position code to be based more on the number of action bars
@@ -261,33 +252,45 @@ function ActionBar:IsOverrideBar()
 end
 
 --empty button display
-function ActionBar:ShowGrid(reason)
-	for _,b in pairs(self.buttons) do
-		b:ShowGrid(reason)
-	end
+function ActionBar:ShowGrid()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() then
+            b:SetAlpha(1.0)
+        end
+    end
 end
 
-function ActionBar:HideGrid(reason)
-	for _,b in pairs(self.buttons) do
-		b:HideGrid(reason)
-	end
+function ActionBar:HideGrid()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
+            b:SetAlpha(0.0)
+        end
+    end
 end
 
 function ActionBar:UpdateGrid()
-	if RazerNaga:ShowGrid() then
-		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-	else
-		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
-	end
+    if RazerNaga:ShowGrid() then
+        self:ShowGrid()
+    else
+        self:HideGrid()
+    end
 end
 
----keybound support
+function ActionBar:UpdateSlot()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and b:HasAction() then
+            b:SetAlpha(1.0)
+        end
+    end
+end
+
+--keybound support
 function ActionBar:KEYBOUND_ENABLED()
-	self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:ShowGrid()
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-	self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:HideGrid()
 end
 
 --right click targeting support
@@ -326,18 +329,11 @@ function ActionBar:UpdateFlyoutDirection()
 	if self.buttons then
 		local direction = self:GetFlyoutDirection()
 
-		--dear blizzard, I'd like to be able to use the useparent-* attribute stuff for this
 		for _,b in pairs(self.buttons) do
 			b:SetFlyoutDirection(direction)
 		end
 	end
 end
-
-function ActionBar:SavePosition()
-	RazerNaga.Frame.SavePosition(self)
-	self:UpdateFlyoutDirection()
-end
-
 
 --right click menu code for action bars
 --TODO: Probably enable the showstate stuff for other bars, since every bar basically has showstate functionality for 'free'
@@ -507,6 +503,11 @@ function ActionBarController:Load()
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
+
+	self:RegisterEvent("ACTIONBAR_SHOWGRID")
+	self:RegisterEvent("ACTIONBAR_HIDEGRID")
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+	self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarController:Unload()
@@ -527,4 +528,20 @@ function ActionBarController:UpdateOverrideBar()
 	for _, button in pairs(overrideBar.buttons) do
 		button:Update()
 	end
+end
+
+function ActionBarController:ACTIONBAR_SHOWGRID()
+    ActionBar:ForAll('ShowGrid')
+end
+
+function ActionBarController:ACTIONBAR_HIDEGRID()
+    ActionBar:ForAll('HideGrid')
+end
+
+function ActionBarController:ACTIONBAR_SLOT_CHANGED()
+    ActionBar:ForAll('UpdateSlot')
+end
+
+function ActionBarController:SPELLS_CHANGED()
+    ActionBar:ForAll('UpdateGrid')
 end

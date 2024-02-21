@@ -41,7 +41,7 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttribute('showgrid', 0)
+		b:SetAttribute('showgrid', 1)
 		b:SetAttribute('action--base', id)
 		b:SetAttribute('_childupdate-action', [[
 			local state = message
@@ -56,8 +56,18 @@ function ActionButton:New(id)
 
 			if newActionID ~= self:GetAttribute('action') then
 				self:SetAttribute('action', newActionID)
+				self:RunAttribute("UpdateShown")
 				self:CallMethod('UpdateState')
 			end
+		]])
+		b:SetAttribute("UpdateShown", [[
+		    local show = (HasAction(self:GetAttribute("action")))
+		                 and not self:GetAttribute("statehidden")
+		    if show then
+		        self:SetAlpha(1)
+		    else
+		        self:SetAlpha(0)
+		    end
 		]])
 
 		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
@@ -151,30 +161,6 @@ end
 --keybound support
 function ActionButton:OnEnter()
 	KeyBound:Set(self)
-end
-
---button visibility
-function ActionButton:ShowGrid(reason)
-	if InCombatLockdown() then return end
-
-	self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason))
-
-	if self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") then
-		self:Show()
-	end
-end
-
-function ActionButton:HideGrid(reason)
-	if InCombatLockdown() then return end
-
-	local showgrid = self:GetAttribute("showgrid");
-	if showgrid > 0 then
-		self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
-	end
-
-	if self:GetAttribute("showgrid") == 0 and not HasAction(self.action) then
-		self:Hide()
-	end
 end
 
 --macro text
