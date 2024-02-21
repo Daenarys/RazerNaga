@@ -184,7 +184,7 @@ do
 		local b = self.buttons[i]
 		local maxSize = self:MaxLength()
 
-		b:SetAttributeNoHandler('button--index', i)
+		b:SetAttribute('button--index', i)
 
 		for i, state in RazerNaga.BarStates:getAll() do
 			local offset = self:GetOffset(state.id)
@@ -194,7 +194,7 @@ do
 				actionId = ToValidID(b:GetAttribute('action--base') + offset * maxSize)
 			end
 
-			b:SetAttributeNoHandler('action--S' .. i, actionId)
+			b:SetAttribute('action--S' .. i, actionId)
 		end
 	end
 end
