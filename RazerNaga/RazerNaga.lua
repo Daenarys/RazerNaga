@@ -945,24 +945,6 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 	end)
 end
 
---[[ Masque Support ]]--
-
-function RazerNaga:Masque(group, button, buttonData)
-	local Masque = LibStub('Masque', true)
-	if Masque then
-		Masque:Group('RazerNaga', group):AddButton(button, buttonData)
-		return true
-	end
-end
-
-function RazerNaga:RemoveMasque(group, button)
-	local Masque = LibStub('Masque', true)
-	if Masque then
-		Masque:Group('RazerNaga', group):RemoveButton(button)
-		return true
-	end
-end
-
 
 --[[ Incompatibility Check ]]--
 
