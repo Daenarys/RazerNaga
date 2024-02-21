@@ -115,7 +115,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -250,
+				['x'] = -260,
 				['y'] = 110,
 				['enableAutoBinding'] = true,
 				['autoBindingModifier'] = 'NONE'
@@ -131,7 +131,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -100,
+				['x'] = -110,
 				['y'] = 110,
 			}, -- [2]
 			{
@@ -161,7 +161,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'RIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -40,
+				['x'] = -47,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -176,8 +176,8 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOM',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = 270,
-				['y'] = 52,
+				['x'] = 300,
+				['y'] = 57,
 			}, -- [5]
 			{
 			['isRightToLeft'] = false,
@@ -191,8 +191,8 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOM',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -270,
-				['y'] = 52,
+				['x'] = -290,
+				['y'] = 57,
 			}, -- [6]
 			{
 			['isRightToLeft'] = false,
@@ -206,7 +206,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -250,
+				['x'] = -260,
 				['y'] = 305,
 			}, -- [7]
 			{
@@ -221,7 +221,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -100,
+				['x'] = -110,
 				['y'] = 305,
 			}, -- [8]
 			{
@@ -236,7 +236,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -250,
+				['x'] = -260,
 				['y'] = 500,
 			}, -- [9]
 			{
@@ -251,7 +251,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['scale'] = 0.91,
 				['spacing'] = 0,
-				['x'] = -100,
+				['x'] = -110,
 				['y'] = 500,
 			}, -- [10]
 			['cast'] = {
