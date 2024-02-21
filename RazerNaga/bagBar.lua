@@ -20,7 +20,7 @@ function BagBar:SkinButton(b)
 	b:SetSize(32, 32)
 
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -5)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -6)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
