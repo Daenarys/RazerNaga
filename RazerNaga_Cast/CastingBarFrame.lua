@@ -417,7 +417,9 @@ function CastingBarFrame_ApplyAlpha(self, alpha)
 end
 
 function CastingBarFrame_FinishSpell(self)
-	self:SetStatusBarColor(0.0, 1.0, 0.0);
+	if not self.finishedColorSameAsStart then
+		self:SetStatusBarColor(self.finishedCastColor:GetRGB());
+	end
 	if ( self.Spark ) then
 		self.Spark:Hide();
 	end
