@@ -105,30 +105,8 @@ end
 
 function RazerNaga:GetDefaults()
 	local defaults = {
-		global = {
-			tKeymap = {
-				'CTRL-SHIFT',
-				'CTRL',
-				'SHIFT',
-				'ALT',
-				'ALT-SHIFT',
-				'ALT-CTRL',
-				'ALT-CTRL-SHIFT',
-			},
-			tKeyColors = {
-				{r = 60, g = 143, b = 157, a = 255}, --perfect sky
-				{r = 255, g = 193, b = 72, a = 255}, --pringles cheese
-				{r = 146, g = 181, b = 97, a = 255}, --no less courage
-				{r = 223, g = 108, b = 17, a = 255}, --something toxic
-				{r = 194, g = 38, b = 182, a = 255}, --electric magenta
-				{r = 177, g = 68, b = 35, a = 255},   --earth gives we take
-				{r = 63, g = 48, b = 103, a = 255},   --curtains to heaven
-			}
-		},
-
 		profile = {
 			possessBar = 1,
-
 			sticky = false,
 			linkedOpacity = false,
 			showMacroText = true,
@@ -204,47 +182,62 @@ function RazerNaga:HideBlizzard()
 	HiddenFrame:SetAllPoints(UIParent)
 	HiddenFrame:Hide()
 
-	local function apply(func, arg, ...)
-		if select('#', ...) > 0 then
-			return func(arg), apply(func, ...)
-		end
+	local function apply(func, ...)
+	    for i = 1, select('#', ...) do
+	        local name = (select(i, ...))
+	        local frame = _G[name]
 
-		return func(arg)
+	        if frame then
+	            func(frame)
+	        else
+	            self:Printf('Could not find frame %q', name)
+	        end
+	    end
 	end
 
-	local function hide(frame)
-		if not frame then
-			return
-		end
-
-		if frame.HideBase then
-			frame:HideBase()
-		else
-			frame:Hide()
-		end
-		
-		frame:SetParent(HiddenFrame)
+	local function banish(frame)
+	    (frame.HideBase or frame.Hide)(frame)
+	    frame:SetParent(HiddenFrame)
 	end
 
-	apply(hide,
-		MainMenuBar,
-		MultiBarBottomLeft,
-		MultiBarBottomRight,
-		MultiBarLeft,
-		MultiBarRight,
-		MultiBar5,
-		MultiBar6,
-		MultiBar7,
-		MicroButtonAndBagsBar,
-		StanceBar,
-		PossessActionBar,
-		MultiCastActionBarFrame,
-		PetActionBar,
-		StatusTrackingBarManager,
-		MainMenuBarVehicleLeaveButton,
-		BagsBar,
-		MicroMenu,
-		MicroMenuContainer
+	local function unregisterEvents(frame)
+	    frame:UnregisterAllEvents()
+	end
+
+	apply(banish,
+		"MainMenuBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"PetActionBar",
+		"StatusTrackingBarManager",
+		"MainMenuBarVehicleLeaveButton",
+		"MicroButtonAndBagsBar",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer"
+	)
+
+	apply(unregisterEvents,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"MainMenuBarVehicleLeaveButton",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer"
 	)
 
 	local function disableActionButton(name)
@@ -917,27 +910,24 @@ function RazerNaga:SetFirstLoad(enable)
 end
 
 --queuestatusbutton
-if not (IsAddOnLoaded("ClassicFrames")) then
-	--load and position the lfg eye
-	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-		self:SetParent(MinimapBackdrop)
-		self:SetFrameLevel(6)
-		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
-		self:SetScale(0.85)
-	end)
+hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+	self:SetParent(MinimapBackdrop)
+	self:SetFrameLevel(6)
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+	self:SetScale(0.85)
+end)
 
-	--queuestatusframe
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
+--queuestatusframe
+hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+	self:ClearAllPoints()
+	self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+end)
 
-	hooksecurefunc("QueueStatusDropDown_Show", function()
-		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
-	end)
-end
+hooksecurefunc("QueueStatusDropDown_Show", function()
+	DropDownList1:ClearAllPoints()
+	DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
+end)
 
 
 --[[ Incompatibility Check ]]--
