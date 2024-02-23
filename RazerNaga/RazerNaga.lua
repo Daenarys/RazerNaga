@@ -253,7 +253,6 @@ function RazerNaga:HideBlizzard()
 		"MicroMenuContainer"
 	)
 
-
 	apply(disableActionButtons,
 		"MainMenuBar",
 		"MultiBarBottomLeft",
