@@ -16,6 +16,8 @@ end
 for id = 1, NUM_PET_ACTION_SLOTS do
     local button = getPetButton(id)
 
+    button.cooldown:SetDrawBling(button.cooldown:GetEffectiveAlpha() > 0.5)
+
     button:SetAttribute("commandName", "BONUSACTIONBUTTON" .. id)
     RazerNaga.BindableButton:AddQuickBindingSupport(button)
 end

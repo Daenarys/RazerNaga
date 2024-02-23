@@ -151,7 +151,7 @@ function StanceBarModule:UpdateNumForms()
     self:UpdateStanceButtons()
 end
 
-StanceBarModule.UpdateStanceButtons = RazerNaga:Defer(function(self)
+StanceBarModule.UpdateStanceButtons = RazerNaga:Debounce(function(self)
     local bar = self.bar
     if bar then
         bar:UpdateActions()

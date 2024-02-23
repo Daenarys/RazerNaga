@@ -105,7 +105,8 @@ function ActionButton:OnCreate(id)
         end
     ]])
 
-    -- ...and the rest
+    self.cooldown:SetDrawBling(self.cooldown:GetEffectiveAlpha() > 0.5)
+
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
     RazerNaga.SpellFlyout:Register(self)
 end
