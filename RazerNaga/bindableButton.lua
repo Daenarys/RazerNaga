@@ -113,6 +113,12 @@ function BindableButton:UpdateHotkeys()
 
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
+
+    if ( hotkey:GetText() == RANGE_INDICATOR ) then
+        hotkey:Hide()
+    else
+        hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
+    end
 end
 
 function BindableButton:OnEnter()
