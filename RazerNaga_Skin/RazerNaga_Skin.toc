@@ -8,7 +8,6 @@ skins\ApplySkin.lua
 skins\Achievements.lua
 skins\AddOnList.lua
 skins\AuctionHouse.lua
-skins\AzeriteEssence.lua
 skins\Buffs.lua
 skins\Calendar.lua
 skins\Character.lua
