@@ -204,6 +204,19 @@ function RazerNaga:HideBlizzard()
 	    frame:UnregisterAllEvents()
 	end
 
+	local function disableActionButtons(bar)
+		local buttons = bar.actionButtons
+		if type(buttons) ~= "table" then
+			return
+		end
+
+		for _, button in pairs(buttons) do
+			button:UnregisterAllEvents()
+			button:SetAttributeNoHandler("statehidden", true)
+			button:Hide()
+		end
+	end
+
 	apply(banish,
 		"MainMenuBar",
 		"MultiBarBottomLeft",
@@ -240,27 +253,17 @@ function RazerNaga:HideBlizzard()
 		"MicroMenuContainer"
 	)
 
-	local function disableActionButton(name)
-		local button = _G[name]
-		if button then
-			button:UnregisterAllEvents()
-			button:SetAttribute('statehidden', true)
-			button:Hide()
-		else
-			self:Printf('Action Button %q could not be found', name)
-		end
-	end
 
-	for id = 1, NUM_ACTIONBAR_BUTTONS do
-		disableActionButton(('ActionButton%d'):format(id))
-		disableActionButton(('MultiBarRightButton%d'):format(id))
-		disableActionButton(('MultiBarLeftButton%d'):format(id))
-		disableActionButton(('MultiBarBottomRightButton%d'):format(id))
-		disableActionButton(('MultiBarBottomLeftButton%d'):format(id))
-		disableActionButton(('MultiBar5Button%d'):format(id))
-		disableActionButton(('MultiBar6Button%d'):format(id))
-		disableActionButton(('MultiBar7Button%d'):format(id))
-	end
+	apply(disableActionButtons,
+		"MainMenuBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7"
+	)
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
