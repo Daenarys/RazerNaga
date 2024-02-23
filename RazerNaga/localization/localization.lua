@@ -117,4 +117,5 @@ L.AltKey = 'ALT'
 L.IncompatibleAddonLoaded = 'RazerNaga was unable to load properly because %s is loaded, which RazerNaga is incompatible with. Please disable any other action bar addons you may be running to load RazerNaga.'
 
 L.ChangeSummary = 'Change Summary:'
+L.BindTKeyPrompt = 'Hold down the key |cff00ff00%s|r and click here to register its binding.'
 L.TryAgain = 'Try Again'

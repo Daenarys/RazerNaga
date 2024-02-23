@@ -170,6 +170,42 @@ function Menu:AddAdvancedPanel()
 	return panel
 end
 
+function Menu:AddBindingSelectorPanel()
+	local panel = self:NewPanel(L.Bindings)
+
+	local enabler = panel:NewCheckButton(L.EnableAutoBindings)
+	_G[enabler:GetName() .. 'Text']:SetWidth(146)
+	_G[enabler:GetName() .. 'Text']:SetJustifyH('LEFT')
+	_G[enabler:GetName() .. 'Text']:SetJustifyV('TOP')
+
+	enabler:SetScript('OnClick', function(self)
+		RazerNaga.BindingsLoader:SetEnableAutoBinding(self:GetParent().owner, self:GetChecked())
+	end)
+
+	enabler:SetScript('OnShow', function(self)
+		if RazerNaga.AutoBinder:IsAutoBindingEnabled() then
+			self:Enable()
+		else
+			self:Disable()
+		end
+		self:SetChecked(RazerNaga.BindingsLoader:IsAutoBindingEnabled(self:GetParent().owner))
+	end)
+	
+	RazerNaga.Envoy:Register(enabler, 'UPDATE_AUTO_BINDINGS', function(self)
+		if RazerNaga.AutoBinder:IsAutoBindingEnabled() then
+			self:Enable()
+		else
+			self:Disable()
+		end
+	end)	
+
+	local selector = panel:NewBindingModifierSelector()
+	selector:SetPoint('TOPLEFT', enabler, 'BOTTOMLEFT', 2, -12)
+	selector:SetWidth(172)
+
+	return panel
+end
+
 do
 	local info = {}
 	local function AddItem(text, value, func, checked)
@@ -489,6 +525,30 @@ end
 --radio group
 function Panel:NewRadioGroup(name)
 	return RazerNaga.RadioGroup:New(name, self)
+end
+
+local function BindingModifier_OnSelect(self, value)
+	RazerNaga.BindingsLoader:SetFrameModifier(self:GetParent().owner, value)
+end
+
+local function BindingModifier_GetSelectedValue(self)
+	return RazerNaga.BindingsLoader:GetFrameModifier(self:GetParent().owner)
+end
+
+function Panel:NewBindingModifierSelector()
+	local f = self:NewRadioGroup(L.BindingSetModifier)
+
+	for _, modifier in RazerNaga.BindingsLoader:GetAvailableModifiers() do
+		f:Add(RazerNaga.BindingsLoader:GetLocalizedModiferName(modifier), modifier)
+	end
+
+	f.OnSelect = BindingModifier_OnSelect
+	f.GetSelectedValue = BindingModifier_GetSelectedValue
+	f:SetColumns(1)
+	f:Layout()
+
+	self.height = self.height + 200
+	return f
 end
 
 --right to left & left to right checkboxes

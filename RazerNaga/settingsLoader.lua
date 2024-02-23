@@ -60,6 +60,7 @@ function SettingsLoader:LoadSettings(settings)
 
 	--reenable dominos
 	RazerNaga:Load()
+	RazerNaga.AutoBinder:EnforceBindings()
 end
 
 --replace any items in toTble that are in fromTbl
@@ -116,6 +117,8 @@ function SettingsLoader:GetThreeByFour()
 				['spacing'] = 0,
 				['x'] = -260,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'NONE'
 			}, -- [1]
 			{
 				['isRightToLeft'] = false,
@@ -314,6 +317,8 @@ function SettingsLoader:GetThreeByFour()
 				['spacing'] = 4,
 				['x'] = -400,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'CTRL'
 			},
 			['class'] = {
 				['isRightToLeft'] = false,
@@ -326,7 +331,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['spacing'] = 0,
 				['x'] = -306,
-				['y'] = 239,
+				['y'] = 270,
 			}
 		},
 	}
@@ -361,6 +366,8 @@ function SettingsLoader:GetFourByThree()
 				['spacing'] = 4,
 				['x'] = -290,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'NONE'
 			}, -- [1]
 			{
 				['isRightToLeft'] = false,
@@ -549,6 +556,8 @@ function SettingsLoader:GetFourByThree()
 				['spacing'] = 6,
 				['x'] = -480,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'CTRL'
 			},
 			['class'] = {
 				['isRightToLeft'] = false,

@@ -40,12 +40,12 @@ function ConfigModeDialog:Load()
 	header:SetWidth(326); header:SetHeight(64)
 	header:SetPoint('TOP', 0, 12)
 
-	local title = self:CreateFontString('ARTWORK')
+	local title = self:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
 	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText(L.ConfigMode)
 
-	local desc = self:CreateFontString('ARTWORK')
+	local desc = self:CreateFontString(nil, 'ARTWORK')
 	desc:SetFontObject('GameFontHighlight')
 	desc:SetJustifyV('TOP')
 	desc:SetJustifyH('CENTER')
@@ -171,6 +171,7 @@ function ConfigModeDialog:CreateBindingSetPicker()
 	dd:SetScript('OnShow', function(self)
 		UIDropDownMenu_SetWidth(self, 110)
 		UIDropDownMenu_Initialize(self, self.Initialize)
+		UIDropDownMenu_SetSelectedValue(self, RazerNaga.BindingsLoader:GetCurrentBindingsSetID())
 	end)
 
 	dd:SetScript('OnEnter', function(self)
@@ -183,7 +184,15 @@ function ConfigModeDialog:CreateBindingSetPicker()
 
 
 	local function Item_OnClick(self)
+		RazerNaga.BindingsLoader:SetBindingSetID(self.value)
 		UIDropDownMenu_SetSelectedValue(dd, self.value)
+	end
+
+	dd.Initialize = function(self)
+		local selected = RazerNaga.BindingsLoader:GetCurrentBindingsSetID()
+		for i, set in RazerNaga.BindingsLoader:GetAvailableBindingsSets() do
+			AddItem(set.localizedName, set.id, Item_OnClick, set.id == selected, nil, set.tooltip)
+		end
 	end
 
 	return dd
@@ -191,8 +200,17 @@ end
 
 function ConfigModeDialog:CreateAutoBindingToggle()
 	local autoBindings = CreateFrame('CheckButton', self:GetName() .. 'AutoBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[autoBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[autoBindings:GetName() .. 'Text']:SetText(L.EnableAutomaticBindings)
+	_G[autoBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[autoBindings:GetName() .. 'Text']:SetPoint("LEFT", autoBindings, "RIGHT", 2, 1)
 
+	autoBindings:SetScript('OnShow', function(self)
+		self:SetChecked(RazerNaga.AutoBinder:IsAutoBindingEnabled())
+	end)
+	autoBindings:SetScript('OnClick', function(self)
+		RazerNaga.AutoBinder:SetEnableAutomaticBindings(self:GetChecked())
+	end)
 	autoBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.AutomaticBindingsToggle, nil, nil, nil, nil, 1)
@@ -206,7 +224,10 @@ end
 
 function ConfigModeDialog:CreatePerCharacterBindingToggle()
 	local perCharBindings = CreateFrame('CheckButton', self:GetName() .. 'PerCharBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[perCharBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[perCharBindings:GetName() .. 'Text']:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
+	_G[perCharBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[perCharBindings:GetName() .. 'Text']:SetPoint("LEFT", perCharBindings, "RIGHT", 2, 1)
 
 	perCharBindings:SetScript('OnShow', function(self)
 		self:SetChecked(GetCurrentBindingSet() == 2)
@@ -215,6 +236,7 @@ function ConfigModeDialog:CreatePerCharacterBindingToggle()
 		local newBindingsSet = (self:GetChecked() and 2) or 1
 		LoadBindings(newBindingsSet)
 		SaveBindings(newBindingsSet)
+		RazerNaga.AutoBinder:EnforceBindings()
 	end)
 	perCharBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
@@ -229,6 +251,11 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
+	exitConfig:SetSize(32, 32)
+	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
