@@ -916,7 +916,11 @@ hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 	self:SetParent(MinimapBackdrop)
 	self:SetFrameLevel(6)
 	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+	if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+	else
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 14, -196)
+	end
 	self:SetScale(0.85)
 end)
 
