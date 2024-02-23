@@ -8,11 +8,8 @@ local RazerNaga = _G[...]
 local ActionButton = {}
 
 local function GetActionButtonCommand(id)
-    -- 0
-    if id <= 0 then
-        return
     -- 1
-    elseif id <= 12 then
+    if id <= 12 then
         return "ACTIONBUTTON" .. id
     -- 2
     elseif id <= 24 then
@@ -29,18 +26,17 @@ local function GetActionButtonCommand(id)
     -- 6
     elseif id <= 72 then
         return "MULTIACTIONBAR1BUTTON" .. (id - 60)
-    -- 7-11
-    elseif id <= 132 then
+    -- 7
+    elseif id <= 84 then
+        return "MULTIACTIONBAR5BUTTON" .. (id - 72)
+    -- 8
+    elseif id <= 96 then
+        return "MULTIACTIONBAR6BUTTON" .. (id - 84)
+    -- 9
+    elseif id <= 108 then
+        return "MULTIACTIONBAR7BUTTON" .. (id - 96)
+    else
         return
-    -- 12
-    elseif id <= 144 then
-        return "MULTIACTIONBAR5BUTTON" .. (id - 132)
-    -- 13
-    elseif id <= 156 then
-        return "MULTIACTIONBAR6BUTTON" .. (id - 144)
-    -- 14
-    elseif id <= 168 then
-        return "MULTIACTIONBAR7BUTTON" .. (id - 156)
     end
 end
 
@@ -137,7 +133,7 @@ function ActionButton:UpdateShown()
 end
 
 --------------------------------------------------------------------------------
--- configuration
+-- Configuration
 --------------------------------------------------------------------------------
 
 function ActionButton:SetFlyoutDirectionInsecure(direction)
