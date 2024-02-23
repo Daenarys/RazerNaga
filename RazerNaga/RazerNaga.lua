@@ -58,7 +58,6 @@ function RazerNaga:OnEnable()
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
 
 	self:HideBlizzard()
-	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -276,29 +275,6 @@ function RazerNaga:HideBlizzard()
 		"MultiBar6",
 		"MultiBar7"
 	)
-end
-
-function RazerNaga:SetUseOverrideUI(enable)
-	self.db.profile.useOverrideUI = enable and true or false
-	self:UpdateUseOverrideUI()
-end
-
-function RazerNaga:UsingOverrideUI()
-	return self.db.profile.useOverrideUI
-end
-
-function RazerNaga:UpdateUseOverrideUI()
-	local usingOverrideUI = self:UsingOverrideUI()
-
-	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
-
-	local oab = _G['OverrideActionBar']
-	oab:ClearAllPoints()
-	if usingOverrideUI then
-		oab:SetPoint('BOTTOM')
-	else
-		oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
-	end
 end
 
 
@@ -788,16 +764,27 @@ end
 
 --possess bar settings
 function RazerNaga:SetOverrideBar(id)
-	local prevBar = self:GetOverrideBar()
-	self.db.profile.possessBar = id
-	local newBar = self:GetOverrideBar()
+    local prevBar = self:GetOverrideBar()
+    self.db.profile.possessBar = id
+    local newBar = self:GetOverrideBar()
 
-	prevBar:UpdateOverrideBar()
-	newBar:UpdateOverrideBar()
+    prevBar:UpdateOverrideBar()
+    newBar:UpdateOverrideBar()
+
+    self.callbacks:Fire('OVERRIDE_BAR_UPDATED', newBar)
 end
 
 function RazerNaga:GetOverrideBar()
 	return self.Frame:Get(self.db.profile.possessBar)
+end
+
+function RazerNaga:SetUseOverrideUI(enable)
+	self.db.profile.useOverrideUI = enable and true or false
+	self.callbacks:Fire("USE_OVERRRIDE_UI_CHANGED", self:UsingOverrideUI())
+end
+
+function RazerNaga:UsingOverrideUI()
+	return self.db.profile.useOverrideUI
 end
 
 --action bar numbers
