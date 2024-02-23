@@ -326,7 +326,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['spacing'] = 0,
 				['x'] = -306,
-				['y'] = 270,
+				['y'] = 239,
 			}
 		},
 	}

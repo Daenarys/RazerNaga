@@ -16,6 +16,8 @@ end
 for id = 1, NUM_PET_ACTION_SLOTS do
     local button = getPetButton(id)
 
+    button.buttonType = 'BONUSACTIONBUTTON'
+
     -- set the buttontype
     button:SetAttribute("commandName", "BONUSACTIONBUTTON" .. id)
 

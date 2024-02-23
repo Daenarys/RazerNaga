@@ -114,12 +114,24 @@ function BindableButton:UpdateHotkeys()
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
 
+    if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPRIGHT", -2, -4)
+    elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -4)
+    elseif key ~= '' and RazerNaga:ShowBindingText() then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPRIGHT", -4, -5)
+    end
+
     if ( hotkey:GetText() == RANGE_INDICATOR ) then
         hotkey:Hide()
     else
         hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
     end
 end
+
 
 function BindableButton:OnEnter()
     if not KeyBound:IsShown() then
