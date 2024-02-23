@@ -42,6 +42,9 @@ function RazerNaga:OnInitialize()
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_DISABLED')
+
+	-- debounce UPDATE_BINDINGS call
+	self.UPDATE_BINDINGS = self:Debounce(self.UPDATE_BINDINGS, 0.1, self)
 end
 
 function RazerNaga:OnEnable()
@@ -50,6 +53,9 @@ function RazerNaga:OnEnable()
 		self:ShowIncompatibleAddonDialog(incompatibleAddon)
 		return
 	end
+
+	self:RegisterEvent('UPDATE_BINDINGS')
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
 
 	self:HideBlizzard()
 	self:UpdateUseOverrideUI()
@@ -297,6 +303,14 @@ end
 
 
 --[[ Keybound Events ]]--
+
+function RazerNaga:UPDATE_BINDINGS()
+    self.Frame:ForEach('ForButtons', 'UpdateHotkeys')
+
+    if not InCombatLockdown() then
+        self.Frame:ForEach('ForButtons', 'UpdateOverrideBindings')
+    end
+end
 
 function RazerNaga:LIBKEYBOUND_ENABLED()
     self.Frame:ForEach('KEYBOUND_ENABLED')
