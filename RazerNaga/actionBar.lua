@@ -474,7 +474,7 @@ do
         AddLayout(menu)
         AddClass(menu)
         AddPaging(menu)
-        AddModifier(menu)
+        --AddModifier(menu)
         AddTargeting(menu)
         AddShowState(menu)
         AddAdvancedLayout(menu)
