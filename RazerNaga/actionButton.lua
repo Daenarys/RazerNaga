@@ -8,6 +8,9 @@ local RazerNaga = _G[...]
 local ActionButton = {}
 
 local function GetActionButtonCommand(id)
+    -- 0
+    if id <= 0 then
+        return
     -- 1
     if id <= 12 then
         return "ACTIONBUTTON" .. id
