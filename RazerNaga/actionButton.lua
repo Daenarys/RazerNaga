@@ -12,7 +12,7 @@ local function GetActionButtonCommand(id)
     if id <= 0 then
         return
     -- 1
-    if id <= 12 then
+    elseif id <= 12 then
         return "ACTIONBUTTON" .. id
     -- 2
     elseif id <= 24 then
