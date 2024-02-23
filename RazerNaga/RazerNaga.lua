@@ -14,6 +14,7 @@ local CONFIG_ADDON_NAME = AddonName .. '_Config'
 -- setup custom callbacks
 RazerNaga.callbacks = LibStub('CallbackHandler-1.0'):New(RazerNaga)
 
+
 --[[ Startup ]]--
 
 function RazerNaga:OnInitialize()
