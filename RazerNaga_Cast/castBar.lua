@@ -20,14 +20,12 @@ end
 CastBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function CastBar:New()
-	local f = self.super.New(self, 'cast')
+	local f = self.proto.New(self, 'cast')
 	f:SetTooltipText(L.CastBarHelp)
 	f:SetFrameStrata('HIGH')
 
 	if not f.cast then
 		f.cast = CastingBar:New(f)
-		f.header:SetParent(nil)
-		f.header:ClearAllPoints()
 	end
 
 	f:UpdateText()

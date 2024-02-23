@@ -1,0 +1,145 @@
+<Bindings>
+	<!-- modified clicks -->
+	<ModifiedClick action="RAZERNAGA_IGNORE_STICKY_FRAMES" default="ALT"/>
+
+	<!-- action button bindings -->
+	<!-- 1 -->
+	<!-- <Binding name="CLICK RazerNagaActionButton1:HOTKEY" category="RazerNaga" header="RazerNagaActionBar1" />
+	<Binding name="CLICK RazerNagaActionButton2:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton3:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton4:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton5:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton6:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton7:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton8:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton9:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton10:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton11:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton12:HOTKEY" category="RazerNaga" /> -->
+
+	<!-- 2 -->
+	<Binding name="CLICK RazerNagaActionButton13:HOTKEY" category="RazerNaga" header="RazerNagaActionBar2" />
+	<Binding name="CLICK RazerNagaActionButton14:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton15:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton16:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton17:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton18:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton19:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton20:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton21:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton22:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton23:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton24:HOTKEY" category="RazerNaga" />
+
+	<!-- 3 -->
+	<!-- <Binding name="CLICK RazerNagaActionButton25:HOTKEY" category="RazerNaga" header="RazerNagaActionBar3" />
+	<Binding name="CLICK RazerNagaActionButton26:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton27:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton28:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton29:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton30:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton31:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton32:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton33:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton34:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton35:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton36:HOTKEY" category="RazerNaga" /> -->
+
+	<!-- 4 -->
+	<!-- <Binding name="CLICK RazerNagaActionButton37:HOTKEY" category="RazerNaga" header="RazerNagaActionBar4" />
+	<Binding name="CLICK RazerNagaActionButton38:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton39:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton40:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton41:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton42:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton43:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton44:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton45:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton46:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton47:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton48:HOTKEY" category="RazerNaga" /> -->
+
+	<!-- 5 -->
+	<!-- <Binding name="CLICK RazerNagaActionButton49:HOTKEY" category="RazerNaga" header="RazerNagaActionBar5" />
+	<Binding name="CLICK RazerNagaActionButton50:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton51:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton52:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton53:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton54:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton55:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton56:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton57:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton58:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton59:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton60:HOTKEY" category="RazerNaga" /> -->
+
+	<!-- 6 -->
+	<!-- <Binding name="CLICK RazerNagaActionButton61:HOTKEY" category="RazerNaga" header="RazerNagaActionBar6" />
+	<Binding name="CLICK RazerNagaActionButton62:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton63:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton64:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton65:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton66:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton67:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton68:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton69:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton70:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton71:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton72:HOTKEY" category="RazerNaga" /> -->
+
+	<!-- 7 -->
+	<Binding name="CLICK RazerNagaActionButton73:HOTKEY" category="RazerNaga" header="RazerNagaActionBar7" />
+	<Binding name="CLICK RazerNagaActionButton74:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton75:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton76:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton77:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton78:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton79:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton80:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton81:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton82:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton83:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton84:HOTKEY" category="RazerNaga" />
+
+	<!-- 8 -->
+	<Binding name="CLICK RazerNagaActionButton85:HOTKEY" category="RazerNaga" header="RazerNagaActionBar8" />
+	<Binding name="CLICK RazerNagaActionButton86:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton87:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton88:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton89:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton90:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton91:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton92:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton93:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton94:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton95:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton96:HOTKEY" category="RazerNaga" />
+
+	<!-- 9 -->
+	<Binding name="CLICK RazerNagaActionButton97:HOTKEY" category="RazerNaga" header="RazerNagaActionBar9" />
+	<Binding name="CLICK RazerNagaActionButton98:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton99:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton100:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton101:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton102:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton103:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton104:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton105:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton106:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton107:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton108:HOTKEY" category="RazerNaga" />
+
+	<!-- 10 -->
+	<Binding name="CLICK RazerNagaActionButton109:HOTKEY" category="RazerNaga" header="RazerNagaActionBar10" />
+	<Binding name="CLICK RazerNagaActionButton110:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton111:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton112:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton113:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton114:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton115:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton116:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton117:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton118:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton119:HOTKEY" category="RazerNaga" />
+	<Binding name="CLICK RazerNagaActionButton120:HOTKEY" category="RazerNaga" />
+</Bindings>
