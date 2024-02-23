@@ -23,13 +23,12 @@ end
 
 local function stanceButton_OnCreate(button)
     -- set the buttontype
-    button.buttonType = 'SHAPESHIFTBUTTON'
+    button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. button:GetID())
 
     -- turn off cooldown edges
     button.cooldown:SetDrawEdge(false)
 
     -- apply hooks for quick binding
-    button.commandName = ('SHAPESHIFTBUTTON%d'):format(button:GetID())
     RazerNaga.BindableButton:AddQuickBindingSupport(button)
 
     -- register mouse clicks

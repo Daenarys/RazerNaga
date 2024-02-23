@@ -70,12 +70,6 @@ local function addFormState(stateType, stateId, spellID)
     addState(stateType, stateId, lookupFormConditional, name)
 end
 
-local function getEquippedConditional(classId, subclassId)
-    local name = GetItemSubClassInfo(classId, subclassId)
-
-    return ('[equipped:%s]'):format(name)
-end
-
 -- keybindings
 addState('modifier', 'selfcast', '[mod:SELFCAST]', AUTO_SELF_CAST_KEY_TEXT)
 addState('modifier', 'ctrlAltShift', '[mod:alt,mod:ctrl,mod:shift]')
@@ -104,19 +98,18 @@ if class == 'DRUID' then
 	addFormState('class', 'tree', 114282)
 	addFormState('class', 'travel', 783)
 	addFormState('class', 'stag', 210053)
+elseif class == 'EVOKER' then
+    addState('class', 'soar', '[bonusbar:1]', GetSpellInfo(369536))
 elseif class == 'PALADIN' then
 	addFormState('class', 'concentration', 317920)
 	addFormState('class', 'crusader', 32223)
 	addFormState('class', 'devotion', 465)
 	addFormState('class', 'retribution', 183435)
-	addState('class', 'shield', getEquippedConditional(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD))
 elseif class == 'ROGUE' then
-	if GetSpellInfo(185313) then
-		addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellInfo(185313))
-	end
-	addState('class', 'stealth', '[bonusbar:1]', GetSpellInfo(1784))
-elseif class == 'WARRIOR' then
-	addState('class', 'shield', getEquippedConditional(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD))
+    if GetSpellInfo(185313) then
+        addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellInfo(185313))
+    end
+    addState('class', 'stealth', '[bonusbar:1]', GetSpellInfo(1784))
 end
 
 -- race
