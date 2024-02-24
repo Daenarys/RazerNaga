@@ -5,14 +5,10 @@
 local RazerNaga = _G[...]
 local ActionButtonMixin = {}
 
-local function GetActionButtonCommand(id)
-    return
-end
-
 function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
-    self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or ("CLICK %s:HOTKEY"):format(self:GetName()))
+    self:SetAttributeNoHandler("commandName", ("CLICK %s:HOTKEY"):format(self:GetName()))
     self:SetAttributeNoHandler("showgrid", 0)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)

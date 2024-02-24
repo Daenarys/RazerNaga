@@ -20,7 +20,7 @@ for id = 1, NUM_PET_ACTION_SLOTS do
     button.buttonType = 'BONUSACTIONBUTTON'
     button:SetAttribute("commandName", "BONUSACTIONBUTTON" .. id)
 
-    -- enable drawbling
+    -- enable cooldown bling
     button.cooldown:SetDrawBling(true)
 
     -- apply hooks for quick binding

@@ -26,6 +26,9 @@ local function stanceButton_OnCreate(button)
     button.buttonType = 'SHAPESHIFTBUTTON'
     button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. button:GetID())
 
+    -- enable cooldown bling
+    button.cooldown:SetDrawBling(true)
+
     -- turn off cooldown edges
     button.cooldown:SetDrawEdge(false)
 

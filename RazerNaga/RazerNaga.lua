@@ -59,6 +59,7 @@ function RazerNaga:OnEnable()
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -765,14 +766,12 @@ end
 
 --possess bar settings
 function RazerNaga:SetOverrideBar(id)
-    local prevBar = self:GetOverrideBar()
-    self.db.profile.possessBar = id
-    local newBar = self:GetOverrideBar()
+	local prevBar = self:GetOverrideBar()
+	self.db.profile.possessBar = id
+	local newBar = self:GetOverrideBar()
 
-    prevBar:UpdateOverrideBar()
-    newBar:UpdateOverrideBar()
-
-    self.callbacks:Fire('OVERRIDE_BAR_UPDATED', newBar)
+	prevBar:UpdateOverrideBar()
+	newBar:UpdateOverrideBar()
 end
 
 function RazerNaga:GetOverrideBar()
@@ -781,16 +780,33 @@ end
 
 function RazerNaga:SetUseOverrideUI(enable)
 	self.db.profile.useOverrideUI = enable and true or false
-	self.callbacks:Fire("USE_OVERRRIDE_UI_CHANGED", self:UsingOverrideUI())
+	self:UpdateUseOverrideUI()
 end
 
 function RazerNaga:UsingOverrideUI()
 	return self.db.profile.useOverrideUI
 end
 
+function RazerNaga:UpdateUseOverrideUI()
+	if not self.OverrideController then return end
+
+	local usingOverrideUI = self:UsingOverrideUI()
+	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
+
+    local oab = _G.OverrideActionBar
+    if oab then
+        oab:ClearAllPoints()
+        if usingOverrideUI then
+            oab:SetPoint('BOTTOM')
+        else
+            oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
+        end
+    end
+end
+
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-    count = max(min(count, 120), 1) --sometimes, I do entertaininig things
+    count = Clamp(count, 1, 120)
 
     if count ~= self:NumBars() then
         self.db.profile.ab.count = count

@@ -32,53 +32,50 @@ function Frame:Create(id)
 
 	f:SetClampedToScreen(true)
 	f:SetMovable(true)
+	
 	f.id = id
-
 	f:SetAttribute('id', id)
 
 	f:SetAttribute('_onstate-alpha', [[
 		self:CallMethod('Fade')
 	]])
-	
-	f:SetAttribute('_onstate-overrideui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-
-	f:SetAttribute('_onstate-showinoverrideui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-
-	f:SetAttribute('_onstate-petbattleui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-
-	f:SetAttribute('_onstate-showinpetbattleui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-
 	f:SetAttribute('_onstate-display', [[
 		self:RunAttribute('UpdateShown')
 	]])
-
-	f:SetAttribute("_onstate-hidden", [[
+	f:SetAttribute('_onstate-hidden', [[
+		self:RunAttribute('UpdateShown')
+	]])
+	f:SetAttribute('_onstate-overrideui', [[
+		self:RunAttribute('UpdateShown')
+	]])
+	f:SetAttribute('_onstate-petbattleui', [[
+		self:RunAttribute('UpdateShown')
+	]])
+	f:SetAttribute('_onstate-showinoverrideui', [[
+		self:RunAttribute('UpdateShown')
+	]])
+	f:SetAttribute("_onstate-showinpetbattleui", [[
 		self:RunAttribute("UpdateShown")
 	]])
-
 	f:SetAttribute('UpdateShown', [[
-		if self:GetAttribute('state-hidden') then
+		if self:GetAttribute("state-hidden") then
 			self:Hide()
 			return
 		end
+
 		local isOverrideUIShown = self:GetAttribute('state-overrideui') and true or false
 		local isPetBattleUIShown = self:GetAttribute('state-petbattleui') and true or false
+
 		if isPetBattleUIShown and not self:GetAttribute('state-showinpetbattleui') then
 			self:Hide()
 			return
 		end
+
 		if isOverrideUIShown and not self:GetAttribute('state-showinoverrideui') then
 			self:Hide()
 			return
 		end
+
 		local displayState = self:GetAttribute('state-display')
 		if displayState == 'hide' then
 			if self:GetAttribute('state-alpha') then
@@ -87,6 +84,7 @@ function Frame:Create(id)
 			self:Hide()
 			return
 		end
+
 		local stateAlpha = tonumber(displayState)
 		if self:GetAttribute('state-alpha') ~= stateAlpha then
 			self:SetAttribute('state-alpha', stateAlpha)
