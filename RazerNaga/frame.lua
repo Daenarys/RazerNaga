@@ -4,6 +4,7 @@
 --]]
 
 local Frame = RazerNaga:CreateClass('Frame')
+RazerNaga.Frame = Frame
 
 local active = {}
 local unused = {}
@@ -1101,7 +1102,3 @@ function Frame:ForFrame(id, method, ...)
 		end
 	end
 end
-
---[[ exports ]]--
-
-RazerNaga.Frame = Frame
