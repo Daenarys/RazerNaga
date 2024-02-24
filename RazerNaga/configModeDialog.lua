@@ -64,7 +64,6 @@ function ConfigModeDialog:Load()
 	local uiMenu = self:CreateUIMenuButton()
 	uiMenu:SetPoint('LEFT', bindingMode, 'RIGHT', 2, 0)
 
-
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
 	bindingSetPicker:SetPoint('BOTTOMLEFT', 0, 66)
@@ -115,15 +114,6 @@ function ConfigModeDialog:CreateRotateButton()
 	end
 
 	rotator:SetScript('OnShow', rotator.UpdateTexture)
-
-	rotator:SetScript('OnClick', function(self)
-		if RazerNaga.SettingsLoader:GetLayoutType() == '3x4' then
-			RazerNaga.SettingsLoader:LoadFourByThree()
-		else
-			RazerNaga.SettingsLoader:LoadThreeByFour()
-		end
-		self:UpdateTexture()
-	end)
 
 	rotator.UpdateTooltip = function(self)
 		local layoutType = RazerNaga.SettingsLoader:GetLayoutType()
@@ -177,14 +167,10 @@ function ConfigModeDialog:CreateBindingSetPicker()
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
 	end)
+
 	dd:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
-
-
-	local function Item_OnClick(self)
-		UIDropDownMenu_SetSelectedValue(dd, self.value)
-	end
 
 	return dd
 end
@@ -197,6 +183,7 @@ function ConfigModeDialog:CreateAutoBindingToggle()
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.AutomaticBindingsToggle, nil, nil, nil, nil, 1)
 	end)
+
 	autoBindings:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
@@ -212,6 +199,7 @@ function ConfigModeDialog:CreatePerCharacterBindingToggle()
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP, nil, nil, nil, nil, 1)
 	end)
+
 	perCharBindings:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
