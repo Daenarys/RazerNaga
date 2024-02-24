@@ -1068,7 +1068,7 @@ end
 --this adds two special IDs, 'all' for all frames and '<number>-<number>' for a range of IDs
 function Frame:ForFrame(id, method, ...)
 	if id == 'all' then
-		self:ForAll(method, ...)
+		self:ForEach(method, ...)
 	else
 		local startID, endID = tostring(id):match('(%d+)-(%d+)')
 		startID = tonumber(startID)
