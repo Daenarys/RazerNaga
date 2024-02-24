@@ -1,7 +1,14 @@
-local Addon = _G[...]
+--------------------------------------------------------------------------------
+-- Vehicle Bar
+-- A movable bar for vehicles
+--------------------------------------------------------------------------------
+
+local RazerNaga = _G[...]
 local VehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
---[[ The Bar ]]--
+--------------------------------------------------------------------------------
+-- Button
+--------------------------------------------------------------------------------
 
 local function possessButton_OnClick(self)
     self:SetChecked(false)
@@ -63,53 +70,57 @@ local function getOrCreatePossessButton(id)
     return button
 end
 
-local VehicleBar = Addon:CreateClass('Frame', Addon.Frame)
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
+
+local VehicleBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function VehicleBar:New()
-	local bar = VehicleBar.super.New(self, 'vehicle')
+    local bar = VehicleBar.proto.New(self, 'vehicle')
 
-	bar:LoadButtons()
-	bar:Layout()
+    bar:LoadButtons()
+    bar:Layout()
 
-	return bar
+    return bar
 end
 
 function VehicleBar:GetDefaults()
-	return {
-		point = 'CENTER',
-		x = -244,
-		y = 0,
-	}
+    return {
+        point = 'CENTER',
+        x = -244,
+        y = 0,
+    }
 end
 
 function VehicleBar:GetShowStates()
-	return '[canexitvehicle][possessbar]show;hide'
+    return '[canexitvehicle][possessbar]show;hide'
 end
 
 function VehicleBar:NumButtons()
-	return 1
+    return 1
 end
 
 function VehicleBar:AddButton(i)
-	local button = getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
+    local button = getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
 
-	if button then
-		button:SetParent(self.header)
-		button:Show()
+    if button then
+        button:SetParent(self)
+        button:Show()
 
-		self.buttons[i] = button
-	end
+        self.buttons[i] = button
+    end
 end
 
 function VehicleBar:RemoveButton(i)
-	local button = self.buttons[i]
+    local button = self.buttons[i]
 
-	if button then
-		button:SetParent(nil)
-		button:Hide()
+    if button then
+        button:SetParent(nil)
+        button:Hide()
 
-		self.buttons[i] = nil
-	end
+        self.buttons[i] = nil
+    end
 end
 
 function VehicleBar:Update()
@@ -127,24 +138,25 @@ function VehicleBar:Update()
 
     icon:SetVertexColor(1, 1, 1)
     icon:SetDesaturated(false)
-	
-    -- hide the actionbutton texture
+    
     button.NormalTexture:SetTexture()
 
     button:SetChecked(false)
     button:Enable()
 end
 
---[[ Controller ]]--
+--------------------------------------------------------------------------------
+-- Module
+--------------------------------------------------------------------------------
 
-local VehicleBarController = Addon:NewModule('VehicleBar', 'AceEvent-3.0')
+local VehicleBarController = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
 
 function VehicleBarController:OnInitialize()
-	VehicleLeaveButton:UnregisterAllEvents()
+    VehicleLeaveButton:UnregisterAllEvents()
 end
 
 function VehicleBarController:Load()
-	self.frame = VehicleBar:New()
+    self.frame = VehicleBar:New()
 
     self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
     self:RegisterEvent("UNIT_EXITED_VEHICLE", "Update")
@@ -158,16 +170,16 @@ function VehicleBarController:Load()
 end
 
 function VehicleBarController:Unload()
-	self:UnregisterAllEvents()
+    self:UnregisterAllEvents()
 
-	if self.frame then
-		self.frame:Free()
-		self.frame = nil
-	end
+    if self.frame then
+        self.frame:Free()
+        self.frame = nil
+    end
 end
 
 function VehicleBarController:Update()
-	if InCombatLockdown() then return end
+    if InCombatLockdown() then return end
 
-	self.frame:Update()
+    self.frame:Update()
 end

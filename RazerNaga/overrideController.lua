@@ -1,123 +1,95 @@
-local OverrideController = CreateFrame('Frame', nil, nil, 'SecureHandlerStateTemplate'); OverrideController:Hide()
-RazerNaga.OverrideController = OverrideController
+local RazerNaga = _G[...]
 
-local overrideBarStates = {
-	form = '[form]1;0',
-	overridebar = '[overridebar]1;0',
-	possessbar = '[possessbar]1;0',
-	sstemp = '[shapeshift]1;0',
-	vehicle = '[@vehicle,exists]1;0',
-	vehicleui = '[vehicleui]1;0',
-	bonusbar = '[bonusbar:5]1;0'
-}
+local OverrideController = CreateFrame('Frame', nil, nil, 'SecureHandlerAttributeTemplate')
 
 function OverrideController:OnLoad()
-	local watcher = CreateFrame('Frame', nil, OverrideActionBar, 'SecureHandlerShowHideTemplate')
-
-	watcher:SetFrameRef('controller', self)
-
-	watcher:SetAttribute('_onshow', [[
-		self:GetFrameRef('controller'):SetAttribute('state-isoverrideuishown', true)
-	]])
-
-	watcher:SetAttribute('_onhide', [[
-		self:GetFrameRef('controller'):SetAttribute('state-isoverrideuishown', false)
-	]])
-
-	self.overrideUIWatcher = watcher
-
-	self:SetAttribute('_onstate-isoverrideuishown', [[
-		self:RunAttribute('updateOverrideUI')
-	]])
-
-	self:SetAttribute('_onstate-useoverrideui', [[
-		self:RunAttribute('updateOverrideUI')
-	]])
-
-	self:SetAttribute('_onstate-overrideui', [[
-		for i, frame in pairs(myFrames) do
-			frame:SetAttribute('state-overrideui', newstate)
-		end
-	]])
-
-	self:SetAttribute('updateOverrideUI', [[
-		local isOverrideUIVisible = self:GetAttribute('state-useoverrideui') and self:GetAttribute('state-isoverrideuishown')
-
-		self:SetAttribute('state-overrideui', isOverrideUIVisible)
-	]])
-
-	self:SetAttribute('_onstate-petbattleui', [[
-		local hasPetBattleUI = newstate == 1
-
-		for i, frame in pairs(myFrames) do
-			frame:SetAttribute('state-petbattleui', hasPetBattleUI)
-		end
-	]])
-
-	self:SetAttribute('_onstate-overridepage', [[
-		local overridePage = newstate or 0
-
-		for i, frame in pairs(myFrames) do
-			frame:SetAttribute('state-overridepage', overridePage)
-		end
-	]])
-
-	for state in pairs(overrideBarStates) do
-		self:SetAttribute('_onstate-' .. state, [[
-			self:RunAttribute('updateOverridePage')
-		]])
-	end
-
-	self:SetAttribute('updateOverridePage', [[
-		local newPage
-
-		if HasVehicleActionBar() then
-			newPage = GetVehicleBarIndex() or 0
-		elseif HasOverrideActionBar() then
-			newPage = GetOverrideBarIndex() or 0
-		elseif HasTempShapeshiftActionBar() then
-			newPage = GetTempShapeshiftBarIndex() or 0
-		elseif GetBonusBarOffset() > 4 then
-			newPage = GetBonusBarOffset() + 6
+	self:SetAttributeNoHandler("_onattributechanged", [[
+		if name == "overrideui" then
+			for _, frame in pairs(myFrames) do
+				frame:SetAttribute("state-overrideui", value == 1)
+			end
+		elseif name == "petbattleui" then
+			for _, frame in pairs(myFrames) do
+				frame:SetAttribute("state-petbattleui", value == 1)
+			end
+		elseif name == "overridepage" then
+			for _, frame in pairs(myFrames) do
+				frame:SetAttribute("state-overridepage", value)
+			end
 		else
-			newPage = GetBonusBarOffset() or 0
-		end
+			local page
+			if HasVehicleActionBar and HasVehicleActionBar() then
+				page = GetVehicleBarIndex() or 0
+			elseif HasOverrideActionBar and HasOverrideActionBar() then
+				page = GetOverrideBarIndex() or 0
+			elseif HasTempShapeshiftActionBar and HasTempShapeshiftActionBar() then
+				page = GetTempShapeshiftBarIndex() or 0
+			elseif GetBonusBarOffset() > 4 then
+				page = GetBonusBarOffset() + 6
+			else
+				page = 0
+			end
 
-		self:SetAttribute('state-overridepage', newPage)
+			if self:GetAttribute("overridepage") ~= page then
+				self:SetAttribute("overridepage", page)
+			end
+		end
 	]])
 
-	self:Execute([[ myFrames = table.new() ]])
-	self:SetAttributeNoHandler('state-isoverrideuishown', self.overrideUIWatcher:IsVisible() and true)
-	RegisterStateDriver(self, 'petbattleui', '[petbattle]1;0')
+	self:WrapScript(OverrideActionBarButton1, "OnShow", [[
+		control:SetAttribute("overrideui", 1)
+	]])
 
-	for state, values in pairs(overrideBarStates) do
-		RegisterStateDriver(self, state, values)
+	self:WrapScript(OverrideActionBarButton1, "OnHide", [[
+		control:SetAttribute("overrideui", 0)
+	]])
+
+	-- init
+	self:Execute([[ myFrames = table.new() ]])
+
+	for attribute, driver in pairs {
+		form = '[form]1;0',
+		overridebar = '[overridebar]1;0',
+		possessbar = '[possessbar]1;0',
+		sstemp = '[shapeshift]1;0',
+		vehicle = '[@vehicle,exists]1;0',
+		vehicleui = '[vehicleui]1;0',
+		petbattleui = '[petbattle]1;0',
+		bonusbar = '[bonusbar:5]1;0'
+	} do
+		RegisterAttributeDriver(self, attribute, driver)
 	end
 
+	self:SetAttributeNoHandler('overrideui', OverrideActionBarButton1:IsVisible())
+	RazerNaga.RegisterCallback(self, 'LAYOUT_LOADED')
+	RazerNaga.RegisterCallback(self, 'USE_OVERRRIDE_UI_CHANGED')
 	self.OnLoad = nil
 end
 
+function OverrideController:LAYOUT_LOADED()
+	self:SetShowOverrideUI(RazerNaga:UsingOverrideUI())
+end
+
+function OverrideController:USE_OVERRRIDE_UI_CHANGED(_, show)
+	self:SetShowOverrideUI(show)
+end
+
 function OverrideController:Add(frame)
-	self:SetFrameRef('FrameToRegister', frame)
+	self:SetFrameRef('add', frame)
+	self:Execute([[ table.insert(myFrames, self:GetFrameRef('add')) ]])
 
-	self:Execute([[
-		local frame = self:GetFrameRef('FrameToRegister')
-
-		table.insert(myFrames, frame)
-	]])
-
-	frame:SetAttribute('state-overrideui', self:GetAttribute('state-overrideui'))
-	frame:SetAttribute('state-petbattleui', tonumber(self:GetAttribute('state-petbattleui')) == 1)
-	frame:SetAttribute('state-overridepage', self:GetAttribute('state-overridepage') or 0)
+	-- initialize state
+	frame:SetAttribute('state-overrideui', tonumber(self:GetAttribute('overrideui')) == 1)
+	frame:SetAttribute('state-petbattleui', tonumber(self:GetAttribute('petbattleui')) == 1)
+	frame:SetAttribute('state-overridepage', self:GetAttribute('overridepage') or 0)
 end
 
 function OverrideController:Remove(frame)
-	self:SetFrameRef('FrameToUnregister', frame)
+	self:SetFrameRef('rem', frame)
 
 	self:Execute([[
-		local frameToUnregister = self:GetFrameRef('FrameToUnregister')
 		for i, frame in pairs(myFrames) do
-			if frame == frameToUnregister then
+			if frame == self:GetFrameRef('rem') then
 				table.remove(myFrames, i)
 				break
 			end
@@ -125,8 +97,24 @@ function OverrideController:Remove(frame)
 	]])
 end
 
+local originalParent = nil
+function OverrideController:SetShowOverrideUI(show)
+	if show then
+		if originalParent ~= nil then
+			OverrideActionBar:SetParent(originalParent)
+			originalParent = nil
+		end
+	elseif originalParent == nil then
+		originalParent = OverrideActionBar:GetParent()
+		OverrideActionBar:SetParent(RazerNaga.ShadowUIParent)
+	end
+end
+
 function OverrideController:OverrideBarActive()
-	return (self:GetAttribute('state-overridepage') or 0) > 10
+	return (self:GetAttribute("overridepage") or 0) > 10
 end
 
 OverrideController:OnLoad()
+
+-- exports
+RazerNaga.OverrideController = OverrideController

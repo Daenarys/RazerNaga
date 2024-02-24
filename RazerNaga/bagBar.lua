@@ -8,7 +8,7 @@
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function BagBar:New()
-	local f = self.super.New(self, 'bags')
+	local f = self.proto.New(self, 'bags')
 	f:Reload()
 
 	return f
@@ -63,7 +63,7 @@ end
 
 function BagBar:AddButton(i)
 	local b = self.bags[i]
-	b:SetParent(self.header)
+	b:SetParent(self)
 	b:Show()
 	self:SkinButton(b)
 

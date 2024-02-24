@@ -11,6 +11,9 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
+-- setup custom callbacks
+RazerNaga.callbacks = LibStub('CallbackHandler-1.0'):New(RazerNaga)
+
 
 --[[ Startup ]]--
 
@@ -40,6 +43,9 @@ function RazerNaga:OnInitialize()
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_DISABLED')
+
+	-- debounce UPDATE_BINDINGS call
+	self.UPDATE_BINDINGS = self:Debounce(self.UPDATE_BINDINGS, 0.1, self)
 end
 
 function RazerNaga:OnEnable()
@@ -49,8 +55,10 @@ function RazerNaga:OnEnable()
 		return
 	end
 
+	self:RegisterEvent('UPDATE_BINDINGS')
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
+
 	self:HideBlizzard()
-	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -124,13 +132,7 @@ function RazerNaga:GetDefaults()
 				showgrid = true,
 			},
 
-			frames = {},
-
-			--lynn settings
-			firstLoad = true,
-			autoBindKeys = false,
-			highlightModifiers = false,
-			bindingSet = 'Simple'
+			frames = {}
 		}
 	}
 
@@ -154,12 +156,11 @@ function RazerNaga:Load()
 		end
 	end
 
-	self.Frame:ForAll('Reanchor')
+	self.Frame:ForEach('Reanchor')
 	self:UpdateMinimapButton()
 
 	--show auto binder dialog, if fist load of this profile
 	if self:IsFirstLoad() then
-		self.AutoBinder:ShowEnableAutoBindingsDialog()
 		self:SetFirstLoad(false)
 	end
 end
@@ -178,10 +179,6 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-	HiddenFrame:SetAllPoints(UIParent)
-	HiddenFrame:Hide()
-
 	local function apply(func, ...)
 	    for i = 1, select('#', ...) do
 	        local name = (select(i, ...))
@@ -190,14 +187,14 @@ function RazerNaga:HideBlizzard()
 	        if frame then
 	            func(frame)
 	        else
-	            self:Printf('Could not find frame %q', name)
+				self:Printf('Could not find frame %q', name)
 	        end
 	    end
 	end
 
 	local function banish(frame)
 	    (frame.HideBase or frame.Hide)(frame)
-	    frame:SetParent(HiddenFrame)
+	    frame:SetParent(RazerNaga.ShadowUIParent)
 	end
 
 	local function unregisterEvents(frame)
@@ -205,16 +202,20 @@ function RazerNaga:HideBlizzard()
 	end
 
 	local function disableActionButtons(bar)
-		local buttons = bar.actionButtons
-		if type(buttons) ~= "table" then
-			return
-		end
+	    local buttons = bar.actionButtons
+	    if type(buttons) ~= "table" then
+	        return
+	    end
 
-		for _, button in pairs(buttons) do
-			button:UnregisterAllEvents()
-			button:SetAttributeNoHandler("statehidden", true)
-			button:Hide()
-		end
+	    for _, button in pairs(buttons) do
+	        button:UnregisterAllEvents()
+	        button:SetAttributeNoHandler("statehidden", true)
+	        button:Hide()
+	    end
+	end
+
+	local function wipeActionButtons(bar)
+	    table.wipe(bar.actionButtons)
 	end
 
 	apply(banish,
@@ -254,7 +255,19 @@ function RazerNaga:HideBlizzard()
 	)
 
 	apply(disableActionButtons,
-		"MainMenuBar",
+	    "MainMenuBar",
+	    "MultiBar5",
+	    "MultiBar6",
+	    "MultiBar7",
+	    "MultiBarBottomLeft",
+	    "MultiBarBottomRight",
+	    "MultiBarLeft",
+	    "MultiBarRight",
+	    "PossessActionBar",
+	    "StanceBar"
+	)
+
+	apply(wipeActionButtons,
 		"MultiBarBottomLeft",
 		"MultiBarBottomRight",
 		"MultiBarLeft",
@@ -265,47 +278,25 @@ function RazerNaga:HideBlizzard()
 	)
 end
 
-function RazerNaga:SetUseOverrideUI(enable)
-	self.db.profile.useOverrideUI = enable and true or false
-	self:UpdateUseOverrideUI()
-end
-
-function RazerNaga:UsingOverrideUI()
-	return self.db.profile.useOverrideUI
-end
-
-function RazerNaga:UpdateUseOverrideUI()
-	local usingOverrideUI = self:UsingOverrideUI()
-
-	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
-
-	local oab = _G['OverrideActionBar']
-	oab:ClearAllPoints()
-	if usingOverrideUI then
-		oab:SetPoint('BOTTOM')
-	else
-		oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
-	end
-end
-
 
 --[[ Keybound Events ]]--
 
+function RazerNaga:UPDATE_BINDINGS()
+    self.Frame:ForEach('ForButtons', 'UpdateHotkeys')
+
+    if not InCombatLockdown() then
+        self.Frame:ForEach('ForButtons', 'UpdateOverrideBindings')
+    end
+end
+
 function RazerNaga:LIBKEYBOUND_ENABLED()
-	for _,frame in self.Frame:GetAll() do
-		if frame.KEYBOUND_ENABLED then
-			frame:KEYBOUND_ENABLED()
-		end
-	end
+    self.Frame:ForEach('KEYBOUND_ENABLED')
 end
 
 function RazerNaga:LIBKEYBOUND_DISABLED()
-	for _,frame in self.Frame:GetAll() do
-		if frame.KEYBOUND_DISABLED then
-			frame:KEYBOUND_DISABLED()
-		end
-	end
+    self.Frame:ForEach('KEYBOUND_DISABLED')
 end
+
 
 --[[ Profile Functions ]]--
 
@@ -535,7 +526,7 @@ do
 	end
 
 	function RazerNaga:PrintHelp(cmd)
-		self:Print('Commands (/dom, /RazerNaga)')
+		self:Print('Commands (/rz, /RazerNaga)')
 
 		PrintCmd('config', L.ConfigDesc)
 		PrintCmd('scale <frameList> <scale>', L.SetScaleDesc)
@@ -589,14 +580,13 @@ function RazerNaga:SetLock(enable)
 	self.locked = enable or false
 
 	if self:Locked() then
-		self.Frame:ForAll('Lock')
+		self.Frame:ForEach('Lock')
 		self:HideConfigHelper()
 	else
-		self.Frame:ForAll('Unlock')
+		self.Frame:ForEach('Unlock')
 		LibStub('LibKeyBound-1.0'):Deactivate()
 		self:ShowConfigHelper()
 	end
-	self.Envoy:Send('CONFIG_MODE_UPDATE', not enable)
 end
 
 function RazerNaga:Locked()
@@ -615,20 +605,17 @@ StaticPopupDialogs['RAZER_NAGA_CONFIRM_BIND_MANUALLY'] = {
 	text = L.BindKeysManuallyPrompt,
 	button1 = YES,
 	button2 = NO,
-	OnAccept = function(self) RazerNaga.AutoBinder:SetEnableAutomaticBindings(false); RazerNaga:ToggleBindingMode() end,
+	OnAccept = function(self) RazerNaga:ToggleBindingMode() end,
 	OnCancel = function(self) end,
 	hideOnEscape = 1,
 	timeout = 0,
 	exclusive = 1,
 }
 
+
 function RazerNaga:ToggleBindingMode()
-	if self.AutoBinder:IsAutoBindingEnabled() then
-		StaticPopup_Show('RAZER_NAGA_CONFIRM_BIND_MANUALLY')
-	else
-		self:SetLock(true)
-		LibStub('LibKeyBound-1.0'):Toggle()
-	end
+	self:SetLock(true)
+	LibStub('LibKeyBound-1.0'):Toggle()
 end
 
 --scale
@@ -739,8 +726,7 @@ end
 
 function RazerNaga:SetShowGrid(enable)
 	self.db.profile.showgrid = enable or false
-
-	self.ActionBar:ForAll('UpdateGrid')
+	self.Frame:ForEach('SetShowEmptyButtons', enable)
 end
 
 function RazerNaga:ShowGrid()
@@ -750,7 +736,7 @@ end
 --right click selfcast
 function RazerNaga:SetRightClickUnit(unit)
 	self.db.profile.ab.rightClickUnit = unit
-	self.ActionBar:ForAll('UpdateRightClickUnit')
+	self.Frame:ForEach('UpdateRightClickUnit')
 end
 
 function RazerNaga:GetRightClickUnit()
@@ -759,17 +745,8 @@ end
 
 --binding text
 function RazerNaga:SetShowBindingText(enable)
-	self.db.profile.showBindingText = enable or false
-
-	for _,f in self.Frame:GetAll() do
-		if f.buttons then
-			for _,b in pairs(f.buttons) do
-				if b.UpdateHotkey then
-					b:UpdateHotkey()
-				end
-			end
-		end
-	end
+    self.db.profile.showBindingText = enable or false
+    self.Frame:ForEach('ForButtons', 'SetShowBindingText', enable)
 end
 
 function RazerNaga:ShowBindingText()
@@ -778,17 +755,8 @@ end
 
 --macro text
 function RazerNaga:SetShowMacroText(enable)
-	self.db.profile.showMacroText = enable or false
-
-	for _,f in self.Frame:GetAll() do
-		if f.buttons then
-			for _,b in pairs(f.buttons) do
-				if b.UpdateMacro then
-					b:UpdateMacro()
-				end
-			end
-		end
-	end
+    self.db.profile.showMacroText = enable or false
+    self.Frame:ForEach('ForButtons', 'SetShowMacroText', enable)
 end
 
 function RazerNaga:ShowMacroText()
@@ -797,30 +765,37 @@ end
 
 --possess bar settings
 function RazerNaga:SetOverrideBar(id)
-	local prevBar = self:GetOverrideBar()
-	self.db.profile.possessBar = id
-	local newBar = self:GetOverrideBar()
+    local prevBar = self:GetOverrideBar()
+    self.db.profile.possessBar = id
+    local newBar = self:GetOverrideBar()
 
-	prevBar:UpdateOverrideBar()
-	newBar:UpdateOverrideBar()
+    prevBar:UpdateOverrideBar()
+    newBar:UpdateOverrideBar()
+
+    self.callbacks:Fire('OVERRIDE_BAR_UPDATED', newBar)
 end
 
 function RazerNaga:GetOverrideBar()
 	return self.Frame:Get(self.db.profile.possessBar)
 end
 
+function RazerNaga:SetUseOverrideUI(enable)
+	self.db.profile.useOverrideUI = enable and true or false
+	self.callbacks:Fire("USE_OVERRRIDE_UI_CHANGED", self:UsingOverrideUI())
+end
+
+function RazerNaga:UsingOverrideUI()
+	return self.db.profile.useOverrideUI
+end
+
 --action bar numbers
 function RazerNaga:SetNumBars(count)
-	count = max(min(count, 120), 1) --sometimes, I do entertaininig things
+    count = max(min(count, 120), 1) --sometimes, I do entertaininig things
 
-	if count ~= self:NumBars() then
-		self.ActionBar:ForAll('Delete')
-		self.db.profile.ab.count = count
-
-		for i = 1, self:NumBars() do
-			self.ActionBar:New(i)
-		end
-	end
+    if count ~= self:NumBars() then
+        self.db.profile.ab.count = count
+        self.callbacks:Fire('ACTIONBAR_COUNT_UPDATED', count)
+    end
 end
 
 function RazerNaga:SetNumButtons(count)
@@ -830,7 +805,6 @@ end
 function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
-
 
 --tooltips
 function RazerNaga:ShowTooltips()
@@ -850,7 +824,6 @@ end
 function RazerNaga:ShowCombatTooltips()
 	return self.db.profile.showTooltipsCombat
 end
-
 
 --minimap button
 function RazerNaga:SetShowMinimap(enable)
@@ -882,8 +855,8 @@ end
 function RazerNaga:SetSticky(enable)
 	self.db.profile.sticky = enable or false
 	if not enable then
-		self.Frame:ForAll('Stick')
-		self.Frame:ForAll('Reposition')
+		self.Frame:ForEach('Stick')
+		self.Frame:ForEach('Reposition')
 	end
 end
 
@@ -894,8 +867,8 @@ end
 --linked opacity
 function RazerNaga:SetLinkedOpacity(enable)
 	self.db.profile.linkedOpacity = enable or false
-	self.Frame:ForAll('UpdateWatched')
-	self.Frame:ForAll('UpdateAlpha')
+	self.Frame:ForEach('UpdateWatched')
+	self.Frame:ForEach('UpdateAlpha')
 end
 
 function RazerNaga:IsLinkedOpacityEnabled()
@@ -916,11 +889,7 @@ hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 	self:SetParent(MinimapBackdrop)
 	self:SetFrameLevel(6)
 	self:ClearAllPoints()
-	if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
-	else
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 14, -196)
-	end
+	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
 	self:SetScale(0.85)
 end)
 
@@ -971,19 +940,194 @@ end
 
 --[[ Utility Functions ]]--
 
---utility function: create a widget class
-function RazerNaga:CreateClass(type, parentClass)
-	local class = CreateFrame(type)
-	class.mt = {__index = class}
+-- create a frame, and then hide it
+function RazerNaga:CreateHiddenFrame(...)
+    local frame = CreateFrame(...)
 
-	if parentClass then
-		class = setmetatable(class, {__index = parentClass})
-		class.super = parentClass
-	end
+    frame:Hide()
 
-	function class:Bind(o)
-		return setmetatable(o, self.mt)
-	end
+    return frame
+end
 
-	return class
+-- A utility function for extending blizzard widget types (Frames, Buttons, etc)
+do
+    -- extend basically just does a post hook of an existing object method
+    -- its here so that I can not forget to do class.proto.thing when hooking
+    -- thing
+    local function class_Extend(class, method, func)
+        if not (type(method) == 'string' and type(func) == 'function') then
+            error('Usage: Class:Extend("method", func)', 2)
+        end
+
+        if type(class.proto[method]) ~= 'function' then
+            error(('Parent has no method named %q'):format(method), 2)
+        end
+
+        class[method] = function(self, ...)
+            class.proto[method](self, ...)
+
+            return func(self, ...)
+        end
+    end
+
+    function RazerNaga:CreateClass(frameType, prototype)
+        local class = self:CreateHiddenFrame(frameType)
+
+        local class_mt = {__index = class}
+
+        class.Bind = function(_, object)
+            return setmetatable(object, class_mt)
+        end
+
+        if type(prototype) == 'table' then
+            class.proto = prototype
+            class.Extend = class_Extend
+
+            setmetatable(class, {__index = prototype})
+        end
+
+        return class
+    end
+end
+-- returns a function that generates unique names for frames
+-- in the format <AddonName>_<Prefix>[1, 2, ...]
+function RazerNaga:CreateNameGenerator(prefix)
+    local id = 0
+    return function()
+        id = id + 1
+        return ('%s_%s_%d'):format("RazerNaga", prefix, id)
+    end
+end
+
+-- A functional way to fade a frame from one opacity to another without constantly
+-- creating new animation groups for the frame
+do
+
+    local function clouseEnough(value1, value2)
+        return _G.Round(value1 * 100) == _G.Round(value2 * 100)
+    end
+
+    -- track the time the animation started playing
+    -- this is so that we can figure out how long we've been delaying for
+    local function animation_OnPlay(self)
+        self.start = _G.GetTime()
+    end
+
+    local function sequence_OnFinished(self)
+        if self.alpha then
+            self:GetParent():SetAlpha(self.alpha)
+            self.alpha = nil
+        end
+    end
+
+    local function sequence_Create(frame)
+        local sequence = frame:CreateAnimationGroup()
+        sequence:SetLooping('NONE')
+        sequence:SetScript('OnFinished', sequence_OnFinished)
+        sequence.alpha = nil
+
+        local animation = sequence:CreateAnimation('Alpha')
+        animation:SetSmoothing('IN_OUT')
+        animation:SetOrder(0)
+        animation:SetScript('OnPlay', animation_OnPlay)
+
+        return sequence, animation
+    end
+
+    RazerNaga.Fade =
+        setmetatable(
+        {},
+        {
+            __call = function(self, addon, frame, toAlpha, delay, duration)
+                return self[frame](toAlpha, delay, duration)
+            end,
+
+            __index = function(self, frame)
+                local sequence, animation
+
+                -- handle animation requests
+                local function func(toAlpha, delay, duration)
+                    -- we're already at target alpha, stop
+                    if clouseEnough(frame:GetAlpha(), toAlpha) then
+                        if sequence and sequence:IsPlaying() then
+                            sequence:Stop()
+                            return
+                        end
+                    end
+
+                    -- create the animation if we've not yet done so
+                    if not sequence then
+                        sequence, animation = sequence_Create(frame)
+                    end
+
+                    local fromAlpha = frame:GetAlpha()
+
+                    -- animation already started, but is in the delay phase
+                    -- so shorten the delay by however much time has gone by
+                    if animation:IsDelaying() then
+                        delay = math.max(delay - (_G.GetTime() - animation.start), 0)
+                    -- we're already in the middle of a fade animation
+                    elseif animation:IsPlaying() then
+                        -- set delay to zero, as we don't want to pause in the
+                        -- middle of an animation
+                        delay = 0
+
+                        -- figure out what opacity we're currently at
+                        -- by using the animation progress
+                        local delta = animation:GetFromAlpha() - animation:GetToAlpha()
+                        fromAlpha = animation:GetFromAlpha() + (delta * animation:GetSmoothProgress())
+                    end
+
+                    -- check that value against our current one
+                    -- if so, quit early
+                    if clouseEnough(fromAlpha, toAlpha) then
+                        frame:SetAlpha(toAlpha)
+
+                        if sequence:IsPlaying() then
+                            sequence:Stop()
+                            return
+                        end
+                    end
+
+                    sequence.alpha = toAlpha
+                    animation:SetFromAlpha(frame:GetAlpha())
+                    animation:SetToAlpha(toAlpha)
+                    animation:SetStartDelay(delay)
+                    animation:SetDuration(duration)
+
+                    sequence:Restart()
+                end
+
+                self[frame] = func
+                return func
+            end
+        }
+    )
+end
+
+-- debounce
+function RazerNaga:Debounce(func, delay, ...)
+    delay = delay or 0
+
+    local argCount = select("#", ...)
+    local callback
+
+    if argCount == 0 then
+        callback = func
+    elseif argCount == 1 then
+        local arg = ...
+        callback = function() func(arg) end
+    else
+        local args = { ... }
+        callback = function() func(unpack(args)) end
+    end
+
+    local timer
+    return function()
+        if timer then
+            timer:Cancel()
+        end
+
+        timer = C_Timer.NewTimer(delay, callback)
+    end
 end
