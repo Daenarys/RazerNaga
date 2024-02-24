@@ -14,7 +14,6 @@ local CONFIG_ADDON_NAME = AddonName .. '_Config'
 -- setup custom callbacks
 RazerNaga.callbacks = LibStub('CallbackHandler-1.0'):New(RazerNaga)
 
-
 --[[ Startup ]]--
 
 function RazerNaga:OnInitialize()
@@ -176,7 +175,6 @@ function RazerNaga:Unload()
 	end
 end
 
-
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
@@ -279,7 +277,6 @@ function RazerNaga:HideBlizzard()
 	)
 end
 
-
 --[[ Keybound Events ]]--
 
 function RazerNaga:UPDATE_BINDINGS()
@@ -297,7 +294,6 @@ end
 function RazerNaga:LIBKEYBOUND_DISABLED()
     self.Frame:ForEach('KEYBOUND_DISABLED')
 end
-
 
 --[[ Profile Functions ]]--
 
@@ -389,7 +385,6 @@ function RazerNaga:MatchProfileExact(name)
 	end
 end
 
-
 --[[ Profile Events ]]--
 
 function RazerNaga:OnNewProfile(msg, db, name)
@@ -413,7 +408,6 @@ function RazerNaga:OnProfileReset(msg, db)
 	self:Print(format(L.ProfileReset, db:GetCurrentProfile()))
 end
 
-
 --[[ Settings...Setting ]]--
 
 function RazerNaga:SetFrameSets(id, sets)
@@ -426,7 +420,6 @@ end
 function RazerNaga:GetFrameSets(id)
 	return self.db.profile.frames[tonumber(id) or id]
 end
-
 
 --[[ Options Menu Display ]]--
 
@@ -451,7 +444,6 @@ function RazerNaga:NewMenu(id)
 
 	return self.Menu and self.Menu:New(id)
 end
-
 
 --[[ Slash Commands ]]--
 
@@ -558,7 +550,6 @@ function RazerNaga:IsConfigAddonEnabled()
 	return GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
 end
 
-
 --[[ Configuration Functions ]]--
 
 --moving
@@ -597,7 +588,6 @@ end
 function RazerNaga:ToggleLockedFrames()
 	self:SetLock(not self:Locked())
 end
-
 
 --[[ Bindings Mode ]]--
 
@@ -920,7 +910,6 @@ hooksecurefunc("QueueStatusDropDown_Show", function()
 	DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
 end)
 
-
 --[[ Incompatibility Check ]]--
 
 local INCOMPATIBLE_ADDONS = {
@@ -952,7 +941,6 @@ function RazerNaga:ShowIncompatibleAddonDialog(addonName)
 	StaticPopupDialogs['RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED'].text = string.format(L.IncompatibleAddonLoaded, addonName)
 	StaticPopup_Show('RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED')
 end
-
 
 --[[ Utility Functions ]]--
 
