@@ -66,9 +66,13 @@ function ActionButtonMixin:OnCreate(id)
         end
     ]])
 
+    -- enable cooldown bling
     self.cooldown:SetDrawBling(true)
 
+    -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
+
+    -- apply custom flyout
     RazerNaga.SpellFlyout:Register(self)
 end
 
