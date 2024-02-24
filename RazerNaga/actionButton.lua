@@ -74,15 +74,21 @@ function ActionButtonMixin:OnCreate(id)
 
     -- apply custom flyout
     RazerNaga.SpellFlyout:Register(self)
-end
 
-function ActionButtonMixin:UpdateIcon()
-    local icon = GetActionTexture(self.action)
-    if icon then
-        self.icon:SetTexture(icon)
-        self.icon:Show()
-    else
-        self.icon:Hide()
+    -- disable spell animations
+    if (ActionBarActionEventsFrame) then
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_START")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
+        ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
     end
 end
 
@@ -195,15 +201,10 @@ ActionButton:Execute([[
 function ActionButton:Initialize()
     -- register game events
     self:SetScript("OnEvent", function(f, event, ...) f[event](f, ...); end)
-    self:RegisterEvent("ACTIONBAR_HIDEGRID")
-    self:RegisterEvent("ACTIONBAR_SHOWGRID")
-    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
-    self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("PLAYER_LOGIN")
-    self:RegisterEvent("SPELLS_CHANGED")
-
-    -- addon callbacks
-    RazerNaga.RegisterCallback(self, "LAYOUT_LOADED")
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self:RegisterEvent("ACTIONBAR_SHOWGRID")
+    self:RegisterEvent("ACTIONBAR_HIDEGRID")
 
     -- library callbacks
     local keybound = LibStub("LibKeyBound-1.0", true)
@@ -276,14 +277,6 @@ function ActionButton:ACTIONBAR_HIDEGRID()
     self:SetShowGrid(false, self.ShowGridReasons.GAME_EVENT)
 end
 
-function ActionButton:ACTIONBAR_SLOT_CHANGED(slot)
-    if slot == 0 or slot == nil then
-        self:ForAll("UpdateIcon")
-    else
-        self:ForActionSlot(slot, "UpdateIcon")
-    end
-end
-
 function ActionButton:PLAYER_ENTERING_WORLD()
     self:ForAll("UpdateShown")
 end
@@ -292,13 +285,6 @@ end
 -- always show buttons state to the main bar
 function ActionButton:PLAYER_LOGIN()
     ActionButton1:SetAttribute("showgrid", 0)
-    self:LAYOUT_LOADED()
-end
-
--- force a visibility updates when spells changed (typically called when
--- switching talents)
-function ActionButton:SPELLS_CHANGED()
-    self:ForAll("UpdateShown")
 end
 
 -- addon callbacks
@@ -308,10 +294,6 @@ end
 
 function ActionButton:LIBKEYBOUND_DISABLED()
     self:SetShowGrid(false, self.ShowGridReasons.KEYBOUND_EVENT)
-end
-
-function ActionButton:LAYOUT_LOADED()
-    self:SetShowSpellAnimations()
 end
 
 function ActionButton:OnActionChanged(buttonName, action)
@@ -511,25 +493,6 @@ end
 
 function ActionButton:SetShowGrid(show, reason, force)
     self:ForAll("SetShowGridInsecure", show, reason, force)
-end
-
-function ActionButton:SetShowSpellAnimations()
-    local f = ActionBarActionEventsFrame
-
-    if f:IsEventRegistered("UNIT_SPELLCAST_SENT") then
-        f:UnregisterEvent("UNIT_SPELLCAST_SENT")
-        f:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-        f:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-        f:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
-        f:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-        f:UnregisterEvent("UNIT_SPELLCAST_FAILED")
-        f:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-        f:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
-        f:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
-        f:UnregisterEvent("UNIT_SPELLCAST_START")
-        f:UnregisterEvent("UNIT_SPELLCAST_STOP")
-        f:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-    end
 end
 
 --------------------------------------------------------------------------------
