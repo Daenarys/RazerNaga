@@ -117,8 +117,8 @@ function Frame:Free(deleteSettings)
 	RazerNaga.MouseOverWatcher:Remove(self)
 	
 	if RazerNaga.OverrideController then
-        RazerNaga.OverrideController:Remove(self)
-    end
+		RazerNaga.OverrideController:Remove(self)
+	end
 
 	self.docked = nil
 
