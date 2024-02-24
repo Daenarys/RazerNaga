@@ -58,7 +58,6 @@ function ButtonBar:AttachButton(index)
         button:SetParent(self)
         button:EnableMouse(not self:GetClickThrough())
         self:OnAttachButton(button)
-        button:Show()
 
         self.buttons[index] = button
     end
@@ -121,12 +120,12 @@ function ButtonBar:NumButtons()
 end
 
 function ButtonBar:SetColumns(columns)
-	if columns ~= self:NumButtons() then
-		self.sets.columns = columns
-	else
-		self.sets.columns = false
-	end
-	self:Layout()
+    if columns ~= self:NumButtons() then
+        self.sets.columns = columns
+    else
+        self.sets.columns = false
+    end
+    self:Layout()
 end
 
 function ButtonBar:NumColumns()
@@ -198,7 +197,7 @@ end
 -- | Padding
 -- v
 function ButtonBar:Layout()
-    local numButtons = #self.buttons
+    local numButtons = self:NumButtons()
     if numButtons < 1 then
         ButtonBar.proto.Layout(self)
         return
@@ -211,7 +210,7 @@ function ButtonBar:Layout()
     local isTopToBottom = self:GetTopToBottom()
 
     -- grab base button sizes
-    local l, _, t, _ = self:GetButtonInsets()
+    local l, r, t, b = self:GetButtonInsets()
     local bW, bH = self:GetButtonSize()
     local pW, pH = self:GetPadding()
     local spacing = self:GetSpacing()
@@ -222,7 +221,12 @@ function ButtonBar:Layout()
     local xOff = pW - l
     local yOff = pH - t
 
-    for i, button in ipairs(self.buttons) do
+    for i = 1, numButtons do
+        local button = self.buttons[i]
+        if not button then
+            break
+        end
+
         local row = floor((i - 1) / cols)
         if not isTopToBottom then
             row = rows - (row + 1)

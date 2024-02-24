@@ -37,15 +37,7 @@ function PetBar:New()
     return PetBar.proto.New(self, 'pet')
 end
 
-function PetBar:IsOverrideBar()
-    return RazerNaga.db.profile.possessBar == self.id
-end
-
-function PetBar:UpdateOverrideBar()
-    self:UpdateDisplayConditions()
-end
-
-function PetBar:GetDisplayConditions()
+function PetBar:GetShowStates()
     return '[@pet,exists,nopossessbar]show;hide'
 end
 
