@@ -5,10 +5,38 @@
 local RazerNaga = _G[...]
 local ActionButtonMixin = {}
 
+local function GetActionButtonCommand(id)
+    -- 0
+    if id <= 0 then
+        return
+    -- 1
+    elseif id <= 12 then
+        return "ACTIONBUTTON" .. id
+    -- 2
+    elseif id <= 24 then
+        return
+    -- 3
+    elseif id <= 36 then
+        return "MULTIACTIONBAR3BUTTON" .. (id - 24)
+    -- 4
+    elseif id <= 48 then
+        return "MULTIACTIONBAR4BUTTON" .. (id - 36)
+    -- 5
+    elseif id <= 60 then
+        return "MULTIACTIONBAR2BUTTON" .. (id - 48)
+    -- 6
+    elseif id <= 72 then
+        return "MULTIACTIONBAR1BUTTON" .. (id - 60)
+    -- 7-10
+    elseif id <= 120 then
+        return
+    end
+end
+
 function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
-    self:SetAttributeNoHandler("commandName", self:GetName())
+    self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or self:GetName())
     self:SetAttributeNoHandler("showgrid", 0)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
