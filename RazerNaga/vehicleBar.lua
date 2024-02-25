@@ -2,7 +2,6 @@
 -- Vehicle Bar
 -- A movable bar for vehicles
 --------------------------------------------------------------------------------
-
 local RazerNaga = _G[...]
 local VehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
@@ -149,13 +148,13 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local VehicleBarController = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
+local VehicleBarModule = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
 
-function VehicleBarController:OnInitialize()
+function VehicleBarModule:OnInitialize()
     VehicleLeaveButton:UnregisterAllEvents()
 end
 
-function VehicleBarController:Load()
+function VehicleBarModule:Load()
     self.frame = VehicleBar:New()
 
     self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
@@ -169,7 +168,7 @@ function VehicleBarController:Load()
     self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "Update")
 end
 
-function VehicleBarController:Unload()
+function VehicleBarModule:Unload()
     self:UnregisterAllEvents()
 
     if self.frame then
@@ -178,7 +177,7 @@ function VehicleBarController:Unload()
     end
 end
 
-function VehicleBarController:Update()
+function VehicleBarModule:Update()
     if InCombatLockdown() then return end
 
     self.frame:Update()

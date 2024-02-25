@@ -375,20 +375,20 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local MenuBarController = RazerNaga:NewModule('MenuBar')
+local MenuBarModule = RazerNaga:NewModule('MenuBar')
 
-function MenuBarController:OnInitialize()
+function MenuBarModule:OnInitialize()
     local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
     if perf then
         perf:SetSize(28, 58)
     end
 end
 
-function MenuBarController:Load()
+function MenuBarModule:Load()
     self.frame = MenuBar:New()
 end
 
-function MenuBarController:Unload()
+function MenuBarModule:Unload()
     if self.frame then
         self.frame:Free()
         self.frame = nil

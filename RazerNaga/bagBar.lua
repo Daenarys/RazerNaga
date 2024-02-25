@@ -127,9 +127,9 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+local BagBarModule = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
-function BagBarController:OnInitialize()
+function BagBarModule:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
@@ -161,11 +161,11 @@ function BagBarController:OnInitialize()
 	end
 end
 
-function BagBarController:Load()
+function BagBarModule:Load()
 	self.frame = BagBar:New()
 end
 
-function BagBarController:Unload()
+function BagBarModule:Unload()
 	if self.frame then
 		self.frame:Free()
 		self.frame = nil

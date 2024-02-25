@@ -113,19 +113,15 @@ function SpellFlyoutButtonMixin:UpdateState()
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
-	local usable, oom = IsUsableSpell(self.spellID)
-    local icon = self.icon
-
-    if oom then
-        icon:SetDesaturated(true)
-        icon:SetVertexColor(0.4, 0.4, 1.0)
-    elseif usable then
-        icon:SetDesaturated(false)
-        icon:SetVertexColor(1, 1, 1)
-    else
-        icon:SetDesaturated(true)
-        icon:SetVertexColor(0.4, 0.4, 0.4)
-    end
+	local isUsable, notEnoughMana = IsUsableSpell(self.spellID)
+	local icon = self.icon
+	if ( isUsable ) then
+		icon:SetVertexColor(1.0, 1.0, 1.0)
+	elseif ( notEnoughMana ) then
+		icon:SetVertexColor(0.5, 0.5, 1.0)
+	else
+		icon:SetVertexColor(0.4, 0.4, 0.4)
+	end
 end
 
 function SpellFlyoutButtonMixin:UpdateCount()
@@ -233,7 +229,7 @@ local SpellFlyoutFrame_Toggle = [[
 		return
 	end
 
-	self:SetFrameStrata("LOW");
+	self:SetFrameStrata("LOW")
 
 	local bW = FLYOUT_SLOTS[1]:GetWidth()
 	local bH = FLYOUT_SLOTS[1]:GetHeight()
