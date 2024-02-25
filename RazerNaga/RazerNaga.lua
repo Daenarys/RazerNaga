@@ -217,10 +217,6 @@ function RazerNaga:HideBlizzard()
 	    end
 	end
 
-	local function wipeActionButtons(bar)
-	    table.wipe(bar.actionButtons)
-	end
-
 	apply(banish,
 		"MainMenuBar",
 		"MultiBarBottomLeft",
@@ -258,26 +254,14 @@ function RazerNaga:HideBlizzard()
 	)
 
 	apply(disableActionButtons,
-	    "MainMenuBar",
-	    "MultiBar5",
-	    "MultiBar6",
-	    "MultiBar7",
-	    "MultiBarBottomLeft",
-	    "MultiBarBottomRight",
-	    "MultiBarLeft",
-	    "MultiBarRight",
-	    "PossessActionBar",
-	    "StanceBar"
-	)
-
-	apply(wipeActionButtons,
+		"MainMenuBar",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
 		"MultiBarBottomLeft",
 		"MultiBarBottomRight",
 		"MultiBarLeft",
-		"MultiBarRight",
-		"MultiBar5",
-		"MultiBar6",
-		"MultiBar7"
+		"MultiBarRight"
 	)
 end
 

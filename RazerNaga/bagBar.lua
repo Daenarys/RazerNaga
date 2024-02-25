@@ -20,10 +20,56 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(32, 32)
 
+	b:SetSize(30, 30)
+
+	if b.IconBorder ~= nil then
+		b.IconBorder:SetSize(30, 30)
+	end
+
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
+	end
+
+	if b.CircleMask then
+		b.CircleMask:Hide()
+	end
+
+	local function updateTextures(self)
+		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
+		self:GetNormalTexture():SetSize(50, 50)
+		self:GetNormalTexture():SetAlpha(1)
+		self:GetNormalTexture():ClearAllPoints()
+		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:GetHighlightTexture():SetAlpha(1)
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		self.SlotHighlightTexture:SetBlendMode("ADD")
+	end
+
+	for i = 0, 3 do
+		local bagSlot = _G["CharacterBag"..i.."Slot"]
+		hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
+		hooksecurefunc(bagSlot, "UpdateTextures", updateTextures)
+	end
+
+	updateTextures(CharacterBag0Slot)
+	CharacterBag0Slot:ClearAllPoints()
+	CharacterBag0Slot:SetPoint("RIGHT", MainMenuBarBackpackButton, "LEFT", -2, 0)
+	updateTextures(CharacterBag1Slot)
+	CharacterBag1Slot:ClearAllPoints()
+	CharacterBag1Slot:SetPoint("RIGHT", CharacterBag0Slot, "LEFT", -2, 0)
+	updateTextures(CharacterBag2Slot)
+	CharacterBag2Slot:ClearAllPoints()
+	CharacterBag2Slot:SetPoint("RIGHT", CharacterBag1Slot, "LEFT", -2, 0)
+	updateTextures(CharacterBag3Slot)
+	CharacterBag3Slot:ClearAllPoints()
+	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
+	updateTextures(MainMenuBarBackpackButton)
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
 	b.skinned = true
 end

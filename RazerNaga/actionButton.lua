@@ -66,14 +66,20 @@ function ActionButtonMixin:OnCreate(id)
         end
     ]])
 
-    -- enable cooldown bling
-    self.cooldown:SetDrawBling(true)
-
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
 
     -- apply custom flyout
     RazerNaga.SpellFlyout:Register(self)
+
+    -- use pre 10.x button size
+    self:SetSize(36, 36)
+
+    -- apply pre 10.x button skin
+    self:Skin()
+
+    -- enable cooldown bling
+    self.cooldown:SetDrawBling(true)
 
     -- disable spell animations
     if (ActionBarActionEventsFrame) then
@@ -105,6 +111,59 @@ function ActionButtonMixin:UpdateShown()
         (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
         and not self:GetAttribute("statehidden")
     )
+end
+
+function ActionButtonMixin:Skin()
+    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+    self.NormalTexture:ClearAllPoints()
+    self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+    self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+    self.PushedTexture:SetSize(36, 36)
+    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+    self.HighlightTexture:SetSize(36, 36)
+    self.HighlightTexture:SetBlendMode("ADD")
+    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+    self.CheckedTexture:ClearAllPoints()
+    self.CheckedTexture:SetAllPoints()
+    self.CheckedTexture:SetBlendMode("ADD")
+    self.NewActionTexture:SetSize(44, 44)
+    self.NewActionTexture:SetAtlas("bags-newitem")
+    self.NewActionTexture:ClearAllPoints()
+    self.NewActionTexture:SetPoint("CENTER")
+    self.NewActionTexture:SetBlendMode("ADD")
+    self.SpellHighlightTexture:SetSize(44, 44)
+    self.SpellHighlightTexture:SetAtlas("bags-newitem")
+    self.SpellHighlightTexture:ClearAllPoints()
+    self.SpellHighlightTexture:SetPoint("CENTER")
+    self.SpellHighlightTexture:SetBlendMode("ADD")
+    self.QuickKeybindHighlightTexture:SetAtlas("bags-newitem")
+    self.QuickKeybindHighlightTexture:ClearAllPoints()
+    self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT", -2, 2)
+    self.QuickKeybindHighlightTexture:SetPoint("BOTTOMRIGHT", 2, -2)
+    self.QuickKeybindHighlightTexture:SetBlendMode("ADD")
+    self.QuickKeybindHighlightTexture:SetAlpha(0.5)
+    self.Border:ClearAllPoints()
+    self.Border:SetPoint("TOPLEFT", -3, 3)
+    self.Border:SetPoint("BOTTOMRIGHT", 3, -3)
+    self.cooldown:ClearAllPoints()
+    self.cooldown:SetAllPoints()
+    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
+    self.Count:ClearAllPoints()
+    self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+    self.FlyoutBorderShadow:SetSize(48, 48)
+    self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+    self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
+    if self.SlotArt then
+        self.SlotArt:Hide()
+    end
+    if self.SlotBackground then
+        self.SlotBackground:Hide()
+    end
 end
 
 --------------------------------------------------------------------------------

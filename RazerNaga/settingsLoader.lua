@@ -92,8 +92,6 @@ function SettingsLoader:LoadThreeByFour()
 end
 
 function SettingsLoader:GetThreeByFour()
-	--this is basically the raw output of the RazerNaga.lua saved variables
-	--the only thing I removed was paging information as to not override the user's paging settings
 	return {
 		layoutType = '3x4',
 
@@ -109,13 +107,14 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -260,
+				['spacing'] = 4,
+				['x'] = -250,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'NONE'
 			}, -- [1]
 			{
 				['isRightToLeft'] = false,
@@ -123,12 +122,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -110,
+				['spacing'] = 4,
+				['x'] = -100,
 				['y'] = 110,
 			}, -- [2]
 			{
@@ -138,11 +136,10 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 1,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
+				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0,
 			}, -- [3]
@@ -153,12 +150,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 1,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -47,
+				['spacing'] = 4,
+				['x'] = -40,
 				['y'] = 0,
 			}, -- [4]
 			{
@@ -168,13 +164,12 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 12,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = 300,
-				['y'] = 57,
+				['spacing'] = 4,
+				['x'] = 270,
+				['y'] = 52,
 			}, -- [5]
 			{
 			['isRightToLeft'] = false,
@@ -183,13 +178,12 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 12,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -290,
-				['y'] = 57,
+				['spacing'] = 4,
+				['x'] = -270,
+				['y'] = 52,
 			}, -- [6]
 			{
 			['isRightToLeft'] = false,
@@ -198,12 +192,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -260,
+				['spacing'] = 4,
+				['x'] = -250,
 				['y'] = 305,
 			}, -- [7]
 			{
@@ -213,12 +206,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -110,
+				['spacing'] = 4,
+				['x'] = -100,
 				['y'] = 305,
 			}, -- [8]
 			{
@@ -228,12 +220,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -260,
+				['spacing'] = 4,
+				['x'] = -250,
 				['y'] = 500,
 			}, -- [9]
 			{
@@ -243,12 +234,11 @@ function SettingsLoader:GetThreeByFour()
 				['columns'] = 3,
 				['hidden'] = false,
 				['numButtons'] = 12,
-				['padH'] = 1,
-				['padW'] = 1,
+				['padH'] = 2,
+				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['scale'] = 0.91,
-				['spacing'] = 0,
-				['x'] = -110,
+				['spacing'] = 4,
+				['x'] = -100,
 				['y'] = 500,
 			}, -- [10]
 			['cast'] = {
@@ -297,7 +287,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = -1,
+				['spacing'] = 2,
 				['x'] = 250,
 				['y'] = 0,
 			},
@@ -307,13 +297,13 @@ function SettingsLoader:GetThreeByFour()
 				['anchor'] = false,
 				['columns'] = 3,
 				['hidden'] = false,
-				['padH'] = 1,
-				['padW'] = 1,
 				['point'] = 'BOTTOMRIGHT',
 				['showstates'] = '[target=pet,exists,nobonusbar:5]',
-				['spacing'] = 4,
+				['spacing'] = 6,
 				['x'] = -400,
 				['y'] = 110,
+				['enableAutoBinding'] = true,
+				['autoBindingModifier'] = 'CTRL'
 			},
 			['class'] = {
 				['isRightToLeft'] = false,
@@ -326,7 +316,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOMRIGHT',
 				['spacing'] = 0,
 				['x'] = -306,
-				['y'] = 239,
+				['y'] = 270,
 			}
 		},
 	}

@@ -267,21 +267,25 @@ function SpellFlyoutFrameMixin:Initialize()
 	self.Background = CreateFrame('Frame', nil, self)
 	self.Background:SetAllPoints()
 
-	self.Background.End = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.End:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutButton', true)
-
-	self.Background.HorizontalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.HorizontalMiddle:SetAtlas('_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft', true)
-	self.Background.HorizontalMiddle:SetHorizTile(true)
-	self.Background.HorizontalMiddle:Hide()
-
-	self.Background.VerticalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.VerticalMiddle:SetAtlas('!UI-HUD-ActionBar-IconFrame-FlyoutMid', true)
-	self.Background.VerticalMiddle:SetVertTile(true)
-	self.Background.VerticalMiddle:Hide()
-
 	self.Background.Start = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.Start:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutBottom', true)
+	self.Background.Start:Hide()
+
+	self.Background.End = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.End:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+	self.Background.End:SetSize(37,22)
+	self.Background.End:SetTexCoord(0.01562500,0.59375000,0.74218750,0.91406250)
+
+	self.Background.HorizontalMiddle = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.HorizontalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMidLeft")
+	self.Background.HorizontalMiddle:SetHorizTile(true)
+	self.Background.HorizontalMiddle:SetSize(32,37)
+	self.Background.HorizontalMiddle:SetTexCoord(0,1,0,0.578125)
+
+	self.Background.VerticalMiddle = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.VerticalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMid")
+	self.Background.VerticalMiddle:SetVertTile(true)
+	self.Background.VerticalMiddle:SetSize(37,32)
+	self.Background.VerticalMiddle:SetTexCoord(0,0.578125,0,1)
 
 	local command = [[
 		FLYOUT_INFO = newtable()
@@ -302,56 +306,43 @@ end
 function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	self.direction = direction
 	self.Background.End:ClearAllPoints()
-	self.Background.Start:ClearAllPoints()
 
-	if direction == "UP" then
-		self.Background.End:SetPoint("TOP", 0, SPELLFLYOUT_INITIAL_SPACING)
-		SetClampedTextureRotation(self.Background.End, 0)
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 0)
-		self.Background.Start:SetPoint("TOP", self.Background.VerticalMiddle, "BOTTOM")
-		SetClampedTextureRotation(self.Background.Start, 0)
-		self.Background.HorizontalMiddle:Hide()
-		self.Background.VerticalMiddle:Show()
-		self.Background.VerticalMiddle:ClearAllPoints()
-		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM")
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance)
-	elseif direction == "DOWN" then
-		self.Background.End:SetPoint("BOTTOM", 0, -SPELLFLYOUT_INITIAL_SPACING)
-		SetClampedTextureRotation(self.Background.End, 180)
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 180)
-		self.Background.Start:SetPoint("BOTTOM", self.Background.VerticalMiddle, "TOP")
-		SetClampedTextureRotation(self.Background.Start, 180)
-		self.Background.HorizontalMiddle:Hide()
-		self.Background.VerticalMiddle:Show()
-		self.Background.VerticalMiddle:ClearAllPoints()
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP")
-		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance)
-	elseif direction == "LEFT" then
-		self.Background.End:SetPoint("LEFT", -SPELLFLYOUT_INITIAL_SPACING, 0)
-		SetClampedTextureRotation(self.Background.End, 270)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 180)
-		self.Background.Start:SetPoint("LEFT", self.Background.HorizontalMiddle, "RIGHT")
-		SetClampedTextureRotation(self.Background.Start, 270)
-		self.Background.VerticalMiddle:Hide()
-		self.Background.HorizontalMiddle:Show()
-		self.Background.HorizontalMiddle:ClearAllPoints()
-		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT")
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0)
-	elseif direction == "RIGHT" then
-		self.Background.End:SetPoint("RIGHT", SPELLFLYOUT_INITIAL_SPACING, 0)
-		SetClampedTextureRotation(self.Background.End, 90)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 0)
-		self.Background.Start:SetPoint("RIGHT", self.Background.HorizontalMiddle, "LEFT")
-		SetClampedTextureRotation(self.Background.Start, 90)
-		self.Background.VerticalMiddle:Hide()
-		self.Background.HorizontalMiddle:Show()
-		self.Background.HorizontalMiddle:ClearAllPoints()
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT")
-		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0)
+	if (direction == "UP") then
+		self.Background.End:SetPoint("TOP");
+		SetClampedTextureRotation(self.Background.End, 0);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM");
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance);
+	elseif (direction == "DOWN") then
+		self.Background.End:SetPoint("BOTTOM");
+		SetClampedTextureRotation(self.Background.End, 180);
+		self.Background.HorizontalMiddle:Hide();
+		self.Background.VerticalMiddle:Show();
+		self.Background.VerticalMiddle:ClearAllPoints();
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP");
+		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance);
+	elseif (direction == "LEFT") then
+		self.Background.End:SetPoint("LEFT");
+		SetClampedTextureRotation(self.Background.End, 270);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT");
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0);
+	elseif (direction == "RIGHT") then
+		self.Background.End:SetPoint("RIGHT");
+		SetClampedTextureRotation(self.Background.End, 90);
+		self.Background.VerticalMiddle:Hide();
+		self.Background.HorizontalMiddle:Show();
+		self.Background.HorizontalMiddle:ClearAllPoints();
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT");
+		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0);
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(47)
+	self:SetBorderSize(36)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
@@ -464,6 +455,12 @@ local SpellFlyoutButton_OnClickPost = [[
 function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	local name = ('%sSpellFlyoutButton%d'):format("RazerNaga", id)
 	local button = CreateFrame('CheckButton', name, self, 'SmallActionButtonTemplate, SecureActionButtonTemplate')
+
+	button:SetSize(28, 28)
+	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
+	button.NormalTexture:SetAlpha(0)
+	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:SetBlendMode("ADD")
 
 	Mixin(button, SpellFlyoutButtonMixin)
 
@@ -587,18 +584,6 @@ function SpellFlyout:OnFlyoutHidden()
 		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 		self:UnregisterEvent("SPELL_UPDATE_USABLE")
 	end
-end
-
-function SpellFlyout:IsVisible()
-	return self.frame and self.frame:IsVisible()
-end
-
-function SpellFlyout:IsMouseOver(...)
-	return self.frame and self.frame:IsMouseOver(...)
-end
-
-function SpellFlyout:IsForbidden(...)
-	return self.frame and self.frame:IsForbidden()
 end
 
 function SpellFlyout:GetParent()
