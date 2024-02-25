@@ -3,7 +3,6 @@
 -- A movable bar for vehicles
 --------------------------------------------------------------------------------
 local RazerNaga = _G[...]
-local VehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
 --------------------------------------------------------------------------------
 -- Button
@@ -149,10 +148,6 @@ end
 --------------------------------------------------------------------------------
 
 local VehicleBarModule = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
-
-function VehicleBarModule:OnInitialize()
-    VehicleLeaveButton:UnregisterAllEvents()
-end
 
 function VehicleBarModule:Load()
     self.frame = VehicleBar:New()
