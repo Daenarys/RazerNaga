@@ -80,8 +80,7 @@ function ActionBar:GetDefaults()
         spacing = 2,
         padW = 2,
         padH = 2,
-        numButtons = self:MaxLength(),
-        showEmptyButtons = false
+        numButtons = self:MaxLength()
     }
 end
 
@@ -108,7 +107,7 @@ function ActionBar:OnAttachButton(button)
     button:SetAttribute("action", button:GetAttribute("index") + (self:GetAttribute("actionOffset") or 0))
     
     button:SetFlyoutDirectionInsecure(self:GetFlyoutDirection())
-    button:SetShowGridInsecure(self:ShowingEmptyButtons(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
+    button:SetShowGridInsecure(RazerNaga:ShowGrid(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
     button:SetShowMacroText(RazerNaga:ShowMacroText())
     button:SetShowCooldowns(self:GetAlpha() > 0)
     button:SetAttributeNoHandler("statehidden", (button:GetAttribute("index") > self:NumButtons()) or nil)
@@ -119,39 +118,6 @@ end
 
 function ActionBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
-end
-
--- sizing
-function ActionBar:ReloadButtons()
-    local oldNumButtons = #self.buttons
-    for i = 1, oldNumButtons do
-        self:DetachButton(i)
-    end
-
-    local newNumButtons = self:MaxLength()
-    for i = 1, newNumButtons do
-        self:AttachButton(i)
-    end
-
-    self:Layout()
-end
-
-function ActionBar:UpdateNumButtons()
-    local numVisible = self:NumButtons()
-
-    for i, button in pairs(self.buttons) do
-        if i > numVisible then
-            if not button:GetAttribute("statehidden") then
-                button:SetAttribute("statehidden", true)
-                button:Hide()
-            end
-        elseif button:GetAttribute("statehidden") then
-            button:SetAttribute("statehidden", nil)
-            button:UpdateShown()
-        end
-    end
-
-    self:Layout()
 end
 
 -- paging
@@ -240,12 +206,7 @@ function ActionBar:IsOverrideBar()
 end
 
 function ActionBar:SetShowEmptyButtons(show)
-    self.sets.showEmptyButtons = show and true
-    self:ForButtons('SetShowGridInsecure', self:ShowingEmptyButtons(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
-end
-
-function ActionBar:ShowingEmptyButtons()
-    return self.sets.showEmptyButtons and true
+    self:ForButtons('SetShowGridInsecure', RazerNaga:ShowGrid(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
 end
 
 -- unit

@@ -6,12 +6,10 @@ local RazerNaga = _G[...]
 local ActionButtonMixin = {}
 
 function ActionButtonMixin:OnCreate(id)
-    -- initialize state
-    self.showgrid = 0
-
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
     self:SetAttributeNoHandler("commandName", self:GetName())
+    self:SetAttributeNoHandler("showgrid", 0)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
@@ -30,14 +28,41 @@ function ActionButtonMixin:OnCreate(id)
         end
     ]])
 
+    self:SetAttributeNoHandler("SetShowGrid", [[
+        local show, reason, force = ...
+        local value = self:GetAttribute("showgrid")
+        local prevValue = value
+
+        if show then
+            if value % (reason * 2) < reason then
+                value = value + reason
+            end
+        elseif value % (reason * 2) >= reason then
+            value = value - reason
+        end
+
+        if (prevValue ~= value) or force then
+            self:SetAttribute("showgrid", value)
+
+            local show = (value > 0 or HasAction(self:GetAttribute("action")))
+                and not self:GetAttribute("statehidden")
+
+            if show then
+                self:Show(true)
+            else
+                self:Hide(true)
+            end
+        end
+    ]])
+
     self:SetAttributeNoHandler("UpdateShown", [[
-        local show = (HasAction(self:GetAttribute("action")))
+        local show = (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
             and not self:GetAttribute("statehidden")
 
         if show then
-            self:SetAlpha(1)
+            self:Show(true)
         else
-            self:SetAlpha(0)
+            self:Hide(true)
         end
     ]])
 
@@ -74,11 +99,12 @@ function ActionButtonMixin:UpdateOverrideBindings()
 end
 
 function ActionButtonMixin:UpdateShown()
-    if self.showgrid > 0 or HasAction(self.action) then
-        self:SetAlpha(1)
-    else
-        self:SetAlpha(0)
-    end
+    if InCombatLockdown() then return end
+
+    self:SetShown(
+        (self:GetAttribute("showgrid") > 0 or HasAction(self:GetAttribute("action")))
+        and not self:GetAttribute("statehidden")
+    )
 end
 
 --------------------------------------------------------------------------------
@@ -112,15 +138,23 @@ function ActionButtonMixin:SetShowEmptyButtons(show, force)
 end
 
 function ActionButtonMixin:SetShowGridInsecure(show, reason, force)
-    local showgrid
-    if show then
-        showgrid = bit.bor(self.showgrid, reason)
-    else
-        showgrid = bit.band(self.showgrid, bit.bnot(reason))
+    if InCombatLockdown() then return end
+
+    if type(reason) ~= "number" then
+        error("Usage: ActionButtonMixin:SetShowGridInsecure(show, reason, force?)", 2)
     end
 
-    if (self.showgrid ~= showgrid) or force then
-        self.showgrid = showgrid
+    local value = self:GetAttribute("showgrid") or 0
+    local prevValue = value
+
+    if show then
+        value = bit.bor(value, reason)
+    else
+        value = bit.band(value, bit.bnot(reason))
+    end
+
+    if (value ~= prevValue) or force then
+        self:SetAttribute("showgrid", value)
         self:UpdateShown()
     end
 end
@@ -162,6 +196,7 @@ ActionButton:Execute([[
 function ActionButton:Initialize()
     -- register game events
     self:SetScript("OnEvent", function(f, event, ...) f[event](f, ...); end)
+    self:RegisterEvent("PLAYER_LOGIN")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
@@ -175,6 +210,28 @@ function ActionButton:Initialize()
     end
 
     -- secure methods
+    self:SetAttributeNoHandler("SetShowGrid", [[
+        local show, reason, force = ...
+        local value = self:GetAttribute("showgrid") or 0
+        local prevValue = value
+
+        if show then
+            if value % (reason * 2) < reason then
+                value = value + reason
+            end
+        elseif value % (reason * 2) >= reason then
+            value = value - reason
+        end
+
+        if (prevValue ~= value) or force then
+            self:SetAttribute("showgrid", value)
+
+            for button in pairs(ActionButton) do
+                button:RunAttribute("SetShowGrid", show, reason)
+            end
+        end
+    ]])
+
     self:SetAttributeNoHandler("ForActionSlot", [[
         local id, method = ...
         for button, action in pairs(ActionButton) do
@@ -195,6 +252,15 @@ function ActionButton:Initialize()
         end
     ]])
 
+    self:WrapScript(ActionButton1, "OnAttributeChanged", [[
+        if name ~= "showgrid" then return end
+
+        for reason = 2, 4, 2 do
+            local show = value % (reason * 2) >= reason
+            control:RunAttribute("SetShowGrid", show, reason)
+        end
+    ]])
+
     self.Initialize = nil
 end
 
@@ -208,6 +274,12 @@ end
 
 function ActionButton:PLAYER_ENTERING_WORLD()
     self:ForAll("UpdateShown")
+end
+
+-- reset grid state at login. This covers waiting for the game to apply the
+-- always show buttons state to the main bar
+function ActionButton:PLAYER_LOGIN()
+    ActionButton1:SetAttribute("showgrid", 0)
 end
 
 -- addon callbacks
@@ -271,6 +343,14 @@ local ActionButton_OnShowHide = [[
     self:RunAttribute("UpdateShown")
 ]]
 
+local function GetActionButtonName(id)
+    if id <= 0 then
+        return
+    else
+        return ACTION_BUTTON_NAME_TEMPLATE:format(id)
+    end
+end
+
 local function SafeMixin(button, trait)
     for k, v in pairs(trait) do
         if rawget(button, k) ~= nil then
@@ -282,7 +362,7 @@ local function SafeMixin(button, trait)
 end
 
 function ActionButton:GetOrCreateActionButton(id, parent)
-    local name = ACTION_BUTTON_NAME_TEMPLATE:format(id)
+    local name = GetActionButtonName(id)
     if name == nil then
         error(("Invalid Action ID %q"):format(id))
     end
@@ -327,7 +407,6 @@ function ActionButton:GetOrCreateActionButton(id, parent)
         self:WrapScript(button, "OnShow", ActionButton_OnShowHide)
         self:WrapScript(button, "OnHide", ActionButton_OnShowHide)
 
-        -- enable cast on keypress
         self:AddCastOnKeyPressSupport(button)
 
         -- register the button with the controller
