@@ -13,6 +13,7 @@ fadeManager.lua
 overrideController.lua
 tooltipController.lua
 settingsLoader.lua
+autoBinder.lua
 drag.lua
 frame.lua
 barStates.lua

@@ -133,10 +133,6 @@ function ActionButtonMixin:SetShowCooldowns(show)
     end
 end
 
-function ActionButtonMixin:SetShowCounts(show)
-    self.Count:SetShown(show)
-end
-
 function ActionButtonMixin:SetShowEmptyButtons(show, force)
     self:SetShowGridInsecure(show, RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR, force)
 end
@@ -182,7 +178,6 @@ local ACTION_BUTTON_NAME_TEMPLATE = "RazerNaga" .. "ActionButton%d"
 ActionButton.ShowGridReasons = {
     GAME_EVENT = 2,
     SPELLBOOK_SHOWN = 4,
-
     KEYBOUND_EVENT = 16,
     SHOW_EMPTY_BUTTONS_PER_BAR = 32
 }

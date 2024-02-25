@@ -2,7 +2,6 @@
 -- Stance bar
 -- Lets you move around the bar for displaying forms/stances/etc
 --------------------------------------------------------------------------------
-
 local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
 

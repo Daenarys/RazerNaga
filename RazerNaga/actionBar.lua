@@ -92,7 +92,6 @@ end
 
 function ActionBar:AcquireButton(index)
     local id = index + (self.id - 1) * self:MaxLength()
-
     local button = RazerNaga.ActionButton:GetOrCreateActionButton(id, self)
 
     button:SetAttributeNoHandler('index', index)

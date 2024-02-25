@@ -132,7 +132,10 @@ function RazerNaga:GetDefaults()
 				showgrid = true,
 			},
 
-			frames = {}
+			frames = {},
+
+			--lynn settings
+			firstLoad = true
 		}
 	}
 
@@ -161,6 +164,7 @@ function RazerNaga:Load()
 
 	--show auto binder dialog, if fist load of this profile
 	if self:IsFirstLoad() then
+		self.AutoBinder:ShowEnableAutoBindingsDialog()
 		self:SetFirstLoad(false)
 	end
 end
