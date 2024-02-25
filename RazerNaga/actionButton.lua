@@ -156,8 +156,6 @@ function ActionButtonMixin:Skin()
     self.Count:ClearAllPoints()
     self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
     self.FlyoutBorderShadow:SetSize(48, 48)
-    self.FlyoutBorderShadow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-    self.FlyoutBorderShadow:SetTexCoord(0.01562500, 0.76562500, 0.00781250, 0.38281250)
     if self.SlotArt then
         self.SlotArt:Hide()
     end
