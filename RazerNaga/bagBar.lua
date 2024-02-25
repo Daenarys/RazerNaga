@@ -74,6 +74,30 @@ function BagBar:SkinButton(b)
 	b.skinned = true
 end
 
+local function Disable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Disable()
+		SetDesaturation(bagButton.icon, true)
+		SetDesaturation(bagButton.NormalTexture, true)
+	end
+end
+
+local function Enable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Enable()
+		SetDesaturation(bagButton.icon, false)
+		SetDesaturation(bagButton.NormalTexture, false)
+	end
+end
+
+GameMenuFrame:HookScript("OnShow", function()
+	Disable_BagButtons()
+end)
+
+GameMenuFrame:HookScript("OnHide", function()
+	Enable_BagButtons()
+end)
+
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
