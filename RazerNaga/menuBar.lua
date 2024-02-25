@@ -2,6 +2,11 @@
 -- Menu Bar
 -- Defines the RazerNaga menuBar object
 --------------------------------------------------------------------------------
+local RazerNaga = _G[...]
+
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 RazerNaga.MenuBar = MenuBar
@@ -36,10 +41,6 @@ local MICRO_BUTTON_NAMES = {
     ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS']
 }
-
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
 
 function MenuBar:SkinButton(button)
     if button.skinned then return end

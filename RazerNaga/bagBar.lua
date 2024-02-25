@@ -2,6 +2,11 @@
 -- Bag Bar
 -- Defines the RazerNaga bagBar object
 --------------------------------------------------------------------------------
+local RazerNaga = _G[...]
+
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
 
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
@@ -92,6 +97,10 @@ end
 function BagBar:NumButtons()
 	return #self.bags
 end
+
+--------------------------------------------------------------------------------
+-- Menu
+--------------------------------------------------------------------------------
 
 function BagBar:CreateMenu()
 	local menu = RazerNaga:NewMenu(self.id)
