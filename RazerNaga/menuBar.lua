@@ -1,6 +1,7 @@
---[[
-    MenuBar
---]]
+--------------------------------------------------------------------------------
+-- Menu Bar
+-- Defines the RazerNaga menuBar object
+--------------------------------------------------------------------------------
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 RazerNaga.MenuBar = MenuBar
@@ -36,7 +37,9 @@ local MICRO_BUTTON_NAMES = {
     ['CollectionsMicroButton'] = _G['COLLECTIONS']
 }
 
---[[ Menu Bar ]] --
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
 
 function MenuBar:SkinButton(button)
     if button.skinned then return end
@@ -302,7 +305,9 @@ function MenuBar:GetButtonInsets()
     return l, r + 1, t + 3, b
 end
 
---[[ Menu Code ]] --
+--------------------------------------------------------------------------------
+-- Menu
+--------------------------------------------------------------------------------
 
 local function Menu_AddLayoutPanel(menu)
     local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
@@ -365,7 +370,9 @@ function MenuBar:CreateMenu()
     return menu
 end
 
---[[ module ]] --
+--------------------------------------------------------------------------------
+-- Module
+--------------------------------------------------------------------------------
 
 local MenuBarController = RazerNaga:NewModule('MenuBar')
 

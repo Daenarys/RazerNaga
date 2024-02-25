@@ -1,9 +1,7 @@
-﻿--[[
-	bagBar.lua
-		Defines the RazerNaga bagBar object
---]]
-
---[[ Bag Bar ]]--
+﻿--------------------------------------------------------------------------------
+-- Bag Bar
+-- Defines the RazerNaga bagBar object
+--------------------------------------------------------------------------------
 
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
@@ -59,7 +57,9 @@ function BagBar:Reload()
 	self:UpdateClickThrough()
 end
 
---[[ Frame Overrides ]]--
+--------------------------------------------------------------------------------
+-- Frame Overrides
+--------------------------------------------------------------------------------
 
 function BagBar:AddButton(i)
 	local b = self.bags[i]
@@ -114,7 +114,9 @@ function BagBar:CreateMenu()
 	self.menu = menu
 end
 
---[[ Bag Bar Controller ]]
+--------------------------------------------------------------------------------
+-- Module
+--------------------------------------------------------------------------------
 
 local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
