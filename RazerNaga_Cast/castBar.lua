@@ -101,9 +101,8 @@ function CastingBar:OnEvent(event, ...)
 
 	local unit = self.unit
 	local spell = UnitCastingInfo(unit)
-	if unit == self.unit then
-		self:UpdateColor(spell)
-	end
+
+	self:UpdateColor(spell)
 end
 
 function CastingBar:OnUpdate(elapsed)
