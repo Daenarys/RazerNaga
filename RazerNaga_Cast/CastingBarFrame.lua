@@ -7,7 +7,7 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetStartChannelColor(self, 0.0, 1.0, 0.0);
 	CastingBarFrame_SetFinishedCastColor(self, 0.0, 1.0, 0.0);
 	CastingBarFrame_SetNonInterruptibleCastColor(self, 0.7, 0.7, 0.7);
-	CastingBarFrame_SetFailedCastColor(self, 1.0, 0.0, 0.0);
+	CastingBarFrame_SetFailedCastColor(self, 0.86, 0.08, 0.24);
 
 	CastingBarFrame_SetUseStartColorForFinished(self, true);
 	CastingBarFrame_SetUseStartColorForFlash(self, true);
