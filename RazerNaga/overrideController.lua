@@ -7,7 +7,8 @@ local overrideBarStates = {
 	possessbar = '[possessbar]1;0',
 	sstemp = '[shapeshift]1;0',
 	vehicle = '[@vehicle,exists]1;0',
-	vehicleui = '[vehicleui]1;0'
+	vehicleui = '[vehicleui]1;0',
+	bonusbar = '[bonusbar:5]1;0'
 }
 
 function OverrideController:OnLoad()
@@ -20,24 +21,29 @@ function OverrideController:OnLoad()
 	watcher:SetAttribute('_onhide', [[
 		self:GetFrameRef('controller'):SetAttribute('state-isoverrideuishown', false)
 	]])
+
 	self.overrideUIWatcher = watcher
 
 	self:SetAttribute('_onstate-isoverrideuishown', [[
 		self:RunAttribute('updateOverrideUI')
 	]])
+
 	self:SetAttribute('_onstate-useoverrideui', [[
 		self:RunAttribute('updateOverrideUI')
 	]])
+
 	self:SetAttribute('_onstate-overrideui', [[
 		for i, frame in pairs(myFrames) do
 			frame:SetAttribute('state-overrideui', newstate)
 		end
 	]])
+
 	self:SetAttribute('updateOverrideUI', [[
 		local isOverrideUIVisible = self:GetAttribute('state-useoverrideui') and self:GetAttribute('state-isoverrideuishown')
 
 		self:SetAttribute('state-overrideui', isOverrideUIVisible)
 	]])
+
 	self:SetAttribute('_onstate-petbattleui', [[
 		local hasPetBattleUI = newstate == 1
 
@@ -45,6 +51,7 @@ function OverrideController:OnLoad()
 			frame:SetAttribute('state-petbattleui', hasPetBattleUI)
 		end
 	]])
+	
 	self:SetAttribute('_onstate-overridepage', [[
 		local overridePage = newstate or 0
 
@@ -68,6 +75,8 @@ function OverrideController:OnLoad()
 			newPage = GetOverrideBarIndex() or 0
 		elseif HasTempShapeshiftActionBar and HasTempShapeshiftActionBar() then
 			newPage = GetTempShapeshiftBarIndex() or 0
+		elseif GetBonusBarOffset() > 4 then
+			newPage = GetBonusBarOffset() + 6
 		else
 			newPage = 0
 		end

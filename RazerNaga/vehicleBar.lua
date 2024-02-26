@@ -137,7 +137,7 @@ function VehicleBar:Update()
     icon:SetVertexColor(1, 1, 1)
     icon:SetDesaturated(false)
     
-    button.NormalTexture:SetTexture()
+    button.NormalTexture:SetAlpha(0)
 
     button:SetChecked(false)
     button:Enable()
