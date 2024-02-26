@@ -1,0 +1,7 @@
+if not _G.FriendsFrame then return end
+
+ApplyDialogBorder(RecruitAFriendRecruitmentFrame.Border)
+ApplyDialogBorder(RecruitAFriendRewardsFrame.Border)
+ApplyDialogBorder(AddFriendFrame.Border)
+ApplyDialogHeader(RaidInfoFrame.Header)
+ApplyDialogBorder(RaidInfoFrame.Border)
