@@ -107,6 +107,17 @@ function BindableButton:UpdateHotkeys()
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
     hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
+
+    if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
+    elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
+    elseif key ~= '' and RazerNaga:ShowBindingText() then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", 3, -3)
+    end
 end
 
 function BindableButton:OnEnter()

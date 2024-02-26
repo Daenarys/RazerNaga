@@ -96,7 +96,7 @@ function SettingsLoader:GetThreeByFour()
 		layoutType = '3x4',
 
 		ab = {
-			count = 10,
+			count = 10
 		},
 
 		['frames'] = {
@@ -110,7 +110,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 110
 			}, -- [1]
@@ -123,7 +123,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 110
 			}, -- [2]
@@ -137,7 +137,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = 0,
 				['y'] = 0
 			}, -- [3]
@@ -151,8 +151,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 2,
-				['x'] = -49,
+				['spacing'] = 4,
+				['x'] = -40,
 				['y'] = 0
 			}, -- [4]
 			{
@@ -165,8 +165,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 2,
-				['x'] = 290,
+				['spacing'] = 4,
+				['x'] = 270,
 				['y'] = 52
 			}, -- [5]
 			{
@@ -179,8 +179,8 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 2,
-				['x'] = -290,
+				['spacing'] = 4,
+				['x'] = -270,
 				['y'] = 52
 			}, -- [6]
 			{
@@ -193,7 +193,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 305
 			}, -- [7]
@@ -207,7 +207,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 305
 			}, -- [8]
@@ -221,7 +221,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -250,
 				['y'] = 500
 			}, -- [9]
@@ -235,7 +235,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 4,
 				['x'] = -100,
 				['y'] = 500
 			}, -- [10]
@@ -285,6 +285,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
+				['spacing'] = 2,
 				['x'] = 250,
 				['y'] = 0
 			},
@@ -296,7 +297,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['point'] = 'BOTTOMRIGHT',
 				['showstates'] = '[target=pet,exists,nobonusbar:5]',
-				['spacing'] = 4,
+				['spacing'] = 6,
 				['x'] = -400,
 				['y'] = 110
 			},
@@ -309,7 +310,7 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 2,
+				['spacing'] = 0,
 				['x'] = -306,
 				['y'] = 270
 			}
