@@ -69,19 +69,20 @@ function CastingBar:New(parent)
 	return f
 end
 
---10.0 stuff
-RazerNagaCastingBarMixin = {};
+--mixin
+RazerNagaCastingBarMixin = {}
 
 function RazerNagaCastingBarMixin:OnLoad()
-	local showTradeSkills = true;
-	local showShieldNo = false;
-	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
-	self.Icon:Hide();
-	self.Text:SetPoint("TOP", 0, -9);
+	local showTradeSkills = true
+	local showShieldNo = false
+	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo)
+	self.Icon:Hide()
+	self.Text:ClearAllPoints()
+	self.Text:SetPoint("TOP", 0, -9)
 end
 
 function RazerNagaCastingBarMixin:OnShow()
-	CastingBarMixin.OnShow(self);
+	CastingBarMixin.OnShow(self)
 end
 
 --hide the old casting bar
