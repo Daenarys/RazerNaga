@@ -110,11 +110,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -250,
-				['y'] = 110,
-				['enableAutoBinding'] = true,
-				['autoBindingModifier'] = 'NONE'
+				['y'] = 110
 			}, -- [1]
 			{
 				['isRightToLeft'] = false,
@@ -125,9 +123,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -100,
-				['y'] = 110,
+				['y'] = 110
 			}, -- [2]
 			{
 				['isRightToLeft'] = false,
@@ -139,9 +137,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = 0,
-				['y'] = 0,
+				['y'] = 0
 			}, -- [3]
 			{
 				['isRightToLeft'] = false,
@@ -153,9 +151,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'RIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -40,
-				['y'] = 0,
+				['y'] = 0
 			}, -- [4]
 			{
 			['isRightToLeft'] = false,
@@ -167,9 +165,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = 270,
-				['y'] = 52,
+				['y'] = 52
 			}, -- [5]
 			{
 			['isRightToLeft'] = false,
@@ -181,9 +179,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -270,
-				['y'] = 52,
+				['y'] = 52
 			}, -- [6]
 			{
 			['isRightToLeft'] = false,
@@ -195,9 +193,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -250,
-				['y'] = 305,
+				['y'] = 305
 			}, -- [7]
 			{
 			['isRightToLeft'] = false,
@@ -209,9 +207,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -100,
-				['y'] = 305,
+				['y'] = 305
 			}, -- [8]
 			{
 			['isRightToLeft'] = false,
@@ -223,9 +221,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -250,
-				['y'] = 500,
+				['y'] = 500
 			}, -- [9]
 			{
 			['isRightToLeft'] = false,
@@ -237,9 +235,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 4,
+				['spacing'] = 2,
 				['x'] = -100,
-				['y'] = 500,
+				['y'] = 500
 			}, -- [10]
 			['cast'] = {
 				['anchor'] = false,
@@ -247,7 +245,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'TOP',
 				['showText'] = true,
 				['x'] = 0,
-				['y'] = -220,
+				['y'] = -220
 			},
 			['menu'] = {
 				['isRightToLeft'] = false,
@@ -256,7 +254,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['point'] = 'BOTTOM',
 				['x'] = 0,
-				['y'] = 0,
+				['y'] = 0
 			},
 			['xp'] = {
 				['alwaysShowText'] = true,
@@ -267,7 +265,7 @@ function SettingsLoader:GetThreeByFour()
 				['texture'] = 'blizzard',
 				['width'] = 0.75,
 				['x'] = 0,
-				['y'] = 38,
+				['y'] = 38
 			},
 			['vehicle'] = {
 				['isRightToLeft'] = false,
@@ -278,7 +276,7 @@ function SettingsLoader:GetThreeByFour()
 				['point'] = 'BOTTOM',
 				['showstates'] = '[target=vehicle,exists]',
 				['x'] = -190,
-				['y'] = 0,
+				['y'] = 0
 			},
 			['bags'] = {
 				['isRightToLeft'] = false,
@@ -287,9 +285,9 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = 2,
+				['spacing'] = 1,
 				['x'] = 250,
-				['y'] = 0,
+				['y'] = 0
 			},
 			['pet'] = {
 				['isRightToLeft'] = false,
@@ -299,11 +297,9 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['point'] = 'BOTTOMRIGHT',
 				['showstates'] = '[target=pet,exists,nobonusbar:5]',
-				['spacing'] = 6,
+				['spacing'] = 4,
 				['x'] = -400,
-				['y'] = 110,
-				['enableAutoBinding'] = true,
-				['autoBindingModifier'] = 'CTRL'
+				['y'] = 110
 			},
 			['class'] = {
 				['isRightToLeft'] = false,
@@ -314,9 +310,9 @@ function SettingsLoader:GetThreeByFour()
 				['padH'] = 2,
 				['padW'] = 2,
 				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 0,
+				['spacing'] = 2,
 				['x'] = -306,
-				['y'] = 270,
+				['y'] = 270
 			}
 		},
 	}

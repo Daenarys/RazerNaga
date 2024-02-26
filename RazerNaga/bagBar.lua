@@ -30,7 +30,7 @@ end
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2,
+		spacing = 1
 	}
 end
 
