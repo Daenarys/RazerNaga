@@ -265,7 +265,6 @@ ActionButton:Execute([[
 function ActionButton:Initialize()
     -- register game events
     self:SetScript("OnEvent", function(f, event, ...) f[event](f, ...); end)
-    self:RegisterEvent("PLAYER_LOGIN")
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
@@ -321,15 +320,6 @@ function ActionButton:Initialize()
         end
     ]])
 
-    self:WrapScript(ActionButton1, "OnAttributeChanged", [[
-        if name ~= "showgrid" then return end
-
-        for reason = 2, 4, 2 do
-            local show = value % (reason * 2) >= reason
-            control:RunAttribute("SetShowGrid", show, reason)
-        end
-    ]])
-
     self.Initialize = nil
 end
 
@@ -343,12 +333,6 @@ end
 
 function ActionButton:PLAYER_ENTERING_WORLD()
     self:ForAll("UpdateShown")
-end
-
--- reset grid state at login. This covers waiting for the game to apply the
--- always show buttons state to the main bar
-function ActionButton:PLAYER_LOGIN()
-    ActionButton1:SetAttribute("showgrid", 0)
 end
 
 -- addon callbacks
