@@ -152,7 +152,7 @@ function SettingsLoader:GetThreeByFour()
 				['padW'] = 2,
 				['point'] = 'RIGHT',
 				['spacing'] = 2,
-				['x'] = -40,
+				['x'] = -49,
 				['y'] = 0
 			}, -- [4]
 			{
@@ -166,7 +166,7 @@ function SettingsLoader:GetThreeByFour()
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
 				['spacing'] = 2,
-				['x'] = 270,
+				['x'] = 290,
 				['y'] = 52
 			}, -- [5]
 			{
@@ -180,7 +180,7 @@ function SettingsLoader:GetThreeByFour()
 				['padW'] = 2,
 				['point'] = 'BOTTOM',
 				['spacing'] = 2,
-				['x'] = -270,
+				['x'] = -290,
 				['y'] = 52
 			}, -- [6]
 			{
