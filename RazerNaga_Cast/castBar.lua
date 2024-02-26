@@ -81,10 +81,6 @@ function RazerNagaCastingBarMixin:OnLoad()
 	self.Text:SetPoint("TOP", 0, -9)
 end
 
-function RazerNagaCastingBarMixin:OnShow()
-	CastingBarMixin.OnShow(self)
-end
-
 --hide the old casting bar
 PlayerCastingBarFrame:UnregisterAllEvents()
 PlayerCastingBarFrame:Hide()

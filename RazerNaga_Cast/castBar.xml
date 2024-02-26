@@ -8,7 +8,6 @@ UI_shared.xsd">
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
-			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>
 </Ui>
