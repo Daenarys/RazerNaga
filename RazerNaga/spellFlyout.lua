@@ -223,7 +223,7 @@ local SpellFlyoutFrame_Toggle = [[
 	self:ClearAllPoints()
 
 	if direction == "UP" then
-		self:SetPoint("BOTTOM", parent, "TOP")
+		self:SetPoint("BOTTOM", parent, "TOP", -1, 0)
 		vertical = true
 	elseif direction == "DOWN" then
 		self:SetPoint("TOP", parent, "BOTTOM")
@@ -323,7 +323,7 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(41)
+	self:SetBorderSize(42)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
