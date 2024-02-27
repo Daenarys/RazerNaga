@@ -169,14 +169,6 @@ function ActionButtonMixin:HideGrid()
     end
 end
 
-function ActionButtonMixin:UpdateGrid()
-    if RazerNaga:ShowGrid() then
-        self:ShowGrid()
-    else
-        self:HideGrid()
-    end
-end
-
 function ActionButtonMixin:UpdateSlot()
     if self:IsShown() and self:HasAction() then
         self:SetAlpha(1.0)
@@ -215,7 +207,6 @@ function ActionButton:Initialize()
     self:RegisterEvent("ACTIONBAR_SHOWGRID")
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
     self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
-    self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
     -- library callbacks
     local keybound = LibStub("LibKeyBound-1.0", true)
@@ -237,10 +228,6 @@ end
 
 function ActionButton:ACTIONBAR_SLOT_CHANGED()
     self:ForAll('UpdateSlot')
-end
-
-function ActionButton:PLAYER_ENTERING_WORLD()
-    self:ForAll('UpdateGrid')
 end
 
 function ActionButton:LIBKEYBOUND_ENABLED()
