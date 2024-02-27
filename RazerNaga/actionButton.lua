@@ -33,6 +33,47 @@ local function GetActionButtonCommand(id)
     end
 end
 
+local function skinActionButton(self)
+    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.NormalTexture:ClearAllPoints()
+    self.NormalTexture:SetPoint("TOPLEFT", -3, 3)
+    self.NormalTexture:SetPoint("BOTTOMRIGHT", 7, -7)
+    self.PushedTexture:ClearAllPoints()
+    self.PushedTexture:SetPoint("TOPLEFT", -3, 3)
+    self.PushedTexture:SetPoint("BOTTOMRIGHT", 7, -7)
+    self.HighlightTexture:ClearAllPoints()
+    self.HighlightTexture:SetPoint("TOPLEFT", -3, 3)
+    self.HighlightTexture:SetPoint("BOTTOMRIGHT", 3, -2)
+    self.CheckedTexture:ClearAllPoints()
+    self.CheckedTexture:SetPoint("TOPLEFT", -3, 3)
+    self.CheckedTexture:SetPoint("BOTTOMRIGHT", 3, -2)
+    self.NewActionTexture:SetSize(44, 44)
+    self.NewActionTexture:SetAtlas("bags-newitem")
+    self.NewActionTexture:ClearAllPoints()
+    self.NewActionTexture:SetPoint("CENTER")
+    self.NewActionTexture:SetBlendMode("ADD")
+    self.SpellHighlightTexture:SetSize(44, 44)
+    self.SpellHighlightTexture:SetAtlas("bags-newitem")
+    self.SpellHighlightTexture:ClearAllPoints()
+    self.SpellHighlightTexture:SetPoint("CENTER")
+    self.SpellHighlightTexture:SetBlendMode("ADD")
+    self.Border:ClearAllPoints()
+    self.Border:SetPoint("TOPLEFT", -3, 3)
+    self.Border:SetPoint("BOTTOMRIGHT", 3, -2)
+    self.cooldown:ClearAllPoints()
+    self.cooldown:SetAllPoints()
+    self.Count:ClearAllPoints()
+    self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
+    self.FlyoutBorderShadow:SetSize(48, 48)
+    self.HotKey:ClearAllPoints()
+    self.HotKey:SetPoint("TOPLEFT", 3, -3)
+    self.SlotBackground:ClearAllPoints()
+    self.SlotBackground:SetPoint("TOPLEFT", -1, 1)
+    self.SlotBackground:SetPoint("BOTTOMRIGHT", 1, -1)
+end
+
 function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
@@ -74,10 +115,11 @@ function ActionButtonMixin:OnCreate(id)
     -- apply custom flyout
     RazerNaga.SpellFlyout:Register(self)
 
+    -- use pre 10.x button size
+    self:SetSize(36, 36)
+
     -- apply button skin
-    if skinActionButton then
-        skinActionButton(self)
-    end
+    skinActionButton(self)
 
     -- enable cooldown bling
     self.cooldown:SetDrawBling(true)

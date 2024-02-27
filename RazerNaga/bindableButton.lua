@@ -84,7 +84,6 @@ BindableButtonProxy:SetScript('OnLeave', function(self)
 end)
 
 -- methods to inject onto a bar to add in common binding functionality
--- previously, this was a mixin
 local BindableButton = {}
 
 -- adds quickbinding support to buttons
