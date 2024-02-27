@@ -65,7 +65,9 @@ function MenuBar:SkinButton(button)
         local prefix = "hud-microbutton-";
         self:SetNormalAtlas(prefix..name.."-Up", true);
         self:SetPushedAtlas(prefix..name.."-Down", true);
-        self:SetDisabledAtlas(prefix..name.."-Disabled", true);
+        if self:GetDisabledTexture() then
+            self:SetDisabledAtlas(prefix..name.."-Disabled", true);
+        end
     end
 
     local function replaceAllAtlases()
@@ -284,46 +286,6 @@ function MenuBar:SkinButton(button)
             _G.GuildMicroButton:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
         end
     end)
-
-    local function EnableMicroButtons()
-        local factionGroup = UnitFactionGroup("player")
-
-        if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
-            or ( SettingsPanel:IsShown() )
-            or ( StoreFrame and StoreFrame_IsShown() ) ) then
-            CharacterMicroButton:Enable()
-            SpellbookMicroButton:Enable()
-            if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
-                TalentMicroButton:Disable()
-            else
-                TalentMicroButton:Enable()
-            end
-            QuestLogMicroButton:Enable()
-            if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
-                GuildMicroButton:Disable()
-            elseif ( C_Club.IsEnabled() and not BNConnected() ) then
-                GuildMicroButton:Disable()
-            else
-                GuildMicroButton:Enable()
-            end
-            if not LFDMicroButton:IsActive() then
-                LFDMicroButton:Disable()
-            else
-                LFDMicroButton:Enable()
-            end
-            AchievementMicroButton:Enable()
-            if ( not AdventureGuideUtil.IsAvailable() ) then
-                EJMicroButton:Disable()
-            else
-                EJMicroButton:Enable()
-            end
-            CollectionsMicroButton:Enable()
-            MainMenuMicroButton:Enable()
-        end
-    end
-
-    -- don't disable them when blizz wants too
-    hooksecurefunc(button, 'UpdateMicroButton', EnableMicroButtons)
 
     HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
     HelpOpenWebTicketButton:ClearAllPoints()
