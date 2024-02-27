@@ -252,25 +252,21 @@ function SpellFlyoutFrameMixin:Initialize()
 	self.Background = CreateFrame('Frame', nil, self)
 	self.Background:SetAllPoints()
 
-	self.Background.Start = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.Start:Hide()
+	self.Background.End = self.Background:CreateTexture(nil, 'BACKGROUND')
+	self.Background.End:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutButton', true)
 
-	self.Background.End = self:CreateTexture(nil, "BACKGROUND")
-	self.Background.End:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-	self.Background.End:SetSize(37,22)
-	self.Background.End:SetTexCoord(0.01562500,0.59375000,0.74218750,0.91406250)
-
-	self.Background.HorizontalMiddle = self:CreateTexture(nil, "BACKGROUND")
-	self.Background.HorizontalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMidLeft")
+	self.Background.HorizontalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
+	self.Background.HorizontalMiddle:SetAtlas('_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft', true)
 	self.Background.HorizontalMiddle:SetHorizTile(true)
-	self.Background.HorizontalMiddle:SetSize(32,37)
-	self.Background.HorizontalMiddle:SetTexCoord(0,1,0,0.578125)
+	self.Background.HorizontalMiddle:Hide()
 
-	self.Background.VerticalMiddle = self:CreateTexture(nil, "BACKGROUND")
-	self.Background.VerticalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMid")
+	self.Background.VerticalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
+	self.Background.VerticalMiddle:SetAtlas('!UI-HUD-ActionBar-IconFrame-FlyoutMid', true)
 	self.Background.VerticalMiddle:SetVertTile(true)
-	self.Background.VerticalMiddle:SetSize(37,32)
-	self.Background.VerticalMiddle:SetTexCoord(0,0.578125,0,1)
+	self.Background.VerticalMiddle:Hide()
+
+	self.Background.Start = self.Background:CreateTexture(nil, 'BACKGROUND')
+	self.Background.Start:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutBottom', true)
 
 	local command = [[
 		FLYOUT_INFO = newtable()
@@ -327,7 +323,7 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(36)
+	self:SetBorderSize(40)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
@@ -440,12 +436,6 @@ local SpellFlyoutButton_OnClickPost = [[
 function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	local name = ('%sSpellFlyoutButton%d'):format("RazerNaga", id)
 	local button = CreateFrame('CheckButton', name, self, 'SmallActionButtonTemplate, SecureActionButtonTemplate')
-
-	button:SetSize(28, 28)
-	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
-	button.NormalTexture:SetAlpha(0)
-	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-	button.HighlightTexture:SetBlendMode("ADD")
 
 	Mixin(button, SpellFlyoutButtonMixin)
 

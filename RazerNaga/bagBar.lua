@@ -20,7 +20,6 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-
 	b:SetSize(30, 30)
 
 	if b.IconBorder ~= nil then
@@ -67,7 +66,7 @@ function BagBar:SkinButton(b)
 	CharacterBag3Slot:ClearAllPoints()
 	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
 	updateTextures(MainMenuBarBackpackButton)
-	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
+	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
@@ -101,7 +100,7 @@ end)
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2,
+		spacing = 2
 	}
 end
 
