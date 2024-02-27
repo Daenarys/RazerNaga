@@ -273,7 +273,7 @@ function MenuBar:SkinButton(button)
 
     hooksecurefunc("LoadMicroButtonTextures", function(self)
         if self == GuildMicroButton then
-            if IsInGuild() then
+            if (IsInGuild()) then
                 self:SetNormalAtlas("hud-microbutton-Character-Up", true)
                 self:SetPushedAtlas("hud-microbutton-Character-Down", true)
             else
