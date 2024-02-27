@@ -527,22 +527,6 @@ function ActionButton:SetShowGrid(show, reason, force)
     self:ForAll("SetShowGridInsecure", show, reason, force)
 end
 
--- disable animations
-if (ActionBarActionEventsFrame) then
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
-end
-
 --------------------------------------------------------------------------------
 -- Collection Methods
 --------------------------------------------------------------------------------

@@ -9,6 +9,7 @@ skins\Achievements.lua
 skins\AddOnList.lua
 skins\AuctionHouse.lua
 skins\Buffs.lua
+skins\Button.lua
 skins\Calendar.lua
 skins\Character.lua
 skins\Chat.lua
