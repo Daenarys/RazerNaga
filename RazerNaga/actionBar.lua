@@ -65,7 +65,6 @@ ActionBar:Extend('OnAcquire', function(self)
     self:UpdateStateDriver()
     self:SetUnit(self:GetUnit())
     self:SetRightClickUnit(RazerNaga:GetRightClickUnit())
-    self:SetShowEmptyButtons(RazerNaga:ShowGrid())
     self:UpdateTransparent(true)
     self:UpdateFlyoutDirection()
 end)
@@ -107,11 +106,10 @@ function ActionBar:OnAttachButton(button)
     button:SetAttribute("action", button:GetAttribute("index") + (self:GetAttribute("actionOffset") or 0))
     
     button:SetFlyoutDirectionInsecure(self:GetFlyoutDirection())
-    button:SetShowGridInsecure(RazerNaga:ShowGrid(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
+    button:UpdateGrid()
     button:SetShowMacroText(RazerNaga:ShowMacroText())
     button:SetShowCooldowns(self:GetAlpha() > 0)
     button:SetAttributeNoHandler("statehidden", (button:GetAttribute("index") > self:NumButtons()) or nil)
-    button:UpdateShown()
 
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
@@ -203,10 +201,6 @@ end
 
 function ActionBar:IsOverrideBar()
     return RazerNaga.db.profile.possessBar == self.id
-end
-
-function ActionBar:SetShowEmptyButtons(show)
-    self:ForButtons('SetShowGridInsecure', RazerNaga:ShowGrid(), RazerNaga.ActionButton.ShowGridReasons.SHOW_EMPTY_BUTTONS_PER_BAR)
 end
 
 -- unit

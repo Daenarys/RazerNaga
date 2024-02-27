@@ -705,7 +705,7 @@ end
 
 function RazerNaga:SetShowGrid(enable)
 	self.db.profile.showgrid = enable or false
-	self.Frame:ForEach('SetShowEmptyButtons', enable)
+	self.Frame:ForEach('UpdateGrid')
 end
 
 function RazerNaga:ShowGrid()
