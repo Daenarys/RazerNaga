@@ -58,15 +58,15 @@ function MenuBar:SkinButton(button)
         {button = CollectionsMicroButton, name = "Mounts"},
         {button = EJMicroButton, name = "EJ"},
         {button = StoreMicroButton, name = "BStore"},  
-        {button = MainMenuMicroButton, name = "MainMenu"},
+        {button = MainMenuMicroButton, name = "MainMenu"}
     }
 
     local function replaceAtlases(self, name)
         local prefix = "hud-microbutton-";
-        self:SetNormalAtlas(prefix..name.."-Up", true);
-        self:SetPushedAtlas(prefix..name.."-Down", true);
+        self:SetNormalAtlas(prefix..name.."-Up", true)
+        self:SetPushedAtlas(prefix..name.."-Down", true)
         if self:GetDisabledTexture() then
-            self:SetDisabledAtlas(prefix..name.."-Disabled", true);
+            self:SetDisabledAtlas(prefix..name.."-Disabled", true)
         end
     end
 
@@ -122,12 +122,12 @@ function MenuBar:SkinButton(button)
         if ( event == "UNIT_PORTRAIT_UPDATE" ) then
             local unit = ...;
             if ( unit == "player" ) then
-                SetPortraitTexture(MicroButtonPortrait, "player");
+                SetPortraitTexture(MicroButtonPortrait, "player")
             end
         elseif ( event == "PORTRAITS_UPDATED" ) then
-            SetPortraitTexture(MicroButtonPortrait, "player");
+            SetPortraitTexture(MicroButtonPortrait, "player")
         elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-            SetPortraitTexture(MicroButtonPortrait, "player");
+            SetPortraitTexture(MicroButtonPortrait, "player")
         end
     end)
 
@@ -164,22 +164,22 @@ function MenuBar:SkinButton(button)
     MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
         local status = GetFileStreamingStatus();
         if ( status == 0 ) then
-            MainMenuBarDownload:Hide();
-            self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true);
-            self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true);
-            self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true);
+            MainMenuBarDownload:Hide()
+            self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true)
+            self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true)
+            self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true)
         else
-            self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
-            self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down");
-            self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up");
+            self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
+            self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down")
+            self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
         if ( status == 1 ) then
-            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green");
+            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green")
         elseif ( status == 2 ) then
-            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow");
+            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow")
         elseif ( status == 3 ) then
-            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red");
+            MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red")
         end
-            MainMenuBarDownload:Show();
+            MainMenuBarDownload:Show()
         end
     end)
 
@@ -204,13 +204,13 @@ function MenuBar:SkinButton(button)
     end
 
     GuildMicroButton:HookScript("OnMouseDown", function(self)
-        GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
-        GuildMicroButtonTabard:SetAlpha(0.5);
+        GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1)
+        GuildMicroButtonTabard:SetAlpha(0.5)
     end)
 
     GuildMicroButton:HookScript("OnMouseUp", function(self)
-        GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
-        GuildMicroButtonTabard:SetAlpha(1.0);
+        GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
+        GuildMicroButtonTabard:SetAlpha(1.0)
     end)
 
     hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
@@ -219,23 +219,23 @@ function MenuBar:SkinButton(button)
             return;
         end
         -- switch textures if the guild has a custom tabard
-        local emblemFilename = select(10, GetGuildLogoInfo());
+        local emblemFilename = select(10, GetGuildLogoInfo())
         if ( emblemFilename ) then
             if ( not tabard:IsShown() ) then
                 local button = GuildMicroButton;
-                button:SetNormalAtlas("hud-microbutton-Character-Up", true);
-                button:SetPushedAtlas("hud-microbutton-Character-Down", true);
+                button:SetNormalAtlas("hud-microbutton-Character-Up", true)
+                button:SetPushedAtlas("hud-microbutton-Character-Down", true)
                 -- no need to change disabled texture, should always be available if you're in a guild
-                tabard:Show();
+                tabard:Show()
             end
-            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background);
+            SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
         else
             if ( tabard:IsShown() ) then
                 local button = GuildMicroButton;
-                button:SetNormalAtlas("hud-microbutton-Socials-Up", true);
-                button:SetPushedAtlas("hud-microbutton-Socials-Down", true);
-                button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
-                tabard:Hide();
+                button:SetNormalAtlas("hud-microbutton-Socials-Up", true)
+                button:SetPushedAtlas("hud-microbutton-Socials-Down", true)
+                button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
+                tabard:Hide()
             end
         end
         tabard.needsUpdate = nil;
@@ -248,9 +248,6 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc("UpdateMicroButtons", function()
-        if AchievementMicroButton:IsEnabled() then
-            AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
-        end
         if CharacterMicroButton.Portrait then
             CharacterMicroButton.Portrait:Hide()
         end
@@ -266,24 +263,24 @@ function MenuBar:SkinButton(button)
         GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
         GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
         if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
-            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1);
-            GuildMicroButtonTabard:SetAlpha(0.70);
+            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1)
+            GuildMicroButtonTabard:SetAlpha(0.70)
         else
-            GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0);
-            GuildMicroButtonTabard:SetAlpha(1);
+            GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
+            GuildMicroButtonTabard:SetAlpha(1)
         end
     end)
 
     hooksecurefunc("LoadMicroButtonTextures", function(self)
-        if not self == _G.GuildMicroButton then return end
-
-        if _G.IsInGuild() then
-            _G.GuildMicroButton:SetNormalAtlas("hud-microbutton-Character-Up", true);
-            _G.GuildMicroButton:SetPushedAtlas("hud-microbutton-Character-Down", true);
-        else
-            _G.GuildMicroButton:SetNormalAtlas("hud-microbutton-Socials-Up", true);
-            _G.GuildMicroButton:SetPushedAtlas("hud-microbutton-Socials-Down", true);
-            _G.GuildMicroButton:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true);
+        if self == GuildMicroButton then
+            if IsInGuild() then
+                self:SetNormalAtlas("hud-microbutton-Character-Up", true)
+                self:SetPushedAtlas("hud-microbutton-Character-Down", true)
+            else
+                self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
+                self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
+                self:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
+            end
         end
     end)
 
