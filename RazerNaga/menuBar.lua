@@ -1,18 +1,12 @@
---------------------------------------------------------------------------------
--- Menu Bar
--- Defines the RazerNaga menuBar object
---------------------------------------------------------------------------------
-local RazerNaga = _G[...]
-
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
+--[[
+	MenuBar
+--]]
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 RazerNaga.MenuBar = MenuBar
 
 local WIDTH_OFFSET = 2
-local HEIGHT_OFFSET = 1
+local HEIGHT_OFFSET = 20
 
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
@@ -42,10 +36,10 @@ local MICRO_BUTTON_NAMES = {
     ['CollectionsMicroButton'] = _G['COLLECTIONS']
 }
 
+--[[ Menu Bar ]] --
+
 function MenuBar:SkinButton(button)
     if button.skinned then return end
-
-    button:SetSize(28, 36)
 
     local buttons = {
         {button = CharacterMicroButton, name = "Character"},
@@ -58,16 +52,15 @@ function MenuBar:SkinButton(button)
         {button = CollectionsMicroButton, name = "Mounts"},
         {button = EJMicroButton, name = "EJ"},
         {button = StoreMicroButton, name = "BStore"},  
-        {button = MainMenuMicroButton, name = "MainMenu"}
+        {button = MainMenuMicroButton, name = "MainMenu"},
     }
 
     local function replaceAtlases(self, name)
-        local prefix = "hud-microbutton-";
-        self:SetNormalAtlas(prefix..name.."-Up", true)
-        self:SetPushedAtlas(prefix..name.."-Down", true)
-        if self:GetDisabledTexture() then
-            self:SetDisabledAtlas(prefix..name.."-Disabled", true)
-        end
+        local prefix = "Interface\\Buttons\\UI-MicroButton-"
+        self:SetNormalTexture(prefix..name.."-Up")
+        self:SetPushedTexture(prefix..name.."-Down")
+        self:SetDisabledTexture(prefix..name.."-Disabled")
+        self:SetHitRectInsets(0,0,18,0)
     end
 
     local function replaceAllAtlases()
@@ -95,9 +88,10 @@ function MenuBar:SkinButton(button)
             self.PushedShadow:Hide()
         end
         if self.FlashBorder then
-            self.FlashBorder:SetAtlas("hud-microbutton-highlightalert", true)
+            self.FlashBorder:SetSize(64, 64)
+            self.FlashBorder:SetTexture("Interface\\Buttons\\Micro-Highlight")
             self.FlashBorder:ClearAllPoints()
-            self.FlashBorder:SetPoint("TOPLEFT", -2, 2)
+            self.FlashBorder:SetPoint("TOPLEFT", -2, -18)
         end
         if self.FlashContent then
             UIFrameFlashStop(self.FlashContent)
@@ -108,19 +102,23 @@ function MenuBar:SkinButton(button)
         if self.HighlightEmblem then
             self.HighlightEmblem:Hide()
         end
-        self:SetHighlightAtlas("hud-microbutton-highlight")
+        self:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight")
     end)
+
+    CharacterMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
+    CharacterMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
+    CharacterMicroButton:SetHighlightTexture("Interface\\Buttons\\UI-MicroButton-Hilight")
 
     if not MicroButtonPortrait then
         local portrait = CharacterMicroButton:CreateTexture("MicroButtonPortrait", "OVERLAY")
-        portrait:SetSize(16, 22)
-        portrait:SetPoint("TOP", 0, -8)
+        portrait:SetSize(18, 25)
+        portrait:SetPoint("TOP", 0, -28)
         portrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
     end
 
     CharacterMicroButton:HookScript("OnEvent", function(self, event, ...)
         if ( event == "UNIT_PORTRAIT_UPDATE" ) then
-            local unit = ...;
+            local unit = ...
             if ( unit == "player" ) then
                 SetPortraitTexture(MicroButtonPortrait, "player")
             end
@@ -141,7 +139,7 @@ function MenuBar:SkinButton(button)
         MicroButtonPortrait:SetAlpha(1.0)
     end
 
-    CharacterMicroButton:HookScript("OnMouseDown", function(self)
+        CharacterMicroButton:HookScript("OnMouseDown", function(self)
         if ( not KeybindFrames_InQuickKeybindMode() ) then
             MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
             MicroButtonPortrait:SetAlpha(0.5)
@@ -162,21 +160,21 @@ function MenuBar:SkinButton(button)
     end
     
     MainMenuMicroButton:HookScript("OnUpdate", function(self, elapsed)
-        local status = GetFileStreamingStatus();
-        if ( status == 0 ) then
+        local status = GetFileStreamingStatus()
+        if(status == 0) then
             MainMenuBarDownload:Hide()
-            self:SetNormalAtlas("hud-microbutton-MainMenu-Up", true)
-            self:SetPushedAtlas("hud-microbutton-MainMenu-Down", true)
-            self:SetDisabledAtlas("hud-microbutton-MainMenu-Disabled", true)
+            self:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Up")
+            self:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Down")
+            self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-MainMenu-Disabled")
         else
             self:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
             self:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Down")
             self:SetDisabledTexture("Interface\\Buttons\\UI-MicroButtonStreamDL-Up")
-        if ( status == 1 ) then
+        if (status == 1) then
             MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Green")
-        elseif ( status == 2 ) then
+        elseif (status == 2) then
             MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Yellow")
-        elseif ( status == 3 ) then
+        elseif (status == 3) then
             MainMenuBarDownload:SetTexture("Interface\\BUTTONS\\UI-MicroStream-Red")
         end
             MainMenuBarDownload:Show()
@@ -185,22 +183,23 @@ function MenuBar:SkinButton(button)
 
     if not GuildMicroButtonTabard then
         local GuildMicroButtonTabard = CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
-        GuildMicroButtonTabard:SetSize(28, 36)
+        GuildMicroButtonTabard:SetSize(28, 58)
         GuildMicroButtonTabard:SetPoint("TOPLEFT")
         GuildMicroButtonTabard:Hide()
     end
 
     if not GuildMicroButtonTabardBackground then
         GuildMicroButtonTabard.background = GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardBackground", "ARTWORK")
-        GuildMicroButtonTabardBackground:SetAtlas("hud-microbutton-Guild-Banner", true)
+        GuildMicroButtonTabardBackground:SetSize(30, 60)
+        GuildMicroButtonTabardBackground:SetTexture("Interface\\Buttons\\UI-MicroButton-Guild-Banner")
         GuildMicroButtonTabardBackground:SetPoint("CENTER", 0, 0)
     end
 
     if not GuildMicroButtonTabardEmblem then
         GuildMicroButtonTabard.emblem = GuildMicroButtonTabard:CreateTexture("GuildMicroButtonTabardEmblem", "OVERLAY")
-        GuildMicroButtonTabardEmblem:SetSize(14, 14)
+        GuildMicroButtonTabardEmblem:SetSize(16, 16)
         GuildMicroButtonTabardEmblem:SetTexture("Interface\\GuildFrame\\GuildEmblems_01")
-        GuildMicroButtonTabardEmblem:SetPoint("CENTER", 0, 0)
+        GuildMicroButtonTabardEmblem:SetPoint("CENTER", 0, -9)
     end
 
     GuildMicroButton:HookScript("OnMouseDown", function(self)
@@ -214,40 +213,43 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
-        local tabard = GuildMicroButtonTabard;
-        if ( not tabard.needsUpdate ) then
-            return;
+        local tabard = GuildMicroButtonTabard
+        if ( not tabard.needsUpdate) then
+            return
         end
         -- switch textures if the guild has a custom tabard
         local emblemFilename = select(10, GetGuildLogoInfo())
         if ( emblemFilename ) then
             if ( not tabard:IsShown() ) then
-                local button = GuildMicroButton;
-                button:SetNormalAtlas("hud-microbutton-Character-Up", true)
-                button:SetPushedAtlas("hud-microbutton-Character-Down", true)
+                local button = GuildMicroButton
+                button:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
+                button:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
                 -- no need to change disabled texture, should always be available if you're in a guild
                 tabard:Show()
             end
             SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
         else
             if ( tabard:IsShown() ) then
-                local button = GuildMicroButton;
-                button:SetNormalAtlas("hud-microbutton-Socials-Up", true)
-                button:SetPushedAtlas("hud-microbutton-Socials-Down", true)
-                button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
+                local button = GuildMicroButton
+                button:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up")
+                button:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down")
+                button:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled")
                 tabard:Hide()
             end
         end
-        tabard.needsUpdate = nil;
+        tabard.needsUpdate = nil
     end)
 
     GuildMicroButton:HookScript("OnEvent", function(self, event, ...)
         if ( event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_GUILD_UPDATE" or event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
-            GuildMicroButtonTabard.needsUpdate = true;
+            GuildMicroButtonTabard.needsUpdate = true
         end
     end)
 
     hooksecurefunc("UpdateMicroButtons", function()
+        if AchievementMicroButton:IsEnabled() then
+            AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT")
+        end
         if CharacterMicroButton.Portrait then
             CharacterMicroButton.Portrait:Hide()
         end
@@ -272,17 +274,57 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc("LoadMicroButtonTextures", function(self)
-        if self == GuildMicroButton then
-            if (IsInGuild()) then
-                self:SetNormalAtlas("hud-microbutton-Character-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Character-Down", true)
-            else
-                self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
-                self:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
-            end
+        if not self == _G.GuildMicroButton then return end
+
+        if _G.IsInGuild() then
+            _G.GuildMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Up")
+            _G.GuildMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButtonCharacter-Down")
+        else
+            _G.GuildMicroButton:SetNormalTexture("Interface\\Buttons\\UI-MicroButton-Socials-Up")
+            _G.GuildMicroButton:SetPushedTexture("Interface\\Buttons\\UI-MicroButton-Socials-Down")
+            _G.GuildMicroButton:SetDisabledTexture("Interface\\Buttons\\UI-MicroButton-Socials-Disabled")
         end
     end)
+
+    local function EnableMicroButtons()
+        local factionGroup = UnitFactionGroup("player")
+
+        if ( ( GameMenuFrame and GameMenuFrame:IsShown() )
+            or ( SettingsPanel:IsShown() )
+            or ( StoreFrame and StoreFrame_IsShown() ) ) then
+            CharacterMicroButton:Enable()
+            SpellbookMicroButton:Enable()
+            if not C_SpecializationInfo.CanPlayerUseTalentSpecUI() then
+                TalentMicroButton:Disable()
+            else
+                TalentMicroButton:Enable()
+            end
+            QuestLogMicroButton:Enable()
+            if ( IsCommunitiesUIDisabledByTrialAccount() or factionGroup == "Neutral" or Kiosk.IsEnabled() ) then
+                GuildMicroButton:Disable()
+            elseif ( C_Club.IsEnabled() and not BNConnected() ) then
+                GuildMicroButton:Disable()
+            else
+                GuildMicroButton:Enable()
+            end
+            if not LFDMicroButton:IsActive() then
+                LFDMicroButton:Disable()
+            else
+                LFDMicroButton:Enable()
+            end
+            AchievementMicroButton:Enable()
+            if ( not AdventureGuideUtil.IsAvailable() ) then
+                EJMicroButton:Disable()
+            else
+                EJMicroButton:Enable()
+            end
+            CollectionsMicroButton:Enable()
+            MainMenuMicroButton:Enable()
+        end
+    end
+
+    -- don't disable them when blizz wants too
+    hooksecurefunc(button, 'UpdateMicroButton', EnableMicroButtons)
 
     HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
     HelpOpenWebTicketButton:ClearAllPoints()
@@ -292,33 +334,33 @@ function MenuBar:SkinButton(button)
 end
 
 function MenuBar:New()
-    local bar = MenuBar.proto.New(self, 'menu')
+	local bar = MenuBar.super.New(self, 'menu')
 
-    bar:LoadButtons()
-    bar:Layout()
+	bar:LoadButtons()
+	bar:Layout()
 
-    return bar
+	return bar
 end
 
 function MenuBar:Create(frameId)
-    local bar = MenuBar.proto.Create(self, frameId)
+	local bar = MenuBar.super.Create(self, frameId)
 
-    bar.buttons = {}
-    bar.activeButtons = {}
-    bar.overrideButtons = {}
+	bar.buttons = {}
+	bar.activeButtons = {}
+	bar.overrideButtons = {}
 
-    bar.updateLayout = function()
-        bar:Layout()
-        bar.updatingLayout = nil
-    end
+	bar.updateLayout = function()
+	    bar:Layout()
+	    bar.updatingLayout = nil
+	end
 
-    local function getOrHook(frame, script, action)
-        if frame:GetScript(script) then
-            frame:HookScript(script, action)
-        else
-            frame:SetScript(script, action)
-        end
-    end
+	local function getOrHook(frame, script, action)
+	    if frame:GetScript(script) then
+	        frame:HookScript(script, action)
+	    else
+	        frame:SetScript(script, action)
+	    end
+	end
 
     local function requestLayoutUpdate()
         if not bar.updatingLayout then
@@ -379,7 +421,8 @@ function MenuBar:AddButton(i)
     local button = _G[buttonName]
 
     if button then
-        button:SetParent(self)
+        button:SetParent(self.header)
+        button:SetSize(28, 58)
         button:Show()
         self:SkinButton(button)
 
@@ -399,7 +442,7 @@ function MenuBar:RemoveButton(i)
 end
 
 function MenuBar:LoadSettings(...)
-    MenuBar.proto.LoadSettings(self, ...)
+    MenuBar.super.LoadSettings(self, ...)
 
     self.activeButtons = {}
 end
@@ -482,7 +525,7 @@ function MenuBar:LayoutNormal()
             row = rows - ceil(i / cols)
         end
         
-        button:SetParent(self)
+        button:SetParent(self.header)
         button:ClearAllPoints()
         button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + HEIGHT_OFFSET)
         button:Show()
@@ -506,7 +549,7 @@ function MenuBar:LayoutOverrideUI()
 end
 
 function MenuBar:FixButtonPositions()
-    wipe(self.overrideButtons)
+	wipe(self.overrideButtons)
 
     for _, buttonName in ipairs(MICRO_BUTTONS) do
         tinsert(self.overrideButtons, _G[buttonName])
@@ -515,14 +558,14 @@ function MenuBar:FixButtonPositions()
     local l, r, t, b = self.overrideButtons[1]:GetHitRectInsets()
 
     for i, button in ipairs(self.overrideButtons) do
-        button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
-        button:ClearAllPoints()
+    	button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
+    	button:ClearAllPoints()
         if i == 1 then
-            button:SetPoint('TOPLEFT', -4, 3)
+            button:SetPoint('TOPLEFT', -12, 25)
         elseif i == 7 then
-            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
+            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 25)
         else
-            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
+            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', 0, 0)
         end
 
         button:Show()
@@ -542,26 +585,24 @@ function MenuBar:UpdateActiveButtons()
 end
 
 function MenuBar:GetButtonInsets()
-    local l, r, t, b = MenuBar.proto.GetButtonInsets(self)
+	local l, r, t, b = MenuBar.proto.GetButtonInsets(self)
 
-    return l, r + 1, t + 3, b
+	return l, r + 1, t + 3, b
 end
 
---------------------------------------------------------------------------------
--- Menu
---------------------------------------------------------------------------------
+--[[ Menu Code ]] --
 
 local function Menu_AddLayoutPanel(menu)
-    local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
+	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
 
-    panel:NewOpacitySlider()
-    panel:NewFadeSlider()
-    panel:NewScaleSlider()
-    panel:NewPaddingSlider()
-    panel:NewSpacingSlider()
-    panel:NewColumnsSlider()
+	panel:NewOpacitySlider()
+	panel:NewFadeSlider()
+	panel:NewScaleSlider()
+	panel:NewPaddingSlider()
+	panel:NewSpacingSlider()
+	panel:NewColumnsSlider()
 
-    return panel
+	return panel
 end
 
 local function Panel_AddDisableMenuButtonCheckbox(panel, button, name)
@@ -587,7 +628,7 @@ local function Panel_AddDisableMenuButtonCheckbox(panel, button, name)
 end
 
 local function Menu_AddDisableMenuButtonsPanel(menu)
-    local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').DisableMenuButtons)
+	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').DisableMenuButtons)
 
     panel.width = 200
 
@@ -601,39 +642,37 @@ local function Menu_AddDisableMenuButtonsPanel(menu)
 end
 
 function MenuBar:CreateMenu()
-    local menu = RazerNaga:NewMenu(self.id)
+	local menu = RazerNaga:NewMenu(self.id)
 
-    Menu_AddLayoutPanel(menu)
-    Menu_AddDisableMenuButtonsPanel(menu)
-    menu:AddAdvancedPanel()
+	Menu_AddLayoutPanel(menu)
+	Menu_AddDisableMenuButtonsPanel(menu)
+	menu:AddAdvancedPanel()
 
-    self.menu = menu
+	self.menu = menu
 
-    return menu
+	return menu
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+--[[ module ]] --
 
-local MenuBarModule = RazerNaga:NewModule('MenuBar')
+local MenuBarController = RazerNaga:NewModule('MenuBar')
 
-function MenuBarModule:OnInitialize()
-    local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
-    if perf then
-        perf:SetSize(28, 58)
-        perf:ClearAllPoints()
-        perf:SetPoint('CENTER', 0, 11)
-    end
+function MenuBarController:OnInitialize()
+	local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
+	if perf then
+		perf:SetSize(28, 58)
+		perf:ClearAllPoints()
+		perf:SetPoint('CENTER', 0, 0)
+	end
 end
 
-function MenuBarModule:Load()
-    self.frame = MenuBar:New()
+function MenuBarController:Load()
+	self.frame = MenuBar:New()
 end
 
-function MenuBarModule:Unload()
-    if self.frame then
-        self.frame:Free()
-        self.frame = nil
-    end
+function MenuBarController:Unload()
+	if self.frame then
+		self.frame:Free()
+		self.frame = nil
+	end
 end

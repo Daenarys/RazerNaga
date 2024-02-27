@@ -1,6 +1,0 @@
-if not _G.EditModeManagerFrame then return end
-
-ApplyDialogBorder(EditModeManagerFrame.Border)
-ApplyDialogBorder(EditModeSystemSettingsDialog.Border)
-ApplyDialogBorder(EditModeNewLayoutDialog.Border)
-ApplyDialogBorder(EditModeImportLayoutDialog.Border)
