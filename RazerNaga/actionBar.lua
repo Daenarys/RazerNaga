@@ -77,7 +77,7 @@ function ActionBar:GetDefaults()
         x = 0,
         y = 14 + (ActionButton1:GetHeight() + 4) * (self.id - 1),
         pages = {},
-        spacing = 2,
+        spacing = 4,
         padW = 2,
         padH = 2,
         numButtons = self:MaxLength()
@@ -203,7 +203,7 @@ function ActionBar:IsOverrideBar()
     return RazerNaga.db.profile.possessBar == self.id
 end
 
---Empty button display
+-- grid
 function ActionBar:ShowGrid()
     for _,b in pairs(self.buttons) do
         if b:IsShown() then
@@ -226,6 +226,22 @@ function ActionBar:UpdateGrid()
     else
         self:HideGrid()
     end
+end
+
+function ActionBar:UpdateSlot()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and b:HasAction() then
+            b:SetAlpha(1.0)
+        end
+    end
+end
+
+function ActionBar:KEYBOUND_ENABLED()
+    self:ShowGrid()
+end
+
+function ActionBar:KEYBOUND_DISABLED()
+    self:HideGrid()
 end
 
 -- unit
@@ -476,6 +492,10 @@ function ActionBarsModule:Load()
 
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
     RazerNaga.RegisterCallback(self, "ACTIONBAR_COUNT_UPDATED")
+    self:RegisterEvent("ACTIONBAR_SHOWGRID")
+    self:RegisterEvent("ACTIONBAR_HIDEGRID")
+    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+    self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarsModule:Unload()
@@ -495,6 +515,22 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
     end
 
     self:ForActive('UpdateStateDriver')
+end
+
+function ActionBarsModule:ACTIONBAR_SHOWGRID()
+    self:ForActive('ShowGrid')
+end
+
+function ActionBarsModule:ACTIONBAR_HIDEGRID()
+    self:ForActive('HideGrid')
+end
+
+function ActionBarsModule:ACTIONBAR_SLOT_CHANGED()
+    self:ForActive('UpdateSlot')
+end
+
+function ActionBarsModule:SPELLS_CHANGED()
+    self:ForActive('UpdateGrid')
 end
 
 function ActionBarsModule:SetBarCount(count)

@@ -73,12 +73,10 @@ local function skinActionButton(self)
 end
 
 function ActionButtonMixin:OnCreate(id)
-    -- initialize state
-    self.showgrid = 0
-
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
     self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or self:GetName())
+    self:SetAttributeNoHandler("showgrid", 0)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
@@ -157,24 +155,6 @@ function ActionButtonMixin:SetShowCooldowns(show)
     end
 end
 
-function ActionButtonMixin:ShowGrid()
-    if self:IsShown() then
-        self:SetAlpha(1.0)
-    end
-end
-
-function ActionButtonMixin:HideGrid()
-    if self:IsShown() and not self:HasAction() and not RazerNaga:ShowGrid() then
-        self:SetAlpha(0.0)
-    end
-end
-
-function ActionButtonMixin:UpdateSlot()
-    if self:IsShown() and self:HasAction() then
-        self:SetAlpha(1.0)
-    end
-end
-
 function ActionButtonMixin:SetShowMacroText(show)
     self.Name:SetShown(show and true)
 end
@@ -196,47 +176,6 @@ ActionButton.buttons = {}
 ActionButton:Execute([[
     ActionButton = table.new()
 ]])
-
---------------------------------------------------------------------------------
--- Event and Callback Handling
---------------------------------------------------------------------------------
-
-function ActionButton:Initialize()
-    -- register game events
-    self:SetScript("OnEvent", function(f, event, ...) f[event](f, ...); end)
-    self:RegisterEvent("ACTIONBAR_SHOWGRID")
-    self:RegisterEvent("ACTIONBAR_HIDEGRID")
-    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
-
-    -- library callbacks
-    local keybound = LibStub("LibKeyBound-1.0", true)
-    if keybound then
-        keybound.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
-        keybound.RegisterCallback(self, 'LIBKEYBOUND_DISABLED')
-    end
-
-    self.Initialize = nil
-end
-
-function ActionButton:ACTIONBAR_SHOWGRID()
-    self:ForAll("ShowGrid")
-end
-
-function ActionButton:ACTIONBAR_HIDEGRID()
-    self:ForAll("HideGrid")
-end
-
-function ActionButton:ACTIONBAR_SLOT_CHANGED()
-    self:ForAll('UpdateSlot')
-end
-
-function ActionButton:LIBKEYBOUND_ENABLED()
-    self:ForAll("ShowGrid")
-end
-
-function ActionButton:LIBKEYBOUND_DISABLED()
-    self:ForAll("HideGrid")
-end
 
 --------------------------------------------------------------------------------
 -- Action Button Construction
@@ -370,19 +309,6 @@ function ActionButton:AddCastOnKeyPressSupport(button)
     button.bind = bind
     button:UpdateOverrideBindings()
 end
-
---------------------------------------------------------------------------------
--- Collection Methods
---------------------------------------------------------------------------------
-
-function ActionButton:ForAll(method, ...)
-    for button in pairs(self.buttons) do
-        button[method](button, ...)
-    end
-end
-
--- startup
-ActionButton:Initialize()
 
 -- exports
 RazerNaga.ActionButton = ActionButton
