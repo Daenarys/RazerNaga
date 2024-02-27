@@ -323,7 +323,7 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(40)
+	self:SetBorderSize(41)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
