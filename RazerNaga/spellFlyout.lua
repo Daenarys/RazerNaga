@@ -441,6 +441,7 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	local button = CreateFrame('CheckButton', name, self, 'SmallActionButtonTemplate, SecureActionButtonTemplate')
 
 	button:SetSize(28, 28)
+	button.cooldown:SetDrawBling(true)
 	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
 	button.NormalTexture:SetAlpha(0)
 	button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
@@ -457,6 +458,8 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	button.PushedTexture:ClearAllPoints()
 	button.PushedTexture:SetPoint("TOPLEFT")
 	button.PushedTexture:SetPoint("BOTTOMRIGHT")
+	button.cooldown:ClearAllPoints()
+	button.cooldown:SetAllPoints()
 
 	Mixin(button, SpellFlyoutButtonMixin)
 
