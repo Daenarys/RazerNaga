@@ -327,7 +327,6 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(36)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
@@ -444,8 +443,20 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	button:SetSize(28, 28)
 	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
 	button.NormalTexture:SetAlpha(0)
+	button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	button.CheckedTexture:ClearAllPoints()
+	button.CheckedTexture:SetPoint("TOPLEFT")
+	button.CheckedTexture:SetPoint("BOTTOMRIGHT")
+	button.CheckedTexture:SetBlendMode("ADD")
 	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:ClearAllPoints()
+	button.HighlightTexture:SetPoint("TOPLEFT")
+	button.HighlightTexture:SetPoint("BOTTOMRIGHT")
 	button.HighlightTexture:SetBlendMode("ADD")
+	button.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	button.PushedTexture:ClearAllPoints()
+	button.PushedTexture:SetPoint("TOPLEFT")
+	button.PushedTexture:SetPoint("BOTTOMRIGHT")
 
 	Mixin(button, SpellFlyoutButtonMixin)
 
