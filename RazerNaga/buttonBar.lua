@@ -1,10 +1,7 @@
---[[
-	buttonBar.lua
-		A frame that contains a grid of buttons
---]]
-
---[[ globals ]]--
-
+--------------------------------------------------------------------------------
+-- Button Bar
+-- A frame that contains a grid of buttons
+--------------------------------------------------------------------------------
 local RazerNaga = _G[...]
 local ButtonBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
@@ -279,6 +276,5 @@ function ButtonBar:ForButtons(methodOrFunc, ...)
     end
 end
 
---[[ exports ]]--
-
+-- exports
 RazerNaga.ButtonBar = ButtonBar
