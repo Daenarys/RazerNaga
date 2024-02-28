@@ -67,15 +67,13 @@ end
 
 function SpellFlyoutButtonMixin:OnPreClick(_, down)
 	if down then
-		self._ActionButtonUseKeyDown = GetCVarBool("ActionButtonUseKeyDown")
 		SetCVar("ActionButtonUseKeyDown", false)
 	end
 end
 
 function SpellFlyoutButtonMixin:OnPostClick(_, down)
 	if not down then
-		SetCVar("ActionButtonUseKeyDown", self._ActionButtonUseKeyDown)
-		self._ActionButtonUseKeyDown = nil
+		SetCVar("ActionButtonUseKeyDown", true)
 	end
 
 	self:UpdateState()
