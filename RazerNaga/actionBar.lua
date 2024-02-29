@@ -63,9 +63,8 @@ ActionBar:Extend('OnAcquire', function(self)
 
     self:LoadStateController()
     self:UpdateStateDriver()
-    self:SetUnit(self:GetUnit())
     self:UpdateGrid()
-    self:SetRightClickUnit(RazerNaga:GetRightClickUnit())
+    self:UpdateRightClickUnit()
     self:UpdateTransparent(true)
     self:UpdateFlyoutDirection()
 end)
@@ -244,44 +243,9 @@ function ActionBar:KEYBOUND_DISABLED()
     self:HideGrid()
 end
 
--- unit
-function ActionBar:SetUnit(unit)
-    unit = unit or 'none'
-
-    if unit == 'none' then
-        self:SetAttribute('*unit*', nil)
-    else
-        self:SetAttribute('*unit*', unit)
-    end
-
-    self.sets.unit = unit
-end
-
-function ActionBar:GetUnit()
-    return self.sets.unit or 'none'
-end
-
 -- right click unit
-function ActionBar:SetRightClickUnit(unit)
-    unit = unit or 'none'
-
-    if unit == 'none' then
-        self:SetAttribute('*unit2', nil)
-    else
-        self:SetAttribute('*unit2', unit)
-    end
-
-    self.sets.rightClickUnit = unit
-end
-
-function ActionBar:GetRightClickUnit()
-    local unit = self.sets.rightClickUnit
-
-    if unit ~= "none" then
-        return unit
-    end
-
-    return RazerNaga:GetRightClickUnit() or "none"
+function ActionBar:UpdateRightClickUnit()
+    self:SetAttribute('*unit2', RazerNaga:GetRightClickUnit())
 end
 
 -- opacity
