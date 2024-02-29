@@ -41,7 +41,7 @@ local MICRO_BUTTON_NAMES = {
 function MenuBar:SkinButton(button)
     if button.skinned then return end
 
-    l button:SetSize(28, 36)
+    button:SetSize(28, 36)
 
     local buttons = {
         {button = CharacterMicroButton, name = "Character"},

@@ -198,93 +198,91 @@ function ActionButton:LoadAction()
 end
 
 function ActionButton:Skin()
-	if not RazerNaga:Masque('Action Bar', self) then
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-		self.NormalTexture:ClearAllPoints()
-		self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
-		self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
-		self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-		self.PushedTexture:SetSize(36, 36)
-		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-		self.HighlightTexture:SetSize(36, 36)
-		self.HighlightTexture:SetBlendMode("ADD")
-		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
-		self.CheckedTexture:ClearAllPoints()
-		self.CheckedTexture:SetAllPoints()
-		self.CheckedTexture:SetBlendMode("ADD")
-		self.NewActionTexture:SetSize(44, 44)
-		self.NewActionTexture:SetAtlas("bags-newitem")
-		self.NewActionTexture:ClearAllPoints()
-		self.NewActionTexture:SetPoint("CENTER")
-		self.NewActionTexture:SetBlendMode("ADD")
-		self.SpellHighlightTexture:SetSize(44, 44)
-		self.SpellHighlightTexture:SetAtlas("bags-newitem")
-		self.SpellHighlightTexture:ClearAllPoints()
-		self.SpellHighlightTexture:SetPoint("CENTER")
-		self.SpellHighlightTexture:SetBlendMode("ADD")
-		self.QuickKeybindHighlightTexture:SetAtlas("bags-newitem")
-		self.QuickKeybindHighlightTexture:ClearAllPoints()
-		self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT", -2, 2)
-		self.QuickKeybindHighlightTexture:SetPoint("BOTTOMRIGHT", 2, -2)
-		self.QuickKeybindHighlightTexture:SetBlendMode("ADD")
-		self.QuickKeybindHighlightTexture:SetAlpha(0.5)
-		self.Border:ClearAllPoints()
-		self.Border:SetPoint("TOPLEFT", -3, 3)
-		self.Border:SetPoint("BOTTOMRIGHT", 3, -3)
-		self.cooldown:ClearAllPoints()
-		self.cooldown:SetAllPoints()
-		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-		self.Flash:ClearAllPoints()
-		self.Flash:SetAllPoints()
-		self.Count:ClearAllPoints()
-		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+	self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+	self.NormalTexture:ClearAllPoints()
+	self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+	self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+	self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+	self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	self.PushedTexture:SetSize(36, 36)
+	self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	self.HighlightTexture:SetSize(36, 36)
+	self.HighlightTexture:SetBlendMode("ADD")
+	self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	self.CheckedTexture:ClearAllPoints()
+	self.CheckedTexture:SetAllPoints()
+	self.CheckedTexture:SetBlendMode("ADD")
+	self.NewActionTexture:SetSize(44, 44)
+	self.NewActionTexture:SetAtlas("bags-newitem")
+	self.NewActionTexture:ClearAllPoints()
+	self.NewActionTexture:SetPoint("CENTER")
+	self.NewActionTexture:SetBlendMode("ADD")
+	self.SpellHighlightTexture:SetSize(44, 44)
+	self.SpellHighlightTexture:SetAtlas("bags-newitem")
+	self.SpellHighlightTexture:ClearAllPoints()
+	self.SpellHighlightTexture:SetPoint("CENTER")
+	self.SpellHighlightTexture:SetBlendMode("ADD")
+	self.QuickKeybindHighlightTexture:SetAtlas("bags-newitem")
+	self.QuickKeybindHighlightTexture:ClearAllPoints()
+	self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT", -2, 2)
+	self.QuickKeybindHighlightTexture:SetPoint("BOTTOMRIGHT", 2, -2)
+	self.QuickKeybindHighlightTexture:SetBlendMode("ADD")
+	self.QuickKeybindHighlightTexture:SetAlpha(0.5)
+	self.Border:ClearAllPoints()
+	self.Border:SetPoint("TOPLEFT", -3, 3)
+	self.Border:SetPoint("BOTTOMRIGHT", 3, -3)
+	self.cooldown:ClearAllPoints()
+	self.cooldown:SetAllPoints()
+	self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+	self.Flash:ClearAllPoints()
+	self.Flash:SetAllPoints()
+	self.Count:ClearAllPoints()
+	self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
 
-		if (self.SlotArt:IsShown()) then
-			self.SlotArt:Hide()
-		end
-		
-		if (self.SlotBackground:IsShown()) then
-			self.SlotBackground:Hide()
-		end
+	if self.SlotArt then
+		self.SlotArt:Hide()
+	end
 
-		if not self.FlyoutArrow then
-			self.FlyoutArrow = self:CreateTexture()
-			self.FlyoutArrow:SetSize(23, 11)
-			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
-			self.FlyoutArrow:SetDrawLayer("OVERLAY", 2)
+	if self.SlotBackground then
+		self.SlotBackground:Hide()
+	end
+
+	if not self.FlyoutArrow then
+		self.FlyoutArrow = self:CreateTexture()
+		self.FlyoutArrow:SetSize(23, 11)
+		self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+		self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
+		self.FlyoutArrow:SetDrawLayer("OVERLAY", 2)
+		self.FlyoutArrow:Hide()
+	end
+
+	hooksecurefunc(self, "UpdateFlyout", function()
+		if not self.FlyoutArrowContainer then return end
+
+		local actionType = GetActionInfo(self.action)
+		if (actionType == "flyout") then
+			self.FlyoutArrow:Show()
+			self.FlyoutArrow:ClearAllPoints()
+			local direction = self:GetAttribute("flyoutDirection")
+			if (direction == "LEFT") then
+				self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
+				SetClampedTextureRotation(self.FlyoutArrow, 270)
+			elseif (direction == "RIGHT") then
+				self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
+				SetClampedTextureRotation(self.FlyoutArrow, 90)
+			elseif (direction == "DOWN") then
+				self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
+				SetClampedTextureRotation(self.FlyoutArrow, 180)
+			else
+				self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
+			end
+		else
 			self.FlyoutArrow:Hide()
 		end
-
-		hooksecurefunc(self, "UpdateFlyout", function()
-			if not self.FlyoutArrowContainer then return end
-
-			local actionType = GetActionInfo(self.action)
-			if (actionType == "flyout") then
-				self.FlyoutArrow:Show()
-				self.FlyoutArrow:ClearAllPoints()
-				local direction = self:GetAttribute("flyoutDirection")
-				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
-					SetClampedTextureRotation(self.FlyoutArrow, 270)
-				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
-					SetClampedTextureRotation(self.FlyoutArrow, 90)
-				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
-					SetClampedTextureRotation(self.FlyoutArrow, 180)
-				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
-				end
-			else
-				self.FlyoutArrow:Hide()
-			end
-			self.FlyoutArrowContainer:Hide()
-			self.FlyoutBorderShadow:Hide()
-		end)
-    end
+		self.FlyoutArrowContainer:Hide()
+		self.FlyoutBorderShadow:Hide()
+	end)
 end
 
 if (ActionBarActionEventsFrame) then
