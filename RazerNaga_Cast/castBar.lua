@@ -94,49 +94,20 @@ function CastingBar:New(parent)
 	f:SetPoint('CENTER')
 
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnUpdate', self.OnUpdate)
-	f:SetScript('OnEvent', self.OnEvent)
+	f:SetScript('OnUpdate', f.OnUpdate)
 
 	return f
 end
 
-function CastingBar:OnEvent(event, ...)
-	CastingBarMixin.OnEvent(self, event, ...)
-	
-	local unit = self.unit
-	local spell = UnitCastingInfo(unit)
-	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-		self.failed = true
-	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-		self.failed = nil
-	end
-	self:UpdateColor(spell)
-end
-
 function CastingBar:OnUpdate(elapsed)
-	CastingBarMixin.OnUpdate(self, elapsed)
+	CastingBarFrame_OnUpdate(self, elapsed)
 
 	if self.casting then
 		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
 		self:AdjustWidth()
-		if self.Spark then
-			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
-		end
-		self.Flash:SetVertexColor(1, 0.7, 0)
 	elseif self.channeling then
 		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
-		self:HideSpark()
-		self.Flash:SetVertexColor(0, 1, 0)
-	elseif self.value >= self.maxValue then
-		self:SetStatusBarColor(0, 1, 0)
-		self:SetValue(self.maxValue)
-		self:HideSpark()
-	else
-		self:SetValue(self.maxValue)
-		self:HideSpark()
 	end
 end
 
@@ -160,32 +131,6 @@ function CastingBar:AdjustWidth()
 	end
 end
 
-function CastingBar:UpdateColor(spell)
-	if self.failed then
-		self:SetStatusBarColor(0.86, 0.08, 0.24)
-	elseif spell and IsHelpfulSpell(spell) then
-		self:SetStatusBarColor(0.31, 0.78, 0.47)
-	elseif spell and IsHarmfulSpell(spell) then
-		self:SetStatusBarColor(0.63, 0.36, 0.94)
-	else
-		self:SetStatusBarColor(1, 0.7, 0)
-	end
-end
-
 --hide the old casting bar
 PlayerCastingBarFrame:UnregisterAllEvents()
 PlayerCastingBarFrame:Hide()
-
---10.0 stuff
-RazerNagaCastingBarMixin = {}
-
-local typeInfoTexture = "Interface\\TargetingFrame\\UI-StatusBar";
-RazerNagaCastingBarMixin.typeInfo = {
-    filling = typeInfoTexture,
-    full = typeInfoTexture,
-    glow = typeInfoTexture
-}
-
-function RazerNagaCastingBarMixin:GetTypeInfo(barType)
-    return self.typeInfo
-end
