@@ -1,11 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
 	<Script file="castBar.lua"/>
-	<StatusBar name="RazerNagaCastingBarTemplate" mixin="RazerNagaCastingBarMixin" inherits="CastingBarFrameTemplate" drawLayer="BORDER" hidden="true" virtual="true">
+	<StatusBar name="RazerNagaCastingBarTemplate" mixin="RazerNagaCastingBarMixin" inherits="SmallCastingBarFrameTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="208" y="11"/>
-		<KeyValues>
-			<KeyValue key="playCastFX" value="true" type="boolean"/>
-		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
 		</Scripts>

@@ -80,8 +80,6 @@ function RazerNagaCastingBarMixin:OnLoad()
 	local showShieldNo = false
 	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo)
 	self.Icon:Hide()
-	self.Text:ClearAllPoints()
-	self.Text:SetPoint("TOP", 0, -9)
 end
 
 --hide the old casting bar
