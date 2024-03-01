@@ -140,14 +140,14 @@ function MenuBar:SkinButton(button)
     end
 
     CharacterMicroButton:HookScript("OnMouseDown", function(self)
-        if ( not KeybindFrames_InQuickKeybindMode() ) then
+        if ( not KeybindFrames_InQuickKeybindMode() and self:IsEnabled() ) then
             MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
             MicroButtonPortrait:SetAlpha(0.5)
         end
     end)
 
-    CharacterMicroButton:HookScript("OnMouseUp", function()
-        if ( not KeybindFrames_InQuickKeybindMode() ) then
+    CharacterMicroButton:HookScript("OnMouseUp", function(self)
+        if ( not KeybindFrames_InQuickKeybindMode() and self:IsEnabled() ) then
             MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
             MicroButtonPortrait:SetAlpha(1.0)
         end
@@ -202,13 +202,17 @@ function MenuBar:SkinButton(button)
     end
 
     GuildMicroButton:HookScript("OnMouseDown", function(self)
-        GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1)
-        GuildMicroButtonTabard:SetAlpha(0.5)
+        if self:IsEnabled() then
+            GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1)
+            GuildMicroButtonTabard:SetAlpha(0.5)
+        end
     end)
 
     GuildMicroButton:HookScript("OnMouseUp", function(self)
-        GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
-        GuildMicroButtonTabard:SetAlpha(1.0)
+        if self:IsEnabled() then
+            GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
+            GuildMicroButtonTabard:SetAlpha(1.0)
+        end
     end)
 
     hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
