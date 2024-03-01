@@ -1,13 +1,9 @@
---------------------------------------------------------------------------------
--- Menu Bar
--- Defines the RazerNaga menuBar object
---------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
+--[[
+	MenuBar
+--]]
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+RazerNaga.MenuBar = MenuBar
 
 local WIDTH_OFFSET = 2
 local HEIGHT_OFFSET = 1
@@ -39,6 +35,8 @@ local MICRO_BUTTON_NAMES = {
     ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS']
 }
+
+--[[ Menu Bar ]] --
 
 function MenuBar:SkinButton(button)
     if button.skinned then return end
@@ -290,33 +288,33 @@ function MenuBar:SkinButton(button)
 end
 
 function MenuBar:New()
-    local bar = MenuBar.proto.New(self, 'menu')
+	local bar = MenuBar.super.New(self, 'menu')
 
-    bar:LoadButtons()
-    bar:Layout()
+	bar:LoadButtons()
+	bar:Layout()
 
-    return bar
+	return bar
 end
 
 function MenuBar:Create(frameId)
-    local bar = MenuBar.proto.Create(self, frameId)
+	local bar = MenuBar.super.Create(self, frameId)
 
-    bar.buttons = {}
-    bar.activeButtons = {}
-    bar.overrideButtons = {}
+	bar.buttons = {}
+	bar.activeButtons = {}
+	bar.overrideButtons = {}
 
-    bar.updateLayout = function()
-        bar:Layout()
-        bar.updatingLayout = nil
-    end
+	bar.updateLayout = function()
+	    bar:Layout()
+	    bar.updatingLayout = nil
+	end
 
-    local function getOrHook(frame, script, action)
-        if frame:GetScript(script) then
-            frame:HookScript(script, action)
-        else
-            frame:SetScript(script, action)
-        end
-    end
+	local function getOrHook(frame, script, action)
+	    if frame:GetScript(script) then
+	        frame:HookScript(script, action)
+	    else
+	        frame:SetScript(script, action)
+	    end
+	end
 
     local function requestLayoutUpdate()
         if not bar.updatingLayout then
@@ -377,7 +375,7 @@ function MenuBar:AddButton(i)
     local button = _G[buttonName]
 
     if button then
-        button:SetParent(self)
+        button:SetParent(self.header)
         button:Show()
         self:SkinButton(button)
 
@@ -397,7 +395,7 @@ function MenuBar:RemoveButton(i)
 end
 
 function MenuBar:LoadSettings(...)
-    MenuBar.proto.LoadSettings(self, ...)
+    MenuBar.super.LoadSettings(self, ...)
 
     self.activeButtons = {}
 end
@@ -480,7 +478,7 @@ function MenuBar:LayoutNormal()
             row = rows - ceil(i / cols)
         end
         
-        button:SetParent(self)
+        button:SetParent(self.header)
         button:ClearAllPoints()
         button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + HEIGHT_OFFSET)
         button:Show()
@@ -504,7 +502,7 @@ function MenuBar:LayoutOverrideUI()
 end
 
 function MenuBar:FixButtonPositions()
-    wipe(self.overrideButtons)
+	wipe(self.overrideButtons)
 
     for _, buttonName in ipairs(MICRO_BUTTONS) do
         tinsert(self.overrideButtons, _G[buttonName])
@@ -513,8 +511,8 @@ function MenuBar:FixButtonPositions()
     local l, r, t, b = self.overrideButtons[1]:GetHitRectInsets()
 
     for i, button in ipairs(self.overrideButtons) do
-        button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
-        button:ClearAllPoints()
+    	button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
+    	button:ClearAllPoints()
         if i == 1 then
             button:SetPoint('TOPLEFT', -4, 3)
         elseif i == 7 then
@@ -540,26 +538,24 @@ function MenuBar:UpdateActiveButtons()
 end
 
 function MenuBar:GetButtonInsets()
-    local l, r, t, b = MenuBar.proto.GetButtonInsets(self)
+	local l, r, t, b = MenuBar.proto.GetButtonInsets(self)
 
-    return l, r + 1, t + 3, b
+	return l, r + 1, t + 3, b
 end
 
---------------------------------------------------------------------------------
--- Menu
---------------------------------------------------------------------------------
+--[[ Menu Code ]] --
 
 local function Menu_AddLayoutPanel(menu)
-    local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
+	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
 
-    panel:NewOpacitySlider()
-    panel:NewFadeSlider()
-    panel:NewScaleSlider()
-    panel:NewPaddingSlider()
-    panel:NewSpacingSlider()
-    panel:NewColumnsSlider()
+	panel:NewOpacitySlider()
+	panel:NewFadeSlider()
+	panel:NewScaleSlider()
+	panel:NewPaddingSlider()
+	panel:NewSpacingSlider()
+	panel:NewColumnsSlider()
 
-    return panel
+	return panel
 end
 
 local function Panel_AddDisableMenuButtonCheckbox(panel, button, name)
@@ -585,7 +581,7 @@ local function Panel_AddDisableMenuButtonCheckbox(panel, button, name)
 end
 
 local function Menu_AddDisableMenuButtonsPanel(menu)
-    local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').DisableMenuButtons)
+	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').DisableMenuButtons)
 
     panel.width = 200
 
@@ -599,39 +595,37 @@ local function Menu_AddDisableMenuButtonsPanel(menu)
 end
 
 function MenuBar:CreateMenu()
-    local menu = RazerNaga:NewMenu(self.id)
+	local menu = RazerNaga:NewMenu(self.id)
 
-    Menu_AddLayoutPanel(menu)
-    Menu_AddDisableMenuButtonsPanel(menu)
-    menu:AddAdvancedPanel()
+	Menu_AddLayoutPanel(menu)
+	Menu_AddDisableMenuButtonsPanel(menu)
+	menu:AddAdvancedPanel()
 
-    self.menu = menu
+	self.menu = menu
 
-    return menu
+	return menu
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+--[[ module ]] --
 
-local MenuBarModule = RazerNaga:NewModule('MenuBar')
+local MenuBarController = RazerNaga:NewModule('MenuBar')
 
-function MenuBarModule:OnInitialize()
-    local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
-    if perf then
+function MenuBarController:OnInitialize()
+	local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
+	if perf then
         perf:SetSize(28, 58)
         perf:ClearAllPoints()
         perf:SetPoint('CENTER', 0, 11)
-    end
+	end
 end
 
-function MenuBarModule:Load()
-    self.frame = MenuBar:New()
+function MenuBarController:Load()
+	self.frame = MenuBar:New()
 end
 
-function MenuBarModule:Unload()
-    if self.frame then
-        self.frame:Free()
-        self.frame = nil
-    end
+function MenuBarController:Unload()
+	if self.frame then
+		self.frame:Free()
+		self.frame = nil
+	end
 end
