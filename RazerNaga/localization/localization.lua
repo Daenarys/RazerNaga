@@ -1,14 +1,11 @@
 ﻿--[[
 	Localization.lua
 		Translations for RazerNaga
-
-	English: Default language
 --]]
 
 local L = LibStub('AceLocale-3.0'):NewLocale('RazerNaga', 'enUS', true)
 
 --system messages
---L.NewPlayer = 'Created new profile for %s'
 L.Updated = 'Updated to v%s'
 
 --profiles
@@ -21,7 +18,6 @@ L.CantDeleteCurrentProfile = 'Cannot delete the current profile'
 L.InvalidProfile = 'Invalid profile "%s"'
 
 --slash command help
---L.ShowOptionsDesc = 'Shows the options menu'
 L.ConfigDesc = 'Toggles configuration mode'
 
 L.SetScaleDesc = 'Sets the scale of <frameList>'
@@ -69,7 +65,6 @@ L.BindingSet = '123/Num Switch'
 L.Simple = '123'
 L.Advanced = 'Num'
 L.EnforcingBindings = 'Configuring key bindings for %s layout - %s keys'
---L.AcceptBindingChangesPrompt = 'Accept Binding Changes?'
 L.CannotAlterBindingsInCombat = 'Cannot alter bindings in combat'
 L.EnableAutoBindingsPrompt = [[
 Razer Naga can ensure that the buttons on the key pad are configured for the action and pet bars, but enabling this feature may affect your current key bindings.
@@ -119,7 +114,6 @@ L.AltKey = 'ALT'
 
 --incompatible addon prompt
 L.IncompatibleAddonLoaded = 'RazerNaga was unable to load properly because %s is loaded, which RazerNaga is incompatible with. Please disable any other action bar addons you may be running to load RazerNaga.'
-
 
 L.ChangeSummary = 'Change Summary:'
 L.BindTKeyPrompt = 'Hold down the key |cff00ff00%s|r and click here to register its binding.'

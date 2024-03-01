@@ -21,8 +21,11 @@ autoBinder.lua
 modifierHighlighter.lua
 drag.lua
 frame.lua
-bindableButton.lua
 barStates.lua
+shadowUIParent.lua
+buttonBar.lua
+bindableButton.lua
+spellFlyout.lua
 actionButton.lua
 actionBar.lua
 petBar.lua
@@ -30,6 +33,5 @@ stanceBar.lua
 bagBar.lua
 menuBar.lua
 vehicleBar.lua
-spellFlyout.lua
 configModeDialog.lua
 hoverMenu.lua
