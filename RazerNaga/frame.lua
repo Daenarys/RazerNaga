@@ -985,40 +985,6 @@ function Frame:UpdateWatched()
 	end
 end
 
---[[ Highlighting (lynn addition) ]]--
-
-local backdrop = {
-	-- path to the background texture
-	bgFile = nil,
-	-- path to the border texture
-	edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
-	-- true to repeat the background texture to fill the frame, false to scale it
-	tile = false,
-	-- size (width or height) of the square repeating background tiles (in pixels)
-	tileSize = 16,
-	-- thickness of edge segments and square size of edge corners (in pixels)
-	edgeSize = 16,
-	-- distance from the edges of the frame to those of the background texture (in pixels)
-	insets = {
-		left = 0,
-		right = 0,
-		top = 0,
-		bottom = 0
-	}
-}
-
-local function createBorder(self)
-	local f = CreateFrame('Frame', nil, self, BackdropTemplateMixin and 'BackdropTemplate')
-	f:SetToplevel(true)
-	f:SetPoint('TOPLEFT', -4, 4, self)
-	f:SetPoint('BOTTOMRIGHT', 4, -4, self)
-	f:SetBackdrop(backdrop)
-	f:SetBackdropBorderColor(1, 0.8, 0, 1)
-	f:Hide()
-
-	return f
-end
-
 
 --[[ Metafunctions ]]--
 
