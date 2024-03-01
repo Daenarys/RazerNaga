@@ -76,20 +76,3 @@ L.State_HARM = 'Harm'
 L.State_NOTARGET = NONE
 
 L.ShowTooltipsCombat = 'Show Tooltips in Combat'
-
-
---anansi additions
-L.Anansi = 'Razer Anansi'
-L.AnansiDescription = 'Anansi enhancements for Razer Naga'
-L.AnansiResyncKeys = 'Resync T-Keys...'
-
-L.AnansiShowTPanelOnHover = 'Show T-Panel on Hover'
-L.AnansiShowTPanel_always = 'Always'
-L.AnansiShowTPanel_ooc = 'When Out of Combat'
-L.AnansiShowTPanel_config = 'In Configuration Mode'
-L.AnansiShowTPanel_never = NEVER
-
-L.AnansiAutoFadeTKeyBars = 'Auto Fade T-Key Bars'
-L.AnansiTKey = 'Anansi T-Key'
-L.AnansiTKeyNames = 'T-Key Names'
-L.AnansiEnableTKeyNotifications = 'Enable T-Key Notifications'
