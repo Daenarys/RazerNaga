@@ -458,7 +458,7 @@ function Frame:GetExpectedAlpha()
 	end
 
 	--if there's a statealpha value for the frame, then use it
-	local stateAlpha = self.header:GetAttribute('state-alpha')
+	local stateAlpha = self:GetAttribute('state-alpha')
 	if stateAlpha then
 		return stateAlpha / 100
 	end
@@ -1033,9 +1033,9 @@ local function createAnansiBorder(self)
 	local BORDER_SIZE = 32
 	local OFFSET = 12
 
-	local f = CreateFrame('Frame', nil, self.header)
-	f:SetPoint('TOPLEFT', -OFFSET, OFFSET, self.header)
-	f:SetPoint('BOTTOMRIGHT', OFFSET, -OFFSET, self.header)
+	local f = CreateFrame('Frame', nil, self)
+	f:SetPoint('TOPLEFT', -OFFSET, OFFSET, self)
+	f:SetPoint('BOTTOMRIGHT', OFFSET, -OFFSET, self)
 
 
 	local tl = f:CreateTexture(nil, 'BACKGROUND')

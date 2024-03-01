@@ -365,16 +365,22 @@ do
         self:AddAdvancedPanel()
     end
 
-    --GetSpellInfo(spellID) is awesome for localization
     local function addStatePanel(self, name, type)
         local states = RazerNaga.BarStates:map(function(s) return s.type == type end)
-
         if #states > 0 then
             local p = self:NewPanel(name)
-
+            local playerClass = select(2, UnitClass('player'))
+            local hasLongStanceNames = playerClass == 'MONK' or playerClass == 'ROGUE' or playerClass == 'DRUID'
             for i = #states, 1, -1 do
                 local state = states[i]
                 local slider = ConditionSlider_New(p, state.id, state.text)
+                if hasLongStanceNames then
+                    slider:SetWidth(slider:GetWidth() + 48)
+                end
+            end
+
+            if hasLongStanceNames then
+                p.width = 228
             end
         end
     end
@@ -430,10 +436,11 @@ do
         local menu = RazerNaga:NewMenu(self.id)
 
         L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
+        menu:AddBindingSelectorPanel()
         AddLayout(menu)
         AddClass(menu)
         AddPaging(menu)
-        --AddModifier(menu)
+        AddModifier(menu)
         AddTargeting(menu)
         AddShowState(menu)
         AddAdvancedLayout(menu)
