@@ -129,12 +129,12 @@ function MenuBar:SkinButton(button)
         end
     end)
 
-    function CharacterMicroButton_SetPushed()
+    local function CharacterMicroButton_SetPushed()
         MicroButtonPortrait:SetTexCoord(0.2666, 0.8666, 0, 0.8333)
         MicroButtonPortrait:SetAlpha(0.5)
     end
 
-    function CharacterMicroButton_SetNormal()
+    local function CharacterMicroButton_SetNormal()
         MicroButtonPortrait:SetTexCoord(0.2, 0.8, 0.0666, 0.9)
         MicroButtonPortrait:SetAlpha(1.0)
     end
