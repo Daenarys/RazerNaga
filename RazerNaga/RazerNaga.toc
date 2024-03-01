@@ -11,6 +11,7 @@ localization.xml
 RazerNaga.lua
 envoy.lua
 timer.lua
+debounce.lua
 fadeManager.lua
 overrideController.lua
 tooltipController.lua
@@ -20,11 +21,8 @@ autoBinder.lua
 modifierHighlighter.lua
 drag.lua
 frame.lua
-barStates.lua
-shadowUIParent.lua
-buttonBar.lua
 bindableButton.lua
-spellFlyout.lua
+barStates.lua
 actionButton.lua
 actionBar.lua
 petBar.lua
@@ -32,5 +30,6 @@ stanceBar.lua
 bagBar.lua
 menuBar.lua
 vehicleBar.lua
+spellFlyout.lua
 configModeDialog.lua
 hoverMenu.lua

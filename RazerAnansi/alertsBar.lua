@@ -184,7 +184,7 @@ local AlertsBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame); Anansi.Alerts
 local unused = {}
 
 function AlertsBar:New()
-	local f = self.proto.New(self, 'alerts')
+	local f = self.super.New(self, 'alerts')
 	f:SetFrameStrata('HIGH')
 	f:Layout()
 

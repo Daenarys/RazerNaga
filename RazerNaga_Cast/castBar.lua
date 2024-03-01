@@ -1,7 +1,7 @@
---------------------------------------------------------------------------------
--- Cast Bar
--- A dominos based casting bar
---------------------------------------------------------------------------------
+--[[
+	castBar.lua
+		A dominos based casting bar
+--]]
 
 local DCB = RazerNaga:NewModule('CastingBar')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
@@ -15,19 +15,19 @@ function DCB:Unload()
 	self.frame:Free()
 end
 
---------------------------------------------------------------------------------
--- Frame Object
---------------------------------------------------------------------------------
+--[[ RazerNaga Frame Object ]]--
 
 CastBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function CastBar:New()
-	local f = self.proto.New(self, 'cast')
+	local f = self.super.New(self, 'cast')
 	f:SetTooltipText(L.CastBarHelp)
 	f:SetFrameStrata('HIGH')
 
 	if not f.cast then
 		f.cast = CastingBar:New(f)
+		f.header:SetParent(nil)
+		f.header:ClearAllPoints()
 	end
 
 	f:UpdateText()
@@ -80,9 +80,7 @@ function CastBar:Layout()
 	self:SetHeight(max(24 + self:GetPadding()*2, 8))
 end
 
---------------------------------------------------------------------------------
--- CastingBar Object
---------------------------------------------------------------------------------
+--[[ CastingBar Object ]]--
 
 CastingBar = RazerNaga:CreateClass('StatusBar')
 
