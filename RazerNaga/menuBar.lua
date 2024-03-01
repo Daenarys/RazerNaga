@@ -268,6 +268,19 @@ function MenuBar:SkinButton(button)
         end
     end)
 
+    hooksecurefunc("LoadMicroButtonTextures", function(self)
+        if self == GuildMicroButton then
+            if (IsInGuild()) then
+                self:SetNormalAtlas("hud-microbutton-Character-Up", true)
+                self:SetPushedAtlas("hud-microbutton-Character-Down", true)
+            else
+                self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
+                self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
+                self:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
+            end
+        end
+    end)
+
     HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
     HelpOpenWebTicketButton:ClearAllPoints()
     HelpOpenWebTicketButton:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
