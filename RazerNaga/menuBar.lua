@@ -257,6 +257,7 @@ function MenuBar:SkinButton(button)
         end
         GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
         GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)
+        GuildMicroButton:GetDisabledTexture():SetVertexColor(1, 1, 1)
         GuildMicroButton:GetHighlightTexture():SetVertexColor(1, 1, 1)
         if ( CommunitiesFrame and CommunitiesFrame:IsShown() ) or ( GuildFrame and GuildFrame:IsShown() ) then
             GuildMicroButtonTabard:SetPoint("TOPLEFT", -1, -1)
@@ -264,19 +265,6 @@ function MenuBar:SkinButton(button)
         else
             GuildMicroButtonTabard:SetPoint("TOPLEFT", 0, 0)
             GuildMicroButtonTabard:SetAlpha(1)
-        end
-    end)
-
-    hooksecurefunc("LoadMicroButtonTextures", function(self)
-        if self == GuildMicroButton then
-            if (IsInGuild()) then
-                self:SetNormalAtlas("hud-microbutton-Character-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Character-Down", true)
-            else
-                self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
-                self:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
-            end
         end
     end)
 
