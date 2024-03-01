@@ -48,7 +48,7 @@ end
 XP = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function XP:New()
-	local f = self.super.New(self, 'xp')
+	local f = self.proto.New(self, 'xp')
 	if not f.value then
 		f:Load()
 	end
