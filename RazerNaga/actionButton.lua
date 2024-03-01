@@ -4,7 +4,6 @@
 --]]
 
 local KeyBound = LibStub('LibKeyBound-1.0')
-local Bindings = RazerNaga.BindingsController
 local Tooltips = RazerNaga:GetModule('Tooltips')
 
 local ActionButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
@@ -40,6 +39,7 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
+		b:SetAttributeNoHandler("action", 0)
 		b:SetAttributeNoHandler('showgrid', 1)
 		b:SetAttributeNoHandler('action--base', id)
 		b:SetAttributeNoHandler('_childupdate-action', [[
@@ -69,7 +69,6 @@ function ActionButton:New(id)
 		    end
 		]])
 
-		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
 		Tooltips:Register(b)
 
 		--get rid of range indicator text
@@ -115,9 +114,7 @@ function ActionButton:Create(id)
 			b.UpdateButtonArt = function() end
 		end
 
-		if b.UpdateHotKeys then
-			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
-		end
+		RazerNaga.BindableButton:AddQuickBindingSupport(b)
 
 		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
 			if not down then
@@ -157,7 +154,6 @@ do
 		self.active[id] = nil
 
 		Tooltips:Unregister(self)
-		Bindings:Unregister(self)
 
 		self:SetAttributeNoHandler("statehidden", true)
 		self:SetParent(HiddenActionButtonFrame)

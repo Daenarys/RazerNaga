@@ -20,7 +20,6 @@ local PetButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
 function PetButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
-	RazerNaga.BindingsController:Register(b)
 	RazerNaga:GetModule('Tooltips'):Register(b)
 
 	return b
@@ -29,12 +28,11 @@ end
 function PetButton:Create(id)
 	local b = self:Bind(_G['PetActionButton' .. id])
 	b.buttonType = 'BONUSACTIONBUTTON'
+
+	RazerNaga.BindableButton:AddQuickBindingSupport(b)
 	
 	b:HookScript('OnEnter', self.OnEnter)
 	b:Skin()
-
-	--override keybinding display
-	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
 
 	if b.UpdateButtonArt then
 		b.UpdateButtonArt = function() end

@@ -9,10 +9,17 @@ local KeyBound = LibStub('LibKeyBound-1.0')
 
 local BindableButton = RazerNaga:CreateClass('CheckButton')
 
--- there's a nice assumption here: all hotkey text will use the same naming
--- convention the call here is wacky because this functionality is actually
--- called for the blizzard buttons _before_ I'm able to bind the action button
--- methods to them
+-- adds quickbinding support to buttons
+function BindableButton:AddQuickBindingSupport(button)
+    if button.UpdateHotkeys then
+        hooksecurefunc(button, 'UpdateHotkeys', BindableButton.UpdateHotkey)
+    else
+        button.UpdateHotkeys = BindableButton.UpdateHotkey
+    end
+
+    button:UpdateHotkeys()
+end
+
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
 

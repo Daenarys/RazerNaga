@@ -76,6 +76,12 @@ local function Disable_BagButtons()
 		SetDesaturation(bagButton.icon, true)
 		SetDesaturation(bagButton.NormalTexture, true)
 	end
+	if MicroButtonPortrait then
+		SetDesaturation(MicroButtonPortrait, true)
+	end
+	if GuildMicroButtonTabardEmblem then
+		SetDesaturation(GuildMicroButtonTabardEmblem, true)
+	end
 end
 
 local function Enable_BagButtons()
@@ -83,6 +89,12 @@ local function Enable_BagButtons()
 		bagButton:Enable()
 		SetDesaturation(bagButton.icon, false)
 		SetDesaturation(bagButton.NormalTexture, false)
+	end
+	if MicroButtonPortrait then
+		SetDesaturation(MicroButtonPortrait, false)
+	end
+		if GuildMicroButtonTabardEmblem then
+		SetDesaturation(GuildMicroButtonTabardEmblem, true)
 	end
 end
 

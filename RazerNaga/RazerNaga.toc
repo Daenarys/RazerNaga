@@ -22,7 +22,6 @@ modifierHighlighter.lua
 drag.lua
 frame.lua
 bindableButton.lua
-bindingsController.lua
 barStates.lua
 actionButton.lua
 actionBar.lua

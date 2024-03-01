@@ -32,7 +32,6 @@ do
 	function StanceButton:New(id)
 		local button = self:Restore(id) or self:Create(id)
 
-		RazerNaga.BindingsController:Register(button)
 		RazerNaga:GetModule('Tooltips'):Register(button)
 
 		return button
@@ -44,6 +43,7 @@ do
 		if button then
 			button:HookScript('OnEnter', self.OnEnter)
 			button:Skin()
+			RazerNaga.BindableButton:AddQuickBindingSupport(button)
 			if button.UpdateButtonArt then
 				button.UpdateButtonArt = function() end
 			end
@@ -91,7 +91,6 @@ do
 		self:SetParent(nil)
 		self:Hide()
 
-		RazerNaga.BindingsController:Unregister(self)
 		RazerNaga:GetModule('Tooltips'):Unregister(self)
 	end
 
