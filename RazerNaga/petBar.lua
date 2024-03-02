@@ -33,7 +33,7 @@ local function skinPetButton(self)
     self.AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
     self.AutoCastable:SetSize(58, 58)
     self.AutoCastable:ClearAllPoints()
-    self.AutoCastable:SetPoint("CENTER", 0, 0)
+    self.AutoCastable:SetPoint("CENTER")
 
     --simulate old floatingbg
     hooksecurefunc(PetActionBar, 'Update', function()
