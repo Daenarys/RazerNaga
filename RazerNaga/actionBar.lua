@@ -98,8 +98,7 @@ function ActionBar:AcquireButton(index)
 end
 
 function ActionBar:ReleaseButton(button)
-    button:SetAttribute('statehidden', true)
-    button:Hide()
+    button:SetAlpha(0)
 end
 
 function ActionBar:OnAttachButton(button)
@@ -108,7 +107,7 @@ function ActionBar:OnAttachButton(button)
     button:SetFlyoutDirectionInsecure(self:GetFlyoutDirection())
     button:SetShowMacroText(RazerNaga:ShowMacroText())
     button:SetShowCooldowns(self:GetAlpha() > 0)
-    button:SetAttributeNoHandler("statehidden", (button:GetAttribute("index") > self:NumButtons()) or nil)
+    button:SetAlpha(1)
 
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
