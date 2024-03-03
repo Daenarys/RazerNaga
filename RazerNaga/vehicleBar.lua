@@ -71,15 +71,10 @@ end
 -- Bar
 --------------------------------------------------------------------------------
 
-local VehicleBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+local VehicleBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
 function VehicleBar:New()
-    local bar = VehicleBar.proto.New(self, 'vehicle')
-
-    bar:LoadButtons()
-    bar:Layout()
-
-    return bar
+    return VehicleBar.proto.New(self, 'vehicle')
 end
 
 function VehicleBar:GetDefaults()
@@ -98,26 +93,18 @@ function VehicleBar:NumButtons()
     return 1
 end
 
-function VehicleBar:AddButton(i)
-    local button = getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
-
-    if button then
-        button:SetParent(self)
-        button:Show()
-
-        self.buttons[i] = button
-    end
+function VehicleBar:AcquireButton()
+    return getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
 end
 
-function VehicleBar:RemoveButton(i)
-    local button = self.buttons[i]
+function VehicleBar:OnAttachButton(button)
+    button:Show()
 
-    if button then
-        button:SetParent(nil)
-        button:Hide()
+    RazerNaga:GetModule('Tooltips'):Register(button)
+end
 
-        self.buttons[i] = nil
-    end
+function VehicleBar:OnDetachButton(button)
+    RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
 
 function VehicleBar:Update()
@@ -149,7 +136,7 @@ end
 local VehicleBarModule = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
 
 function VehicleBarModule:Load()
-    self.frame = VehicleBar:New()
+    self.bar = VehicleBar:New()
 
     self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
     self:RegisterEvent("UNIT_EXITED_VEHICLE", "Update")
@@ -165,14 +152,16 @@ end
 function VehicleBarModule:Unload()
     self:UnregisterAllEvents()
 
-    if self.frame then
-        self.frame:Free()
-        self.frame = nil
+    if self.bar then
+        self.bar:Free()
+        self.bar = nil
     end
 end
 
 function VehicleBarModule:Update()
     if InCombatLockdown() then return end
 
-    self.frame:Update()
+    if self.bar then
+        self.bar:Update()
+    end
 end
