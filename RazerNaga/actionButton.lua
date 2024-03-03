@@ -140,7 +140,7 @@ end
 -- Configuration
 --------------------------------------------------------------------------------
 
-function ActionButtonMixin:SetFlyoutDirectionInsecure(direction)
+function ActionButtonMixin:SetFlyoutDirection(direction)
     if InCombatLockdown() then return end
 
     self:SetAttribute("flyoutDirection", direction)
@@ -149,17 +149,6 @@ end
 
 function ActionButtonMixin:SetShowBindingText(show)
     self.HotKey:SetAlpha(show and 1 or 0)
-end
-
-function ActionButtonMixin:SetShowCooldowns(show)
-    if show then
-        if self.cooldown:GetParent() ~= self then
-            self.cooldown:SetParent(self)
-            ActionButton_UpdateCooldown(self)
-        end
-    else
-        self.cooldown:SetParent(RazerNaga.ShadowUIParent)
-    end
 end
 
 function ActionButtonMixin:SetShowMacroText(show)

@@ -65,7 +65,6 @@ ActionBar:Extend('OnAcquire', function(self)
     self:UpdateStateDriver()
     self:UpdateGrid()
     self:UpdateRightClickUnit()
-    self:UpdateTransparent(true)
     self:UpdateFlyoutDirection()
 end)
 
@@ -104,10 +103,12 @@ end
 function ActionBar:OnAttachButton(button)
     button:SetAttribute("action", button:GetAttribute("index") + (self:GetAttribute("actionOffset") or 0))
     
-    button:SetFlyoutDirectionInsecure(self:GetFlyoutDirection())
+    button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:SetShowMacroText(RazerNaga:ShowMacroText())
-    button:SetShowCooldowns(self:GetAlpha() > 0)
-    button:SetAlpha(1)
+
+    if button:HasAction() then
+        button:SetAlpha(1)
+    end
 
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
@@ -179,11 +180,6 @@ function ActionBar:LoadStateController()
             local page = self:GetAttribute('state-page') or 1
 
             offset = (page - 1) * self:GetAttribute('barLength')
-
-            -- skip action bar 12 slots (not really usable)
-            if offset >= 132 then
-                offset = offset + 12
-            end
         end
 
         self:SetAttribute('actionOffset', offset)
@@ -247,31 +243,7 @@ function ActionBar:UpdateRightClickUnit()
     self:SetAttribute('*unit2', RazerNaga:GetRightClickUnit())
 end
 
--- opacity
-function ActionBar:OnSetAlpha(_alpha)
-    self:UpdateTransparent()
-end
-
-function ActionBar:UpdateTransparent(force)
-    local isTransparent = self:GetAlpha() == 0
-
-    if (self.transparent ~= isTransparent) or force then
-        self.transparent = isTransparent
-        self:ForButtons('SetShowCooldowns', not isTransparent)
-    end
-end
-
 -- flyout direction calculations
-function ActionBar:SetFlyoutDirection(direction)
-    local oldDirection = self.sets.flyoutDirection or 'auto'
-    local newDirection = direction or 'auto'
-
-    if oldDirection ~= newDirection then
-        self.sets.flyoutDirection = newDirection
-        self:UpdateFlyoutDirection()
-    end
-end
-
 function ActionBar:GetFlyoutDirection()
     local w, h = self:GetSize()
     local isVertical = w < h
@@ -291,14 +263,13 @@ function ActionBar:GetFlyoutDirection()
 end
 
 function ActionBar:UpdateFlyoutDirection()
-    self:ForButtons('SetFlyoutDirectionInsecure', self:GetFlyoutDirection())
+    self:ForButtons('SetFlyoutDirection', self:GetFlyoutDirection())
 end
 
-ActionBar:Extend("Layout", ActionBar.UpdateFlyoutDirection)
-ActionBar:Extend("Stick", ActionBar.UpdateFlyoutDirection)
+--------------------------------------------------------------------------------
+-- Menu
+--------------------------------------------------------------------------------
 
---right click menu code for action bars
---TODO: Probably enable the showstate stuff for other bars, since every bar basically has showstate functionality for 'free'
 do
     local L
 
