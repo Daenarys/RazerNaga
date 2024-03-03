@@ -5,7 +5,6 @@ local CASTING_BAR_HOLD_TIME = 1;
 function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetStartCastColor(self, 1.0, 0.7, 0.0);
 	CastingBarFrame_SetStartChannelColor(self, 0.0, 1.0, 0.0);
-	CastingBarFrame_SetFinishedCastColor(self, 0.0, 1.0, 0.0);
 	CastingBarFrame_SetNonInterruptibleCastColor(self, 0.7, 0.7, 0.7);
 	CastingBarFrame_SetFailedCastColor(self, 0.86, 0.08, 0.24);
 
@@ -28,10 +27,6 @@ end
 
 function CastingBarFrame_SetStartChannelColor(self, r, g, b)
 	self.startChannelColor = CreateColor(r, g, b);
-end
-
-function CastingBarFrame_SetFinishedCastColor(self, r, g, b)
-	self.finishedCastColor = CreateColor(r, g, b);
 end
 
 function CastingBarFrame_SetFailedCastColor(self, r, g, b)
@@ -201,9 +196,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:SetValue(self.maxValue);
 			if ( event == "UNIT_SPELLCAST_STOP" ) then
 				self.casting = nil;
-				if not self.finishedColorSameAsStart then
-					self:SetStatusBarColor(self.finishedCastColor:GetRGB());
-				end
+				self:SetStatusBarColor(0.0, 1.0, 0.0);
 			else
 				self.channeling = nil;
 			end
@@ -417,9 +410,7 @@ function CastingBarFrame_ApplyAlpha(self, alpha)
 end
 
 function CastingBarFrame_FinishSpell(self)
-	if not self.finishedColorSameAsStart then
-		self:SetStatusBarColor(self.finishedCastColor:GetRGB());
-	end
+	self:SetStatusBarColor(0.0, 1.0, 0.0);
 	if ( self.Spark ) then
 		self.Spark:Hide();
 	end
