@@ -63,7 +63,14 @@ function MenuBar:SkinButton(button)
         local prefix = "hud-microbutton-";
         self:SetNormalAtlas(prefix..name.."-Up", true)
         self:SetPushedAtlas(prefix..name.."-Down", true)
-        if self:GetDisabledTexture() then
+        if self == GuildMicroButton then
+            local emblemFilename = select(10, GetGuildLogoInfo())
+            if ( emblemFilename ) then
+                self:GetDisabledTexture():SetAtlas("hud-microbutton-Character-Up", true)
+            else
+                self:GetDisabledTexture():SetAtlas("hud-microbutton-Socials-Disabled", true)
+            end
+        elseif self:GetDisabledTexture() then
             self:SetDisabledAtlas(prefix..name.."-Disabled", true)
         end
     end
