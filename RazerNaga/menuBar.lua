@@ -274,17 +274,17 @@ function MenuBar:SkinButton(button)
         end
     end)
 
-    hooksecurefunc("LoadMicroButtonTextures", function(self)
-        if self == GuildMicroButton then
-            if (IsInGuild()) then
-                self:SetNormalAtlas("hud-microbutton-Character-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Character-Down", true)
-                self:SetDisabledAtlas("hud-microbutton-Character-Up", true)
-            else
-                self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
-                self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
-                self:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
-            end
+    hooksecurefunc("LoadMicroButtonTextures", function()
+        local button = GuildMicroButton
+        local emblemFilename = select(10, GetGuildLogoInfo())
+        if ( emblemFilename ) then
+            button:SetNormalAtlas("hud-microbutton-Character-Up", true)
+            button:SetPushedAtlas("hud-microbutton-Character-Down", true)
+            button:SetDisabledAtlas("hud-microbutton-Character-Up", true)
+        else
+            button:SetNormalAtlas("hud-microbutton-Socials-Up", true)
+            button:SetPushedAtlas("hud-microbutton-Socials-Down", true)
+            button:SetDisabledAtlas("hud-microbutton-Socials-Disabled", true)
         end
     end)
 
