@@ -63,14 +63,7 @@ function MenuBar:SkinButton(button)
         local prefix = "hud-microbutton-";
         self:SetNormalAtlas(prefix..name.."-Up", true)
         self:SetPushedAtlas(prefix..name.."-Down", true)
-        if self == GuildMicroButton then
-            local emblemFilename = select(10, GetGuildLogoInfo())
-            if ( emblemFilename ) then
-                self:GetDisabledTexture():SetAtlas("hud-microbutton-Character-Up", true)
-            else
-                self:GetDisabledTexture():SetAtlas("hud-microbutton-Socials-Disabled", true)
-            end
-        elseif self:GetDisabledTexture() then
+        if self:GetDisabledTexture() then
             self:SetDisabledAtlas(prefix..name.."-Disabled", true)
         end
     end
@@ -234,7 +227,7 @@ function MenuBar:SkinButton(button)
                 local button = GuildMicroButton;
                 button:SetNormalAtlas("hud-microbutton-Character-Up", true)
                 button:SetPushedAtlas("hud-microbutton-Character-Down", true)
-                -- no need to change disabled texture, should always be available if you're in a guild
+                button:SetDisabledAtlas("hud-microbutton-Character-Up", true)
                 tabard:Show()
             end
             SetSmallGuildTabardTextures("player", tabard.emblem, tabard.background)
@@ -286,6 +279,7 @@ function MenuBar:SkinButton(button)
             if (IsInGuild()) then
                 self:SetNormalAtlas("hud-microbutton-Character-Up", true)
                 self:SetPushedAtlas("hud-microbutton-Character-Down", true)
+                self:SetDisabledAtlas("hud-microbutton-Character-Up", true)
             else
                 self:SetNormalAtlas("hud-microbutton-Socials-Up", true)
                 self:SetPushedAtlas("hud-microbutton-Socials-Down", true)
