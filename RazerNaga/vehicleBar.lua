@@ -98,8 +98,6 @@ function VehicleBar:AcquireButton()
 end
 
 function VehicleBar:OnAttachButton(button)
-    button:Show()
-
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
 
