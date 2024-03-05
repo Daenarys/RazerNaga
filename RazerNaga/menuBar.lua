@@ -288,9 +288,11 @@ function MenuBar:SkinButton(button)
         end
     end)
 
-    HelpOpenWebTicketButton:SetParent(MainMenuMicroButton)
-    HelpOpenWebTicketButton:ClearAllPoints()
-    HelpOpenWebTicketButton:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
+    hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
+        self:SetParent(MainMenuMicroButton)
+        self:ClearAllPoints()
+        self:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
+    end)
 
     button.skinned = true
 end
