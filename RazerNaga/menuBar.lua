@@ -9,9 +9,6 @@
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
-local WIDTH_OFFSET = 2
-local HEIGHT_OFFSET = 1
-
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
     "SpellbookMicroButton",
@@ -470,8 +467,8 @@ function MenuBar:LayoutNormal()
     local isTopToBottom = self:GetTopToBottom()
 
     local firstButton = self.buttons[1]
-    local w = firstButton:GetWidth() + spacing - WIDTH_OFFSET
-    local h = firstButton:GetHeight() + spacing - HEIGHT_OFFSET
+    local w = firstButton:GetWidth() + spacing - 2
+    local h = firstButton:GetHeight() + spacing - 1
 
     for i, button in pairs(self.activeButtons) do
         local col, row
@@ -490,14 +487,14 @@ function MenuBar:LayoutNormal()
         
         button:SetParent(self)
         button:ClearAllPoints()
-        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + HEIGHT_OFFSET)
+        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
         button:Show()
     end
 
     -- Update bar size, if we're not in combat
     -- TODO: manage bar size via secure code
     if not InCombatLockdown() then
-        local newWidth = max(w*cols - spacing + pW*2 + WIDTH_OFFSET, 8)
+        local newWidth = max(w*cols - spacing + pW*2 + 2, 8)
         local newHeight = max(h*ceil(numButtons / cols) - spacing + pH*2, 8)
         self:SetSize(newWidth, newHeight)
     end
