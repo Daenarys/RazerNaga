@@ -40,8 +40,8 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	
 	local unit = self.unit;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel  = UnitChannelInfo(unit);
-		local nameSpell  = UnitCastingInfo(unit);
+		local nameChannel = UnitChannelInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START";
 			arg1 = unit;
@@ -66,7 +66,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	local barBorderShield = _G[selfName.."BorderShield"];
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
-		local nameSpell  = UnitCastingInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
