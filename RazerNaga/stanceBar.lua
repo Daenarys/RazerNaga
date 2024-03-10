@@ -41,6 +41,9 @@ local function skinStanceButton(self)
     self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
     self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
     self.CheckedTexture:SetBlendMode("ADD")
+    if self.IconMask then
+        self.IconMask:Hide()
+    end
 end
 
 for id = 1, 10 do

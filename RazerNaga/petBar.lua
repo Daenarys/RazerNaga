@@ -34,6 +34,9 @@ local function skinPetButton(self)
     self.AutoCastable:SetSize(58, 58)
     self.AutoCastable:ClearAllPoints()
     self.AutoCastable:SetPoint("CENTER")
+    if self.IconMask then
+        self.IconMask:Hide()
+    end
 
     --simulate old floatingbg
     hooksecurefunc(PetActionBar, 'Update', function()
