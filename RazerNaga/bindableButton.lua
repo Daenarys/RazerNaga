@@ -106,6 +106,7 @@ function BindableButton:UpdateHotkeys()
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
     hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
+    hotkey:SetDrawLayer("ARTWORK", 2)
 
     if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
         hotkey:ClearAllPoints()
