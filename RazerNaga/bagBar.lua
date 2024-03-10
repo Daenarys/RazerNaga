@@ -76,7 +76,6 @@ local function Disable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Disable()
 		SetDesaturation(bagButton.icon, true)
-		SetDesaturation(bagButton.NormalTexture, true)
 	end
 	if MicroButtonPortrait then
 		SetDesaturation(MicroButtonPortrait, true)
@@ -87,7 +86,6 @@ local function Enable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Enable()
 		SetDesaturation(bagButton.icon, false)
-		SetDesaturation(bagButton.NormalTexture, false)
 	end
 	if MicroButtonPortrait then
 		SetDesaturation(MicroButtonPortrait, false)
