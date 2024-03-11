@@ -1,11 +1,7 @@
---------------------------------------------------------------------------------
--- Vehicle Bar
--- A movable bar for vehicles
---------------------------------------------------------------------------------
+local Addon = _G[...]
+local VehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
---------------------------------------------------------------------------------
--- Button
---------------------------------------------------------------------------------
+--[[ The Bar ]]--
 
 local function possessButton_OnClick(self)
     self:SetChecked(false)
@@ -67,42 +63,53 @@ local function getOrCreatePossessButton(id)
     return button
 end
 
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
-
-local VehicleBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+local VehicleBar = Addon:CreateClass('Frame', Addon.Frame)
 
 function VehicleBar:New()
-    return VehicleBar.proto.New(self, 'vehicle')
+	local bar = VehicleBar.super.New(self, 'vehicle')
+
+	bar:LoadButtons()
+	bar:Layout()
+
+	return bar
 end
 
 function VehicleBar:GetDefaults()
-    return {
-        point = 'CENTER',
-        x = -244,
-        y = 0,
-    }
+	return {
+		point = 'CENTER',
+		x = -244,
+		y = 0,
+	}
 end
 
 function VehicleBar:GetShowStates()
-    return '[canexitvehicle][possessbar]show;hide'
+	return '[canexitvehicle][possessbar]show;hide'
 end
 
 function VehicleBar:NumButtons()
-    return 1
+	return 1
 end
 
-function VehicleBar:AcquireButton()
-    return getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
+function VehicleBar:AddButton(i)
+	local button = getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
+
+	if button then
+		button:SetParent(self.header)
+		button:Show()
+
+		self.buttons[i] = button
+	end
 end
 
-function VehicleBar:OnAttachButton(button)
-    RazerNaga:GetModule('Tooltips'):Register(button)
-end
+function VehicleBar:RemoveButton(i)
+	local button = self.buttons[i]
 
-function VehicleBar:OnDetachButton(button)
-    RazerNaga:GetModule('Tooltips'):Unregister(button)
+	if button then
+		button:SetParent(nil)
+		button:Hide()
+
+		self.buttons[i] = nil
+	end
 end
 
 function VehicleBar:Update()
@@ -120,21 +127,24 @@ function VehicleBar:Update()
 
     icon:SetVertexColor(1, 1, 1)
     icon:SetDesaturated(false)
-    
-    button.NormalTexture:SetAlpha(0)
+	
+    -- hide the actionbutton texture
+    button.NormalTexture:SetTexture()
 
     button:SetChecked(false)
     button:Enable()
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+--[[ Controller ]]--
 
-local VehicleBarModule = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
+local VehicleBarController = Addon:NewModule('VehicleBar', 'AceEvent-3.0')
 
-function VehicleBarModule:Load()
-    self.bar = VehicleBar:New()
+function VehicleBarController:OnInitialize()
+	VehicleLeaveButton:UnregisterAllEvents()
+end
+
+function VehicleBarController:Load()
+	self.frame = VehicleBar:New()
 
     self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
     self:RegisterEvent("UNIT_EXITED_VEHICLE", "Update")
@@ -147,19 +157,17 @@ function VehicleBarModule:Load()
     self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "Update")
 end
 
-function VehicleBarModule:Unload()
-    self:UnregisterAllEvents()
+function VehicleBarController:Unload()
+	self:UnregisterAllEvents()
 
-    if self.bar then
-        self.bar:Free()
-        self.bar = nil
-    end
+	if self.frame then
+		self.frame:Free()
+		self.frame = nil
+	end
 end
 
-function VehicleBarModule:Update()
-    if InCombatLockdown() then return end
+function VehicleBarController:Update()
+	if InCombatLockdown() then return end
 
-    if self.bar then
-        self.bar:Update()
-    end
+	self.frame:Update()
 end

@@ -1,16 +1,14 @@
-﻿--------------------------------------------------------------------------------
--- Bag Bar
--- Defines the RazerNaga bagBar object
---------------------------------------------------------------------------------
+﻿--[[
+	bagBar.lua
+		Defines the RazerNaga bagBar object
+--]]
 
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
+--[[ Bag Bar ]]--
 
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function BagBar:New()
-	local f = self.proto.New(self, 'bags')
+	local f = self.super.New(self, 'bags')
 	f:Reload()
 
 	return f
@@ -65,9 +63,11 @@ function BagBar:SkinButton(b)
 	CharacterBag3Slot:ClearAllPoints()
 	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
 	updateTextures(MainMenuBarBackpackButton)
-	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
+
+	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
 	b.skinned = true
 end
@@ -76,9 +76,7 @@ local function Disable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Disable()
 		SetDesaturation(bagButton.icon, true)
-	end
-	if MicroButtonPortrait then
-		SetDesaturation(MicroButtonPortrait, true)
+		SetDesaturation(bagButton.NormalTexture, true)
 	end
 end
 
@@ -86,9 +84,7 @@ local function Enable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Enable()
 		SetDesaturation(bagButton.icon, false)
-	end
-	if MicroButtonPortrait then
-		SetDesaturation(MicroButtonPortrait, false)
+		SetDesaturation(bagButton.NormalTexture, false)
 	end
 end
 
@@ -103,7 +99,7 @@ end)
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2
+		spacing = 2,
 	}
 end
 
@@ -134,13 +130,12 @@ function BagBar:Reload()
 	self:UpdateClickThrough()
 end
 
---------------------------------------------------------------------------------
--- Frame Overrides
---------------------------------------------------------------------------------
+
+--[[ Frame Overrides ]]--
 
 function BagBar:AddButton(i)
 	local b = self.bags[i]
-	b:SetParent(self)
+	b:SetParent(self.header)
 	b:Show()
 	self:SkinButton(b)
 
@@ -170,10 +165,6 @@ function BagBar:NumButtons()
 	return #self.bags
 end
 
---------------------------------------------------------------------------------
--- Menu
---------------------------------------------------------------------------------
-
 function BagBar:CreateMenu()
 	local menu = RazerNaga:NewMenu(self.id)
 	local panel = menu:AddLayoutPanel()
@@ -195,13 +186,11 @@ function BagBar:CreateMenu()
 	self.menu = menu
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+--[[ Bag Bar Controller ]]
 
-local BagBarModule = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
-function BagBarModule:OnInitialize()
+function BagBarController:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
@@ -233,11 +222,11 @@ function BagBarModule:OnInitialize()
 	end
 end
 
-function BagBarModule:Load()
+function BagBarController:Load()
 	self.frame = BagBar:New()
 end
 
-function BagBarModule:Unload()
+function BagBarController:Unload()
 	if self.frame then
 		self.frame:Free()
 		self.frame = nil
