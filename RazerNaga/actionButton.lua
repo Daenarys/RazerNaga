@@ -87,7 +87,7 @@ function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
     self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or self:GetName())
-    self:SetAttributeNoHandler("showgrid", 0)
+    self:SetAttributeNoHandler("showgrid", 1)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
