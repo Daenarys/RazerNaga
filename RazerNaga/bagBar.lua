@@ -63,11 +63,9 @@ function BagBar:SkinButton(b)
 	CharacterBag3Slot:ClearAllPoints()
 	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
 	updateTextures(MainMenuBarBackpackButton)
-	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
+	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
-
-	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
 	b.skinned = true
 end
@@ -76,7 +74,6 @@ local function Disable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Disable()
 		SetDesaturation(bagButton.icon, true)
-		SetDesaturation(bagButton.NormalTexture, true)
 	end
 end
 
@@ -84,7 +81,6 @@ local function Enable_BagButtons()
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		bagButton:Enable()
 		SetDesaturation(bagButton.icon, false)
-		SetDesaturation(bagButton.NormalTexture, false)
 	end
 end
 

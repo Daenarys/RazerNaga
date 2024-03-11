@@ -60,6 +60,7 @@ UI_shared.xsd">
 			<OnLoad>
 				CastingBarFrame_OnLoad(self, 'player', true)
 			</OnLoad>
+			<OnEvent function="CastingBarFrame_OnEvent"/>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>

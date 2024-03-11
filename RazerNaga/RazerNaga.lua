@@ -26,7 +26,6 @@ function RazerNaga:OnInitialize()
 	--version update
 	if RazerNagaVersion then
 		if RazerNagaVersion ~= CURRENT_VERSION then
-			self:UpdateSettings(RazerNagaVersion:match('(%w+)%.(%w+)%.(%w+)'))
 			self:UpdateVersion()
 		end
 	--new user
@@ -178,99 +177,6 @@ function RazerNaga:GetDefaults()
 	return defaults
 end
 
-function RazerNaga:UpdateSettings(major, minor, bugfix)
-	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
-		self:UpgradePagingSettings()
-	end
-
-	if self:ShouldFixRogueSettings(major, minor, bugfix) then
-		self:FixRoguePagingSettings()
-	end
-end
-
-function RazerNaga:ShouldUpgradePagingSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 6)
-end
-
-function RazerNaga:ShouldFixRogueSettings(major, minor, bugfix)
-	return (tonumber(major) == 1 and tonumber(minor) < 7)
-end
-
-function RazerNaga:UpgradePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, oldStates in pairs(frameSets.pages) do
-						local newStates = {}
-
-						--convert class states
-						if class == 'WARRIOR' then
-							newStates['battle'] = oldStates['[bonusbar:1]']
-							newStates['defensive'] = oldStates['[bonusbar:2]']
-							newStates['berserker'] = oldStates['[bonusbar:3]']
-						elseif class == 'DRUID' then
-							newStates['moonkin'] = oldStates['[bonusbar:4]']
-							newStates['bear'] = oldStates['[bonusbar:3]']
-							newStates['tree'] = oldStates['[bonusbar:2]']
-							newStates['prowl'] = oldStates['[bonusbar:1,stealth]']
-							newStates['cat'] = oldStates['[bonusbar:1]']
-						elseif class == 'PRIEST' then
-							newStates['shadow'] = oldStates['[bonusbar:1]']
-						elseif class == 'ROGUE' then
-							newStates['vanish'] = oldStates['[bonusbar:1,form:3]']
-							newStates['shadowdance'] = oldStates['[bonusbar:2]'] or oldStates['form:3']
-							newStates['stealth'] = oldStates['[bonusbar:1]']
-						elseif class == 'WARLOCK' then
-							newStates['meta'] = oldStates['[form:2]']
-						end
-
-						--modifier states
-						for i, state in RazerNaga.BarStates:getAll('modifier') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--possess states
-						for i, state in RazerNaga.BarStates:getAll('possess') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--page states
-						for i, state in RazerNaga.BarStates:getAll('page') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						--targeting states
-						for i, state in RazerNaga.BarStates:getAll('target') do
-							newStates[state.id] = oldStates[state.value]
-						end
-
-						frameSets.pages[class] = newStates
-					end
-				end
-			end
-		end
-	end
-end
-
-function RazerNaga:FixRoguePagingSettings()
-	--perform state translation to handle updates from older versions
-	for profile,sets in pairs(self.db.sv.profiles) do
-		if sets.frames then
-			for frameId, frameSets in pairs(sets.frames) do
-				if frameSets.pages then
-					for class, states in pairs(frameSets.pages) do
-						if class == 'ROGUE' then
-							states['shadowdance'] = (states['shadowdance'] or states['stealth'])
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
 function RazerNaga:UpdateVersion()
 	RazerNagaVersion = CURRENT_VERSION
 
@@ -310,89 +216,91 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local UIHider = CreateFrame("Frame")
-	UIHider:Hide()
-	self.UIHider = UIHider
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
 
-	local function purgeKey(t, k)
-		t[k] = nil
-		local c = 42
-		repeat
-			if t[c] == nil then
-				t[c] = nil
-			end
-			c = c + 1
-		until issecurevariable(t, k)
+	local function apply(func, ...)
+	    for i = 1, select('#', ...) do
+	        local name = (select(i, ...))
+	        local frame = _G[name]
+
+	        if frame then
+	            func(frame)
+	        else
+				self:Printf('Could not find frame %q', name)
+	        end
+	    end
 	end
 
-	local function hideActionBarFrame(frame, clearEvents)
-		if frame then
-			if clearEvents then
-				frame:UnregisterAllEvents()
-			end
-
-			if frame.system then
-				purgeKey(frame, "isShownExternal")
-			end
-
-			if frame.HideBase then
-				frame:HideBase()
-			else
-				frame:Hide()
-			end
-			frame:SetParent(UIHider)
-		end
+	local function banish(frame)
+	    (frame.HideBase or frame.Hide)(frame)
+	    frame:SetParent(HiddenFrame)
 	end
 
-	local function hideActionButton(button)
-		if not button then return end
-
-		button:Hide()
-		button:UnregisterAllEvents()
-		button:SetAttributeNoHandler("statehidden", true)
+	local function unregisterEvents(frame)
+	    frame:UnregisterAllEvents()
 	end
 
-	hideActionBarFrame(MainMenuBar, false)
-	hideActionBarFrame(MultiBarBottomLeft, true)
-	hideActionBarFrame(MultiBarBottomRight, true)
-	hideActionBarFrame(MultiBarLeft, true)
-	hideActionBarFrame(MultiBarRight, true)
-	hideActionBarFrame(MultiBar5, true)
-	hideActionBarFrame(MultiBar6, true)
-	hideActionBarFrame(MultiBar7, true)
+	local function disableActionButtons(bar)
+	    local buttons = bar.actionButtons
+	    if type(buttons) ~= "table" then
+	        return
+	    end
 
-	-- Hide MultiBar Buttons, but keep the bars alive
-	for i=1,12 do
-		hideActionButton(_G["ActionButton" .. i])
-		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
-		hideActionButton(_G["MultiBarBottomRightButton" .. i])
-		hideActionButton(_G["MultiBarRightButton" .. i])
-		hideActionButton(_G["MultiBarLeftButton" .. i])
-		hideActionButton(_G["MultiBar5Button" .. i])
-		hideActionButton(_G["MultiBar6Button" .. i])
-		hideActionButton(_G["MultiBar7Button" .. i])
+	    for _, button in pairs(buttons) do
+	        button:UnregisterAllEvents()
+	        button:SetAttributeNoHandler("statehidden", true)
+	        button:Hide()
+	    end
 	end
 
-	hideActionBarFrame(MicroButtonAndBagsBar, false)
-	hideActionBarFrame(StanceBar, true)
-	hideActionBarFrame(PossessActionBar, true)
-	hideActionBarFrame(MultiCastActionBarFrame, false)
-	hideActionBarFrame(PetActionBar, false)
-	hideActionBarFrame(StatusTrackingBarManager, false)
-	hideActionBarFrame(MainMenuBarVehicleLeaveButton, true)
-	hideActionBarFrame(BagsBar, true)
-	hideActionBarFrame(MicroMenu, true)
-	hideActionBarFrame(MicroMenuContainer, true)
+	apply(banish,
+		"MainMenuBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"PetActionBar",
+		"StatusTrackingBarManager",
+		"MainMenuBarVehicleLeaveButton",
+		"MicroButtonAndBagsBar",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer"
+	)
 
-	-- these events drive visibility, we want the MainMenuBar to remain invisible
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
-	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
+	apply(unregisterEvents,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"MainMenuBarVehicleLeaveButton",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer"
+	)
 
-	-- these functions drive visibility so disable them
-	MultiActionBar_ShowAllGrids = function() end
-	MultiActionBar_HideAllGrids = function() end
+	apply(disableActionButtons,
+		"MainMenuBar",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight"
+	)
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -1066,24 +974,6 @@ if not (IsAddOnLoaded("ClassicFrames")) then
 		DropDownList1:ClearAllPoints()
 		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
 	end)
-end
-
---[[ Masque Support ]]--
-
-function RazerNaga:Masque(group, button, buttonData)
-	local Masque = LibStub('Masque', true)
-	if Masque then
-		Masque:Group('RazerNaga', group):AddButton(button, buttonData)
-		return true
-	end
-end
-
-function RazerNaga:RemoveMasque(group, button)
-	local Masque = LibStub('Masque', true)
-	if Masque then
-		Masque:Group('RazerNaga', group):RemoveButton(button)
-		return true
-	end
 end
 
 

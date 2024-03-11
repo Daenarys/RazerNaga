@@ -45,7 +45,6 @@ local function copyDefaults(tbl, defaults)
 	return tbl
 end
 
-
 --[[ Methods ]]--
 
 --loads the given set of settings into the current dominos profile
@@ -62,20 +61,9 @@ function SettingsLoader:LoadSettings(settings)
 	--reenable dominos
 	RazerNaga:Load()
 	RazerNaga.AutoBinder:EnforceBindings()
-
-	--hack, need to do a slightly more advanced layout method for the class bar to place it properly across all resolutions
-	-- local classBar = RazerNaga.Frame:Get('class')
-	-- if classBar then
-	-- 	if self:GetLayoutType() == '3x4' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -370, 270)
-	-- 	elseif self:GetLayoutType() == '4x3' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -450, 230)
-	-- 	end
-	-- end
 end
 
 --replace any items in toTble that are in fromTbl
-
 function SettingsLoader:ReplaceSettings(toTbl, fromTbl)
 	if not fromTbl then return end
 

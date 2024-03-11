@@ -3,7 +3,6 @@
 		A RazerNaga pet bar
 --]]
 
-
 --[[ Globals ]]--
 
 local RazerNaga = _G[...]
@@ -11,7 +10,6 @@ local KeyBound = LibStub('LibKeyBound-1.0')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 local format = string.format
 local unused = {}
-
 
 --[[ Pet Button ]]--
 
@@ -33,12 +31,13 @@ function PetButton:Create(id)
 	b:HookScript('OnEnter', self.OnEnter)
 	b:Skin()
 
-	--override keybinding display
-	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
-
+	-- disable new texture loading
 	if b.UpdateButtonArt then
 		b.UpdateButtonArt = function() end
 	end
+
+	-- enable cooldown bling
+	b.cooldown:SetDrawBling(true)
 
 	return b
 end
@@ -46,48 +45,49 @@ end
 --if we have button facade support, then skin the button that way
 --otherwise, apply the RazerNaga style to the button to make it pretty
 function PetButton:Skin()
-	if not RazerNaga:Masque('Pet Bar', self) then
-		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self.IconMask:SetSize(64, 64)
-		self.SlotBackground:Hide()
-		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-		self.PushedTexture:ClearAllPoints()
-		self.PushedTexture:SetAllPoints()
-		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-		self.HighlightTexture:ClearAllPoints()
-		self.HighlightTexture:SetAllPoints()
-		self.HighlightTexture:SetBlendMode("ADD")
-		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
-		self.CheckedTexture:ClearAllPoints()
-		self.CheckedTexture:SetAllPoints()
-		self.CheckedTexture:SetBlendMode("ADD")
-		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-		self.Flash:ClearAllPoints()
-		self.Flash:SetAllPoints()
-		self.AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
-		self.AutoCastable:SetSize(58, 58)
-		self.AutoCastable:ClearAllPoints()
-		self.AutoCastable:SetPoint("CENTER", 0, 0)
+    _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.IconMask:SetSize(64, 64)
+    self.SlotBackground:Hide()
+    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+    self.PushedTexture:ClearAllPoints()
+    self.PushedTexture:SetAllPoints()
+    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+    self.HighlightTexture:ClearAllPoints()
+    self.HighlightTexture:SetAllPoints()
+    self.HighlightTexture:SetBlendMode("ADD")
+    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+    self.CheckedTexture:ClearAllPoints()
+    self.CheckedTexture:SetAllPoints()
+    self.CheckedTexture:SetBlendMode("ADD")
+    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
+    self.AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
+    self.AutoCastable:SetSize(58, 58)
+    self.AutoCastable:ClearAllPoints()
+    self.AutoCastable:SetPoint("CENTER")
+    if self.IconMask then
+        self.IconMask:Hide()
+    end
 
-		--simulate old floatingbg
-		hooksecurefunc(PetActionBar, 'Update', function()
-			local petActionID = self:GetID()
-			local texture = GetPetActionInfo(petActionID);
-			if ( texture ) then
-				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-				self.NormalTexture:SetSize(54, 54)
-				self.NormalTexture:ClearAllPoints()
-				self.NormalTexture:SetPoint("CENTER", 0, -1)
-				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-			else
-				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
-				self.NormalTexture:SetSize(54, 54)
-				self.NormalTexture:ClearAllPoints()
-				self.NormalTexture:SetPoint("CENTER", 0, -1)
-				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-			end
-		end)
-	end
+    --simulate old floatingbg
+    hooksecurefunc(PetActionBar, 'Update', function()
+        local petActionID = self:GetID()
+        local texture = GetPetActionInfo(petActionID);
+        if ( texture ) then
+            self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+            self.NormalTexture:SetSize(54, 54)
+            self.NormalTexture:ClearAllPoints()
+            self.NormalTexture:SetPoint("CENTER", 0, -1)
+            self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+        else
+            self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
+            self.NormalTexture:SetSize(54, 54)
+            self.NormalTexture:ClearAllPoints()
+            self.NormalTexture:SetPoint("CENTER", 0, -1)
+            self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+        end
+    end)
 end
 
 function PetButton:Restore(id)
@@ -115,7 +115,6 @@ end
 function PetButton:OnEnter()
 	KeyBound:Set(self)
 end
-
 
 --[[ Pet Bar ]]--
 
@@ -164,7 +163,6 @@ function PetBar:RemoveButton(i)
 	self.buttons[i] = nil
 	b:Free()
 end
-
 
 --[[ keybound  support ]]--
 

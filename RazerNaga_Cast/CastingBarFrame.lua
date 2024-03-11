@@ -7,7 +7,7 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 	CastingBarFrame_SetStartChannelColor(self, 0.0, 1.0, 0.0);
 	CastingBarFrame_SetFinishedCastColor(self, 0.0, 1.0, 0.0);
 	CastingBarFrame_SetNonInterruptibleCastColor(self, 0.7, 0.7, 0.7);
-	CastingBarFrame_SetFailedCastColor(self, 1.0, 0.0, 0.0);
+	CastingBarFrame_SetFailedCastColor(self, 0.86, 0.08, 0.24);
 
 	CastingBarFrame_SetUseStartColorForFinished(self, true);
 	CastingBarFrame_SetUseStartColorForFlash(self, true);
@@ -131,13 +131,20 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
 		end
 
 		local startColor = CastingBarFrame_GetEffectiveStartColor(self, false, notInterruptible);
-		self:SetStatusBarColor(startColor:GetRGB());
+		if nameSpell and IsHelpfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.31, 0.78, 0.47)
+		elseif nameSpell and IsHarmfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.63, 0.36, 0.94)
+		else
+			self:SetStatusBarColor(startColor:GetRGB());
+		end
 		if self.flashColorSameAsStart then
 			self.Flash:SetVertexColor(startColor:GetRGB());
 		else
