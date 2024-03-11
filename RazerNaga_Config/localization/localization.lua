@@ -74,5 +74,10 @@ L.HighlightModifiers = 'Highlight Modifier Bars'
 L.State_HELP= 'Help'
 L.State_HARM = 'Harm'
 L.State_NOTARGET = NONE
+L.State_ALTSHIFT = strjoin("-", ALT_KEY_TEXT, SHIFT_KEY_TEXT)
+L.State_CTRLALT = strjoin("-", CTRL_KEY_TEXT, ALT_KEY_TEXT)
+L.State_CTRLALTSHIFT = strjoin("-", CTRL_KEY_TEXT, ALT_KEY_TEXT, SHIFT_KEY_TEXT)
+L.State_CTRLSHIFT = strjoin("-", CTRL_KEY_TEXT, SHIFT_KEY_TEXT)
+L.State_META = 'Meta Key'
 
 L.ShowTooltipsCombat = 'Show Tooltips in Combat'
