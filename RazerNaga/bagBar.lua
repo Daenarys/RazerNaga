@@ -1,14 +1,16 @@
-﻿--[[
-	bagBar.lua
-		Defines the RazerNaga bagBar object
---]]
+﻿--------------------------------------------------------------------------------
+-- Bag Bar
+-- Defines the RazerNaga bagBar object
+--------------------------------------------------------------------------------
 
---[[ Bag Bar ]]--
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
 
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function BagBar:New()
-	local f = self.super.New(self, 'bags')
+	local f = self.proto.New(self, 'bags')
 	f:Reload()
 
 	return f
@@ -95,7 +97,7 @@ end)
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2,
+		spacing = 2
 	}
 end
 
@@ -126,12 +128,13 @@ function BagBar:Reload()
 	self:UpdateClickThrough()
 end
 
-
---[[ Frame Overrides ]]--
+--------------------------------------------------------------------------------
+-- Frame Overrides
+--------------------------------------------------------------------------------
 
 function BagBar:AddButton(i)
 	local b = self.bags[i]
-	b:SetParent(self.header)
+	b:SetParent(self)
 	b:Show()
 	self:SkinButton(b)
 
@@ -161,6 +164,10 @@ function BagBar:NumButtons()
 	return #self.bags
 end
 
+--------------------------------------------------------------------------------
+-- Menu
+--------------------------------------------------------------------------------
+
 function BagBar:CreateMenu()
 	local menu = RazerNaga:NewMenu(self.id)
 	local panel = menu:AddLayoutPanel()
@@ -182,11 +189,13 @@ function BagBar:CreateMenu()
 	self.menu = menu
 end
 
---[[ Bag Bar Controller ]]
+--------------------------------------------------------------------------------
+-- Module
+--------------------------------------------------------------------------------
 
-local BagBarController = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+local BagBarModule = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
 
-function BagBarController:OnInitialize()
+function BagBarModule:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
@@ -218,11 +227,11 @@ function BagBarController:OnInitialize()
 	end
 end
 
-function BagBarController:Load()
+function BagBarModule:Load()
 	self.frame = BagBar:New()
 end
 
-function BagBarController:Unload()
+function BagBarModule:Unload()
 	if self.frame then
 		self.frame:Free()
 		self.frame = nil
