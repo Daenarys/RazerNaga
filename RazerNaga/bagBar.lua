@@ -65,7 +65,7 @@ function BagBar:SkinButton(b)
 	CharacterBag3Slot:ClearAllPoints()
 	CharacterBag3Slot:SetPoint("RIGHT", CharacterBag2Slot, "LEFT", -2, 0)
 	updateTextures(MainMenuBarBackpackButton)
-	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
