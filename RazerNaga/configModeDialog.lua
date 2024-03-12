@@ -36,7 +36,7 @@ function ConfigModeDialog:Load()
 	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
 
 	local header = self:CreateTexture(nil, 'ARTWORK')
-	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+	header:SetTexture('Interface\\Addons\\RazerNaga\\Icons\\UI-DialogBox-Header')
 	header:SetWidth(326); header:SetHeight(64)
 	header:SetPoint('TOP', 0, 12)
 
