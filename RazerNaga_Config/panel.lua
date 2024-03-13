@@ -95,23 +95,6 @@ function Panel:NewCheckButton(name, getter, setter)
 	return b
 end
 
-function Panel:NewSmallCheckButton(name, getter, setter)
-	local b = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsSmallCheckButtonTemplate')
-	_G[b:GetName() .. 'Text']:SetText(name)
-	
-	if getter then
-		b.getter = getter
-		b:SetScript('OnShow', CheckButton_OnShow)
-	end
-	
-	if setter then
-		b.setter = setter
-		b:SetScript('OnClick', CheckButton_OnClick)
-	end
-
-	return b
-end
-
 --basic dropdown
 function Panel:NewDropdown(name)
 	local f = CreateFrame('Frame', self:GetName() .. name, self, 'UIDropDownMenuTemplate')

@@ -37,13 +37,6 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
-	--create a loader for the options menu
-	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
-	f:SetScript('OnShow', function(self)
-		self:SetScript('OnShow', nil)
-		LoadAddOn('RazerNaga_Config')
-	end)
-
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
@@ -57,10 +50,8 @@ function RazerNaga:OnEnable()
 		return
 	end
 
-	self:RegisterEvent('PLAYER_REGEN_ENABLED')
-	self:RegisterEvent('PLAYER_REGEN_DISABLED')
-
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -162,7 +153,22 @@ function RazerNaga:GetDefaults()
 			firstLoad = true,
 			autoBindKeys = false,
 			highlightModifiers = false,
-			bindingSet = 'Simple'
+			bindingSet = 'Simple',
+
+			--anansi settings
+			showTPanel = 'always',
+
+			tKeyNames = {
+				'T1',
+				'T2',
+				'T3',
+				'T4',
+				'T5',
+				'T6',
+				'T7'
+			},
+
+			enableTKeyNotifications = true,
 		}
 	}
 
@@ -304,163 +310,89 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-	HiddenFrame:SetAllPoints(UIParent)
-	HiddenFrame:Hide()
+	local UIHider = CreateFrame("Frame")
+	UIHider:Hide()
+	self.UIHider = UIHider
 
-	local function apply(func, arg, ...)
-		if select('#', ...) > 0 then
-			return func(arg), apply(func, ...)
-		end
-
-		return func(arg)
-	end
-
-	local function hide(frame)
-		if not frame then
-			return
-		end
-
-		frame:Hide()
-		frame:SetParent(HiddenFrame)
-		frame.ignoreFramePositionManager = true
-
-		-- with 8.2, there's more restrictions on frame anchoring if something
-		-- happens to be attached to a restricted frame. This causes issues with
-		-- moving the action bars around, so we perform a clear all points to avoid
-		-- some frame dependency issues
-		-- we then follow it up with a SetPoint to handle the cases of bits of the
-		-- UI code assuming that this element has a position
-		frame:ClearAllPoints()
-		frame:SetPoint('CENTER')
-	end
-
-	-- disables override bar transition animations
-	local function disableSlideOutAnimations(frame)
-		if not (frame and frame.slideOut) then
-			return
-		end
-
-		local animation = (frame.slideOut:GetAnimations())
-		if animation then
-			animation:SetOffset(0, 0)
-		end
-	end
-
-	apply(hide,
-		ActionBarDownButton,
-		ActionBarUpButton,
-		MainMenuBarPerformanceBarFrame,
-		MicroButtonAndBagsBar,
-		MultiBarBottomLeft,
-		MultiBarBottomRight,
-		MultiBarLeft,
-		MultiBarRight,
-		MultiCastActionBarFrame,
-		PetActionBarFrame,
-		StanceBarFrame
-	)
-
-	apply(disableSlideOutAnimations,
-		MainMenuBar,
-		MultiBarLeft,
-		MultiBarRight,
-		OverrideActionBar
-	)
-
-	-- we don't completely disable the main menu bar, as there's some logic
-	-- dependent on it being visible
-	if MainMenuBar then
-		MainMenuBar:EnableMouse(false)
-
-		-- the main menu bar is responsible for updating the micro buttons
-		-- so we don't disable all events for it
-		MainMenuBar:UnregisterEvent('ACTIONBAR_PAGE_CHANGED')
-		MainMenuBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
-		MainMenuBar:UnregisterEvent('DISPLAY_SIZE_CHANGED')
-		MainMenuBar:UnregisterEvent('UI_SCALE_CHANGED')
-	end
-
-	-- don't hide the art frame, as the multi action bars are dependent on GetLeft
-	-- or similar calls returning a value
-	if MainMenuBarArtFrame then
-		MainMenuBarArtFrame:SetAlpha(0)
-	end
-
-	-- don't reparent the tracking manager, as it assumes its parent has a callback
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:UnregisterAllEvents()
-		StatusTrackingBarManager:Hide()
-	end
-
-	if MainMenuExpBar then
-		MainMenuExpBar:UnregisterAllEvents()
-		hide(MainMenuExpBar)
-	end
-
-	if ReputationWatchBar then
-		ReputationWatchBar:UnregisterAllEvents()
-		hide(ReputationWatchBar)
-
-		hooksecurefunc(
-			'MainMenuBar_UpdateExperienceBars',
-			function()
-				ReputationWatchBar:Hide()
+	local function purgeKey(t, k)
+		t[k] = nil
+		local c = 42
+		repeat
+			if t[c] == nil then
+				t[c] = nil
 			end
-		)
+			c = c + 1
+		until issecurevariable(t, k)
 	end
 
-	if VerticalMultiBarsContainer then
-		VerticalMultiBarsContainer:UnregisterAllEvents()
-		hide(VerticalMultiBarsContainer)
-
-		-- a hack to preserve the multi action bar spacing behavior for the quest log
-		hooksecurefunc(
-			'MultiActionBar_Update',
-			function()
-				local width = 0
-				local showLeft = SHOW_MULTI_ACTIONBAR_3
-				local showRight = SHOW_MULTI_ACTIONBAR_4
-				local stack = GetCVarBool('multiBarRightVerticalLayout')
-
-				if showLeft then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				if showRight and not stack then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				VerticalMultiBarsContainer:SetWidth(width)
+	local function hideActionBarFrame(frame, clearEvents)
+		if frame then
+			if clearEvents then
+				frame:UnregisterAllEvents()
 			end
-		)
-	end
 
-	if PossessBarFrame then
-		PossessBarFrame:UnregisterAllEvents()
-		hide(PossessBarFrame)
-	end
+			if frame.system then
+				purgeKey(frame, "isShownExternal")
+			end
 
-	-- set the stock action buttons to hidden by default
-	local function disableActionButton(name)
-		local button = _G[name]
-		if button then
-			button:SetAttribute('statehidden', true)
-			button:Hide()
-		else
-			self:Printf('Action Button %q could not be found', name)
+			if frame.HideBase then
+				frame:HideBase()
+			else
+				frame:Hide()
+			end
+			frame:SetParent(UIHider)
 		end
 	end
 
-	for id = 1, NUM_ACTIONBAR_BUTTONS do
-		disableActionButton(('ActionButton%d'):format(id))
-		disableActionButton(('MultiBarRightButton%d'):format(id))
-		disableActionButton(('MultiBarLeftButton%d'):format(id))
-		disableActionButton(('MultiBarBottomRightButton%d'):format(id))
-		disableActionButton(('MultiBarBottomLeftButton%d'):format(id))
+	local function hideActionButton(button)
+		if not button then return end
+
+		button:Hide()
+		button:UnregisterAllEvents()
+		button:SetAttribute("statehidden", true)
 	end
 
-	self:UpdateUseOverrideUI()
+	hideActionBarFrame(MainMenuBar, false)
+	hideActionBarFrame(MultiBarBottomLeft, true)
+	hideActionBarFrame(MultiBarBottomRight, true)
+	hideActionBarFrame(MultiBarLeft, true)
+	hideActionBarFrame(MultiBarRight, true)
+	hideActionBarFrame(MultiBar5, true)
+	hideActionBarFrame(MultiBar6, true)
+	hideActionBarFrame(MultiBar7, true)
+
+	-- Hide MultiBar Buttons, but keep the bars alive
+	for i=1,12 do
+		hideActionButton(_G["ActionButton" .. i])
+		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
+		hideActionButton(_G["MultiBarBottomRightButton" .. i])
+		hideActionButton(_G["MultiBarRightButton" .. i])
+		hideActionButton(_G["MultiBarLeftButton" .. i])
+		hideActionButton(_G["MultiBar5Button" .. i])
+		hideActionButton(_G["MultiBar6Button" .. i])
+		hideActionButton(_G["MultiBar7Button" .. i])
+	end
+
+	hideActionBarFrame(MicroButtonAndBagsBar, false)
+	hideActionBarFrame(StanceBar, true)
+	hideActionBarFrame(PossessActionBar, true)
+	hideActionBarFrame(MultiCastActionBarFrame, false)
+	hideActionBarFrame(PetActionBar, false)
+	hideActionBarFrame(StatusTrackingBarManager, false)
+	hideActionBarFrame(MainMenuBarVehicleLeaveButton, true)
+	hideActionBarFrame(BagsBar, true)
+	hideActionBarFrame(MicroMenu, true)
+	hideActionBarFrame(MicroMenuContainer, true)
+
+	-- these events drive visibility, we want the MainMenuBar to remain invisible
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
+	-- these functions drive visibility so disable them
+	MultiActionBar_ShowAllGrids = function() return; end;
+	MultiActionBar_HideAllGrids = function() return; end;
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
@@ -502,23 +434,6 @@ function RazerNaga:LIBKEYBOUND_DISABLED()
 		if frame.KEYBOUND_DISABLED then
 			frame:KEYBOUND_DISABLED()
 		end
-	end
-end
-
--- lock frame positions when entering combat
-function RazerNaga:PLAYER_REGEN_DISABLED()
-	self.wasUnlocked = not self:Locked()
-
-	if self.wasUnlocked then
-		self:SetLock(true)
-	end
-end
-
--- unlock when resuming
-function RazerNaga:PLAYER_REGEN_ENABLED()
-	if self.wasUnlocked then
-		self:SetLock(false)
-		self.wasUnlocked = nil
 	end
 end
 
@@ -656,11 +571,12 @@ end
 
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
 	if LoadAddOn('RazerNaga_Config') then
-		InterfaceOptionsFrame_Show()
+		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
 	end
@@ -799,6 +715,7 @@ end
 
 function RazerNaga:SetLock(enable)
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
@@ -845,7 +762,6 @@ function RazerNaga:ToggleBindingMode()
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
-		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
@@ -1127,6 +1043,29 @@ end
 
 function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
+end
+
+--queuestatusbutton
+if not (IsAddOnLoaded("ClassicFrames")) then
+	--load and position the lfg eye
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetScale(0.85)
+	end)
+
+	--adjust the queuestatus position
+	hooksecurefunc("QueueStatusDropDown_Show", function()
+		DropDownList1:ClearAllPoints()
+		DropDownList1:SetPoint("BOTTOMLEFT", QueueStatusButton, "BOTTOMLEFT", 0, -62)
+	end)
+
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints();
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT", -1, 1);
+	end)
 end
 
 --[[ Masque Support ]]--

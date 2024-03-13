@@ -34,6 +34,13 @@ function PetButton:Create(id)
 	b:HookScript('OnEnter', self.OnEnter)
 	b:Skin()
 
+	--override keybinding display
+	hooksecurefunc(b, 'SetHotkeys', PetButton.UpdateHotkey)
+
+	if b.UpdateButtonArt then
+		b.UpdateButtonArt = function() end
+	end
+
 	return b
 end
 
@@ -42,7 +49,45 @@ end
 function PetButton:Skin()
 	if not RazerNaga:Masque('Pet Bar', self) then
 		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+		self.IconMask:SetSize(64, 64)
+		self.SlotBackground:Hide()
+		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+		self.PushedTexture:ClearAllPoints()
+		self.PushedTexture:SetAllPoints()
+		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+		self.HighlightTexture:ClearAllPoints()
+		self.HighlightTexture:SetAllPoints()
+		self.HighlightTexture:SetBlendMode("ADD")
+		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+		self.CheckedTexture:ClearAllPoints()
+		self.CheckedTexture:SetAllPoints()
+		self.CheckedTexture:SetBlendMode("ADD")
+		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+		self.Flash:ClearAllPoints()
+		self.Flash:SetAllPoints()
+		self.AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
+		self.AutoCastable:SetSize(58, 58)
+		self.AutoCastable:ClearAllPoints()
+		self.AutoCastable:SetPoint("CENTER", 0, 0)
+
+		--simulate old floatingbg
+		hooksecurefunc(PetActionBar, 'Update', function()
+			local petActionID = self:GetID()
+			local texture = GetPetActionInfo(petActionID);
+			if ( texture ) then
+				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+				self.NormalTexture:SetSize(54, 54)
+				self.NormalTexture:ClearAllPoints()
+				self.NormalTexture:SetPoint("CENTER", 0, -1)
+				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+			else
+				self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
+				self.NormalTexture:SetSize(54, 54)
+				self.NormalTexture:ClearAllPoints()
+				self.NormalTexture:SetPoint("CENTER", 0, -1)
+				self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+			end
+		end)
 	end
 end
 
@@ -72,9 +117,6 @@ function PetButton:OnEnter()
 	KeyBound:Set(self)
 end
 
---override keybinding display
-hooksecurefunc('PetActionButton_SetHotkeys', PetButton.UpdateHotkey)
-
 
 --[[ Pet Bar ]]--
 
@@ -90,7 +132,12 @@ function PetBar:New()
 end
 
 function PetBar:GetShowStates()
-	return '[@pet,exists,nopossessbar]show;hide'
+    if UnitClassBase("player") == "WARLOCK" then
+        local eyeOfKilrogg = GetSpellInfo(126)
+        return ('[channeling:%s]hide;[@pet,exists,nopossessbar]show;hide'):format(eyeOfKilrogg)
+    end
+
+    return '[@pet,exists,nopossessbar]show;hide'
 end
 
 function PetBar:GetDefaults()

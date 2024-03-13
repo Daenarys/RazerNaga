@@ -40,12 +40,12 @@ function ConfigModeDialog:Load()
 	header:SetWidth(326); header:SetHeight(64)
 	header:SetPoint('TOP', 0, 12)
 
-	local title = self:CreateFontString('ARTWORK')
+	local title = self:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
 	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText(L.ConfigMode)
 
-	local desc = self:CreateFontString('ARTWORK')
+	local desc = self:CreateFontString(nil, 'ARTWORK')
 	desc:SetFontObject('GameFontHighlight')
 	desc:SetJustifyV('TOP')
 	desc:SetJustifyH('CENTER')
@@ -200,7 +200,10 @@ end
 
 function ConfigModeDialog:CreateAutoBindingToggle()
 	local autoBindings = CreateFrame('CheckButton', self:GetName() .. 'AutoBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[autoBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[autoBindings:GetName() .. 'Text']:SetText(L.EnableAutomaticBindings)
+	_G[autoBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[autoBindings:GetName() .. 'Text']:SetPoint("LEFT", autoBindings, "RIGHT", 2, 1)
 
 	autoBindings:SetScript('OnShow', function(self)
 		self:SetChecked(RazerNaga.AutoBinder:IsAutoBindingEnabled())
@@ -221,7 +224,10 @@ end
 
 function ConfigModeDialog:CreatePerCharacterBindingToggle()
 	local perCharBindings = CreateFrame('CheckButton', self:GetName() .. 'PerCharBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[perCharBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[perCharBindings:GetName() .. 'Text']:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
+	_G[perCharBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[perCharBindings:GetName() .. 'Text']:SetPoint("LEFT", perCharBindings, "RIGHT", 2, 1)
 
 	perCharBindings:SetScript('OnShow', function(self)
 		self:SetChecked(GetCurrentBindingSet() == 2)
@@ -245,6 +251,12 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
+	exitConfig:SetSize(32, 32)
+	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
 	exitConfig:SetScript('OnEnter', function(self)
