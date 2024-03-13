@@ -1,305 +1,316 @@
---[[ 
-	Action Button.lua
-		A RazerNaga action button
---]]
+--------------------------------------------------------------------------------
+-- ActionButtonMixin
+-- Additional methods we define on action buttons
+--------------------------------------------------------------------------------
+local RazerNaga = _G[...]
+local ActionButtonMixin = {}
 
-local KeyBound = LibStub('LibKeyBound-1.0')
-local Bindings = RazerNaga.BindingsController
-local Tooltips = RazerNaga:GetModule('Tooltips')
-
-local ActionButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
-RazerNaga.ActionButton = ActionButton
-ActionButton.unused = {}
-ActionButton.active = {}
-
-local function GetOrCreateActionButton(id)
-	if id <= 12 then
-		local b = _G['ActionButton' .. id]
-		b.buttonType = 'ACTIONBUTTON'
-		return b
-	elseif id <= 24 then
-		return _G['MultiBar5Button' .. (id-12)]
-	elseif id <= 36 then
-		return _G['MultiBarRightButton' .. (id-24)]
-	elseif id <= 48 then
-		return _G['MultiBarLeftButton' .. (id-36)]
-	elseif id <= 60 then
-		return _G['MultiBarBottomRightButton' .. (id-48)]
-	elseif id <= 72 then
-		return _G['MultiBarBottomLeftButton' .. (id-60)]
-	elseif id <= 84 then
-		return _G['MultiBar6Button' .. (id-72)]
-	elseif id <= 96 then
-		return _G['MultiBar7Button' .. (id-84)]
-	end
-	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-96), nil, 'ActionBarButtonTemplate')
-end
-
---constructor
-function ActionButton:New(id)
-	local b = self:Restore(id) or self:Create(id)
-
-	if b then
-		b:SetAttribute('showgrid', 1)
-		b:SetAttribute('action--base', id)
-		b:SetAttribute('_childupdate-action', [[
-			local state = message
-			local overridePage = self:GetParent():GetAttribute('state-overridepage')
-			local newActionID
-			
-			if state == 'override' then
-				newActionID = (self:GetAttribute('button--index') or 1) + (overridePage - 1) * 12
-			else
-				newActionID = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
-			end
-			
-			if newActionID ~= self:GetAttribute('action') then
-				self:SetAttribute('action', newActionID)
-				self:RunAttribute("UpdateShown")
-				self:CallMethod('UpdateState')
-			end
-		]])
-		b:SetAttribute("UpdateShown", [[
-		    local show = (HasAction(self:GetAttribute("action")))
-		                 and not self:GetAttribute("statehidden")
-		    if show then
-		        self:SetAlpha(1.0)
-		    else
-		        self:SetAlpha(0.0)
-		    end
-		]])
-
-		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
-		Tooltips:Register(b)
-
-		--get rid of range indicator text
-		local hotkey = b.HotKey
-		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
-			hotkey:SetText('')
-		end
-
-		b:UpdateMacro()
-
-		self.active[id] = b
-	end
-
-	return b	
-end
-
-function ActionButton:Create(id)
-	local b = GetOrCreateActionButton(id)
-
-	if b then
-		self:Bind(b)
-
-		--this is used to preserve the button's old id
-		--we cannot simply keep a button's id at > 0 or blizzard code will take control of paging
-		--but we need the button's id for the old bindings system
-		b:SetAttribute('bindingid', b:GetID())
-		b:SetID(0)
-
-		b:ClearAllPoints()
-		b:SetAttribute('useparent-actionpage', nil)
-		b:SetAttribute('useparent-unit', true)
-		b:SetAttribute("statehidden", nil)
-		b:EnableMouseWheel(true)
-		b:HookScript('OnEnter', self.OnEnter)
-		b:SetSize(36, 36)
-		b:Skin()
-
-		if b.cooldown then
-			b.cooldown:SetDrawBling(true)
-		end
-
-		if b.UpdateButtonArt then
-			b.UpdateButtonArt = function() end
-		end
-
-		if b.UpdateHotKeys then
-			hooksecurefunc(b, 'UpdateHotkeys', ActionButton.UpdateHotkey)
-		end
-
-		RazerNaga.SpellFlyout:WrapScript(b, "OnClick", [[
-			if not down then
-				local actionType, actionID = GetActionInfo(self:GetAttribute("action"))
-				if actionType == "flyout" then
-					control:SetAttribute("caller", self)
-					control:RunAttribute("Toggle", actionID)
-					return false
-				end
-			end
-		]])
-	end
-	return b
-end
-
-function ActionButton:Restore(id)
-	local b = self.unused[id]
-
-	if b then
-		self.unused[id] = nil
-
-		b:SetAttribute("statehidden", nil)
-
-		self.active[id] = b
-		return b
-	end
-end
-
---destructor
-do
-	local HiddenActionButtonFrame = CreateFrame('Frame')
-	HiddenActionButtonFrame:Hide()
-
-	function ActionButton:Free()
-		local id = self:GetAttribute('action--base')
-
-		self.active[id] = nil
-
-		Tooltips:Unregister(self)
-		Bindings:Unregister(self)
-
-		self:SetAttribute("statehidden", true)
-		self:SetParent(HiddenActionButtonFrame)
-		self:Hide()
-		self.action = 0
-
-		self.unused[id] = self
-	end
-end
-
---keybound support
-function ActionButton:OnEnter()
-	KeyBound:Set(self)
-end
-
---macro text
-function ActionButton:UpdateMacro()
-	if RazerNaga:ShowMacroText() then
-		self.Name:Show()
-	else
-		self.Name:Hide()
-	end
-end
-
-function ActionButton:SetFlyoutDirection(direction)
-	if InCombatLockdown() then return end
-	
-	self:SetAttribute('flyoutDirection', direction)
-	self:UpdateFlyout()
-end
-
---utility function, resyncs the button's current action, modified by state
-function ActionButton:LoadAction()
-	local state = self:GetParent():GetAttribute('state-page')
-	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
-	
-	self:SetAttribute('action', id)
-end
-
-function ActionButton:Skin()
-	if not RazerNaga:Masque('Action Bar', self) then
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-		self.NormalTexture:ClearAllPoints()
-		self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
-		self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
-		self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-		self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-		self.PushedTexture:SetSize(36, 36)
-		self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-		self.HighlightTexture:SetSize(36, 36)
-		self.HighlightTexture:SetBlendMode("ADD")
-		self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
-		self.CheckedTexture:ClearAllPoints()
-		self.CheckedTexture:SetAllPoints()
-		self.CheckedTexture:SetBlendMode("ADD")
-		self.NewActionTexture:SetSize(44, 44)
-		self.NewActionTexture:SetAtlas("bags-newitem")
-		self.NewActionTexture:ClearAllPoints()
-		self.NewActionTexture:SetPoint("CENTER")
-		self.NewActionTexture:SetBlendMode("ADD")
-		self.SpellHighlightTexture:SetSize(44, 44)
-		self.SpellHighlightTexture:SetAtlas("bags-newitem")
-		self.SpellHighlightTexture:ClearAllPoints()
-		self.SpellHighlightTexture:SetPoint("CENTER")
-		self.SpellHighlightTexture:SetBlendMode("ADD")
-		self.QuickKeybindHighlightTexture:SetAtlas("bags-newitem")
-		self.QuickKeybindHighlightTexture:ClearAllPoints()
-		self.QuickKeybindHighlightTexture:SetPoint("TOPLEFT", -2, 2)
-		self.QuickKeybindHighlightTexture:SetPoint("BOTTOMRIGHT", 2, -2)
-		self.QuickKeybindHighlightTexture:SetBlendMode("ADD")
-		self.QuickKeybindHighlightTexture:SetAlpha(0.5)
-		self.Border:ClearAllPoints()
-		self.Border:SetPoint("TOPLEFT", -3, 3)
-		self.Border:SetPoint("BOTTOMRIGHT", 3, -3)
-		self.cooldown:ClearAllPoints()
-		self.cooldown:SetAllPoints()
-		self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-		self.Flash:ClearAllPoints()
-		self.Flash:SetAllPoints()
-		self.Count:ClearAllPoints()
-		self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-
-		if (self.RightDivider:IsShown()) then
-			self.RightDivider:Hide()
-		end
-		if (self.BottomDivider:IsShown()) then
-			self.BottomDivider:Hide()
-		end
-		if (self.SlotArt:IsShown()) then
-			self.SlotArt:Hide()
-		end
-		if (self.SlotBackground:IsShown()) then
-			self.SlotBackground:Hide()
-		end
-
-		if not self.FlyoutContainer then
-			self.FlyoutContainer = CreateFrame("Frame", nil, self)
-			self.FlyoutContainer:SetAllPoints()
-			self.FlyoutContainer:Hide()
-		end
-
-		if not self.FlyoutArrow then
-			self.FlyoutArrow = self.FlyoutContainer:CreateTexture()
-			self.FlyoutArrow:SetSize(23, 11)
-			self.FlyoutArrow:SetDrawLayer("ARTWORK", 2)
-			self.FlyoutArrow:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
-			self.FlyoutArrow:SetTexCoord(0.62500000, 0.98437500, 0.74218750, 0.82812500)
-			self.FlyoutArrow:Hide()
-		end
-
-		hooksecurefunc(self, "UpdateFlyout", function()
-			if not self.FlyoutArrowContainer then return end
-
-			local actionType = GetActionInfo(self.action);
-			if (actionType == "flyout") then
-				self.FlyoutContainer:Show()
-				self.FlyoutArrow:Show()
-				self.FlyoutArrow:ClearAllPoints()
-				local direction = self:GetAttribute("flyoutDirection")
-				if (direction == "LEFT") then
-					self.FlyoutArrow:SetPoint("LEFT", self, "LEFT", -5, 0)
-					SetClampedTextureRotation(self.FlyoutArrow, 270)
-				elseif (direction == "RIGHT") then
-					self.FlyoutArrow:SetPoint("RIGHT", self, "RIGHT", -5, 0)
-					SetClampedTextureRotation(self.FlyoutArrow, 90)
-				elseif (direction == "DOWN") then
-					self.FlyoutArrow:SetPoint("BOTTOM", self, "BOTTOM", 0, 5)
-					SetClampedTextureRotation(self.FlyoutArrow, 180)
-				else
-					self.FlyoutArrow:SetPoint("TOP", self, "TOP", 0, 5)
-				end
-			else
-				self.FlyoutContainer:Hide()
-				self.FlyoutArrow:Hide()
-			end
-			self.FlyoutArrowContainer:Hide()
-			self.FlyoutBorderShadow:Hide()
-		end)
+local function GetActionButtonCommand(id)
+    -- 0
+    if id <= 0 then
+        return
+    -- 1
+    elseif id <= 12 then
+        return "ACTIONBUTTON" .. id
+    -- 2
+    elseif id <= 24 then
+        return
+    -- 3
+    elseif id <= 36 then
+        return "MULTIACTIONBAR3BUTTON" .. (id - 24)
+    -- 4
+    elseif id <= 48 then
+        return "MULTIACTIONBAR4BUTTON" .. (id - 36)
+    -- 5
+    elseif id <= 60 then
+        return "MULTIACTIONBAR2BUTTON" .. (id - 48)
+    -- 6
+    elseif id <= 72 then
+        return "MULTIACTIONBAR1BUTTON" .. (id - 60)
+    -- 7-10
+    elseif id <= 120 then
+        return
     end
 end
 
+local function skinActionButton(self)
+    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+    self.NormalTexture:ClearAllPoints()
+    self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+    self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+    self.PushedTexture:ClearAllPoints()
+    self.PushedTexture:SetAllPoints()
+    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+    self.HighlightTexture:ClearAllPoints()
+    self.HighlightTexture:SetAllPoints()
+    self.HighlightTexture:SetBlendMode("ADD")
+    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+    self.CheckedTexture:ClearAllPoints()
+    self.CheckedTexture:SetAllPoints()
+    self.CheckedTexture:SetBlendMode("ADD")
+    self.NewActionTexture:SetSize(44, 44)
+    self.NewActionTexture:SetAtlas("bags-newitem")
+    self.NewActionTexture:ClearAllPoints()
+    self.NewActionTexture:SetPoint("CENTER")
+    self.NewActionTexture:SetBlendMode("ADD")
+    self.SpellHighlightTexture:SetSize(44, 44)
+    self.SpellHighlightTexture:SetAtlas("bags-newitem")
+    self.SpellHighlightTexture:ClearAllPoints()
+    self.SpellHighlightTexture:SetPoint("CENTER")
+    self.SpellHighlightTexture:SetBlendMode("ADD")
+    self.Border:SetTexture([[Interface\Buttons\UI-ActionButton-Border]])
+    self.Border:SetSize(62, 62)
+    self.Border:ClearAllPoints()
+    self.Border:SetPoint("CENTER")
+    self.Border:SetBlendMode("ADD")
+    self.cooldown:ClearAllPoints()
+    self.cooldown:SetAllPoints()
+    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
+    self.Count:ClearAllPoints()
+    self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+    self.Count:SetDrawLayer("ARTWORK", 2)
+    self.FlyoutBorderShadow:SetSize(48, 48)
+    if self.IconMask then
+        self.IconMask:Hide()
+    end
+    if self.SlotBackground then
+        self.SlotBackground:Hide()
+    end
+end
+
+function ActionButtonMixin:OnCreate(id)
+    -- initialize secure state
+    self:SetAttributeNoHandler("action", 0)
+    self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or self:GetName())
+    self:SetAttributeNoHandler("showgrid", 1)
+    self:SetAttributeNoHandler("useparent-checkfocuscast", true)
+    self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
+    self:SetAttributeNoHandler("useparent-checkselfcast", true)
+
+    -- register for clicks on all buttons, and enable mousewheel bindings
+    self:EnableMouseWheel()
+    self:RegisterForClicks("AnyUp", "AnyDown")
+
+    -- secure handlers
+    self:SetAttributeNoHandler('_childupdate-offset', [[
+        local offset = message or 0
+        local id = self:GetAttribute('index') + offset
+
+        if self:GetAttribute('action') ~= id then
+            self:SetAttribute('action', id)
+            self:RunAttribute("UpdateShown")
+        end
+    ]])
+
+    self:SetAttributeNoHandler("UpdateShown", [[
+        local show = (HasAction(self:GetAttribute("action")))
+            and not self:GetAttribute("statehidden")
+
+        if show then
+            self:SetAlpha(1)
+        else
+            self:SetAlpha(0)
+        end
+    ]])
+
+    -- apply hooks for quick binding
+    RazerNaga.BindableButton:AddQuickBindingSupport(self)
+
+    -- apply custom flyout
+    RazerNaga.SpellFlyout:Register(self)
+
+    -- use pre 10.x button size
+    self:SetSize(36, 36)
+
+    -- apply button skin
+    skinActionButton(self)
+
+    -- enable cooldown bling
+    self.cooldown:SetDrawBling(true)
+end
+
+function ActionButtonMixin:UpdateOverrideBindings()
+    if InCombatLockdown() then return end
+
+    self.bind:SetOverrideBindings(GetBindingKey(self:GetAttribute("commandName")))
+end
+
+--------------------------------------------------------------------------------
+-- Configuration
+--------------------------------------------------------------------------------
+
+function ActionButtonMixin:SetFlyoutDirection(direction)
+    if InCombatLockdown() then return end
+
+    self:SetAttribute("flyoutDirection", direction)
+    self:UpdateFlyout()
+end
+
+function ActionButtonMixin:SetShowBindingText(show)
+    self.HotKey:SetAlpha(show and 1 or 0)
+end
+
+function ActionButtonMixin:SetShowMacroText(show)
+    self.Name:SetShown(show and true)
+end
+
+-- exports
+RazerNaga.ActionButtonMixin = ActionButtonMixin
+
+--------------------------------------------------------------------------------
+-- Action Button 
+-- A pool of action buttons
+--------------------------------------------------------------------------------
+local ActionButton = CreateFrame('Frame', nil, nil, 'SecureHandlerAttributeTemplate')
+
+-- constants
+local ACTION_BUTTON_NAME_TEMPLATE = "RazerNaga" .. "ActionButton%d"
+
+ActionButton.buttons = {}
+
+ActionButton:Execute([[
+    ActionButton = table.new()
+]])
+
+--------------------------------------------------------------------------------
+-- Action Button Construction
+--------------------------------------------------------------------------------
+
+local function GetActionButtonName(id)
+    if id <= 0 then
+        return
+    else
+        return ACTION_BUTTON_NAME_TEMPLATE:format(id)
+    end
+end
+
+local function SafeMixin(button, trait)
+    for k, v in pairs(trait) do
+        if rawget(button, k) ~= nil then
+            error(("%s[%q] has alrady been set"):format(button:GetName(), k), 2)
+        end
+
+        button[k] = v
+    end
+end
+
+function ActionButton:GetOrCreateActionButton(id, parent)
+    local name = GetActionButtonName(id)
+    if name == nil then
+        error(("Invalid Action ID %q"):format(id))
+    end
+
+    local button = _G[name]
+    local created = false
+
+    -- button not found, create a new one
+    if button == nil then
+        button = CreateFrame("CheckButton", name, parent, "ActionBarButtonTemplate")
+
+        -- add custom methods
+        SafeMixin(button, RazerNaga.ActionButtonMixin)
+
+        -- initialize the button
+        button:OnCreate(id)
+        created = true
+    -- button found, but not yet registered, reuse
+    elseif self.buttons[button] == nil then
+        -- add custom methods
+        SafeMixin(button, RazerNaga.ActionButtonMixin)
+
+        -- reset the id of a button to zero to avoid triggering the paging
+        -- logic of the standard UI
+        button:SetParent(parent)
+        button:SetID(0)
+
+        -- initialize the button
+        button:OnCreate(id)
+        created = true
+    end
+
+    if created then
+        -- add secure handlers
+        self:AddCastOnKeyPressSupport(button)
+
+        -- register the button with the controller
+        self:SetFrameRef("add", button)
+
+        self:Execute([[
+            local b = self:GetFrameRef("add")
+            ActionButton[b] = b:GetAttribute("action") or 0
+        ]])
+
+        self.buttons[button] = 0
+    end
+
+    return button
+end
+
+-- update the pushed state of our parent button when pressing and releasing
+-- the button's hotkey
+local function bindButton_PreClick(self, _, down)
+    local owner = self:GetParent()
+
+    if down then
+        if owner:GetButtonState() == "NORMAL" then
+            owner:SetButtonState("PUSHED")
+        end
+    else
+        if owner:GetButtonState() == "PUSHED" then
+            owner:SetButtonState("NORMAL")
+        end
+    end
+end
+
+local function bindButton_SetOverrideBindings(self, ...)
+    ClearOverrideBindings(self)
+
+    local name = self:GetName()
+    for i = 1, select("#", ...) do
+        SetOverrideBindingClick(self, false, select(i, ...), name, "HOTKEY")
+    end
+end
+
+function ActionButton:AddCastOnKeyPressSupport(button)
+    local bind = CreateFrame("Button", "$parentHotkey", button, "SecureActionButtonTemplate")
+
+    bind:SetAttributeNoHandler("type", "action")
+    bind:SetAttributeNoHandler("typerelease", "actionrelease")
+    bind:SetAttributeNoHandler("useparent-action", true)
+    bind:SetAttributeNoHandler("useparent-checkfocuscast", true)
+    bind:SetAttributeNoHandler("useparent-checkmouseovercast", true)
+    bind:SetAttributeNoHandler("useparent-checkselfcast", true)
+    bind:SetAttributeNoHandler("useparent-flyoutDirection", true)
+    bind:SetAttributeNoHandler("useparent-pressAndHoldAction", true)
+    bind:SetAttributeNoHandler("useparent-unit", true)
+    SecureHandlerSetFrameRef(bind, "owner", button)
+
+    bind:EnableMouseWheel()
+    bind:RegisterForClicks("AnyUp", "AnyDown")
+
+    bind:SetScript("PreClick", bindButton_PreClick)
+
+    bind.SetOverrideBindings = bindButton_SetOverrideBindings
+
+    RazerNaga.SpellFlyout:Register(bind)
+
+    -- translate HOTKEY button "clicks" into LeftButton
+    self:WrapScript(bind, "OnClick", [[
+        if button == "HOTKEY" then
+            return "LeftButton"
+        end
+    ]])
+
+    button.bind = bind
+    button:UpdateOverrideBindings()
+end
+
+-- restore old animations
 if (ActionBarActionEventsFrame) then
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -316,83 +327,81 @@ if (ActionBarActionEventsFrame) then
 end
 
 local function OverlayGlowAnimOutFinished(animGroup)
-	local overlay = animGroup:GetParent()
-	local frame = overlay:GetParent()
-	overlay:Hide()
-	frame.ActionButtonOverlay = nil
+    local overlay = animGroup:GetParent()
+    local frame = overlay:GetParent()
+    overlay:Hide()
+    frame.ActionButtonOverlay = nil
 end
 
 local function OverlayGlow_OnHide(self)
-	if self.animOut:IsPlaying() then
-		self.animOut:Stop()
-		OverlayGlowAnimOutFinished(self.animOut)
-	end
+    if self.animOut:IsPlaying() then
+        self.animOut:Stop()
+        OverlayGlowAnimOutFinished(self.animOut)
+    end
 end
 
 local function OverlayGlow_OnUpdate(self, elapsed)
-	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
-	local cooldown = self:GetParent().cooldown
-	-- we need some threshold to avoid dimming the glow during the gdc
-	-- (using 1500 exactly seems risky, what if casting speed is slowed or something?)
-	if cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000 then
-		self:SetAlpha(0.5)
-	else
-		self:SetAlpha(1.0)
-	end
+    AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
+    local cooldown = self:GetParent().cooldown
+    if cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000 then
+        self:SetAlpha(0.5)
+    else
+        self:SetAlpha(1.0)
+    end
 end
 
 local function CreateScaleAnim(group, target, order, duration, x, y, delay)
-	local scale = group:CreateAnimation("Scale")
-	scale:SetTarget(target)
-	scale:SetOrder(order)
-	scale:SetDuration(duration)
-	scale:SetScale(x, y)
+    local scale = group:CreateAnimation("Scale")
+    scale:SetTarget(target)
+    scale:SetOrder(order)
+    scale:SetDuration(duration)
+    scale:SetScale(x, y)
 
-	if delay then
-		scale:SetStartDelay(delay)
-	end
+    if delay then
+        scale:SetStartDelay(delay)
+    end
 end
 
 local function CreateAlphaAnim(group, target, order, duration, fromAlpha, toAlpha, delay)
-	local alpha = group:CreateAnimation("Alpha")
-	alpha:SetTarget(target)
-	alpha:SetOrder(order)
-	alpha:SetDuration(duration)
-	alpha:SetFromAlpha(fromAlpha)
-	alpha:SetToAlpha(toAlpha)
+    local alpha = group:CreateAnimation("Alpha")
+    alpha:SetTarget(target)
+    alpha:SetOrder(order)
+    alpha:SetDuration(duration)
+    alpha:SetFromAlpha(fromAlpha)
+    alpha:SetToAlpha(toAlpha)
 
-	if delay then
-		alpha:SetStartDelay(delay)
-	end
+    if delay then
+        alpha:SetStartDelay(delay)
+    end
 end
 
 local function AnimIn_OnPlay(group)
-	local frame = group:GetParent()
-	local frameWidth, frameHeight = frame:GetSize()
-	frame.spark:SetSize(frameWidth, frameHeight)
-	frame.spark:SetAlpha(0.3)
-	frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2)
-	frame.innerGlow:SetAlpha(1.0)
-	frame.innerGlowOver:SetAlpha(1.0)
-	frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2)
-	frame.outerGlow:SetAlpha(1.0)
-	frame.outerGlowOver:SetAlpha(1.0)
-	frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
-	frame.ants:SetAlpha(0)
-	frame:Show()
+    local frame = group:GetParent()
+    local frameWidth, frameHeight = frame:GetSize()
+    frame.spark:SetSize(frameWidth, frameHeight)
+    frame.spark:SetAlpha(0.3)
+    frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2)
+    frame.innerGlow:SetAlpha(1.0)
+    frame.innerGlowOver:SetAlpha(1.0)
+    frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2)
+    frame.outerGlow:SetAlpha(1.0)
+    frame.outerGlowOver:SetAlpha(1.0)
+    frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
+    frame.ants:SetAlpha(0)
+    frame:Show()
 end
 
 local function AnimIn_OnFinished(group)
-	local frame = group:GetParent()
-	local frameWidth, frameHeight = frame:GetSize()
-	frame.spark:SetAlpha(0)
-	frame.innerGlow:SetAlpha(0)
-	frame.innerGlow:SetSize(frameWidth, frameHeight)
-	frame.innerGlowOver:SetAlpha(0.0)
-	frame.outerGlow:SetSize(frameWidth, frameHeight)
-	frame.outerGlowOver:SetAlpha(0.0)
-	frame.outerGlowOver:SetSize(frameWidth, frameHeight)
-	frame.ants:SetAlpha(1.0)
+    local frame = group:GetParent()
+    local frameWidth, frameHeight = frame:GetSize()
+    frame.spark:SetAlpha(0)
+    frame.innerGlow:SetAlpha(0)
+    frame.innerGlow:SetSize(frameWidth, frameHeight)
+    frame.innerGlowOver:SetAlpha(0.0)
+    frame.outerGlow:SetSize(frameWidth, frameHeight)
+    frame.outerGlowOver:SetAlpha(0.0)
+    frame.outerGlowOver:SetSize(frameWidth, frameHeight)
+    frame.ants:SetAlpha(1.0)
 end
 
 hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
@@ -407,112 +416,119 @@ hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
     local name = button:GetName()
     local overlay = CreateFrame("Frame", name, UIParent)
 
-	-- spark
-	overlay.spark = overlay:CreateTexture(name .. "Spark", "BACKGROUND")
-	overlay.spark:SetPoint("CENTER")
-	overlay.spark:SetAlpha(0)
-	overlay.spark:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-	overlay.spark:SetTexCoord(0.00781250, 0.61718750, 0.00390625, 0.26953125)
+    -- spark
+    overlay.spark = overlay:CreateTexture(name .. "Spark", "BACKGROUND")
+    overlay.spark:SetPoint("CENTER")
+    overlay.spark:SetAlpha(0)
+    overlay.spark:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+    overlay.spark:SetTexCoord(0.00781250, 0.61718750, 0.00390625, 0.26953125)
 
-	-- inner glow
-	overlay.innerGlow = overlay:CreateTexture(name .. "InnerGlow", "ARTWORK")
-	overlay.innerGlow:SetPoint("CENTER")
-	overlay.innerGlow:SetAlpha(0)
-	overlay.innerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-	overlay.innerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
+    -- inner glow
+    overlay.innerGlow = overlay:CreateTexture(name .. "InnerGlow", "ARTWORK")
+    overlay.innerGlow:SetPoint("CENTER")
+    overlay.innerGlow:SetAlpha(0)
+    overlay.innerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+    overlay.innerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
 
-	-- inner glow over
-	overlay.innerGlowOver = overlay:CreateTexture(name .. "InnerGlowOver", "ARTWORK")
-	overlay.innerGlowOver:SetPoint("TOPLEFT", overlay.innerGlow, "TOPLEFT")
-	overlay.innerGlowOver:SetPoint("BOTTOMRIGHT", overlay.innerGlow, "BOTTOMRIGHT")
-	overlay.innerGlowOver:SetAlpha(0)
-	overlay.innerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-	overlay.innerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
+    -- inner glow over
+    overlay.innerGlowOver = overlay:CreateTexture(name .. "InnerGlowOver", "ARTWORK")
+    overlay.innerGlowOver:SetPoint("TOPLEFT", overlay.innerGlow, "TOPLEFT")
+    overlay.innerGlowOver:SetPoint("BOTTOMRIGHT", overlay.innerGlow, "BOTTOMRIGHT")
+    overlay.innerGlowOver:SetAlpha(0)
+    overlay.innerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+    overlay.innerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
 
-	-- outer glow
-	overlay.outerGlow = overlay:CreateTexture(name .. "OuterGlow", "ARTWORK")
-	overlay.outerGlow:SetPoint("CENTER")
-	overlay.outerGlow:SetAlpha(0)
-	overlay.outerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-	overlay.outerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
+    -- outer glow
+    overlay.outerGlow = overlay:CreateTexture(name .. "OuterGlow", "ARTWORK")
+    overlay.outerGlow:SetPoint("CENTER")
+    overlay.outerGlow:SetAlpha(0)
+    overlay.outerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+    overlay.outerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
 
-	-- outer glow over
-	overlay.outerGlowOver = overlay:CreateTexture(name .. "OuterGlowOver", "ARTWORK")
-	overlay.outerGlowOver:SetPoint("TOPLEFT", overlay.outerGlow, "TOPLEFT")
-	overlay.outerGlowOver:SetPoint("BOTTOMRIGHT", overlay.outerGlow, "BOTTOMRIGHT")
-	overlay.outerGlowOver:SetAlpha(0)
-	overlay.outerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-	overlay.outerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
+    -- outer glow over
+    overlay.outerGlowOver = overlay:CreateTexture(name .. "OuterGlowOver", "ARTWORK")
+    overlay.outerGlowOver:SetPoint("TOPLEFT", overlay.outerGlow, "TOPLEFT")
+    overlay.outerGlowOver:SetPoint("BOTTOMRIGHT", overlay.outerGlow, "BOTTOMRIGHT")
+    overlay.outerGlowOver:SetAlpha(0)
+    overlay.outerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
+    overlay.outerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
 
-	-- ants
-	overlay.ants = overlay:CreateTexture(name .. "Ants", "OVERLAY")
-	overlay.ants:SetPoint("CENTER")
-	overlay.ants:SetAlpha(0)
-	overlay.ants:SetTexture([[Interface\SpellActivationOverlay\IconAlertAnts]])
+    -- ants
+    overlay.ants = overlay:CreateTexture(name .. "Ants", "OVERLAY")
+    overlay.ants:SetPoint("CENTER")
+    overlay.ants:SetAlpha(0)
+    overlay.ants:SetTexture([[Interface\SpellActivationOverlay\IconAlertAnts]])
 
-	-- setup antimations
-	overlay.animIn = overlay:CreateAnimationGroup()
-	CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 1.5, 1.5)
-	CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 0, 1)
-	CreateScaleAnim(overlay.animIn, overlay.innerGlow,      1, 0.3, 2, 2)
-	CreateScaleAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 2, 2)
-	CreateAlphaAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 1, 0)
-	CreateScaleAnim(overlay.animIn, overlay.outerGlow,      1, 0.3, 0.5, 0.5)
-	CreateScaleAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 0.5, 0.5)
-	CreateAlphaAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 1, 0)
-	CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 2/3, 2/3, 0.2)
-	CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 1, 0, 0.2)
-	CreateAlphaAnim(overlay.animIn, overlay.innerGlow,      1, 0.2, 1, 0, 0.3)
-	CreateAlphaAnim(overlay.animIn, overlay.ants,           1, 0.2, 0, 1, 0.3)
-	overlay.animIn:SetScript("OnPlay", AnimIn_OnPlay)
-	overlay.animIn:SetScript("OnFinished", AnimIn_OnFinished)
+    -- setup antimations
+    overlay.animIn = overlay:CreateAnimationGroup()
+    CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 1.5, 1.5)
+    CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 0, 1)
+    CreateScaleAnim(overlay.animIn, overlay.innerGlow,      1, 0.3, 2, 2)
+    CreateScaleAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 2, 2)
+    CreateAlphaAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 1, 0)
+    CreateScaleAnim(overlay.animIn, overlay.outerGlow,      1, 0.3, 0.5, 0.5)
+    CreateScaleAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 0.5, 0.5)
+    CreateAlphaAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 1, 0)
+    CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 2/3, 2/3, 0.2)
+    CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 1, 0, 0.2)
+    CreateAlphaAnim(overlay.animIn, overlay.innerGlow,      1, 0.2, 1, 0, 0.3)
+    CreateAlphaAnim(overlay.animIn, overlay.ants,           1, 0.2, 0, 1, 0.3)
+    overlay.animIn:SetScript("OnPlay", AnimIn_OnPlay)
+    overlay.animIn:SetScript("OnFinished", AnimIn_OnFinished)
 
-	overlay.animOut = overlay:CreateAnimationGroup()
-	CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 1, 0.2, 0, 1)
-	CreateAlphaAnim(overlay.animOut, overlay.ants,          1, 0.2, 1, 0)
-	CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 2, 0.2, 1, 0)
-	CreateAlphaAnim(overlay.animOut, overlay.outerGlow,     2, 0.2, 1, 0)
-	overlay.animOut:SetScript("OnFinished", OverlayGlowAnimOutFinished)
+    overlay.animOut = overlay:CreateAnimationGroup()
+    CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 1, 0.2, 0, 1)
+    CreateAlphaAnim(overlay.animOut, overlay.ants,          1, 0.2, 1, 0)
+    CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 2, 0.2, 1, 0)
+    CreateAlphaAnim(overlay.animOut, overlay.outerGlow,     2, 0.2, 1, 0)
+    overlay.animOut:SetScript("OnFinished", OverlayGlowAnimOutFinished)
 
-	-- scripts
-	overlay:SetScript("OnUpdate", OverlayGlow_OnUpdate)
-	overlay:SetScript("OnHide", OverlayGlow_OnHide)
+    -- scripts
+    overlay:SetScript("OnUpdate", OverlayGlow_OnUpdate)
+    overlay:SetScript("OnHide", OverlayGlow_OnHide)
 
-	local frameWidth, frameHeight = button:GetSize()
-	overlay:SetParent(button)
-	overlay:SetFrameLevel(button:GetFrameLevel() + 5)
-	overlay:ClearAllPoints()
-	--Make the height/width available before the next frame:
-	overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
-	overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
-	overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
-	overlay.animIn:Play()
-	button.ActionButtonOverlay = overlay
+    local frameWidth, frameHeight = button:GetSize()
+    overlay:SetParent(button)
+    overlay:SetFrameLevel(button:GetFrameLevel() + 5)
+    overlay:ClearAllPoints()
+    overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
+    overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
+    overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
+    overlay.animIn:Play()
+    button.ActionButtonOverlay = overlay
 end)
 
 hooksecurefunc("ActionButton_ShowOverlayGlow", function(button)
-	if button.ActionButtonOverlay then
-		if button.ActionButtonOverlay.animOut:IsPlaying() then
-			button.ActionButtonOverlay.animOut:Stop()
-			button.ActionButtonOverlay.animIn:Play()
-		end
-	end
+    if button.ActionButtonOverlay then
+        if button.ActionButtonOverlay.animOut:IsPlaying() then
+            button.ActionButtonOverlay.animOut:Stop()
+            button.ActionButtonOverlay.animIn:Play()
+        end
+    end
 end)
 
 hooksecurefunc("ActionButton_HideOverlayGlow", function(button)
-	if button.ActionButtonOverlay then
-		if button.ActionButtonOverlay.animIn:IsPlaying() then
-			button.ActionButtonOverlay.animIn:Stop()
-		end
-		if button:IsVisible() then
-			button.ActionButtonOverlay.animOut:Play()
-		else
-			OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
-		end
-	end
+    if button.ActionButtonOverlay then
+        if button.ActionButtonOverlay.animIn:IsPlaying() then
+            button.ActionButtonOverlay.animIn:Stop()
+        end
+        if button:IsVisible() then
+            button.ActionButtonOverlay.animOut:Play()
+        else
+            OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
+        end
+    end
 end)
 
 hooksecurefunc("StartChargeCooldown", function(parent)
-    parent.chargeCooldown:SetEdgeTexture("Interface\\Cooldown\\edge")
     parent.chargeCooldown:SetAllPoints(parent)
 end)
+
+hooksecurefunc("CooldownFrame_Set", function(self)
+    if not self:IsForbidden() then
+        self:SetEdgeTexture("Interface\\Cooldown\\edge")
+    end
+end)
+
+-- exports
+RazerNaga.ActionButton = ActionButton

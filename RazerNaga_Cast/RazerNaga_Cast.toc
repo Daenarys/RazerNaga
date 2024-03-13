@@ -1,8 +1,9 @@
-﻿## Interface: 100200
+﻿## Interface: 100205
 ## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Cast
 ## Notes: A movable casting bar, with timer
 ## Author: Tuller
 ## Dependencies: RazerNaga
-localization.lua
+localization.xml
+CastingBarFrame.lua
 castBar.xml
