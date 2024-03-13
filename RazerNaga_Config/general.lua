@@ -39,7 +39,6 @@ local GeneralOptions = RazerNaga.Options:NewPanel(L.General, L.GeneralPanelDesc,
 local lock = GeneralOptions:NewButton(L.EnterConfigMode, 136, 22)
 lock:SetScript('OnClick', function(self)
 	RazerNaga:ToggleLockedFrames()
-	HideUIPanel(SettingsPanel)
 end)
 lock:SetPoint('TOPLEFT', 12, -80)
 
@@ -47,7 +46,6 @@ lock:SetPoint('TOPLEFT', 12, -80)
 local bind = GeneralOptions:NewButton(L.EnterBindingMode, 116, 22)
 bind:SetScript('OnClick', function(self)
 	RazerNaga:ToggleBindingMode()
-	HideUIPanel(SettingsPanel)
 end)
 bind:SetPoint('LEFT', lock, 'RIGHT', 4, 0)
 
@@ -66,7 +64,7 @@ stickyBars:SetScript('OnClick', function(self)
 end)
 stickyBars:SetPoint('TOPLEFT', lock, 'BOTTOMLEFT', 0, -24)
 
-local linkedOpacity = GeneralOptions:NewCheckButton(L.LinkedOpacity)
+local linkedOpacity = GeneralOptions:NewSmallCheckButton(L.LinkedOpacity)
 linkedOpacity:SetScript('OnShow', function(self)
 	self:SetChecked(RazerNaga:IsLinkedOpacityEnabled())
 end)
@@ -87,6 +85,17 @@ showMinimapButton:SetPoint('TOP', linkedOpacity, 'BOTTOM', -8, -10)
 
 --[[ Action Bar Settings ]]--
 
+--lock action button positions
+--this option causes taint, but only for the session that the option is set in
+local lockButtons = GeneralOptions:NewCheckButton(L.LockActionButtons)
+lockButtons:SetScript('OnShow', function(self)
+	self:SetChecked(LOCK_ACTIONBAR == '1')
+end)
+lockButtons:SetScript('OnClick', function(self, ...)
+	_G['InterfaceOptionsActionBarsPanelLockActionBars']:Click(...)
+end)
+lockButtons:SetPoint('TOP', showMinimapButton, 'BOTTOM', 0, -10)
+
 --show empty buttons
 local showEmpty = GeneralOptions:NewCheckButton(L.ShowEmptyButtons)
 showEmpty:SetScript('OnShow', function(self)
@@ -96,7 +105,7 @@ showEmpty:SetScript('OnClick', function(self)
 	RazerNaga:SetShowGrid(self:GetChecked())
 end)
 --showEmpty:SetPoint('TOPLEFT', lock, 'BOTTOMLEFT', 0, -24)
-showEmpty:SetPoint('TOP', showMinimapButton, 'BOTTOM', 0, -10)
+showEmpty:SetPoint('TOP', lockButtons, 'BOTTOM', 0, -10)
 
 --show keybinding text
 local showBindings = GeneralOptions:NewCheckButton(L.ShowBindingText)
@@ -129,7 +138,7 @@ end)
 showTooltips:SetPoint('TOP', showMacros, 'BOTTOM', 0, -10)
 
 --show tooltips in combat
-local showTooltipsCombat = GeneralOptions:NewCheckButton(L.ShowTooltipsCombat)
+local showTooltipsCombat = GeneralOptions:NewSmallCheckButton(L.ShowTooltipsCombat)
 showTooltipsCombat:SetScript('OnShow', function(self)
 	self:SetChecked(RazerNaga:ShowCombatTooltips())
 end)
@@ -137,6 +146,16 @@ showTooltipsCombat:SetScript('OnClick', function(self)
 	RazerNaga:SetShowCombatTooltips(self:GetChecked())
 end)
 showTooltipsCombat:SetPoint('TOP', showTooltips, 'BOTTOM', 8, -2)
+
+--pressed modifiers
+local highlightModifiers = GeneralOptions:NewCheckButton(L.HighlightModifiers)
+highlightModifiers:SetScript('OnShow', function(self)
+	self:SetChecked(RazerNaga.ModHighlighter:HighlightingModifiers())
+end)
+highlightModifiers:SetScript('OnClick', function(self)
+	RazerNaga.ModHighlighter:SetHighlightModifiers(self:GetChecked())
+end)
+highlightModifiers:SetPoint('TOP', showTooltipsCombat, 'BOTTOM', -8, -10)
 
 --show override ui
 local showOverrideUI = GeneralOptions:NewCheckButton(L.ShowOverrideUI)
@@ -146,7 +165,7 @@ end)
 showOverrideUI:SetScript('OnClick', function(self)
 	RazerNaga:SetUseOverrideUI(self:GetChecked())
 end)
-showOverrideUI:SetPoint('TOP', showTooltipsCombat, 'BOTTOM', -8, -10)
+showOverrideUI:SetPoint('TOP', highlightModifiers, 'BOTTOM', 0, -10)
 
 
 --[[ Dropdowns ]]--
