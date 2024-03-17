@@ -79,6 +79,11 @@ function MenuBar:SkinButton(button)
             normalTexture:SetAlpha(1)
             normalTexture:SetTexelSnappingBias(0.0)
         end
+        local highlightTexture = self:GetHighlightTexture()
+        if (highlightTexture) then
+            highlightTexture:SetAlpha(1)
+            highlightTexture:SetTexelSnappingBias(0.0)
+        end
         if self.Background then
             self.Background:Hide()
         end
