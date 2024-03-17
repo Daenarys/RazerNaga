@@ -219,6 +219,12 @@ function MenuBar:SkinButton(button)
         end
     end)
 
+    hooksecurefunc(GuildMicroButton, "UpdateNotificationIcon", function(self)
+        self.NotificationOverlay:ClearAllPoints()
+        self.NotificationOverlay:SetPoint("TOPLEFT", 2, -18)
+        self.NotificationOverlay:SetPoint("BOTTOMRIGHT")
+    end)
+
     hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
         local tabard = GuildMicroButtonTabard;
         if ( not tabard.needsUpdate ) then
