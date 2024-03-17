@@ -254,6 +254,9 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc("UpdateMicroButtons", function()
+        if AchievementMicroButton:IsEnabled() then
+            AchievementMicroButton.tooltipText = MicroButtonTooltipText(ACHIEVEMENT_BUTTON, "TOGGLEACHIEVEMENT");
+        end
         if CharacterMicroButton.Portrait then
             CharacterMicroButton.Portrait:Hide()
         end
