@@ -220,9 +220,7 @@ function MenuBar:SkinButton(button)
     end)
 
     hooksecurefunc(GuildMicroButton, "UpdateNotificationIcon", function(self)
-        self.NotificationOverlay:ClearAllPoints()
-        self.NotificationOverlay:SetPoint("TOPLEFT", 2, -18)
-        self.NotificationOverlay:SetPoint("BOTTOMRIGHT")
+        self.NotificationOverlay:Hide()
     end)
 
     hooksecurefunc(GuildMicroButton, "UpdateTabard", function()
