@@ -75,9 +75,10 @@ function MenuBar:SkinButton(button)
 
     button:HookScript("OnUpdate", function(self)
         local normalTexture = self:GetNormalTexture()
-        if (normalTexture) then 
+        if (normalTexture) then
             normalTexture:SetAlpha(1)
-        end 
+            normalTexture:SetTexelSnappingBias(0.0)
+        end
         if self.Background then
             self.Background:Hide()
         end
