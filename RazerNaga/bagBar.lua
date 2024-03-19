@@ -46,17 +46,11 @@ function BagBar:SkinButton(b)
 		self.SlotHighlightTexture:SetBlendMode("ADD")
 	end
 
-	for i = 0, 3 do
-		local bagSlot = _G["CharacterBag"..i.."Slot"]
-		hooksecurefunc(bagSlot, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
-		hooksecurefunc(bagSlot, "UpdateTextures", updateTextures)
-	end
+	hooksecurefunc(b, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
+	hooksecurefunc(b, "UpdateTextures", updateTextures)
 
-	updateTextures(CharacterBag0Slot)
-	updateTextures(CharacterBag1Slot)
-	updateTextures(CharacterBag2Slot)
-	updateTextures(CharacterBag3Slot)
-	updateTextures(MainMenuBarBackpackButton)
+	updateTextures(b)
+
 	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
