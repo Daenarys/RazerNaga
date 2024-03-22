@@ -36,7 +36,7 @@ function ConfigModeDialog:Load()
 	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
 
 	local header = self:CreateTexture(nil, 'ARTWORK')
-	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+	header:SetTexture('Interface\\Addons\\RazerNaga\\Icons\\UI-DialogBox-Header')
 	header:SetWidth(326); header:SetHeight(64)
 	header:SetPoint('TOP', 0, 12)
 
@@ -161,23 +161,30 @@ function ConfigModeDialog:CreateBindingSetPicker()
 	dd:SetScript('OnShow', function(self)
 		UIDropDownMenu_SetWidth(self, 110)
 		UIDropDownMenu_Initialize(self, self.Initialize)
+		UIDropDownMenu_SetSelectedValue(self, "123")
 	end)
 
 	dd:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
 	end)
-
 	dd:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
+
+	dd.Initialize = function(self)
+		AddItem("123")
+	end
 
 	return dd
 end
 
 function ConfigModeDialog:CreateAutoBindingToggle()
 	local autoBindings = CreateFrame('CheckButton', self:GetName() .. 'AutoBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[autoBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[autoBindings:GetName() .. 'Text']:SetText(L.EnableAutomaticBindings)
+	_G[autoBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[autoBindings:GetName() .. 'Text']:SetPoint("LEFT", autoBindings, "RIGHT", 2, 1)
 
 	autoBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
@@ -193,7 +200,10 @@ end
 
 function ConfigModeDialog:CreatePerCharacterBindingToggle()
 	local perCharBindings = CreateFrame('CheckButton', self:GetName() .. 'PerCharBindings', self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[perCharBindings:GetName() .. 'Text']:SetFontObject('GameFontNormal')
 	_G[perCharBindings:GetName() .. 'Text']:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
+	_G[perCharBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
+	_G[perCharBindings:GetName() .. 'Text']:SetPoint("LEFT", perCharBindings, "RIGHT", 2, 1)
 
 	perCharBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
