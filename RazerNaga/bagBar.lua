@@ -19,65 +19,13 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(30, 30)
+	b:SetSize(32, 32)
 
-	if b.IconBorder ~= nil then
-		b.IconBorder:SetSize(30, 30)
-	end
-
-	if b.IconOverlay ~= nil then
-		b.IconOverlay:SetSize(30, 30)
-	end
-
-	if b.CircleMask then
-		b.CircleMask:Hide()
-	end
-
-	local function updateTextures(self)
-		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
-		self:GetNormalTexture():SetSize(50, 50)
-		self:GetNormalTexture():SetAlpha(1)
-		self:GetNormalTexture():ClearAllPoints()
-		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
-		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
-		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-		self:GetHighlightTexture():SetAlpha(1)
-		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		self.SlotHighlightTexture:SetBlendMode("ADD")
-	end
-
-	hooksecurefunc(b, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
-	hooksecurefunc(b, "UpdateTextures", updateTextures)
-
-	updateTextures(b)
-	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
 
 	b.skinned = true
 end
-
-local function Disable_BagButtons()
-	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
-		bagButton:Disable()
-		SetDesaturation(bagButton.icon, true)
-	end
-end
-
-local function Enable_BagButtons()
-	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
-		bagButton:Enable()
-		SetDesaturation(bagButton.icon, false)
-	end
-end
-
-GameMenuFrame:HookScript("OnShow", function()
-	Disable_BagButtons()
-end)
-
-GameMenuFrame:HookScript("OnHide", function()
-	Enable_BagButtons()
-end)
 
 function BagBar:GetDefaults()
 	return {
@@ -88,11 +36,6 @@ end
 
 function BagBar:SetSetOneBag(enable)
 	self.sets.oneBag = enable or false
-	self:Reload()
-end
-
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
 	self:Reload()
 end
 
@@ -109,9 +52,6 @@ function BagBar:Reload()
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
-		end
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
 		end
 	end
 
@@ -166,7 +106,7 @@ function BagBar:CreateMenu()
 	local panel = menu:AddLayoutPanel()
 	local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 
-	--add onebag option
+	--add onebag and showkeyring options
 	local oneBag = panel:NewCheckButton(L.OneBag)
 	oneBag:SetScript('OnShow', function()
 		oneBag:SetChecked(self.sets.oneBag)
@@ -177,16 +117,6 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
-	end)
-
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
-		_G[panel:GetName() .. L.Columns]:OnShow()
-	end)
 
 	menu:AddAdvancedPanel()
 	self.menu = menu
@@ -220,6 +150,14 @@ function BagBarModule:OnInitialize()
     	end)
         EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
     end
+
+	if BagBarExpandToggle then
+		BagBarExpandToggle:Hide()
+	end
+
+	if CharacterReagentBag0Slot then
+		CharacterReagentBag0Slot:Hide()
+	end
 end
 
 function BagBarModule:Load()
