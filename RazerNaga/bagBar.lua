@@ -39,6 +39,11 @@ function BagBar:SetSetOneBag(enable)
 	self:Reload()
 end
 
+function BagBar:SetShowReagentSlot(enable)
+	self.sets.reagentSlot = enable or false
+	self:Reload()
+end
+
 function BagBar:Reload()
 	if not self.bags then
 		self.bags = {}
@@ -52,6 +57,9 @@ function BagBar:Reload()
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
+		end
+		if self.sets.reagentSlot then
+			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
 		end
 	end
 
@@ -106,7 +114,7 @@ function BagBar:CreateMenu()
 	local panel = menu:AddLayoutPanel()
 	local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 
-	--add onebag and showkeyring options
+	--add onebag option
 	local oneBag = panel:NewCheckButton(L.OneBag)
 	oneBag:SetScript('OnShow', function()
 		oneBag:SetChecked(self.sets.oneBag)
@@ -117,6 +125,16 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
+	--add reagentslot option
+	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
+	reagentSlot:SetScript('OnShow', function()
+		reagentSlot:SetChecked(self.sets.reagentSlot)
+	end)
+
+	reagentSlot:SetScript('OnClick', function()
+		self:SetShowReagentSlot(reagentSlot:GetChecked())
+		_G[panel:GetName() .. L.Columns]:OnShow()
+	end)
 
 	menu:AddAdvancedPanel()
 	self.menu = menu
@@ -150,14 +168,6 @@ function BagBarModule:OnInitialize()
     	end)
         EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
     end
-
-	if BagBarExpandToggle then
-		BagBarExpandToggle:Hide()
-	end
-
-	if CharacterReagentBag0Slot then
-		CharacterReagentBag0Slot:Hide()
-	end
 end
 
 function BagBarModule:Load()
