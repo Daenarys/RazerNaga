@@ -35,22 +35,19 @@ end
 
 local function skinActionButton(self)
     self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-    self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+    self:SetNormalAtlas("plunderstorm-actionbar-slot-border")
     self.NormalTexture:ClearAllPoints()
-    self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
-    self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
-    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
-    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+    self.NormalTexture:SetPoint("TOPLEFT", -9, 9)
+    self.NormalTexture:SetPoint("BOTTOMRIGHT", 9, -9)
     self.PushedTexture:ClearAllPoints()
-    self.PushedTexture:SetAllPoints()
-    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+    self.PushedTexture:SetPoint("TOPLEFT", -2, 2)
+    self.PushedTexture:SetPoint("BOTTOMRIGHT", 7, -7)
     self.HighlightTexture:ClearAllPoints()
-    self.HighlightTexture:SetAllPoints()
-    self.HighlightTexture:SetBlendMode("ADD")
-    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+    self.HighlightTexture:SetPoint("TOPLEFT", -3, 3)
+    self.HighlightTexture:SetPoint("BOTTOMRIGHT", 4, -3)
     self.CheckedTexture:ClearAllPoints()
-    self.CheckedTexture:SetAllPoints()
-    self.CheckedTexture:SetBlendMode("ADD")
+    self.CheckedTexture:SetPoint("TOPLEFT", -3, 3)
+    self.CheckedTexture:SetPoint("BOTTOMRIGHT", 4, -3)
     self.NewActionTexture:SetSize(44, 44)
     self.NewActionTexture:SetAtlas("bags-newitem")
     self.NewActionTexture:ClearAllPoints()
@@ -61,33 +58,28 @@ local function skinActionButton(self)
     self.SpellHighlightTexture:ClearAllPoints()
     self.SpellHighlightTexture:SetPoint("CENTER")
     self.SpellHighlightTexture:SetBlendMode("ADD")
-    self.Border:SetTexture([[Interface\Buttons\UI-ActionButton-Border]])
-    self.Border:SetSize(62, 62)
     self.Border:ClearAllPoints()
-    self.Border:SetPoint("CENTER")
-    self.Border:SetBlendMode("ADD")
+    self.Border:SetPoint("TOPLEFT", -3, 3)
+    self.Border:SetPoint("BOTTOMRIGHT", 4, -3)
     self.cooldown:ClearAllPoints()
     self.cooldown:SetAllPoints()
-    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-    self.Flash:ClearAllPoints()
-    self.Flash:SetAllPoints()
     self.Count:ClearAllPoints()
     self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-    self.Count:SetDrawLayer("ARTWORK", 2)
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
     self.FlyoutBorderShadow:SetSize(48, 48)
-    if self.IconMask then
-        self.IconMask:Hide()
-    end
-    if self.SlotBackground then
-        self.SlotBackground:Hide()
-    end
+    self.HotKey:ClearAllPoints()
+    self.HotKey:SetPoint("TOPRIGHT", -2, -3)
+    self.SlotBackground:SetAtlas("plunderstorm-actionbar-slot-background")
+    self.SlotBackground:SetPoint("TOPLEFT", -8, 8)
+    self.SlotBackground:SetPoint("BOTTOMRIGHT", 8, -8)
 end
 
 function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
     self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or self:GetName())
-    self:SetAttributeNoHandler("showgrid", 1)
+    self:SetAttributeNoHandler("showgrid", 0)
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
@@ -310,7 +302,7 @@ function ActionButton:AddCastOnKeyPressSupport(button)
     button:UpdateOverrideBindings()
 end
 
--- restore old animations
+-- disable new animations
 if (ActionBarActionEventsFrame) then
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -325,210 +317,6 @@ if (ActionBarActionEventsFrame) then
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 end
-
-local function OverlayGlowAnimOutFinished(animGroup)
-    local overlay = animGroup:GetParent()
-    local frame = overlay:GetParent()
-    overlay:Hide()
-    frame.ActionButtonOverlay = nil
-end
-
-local function OverlayGlow_OnHide(self)
-    if self.animOut:IsPlaying() then
-        self.animOut:Stop()
-        OverlayGlowAnimOutFinished(self.animOut)
-    end
-end
-
-local function OverlayGlow_OnUpdate(self, elapsed)
-    AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
-    local cooldown = self:GetParent().cooldown
-    if cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000 then
-        self:SetAlpha(0.5)
-    else
-        self:SetAlpha(1.0)
-    end
-end
-
-local function CreateScaleAnim(group, target, order, duration, x, y, delay)
-    local scale = group:CreateAnimation("Scale")
-    scale:SetTarget(target)
-    scale:SetOrder(order)
-    scale:SetDuration(duration)
-    scale:SetScale(x, y)
-
-    if delay then
-        scale:SetStartDelay(delay)
-    end
-end
-
-local function CreateAlphaAnim(group, target, order, duration, fromAlpha, toAlpha, delay)
-    local alpha = group:CreateAnimation("Alpha")
-    alpha:SetTarget(target)
-    alpha:SetOrder(order)
-    alpha:SetDuration(duration)
-    alpha:SetFromAlpha(fromAlpha)
-    alpha:SetToAlpha(toAlpha)
-
-    if delay then
-        alpha:SetStartDelay(delay)
-    end
-end
-
-local function AnimIn_OnPlay(group)
-    local frame = group:GetParent()
-    local frameWidth, frameHeight = frame:GetSize()
-    frame.spark:SetSize(frameWidth, frameHeight)
-    frame.spark:SetAlpha(0.3)
-    frame.innerGlow:SetSize(frameWidth / 2, frameHeight / 2)
-    frame.innerGlow:SetAlpha(1.0)
-    frame.innerGlowOver:SetAlpha(1.0)
-    frame.outerGlow:SetSize(frameWidth * 2, frameHeight * 2)
-    frame.outerGlow:SetAlpha(1.0)
-    frame.outerGlowOver:SetAlpha(1.0)
-    frame.ants:SetSize(frameWidth * 0.85, frameHeight * 0.85)
-    frame.ants:SetAlpha(0)
-    frame:Show()
-end
-
-local function AnimIn_OnFinished(group)
-    local frame = group:GetParent()
-    local frameWidth, frameHeight = frame:GetSize()
-    frame.spark:SetAlpha(0)
-    frame.innerGlow:SetAlpha(0)
-    frame.innerGlow:SetSize(frameWidth, frameHeight)
-    frame.innerGlowOver:SetAlpha(0.0)
-    frame.outerGlow:SetSize(frameWidth, frameHeight)
-    frame.outerGlowOver:SetAlpha(0.0)
-    frame.outerGlowOver:SetSize(frameWidth, frameHeight)
-    frame.ants:SetAlpha(1.0)
-end
-
-hooksecurefunc("ActionButton_SetupOverlayGlow", function(button)
-    if button.SpellActivationAlert then
-        button.SpellActivationAlert:SetAlpha(0)
-    end
-
-    if button.ActionButtonOverlay then
-        return;
-    end
-
-    local name = button:GetName()
-    local overlay = CreateFrame("Frame", name, UIParent)
-
-    -- spark
-    overlay.spark = overlay:CreateTexture(name .. "Spark", "BACKGROUND")
-    overlay.spark:SetPoint("CENTER")
-    overlay.spark:SetAlpha(0)
-    overlay.spark:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-    overlay.spark:SetTexCoord(0.00781250, 0.61718750, 0.00390625, 0.26953125)
-
-    -- inner glow
-    overlay.innerGlow = overlay:CreateTexture(name .. "InnerGlow", "ARTWORK")
-    overlay.innerGlow:SetPoint("CENTER")
-    overlay.innerGlow:SetAlpha(0)
-    overlay.innerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-    overlay.innerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
-
-    -- inner glow over
-    overlay.innerGlowOver = overlay:CreateTexture(name .. "InnerGlowOver", "ARTWORK")
-    overlay.innerGlowOver:SetPoint("TOPLEFT", overlay.innerGlow, "TOPLEFT")
-    overlay.innerGlowOver:SetPoint("BOTTOMRIGHT", overlay.innerGlow, "BOTTOMRIGHT")
-    overlay.innerGlowOver:SetAlpha(0)
-    overlay.innerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-    overlay.innerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
-
-    -- outer glow
-    overlay.outerGlow = overlay:CreateTexture(name .. "OuterGlow", "ARTWORK")
-    overlay.outerGlow:SetPoint("CENTER")
-    overlay.outerGlow:SetAlpha(0)
-    overlay.outerGlow:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-    overlay.outerGlow:SetTexCoord(0.00781250, 0.50781250, 0.27734375, 0.52734375)
-
-    -- outer glow over
-    overlay.outerGlowOver = overlay:CreateTexture(name .. "OuterGlowOver", "ARTWORK")
-    overlay.outerGlowOver:SetPoint("TOPLEFT", overlay.outerGlow, "TOPLEFT")
-    overlay.outerGlowOver:SetPoint("BOTTOMRIGHT", overlay.outerGlow, "BOTTOMRIGHT")
-    overlay.outerGlowOver:SetAlpha(0)
-    overlay.outerGlowOver:SetTexture([[Interface\SpellActivationOverlay\IconAlert]])
-    overlay.outerGlowOver:SetTexCoord(0.00781250, 0.50781250, 0.53515625, 0.78515625)
-
-    -- ants
-    overlay.ants = overlay:CreateTexture(name .. "Ants", "OVERLAY")
-    overlay.ants:SetPoint("CENTER")
-    overlay.ants:SetAlpha(0)
-    overlay.ants:SetTexture([[Interface\SpellActivationOverlay\IconAlertAnts]])
-
-    -- setup antimations
-    overlay.animIn = overlay:CreateAnimationGroup()
-    CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 1.5, 1.5)
-    CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 0, 1)
-    CreateScaleAnim(overlay.animIn, overlay.innerGlow,      1, 0.3, 2, 2)
-    CreateScaleAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 2, 2)
-    CreateAlphaAnim(overlay.animIn, overlay.innerGlowOver,  1, 0.3, 1, 0)
-    CreateScaleAnim(overlay.animIn, overlay.outerGlow,      1, 0.3, 0.5, 0.5)
-    CreateScaleAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 0.5, 0.5)
-    CreateAlphaAnim(overlay.animIn, overlay.outerGlowOver,  1, 0.3, 1, 0)
-    CreateScaleAnim(overlay.animIn, overlay.spark,          1, 0.2, 2/3, 2/3, 0.2)
-    CreateAlphaAnim(overlay.animIn, overlay.spark,          1, 0.2, 1, 0, 0.2)
-    CreateAlphaAnim(overlay.animIn, overlay.innerGlow,      1, 0.2, 1, 0, 0.3)
-    CreateAlphaAnim(overlay.animIn, overlay.ants,           1, 0.2, 0, 1, 0.3)
-    overlay.animIn:SetScript("OnPlay", AnimIn_OnPlay)
-    overlay.animIn:SetScript("OnFinished", AnimIn_OnFinished)
-
-    overlay.animOut = overlay:CreateAnimationGroup()
-    CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 1, 0.2, 0, 1)
-    CreateAlphaAnim(overlay.animOut, overlay.ants,          1, 0.2, 1, 0)
-    CreateAlphaAnim(overlay.animOut, overlay.outerGlowOver, 2, 0.2, 1, 0)
-    CreateAlphaAnim(overlay.animOut, overlay.outerGlow,     2, 0.2, 1, 0)
-    overlay.animOut:SetScript("OnFinished", OverlayGlowAnimOutFinished)
-
-    -- scripts
-    overlay:SetScript("OnUpdate", OverlayGlow_OnUpdate)
-    overlay:SetScript("OnHide", OverlayGlow_OnHide)
-
-    local frameWidth, frameHeight = button:GetSize()
-    overlay:SetParent(button)
-    overlay:SetFrameLevel(button:GetFrameLevel() + 5)
-    overlay:ClearAllPoints()
-    overlay:SetSize(frameWidth * 1.4, frameHeight * 1.4)
-    overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -frameWidth * 0.2, frameHeight * 0.2)
-    overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", frameWidth * 0.2, -frameHeight * 0.2)
-    overlay.animIn:Play()
-    button.ActionButtonOverlay = overlay
-end)
-
-hooksecurefunc("ActionButton_ShowOverlayGlow", function(button)
-    if button.ActionButtonOverlay then
-        if button.ActionButtonOverlay.animOut:IsPlaying() then
-            button.ActionButtonOverlay.animOut:Stop()
-            button.ActionButtonOverlay.animIn:Play()
-        end
-    end
-end)
-
-hooksecurefunc("ActionButton_HideOverlayGlow", function(button)
-    if button.ActionButtonOverlay then
-        if button.ActionButtonOverlay.animIn:IsPlaying() then
-            button.ActionButtonOverlay.animIn:Stop()
-        end
-        if button:IsVisible() then
-            button.ActionButtonOverlay.animOut:Play()
-        else
-            OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
-        end
-    end
-end)
-
-hooksecurefunc("StartChargeCooldown", function(parent)
-    parent.chargeCooldown:SetAllPoints(parent)
-end)
-
-hooksecurefunc("CooldownFrame_Set", function(self)
-    if not self:IsForbidden() then
-        self:SetEdgeTexture("Interface\\Cooldown\\edge")
-    end
-end)
 
 -- exports
 RazerNaga.ActionButton = ActionButton
