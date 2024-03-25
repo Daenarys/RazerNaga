@@ -161,16 +161,21 @@ function ConfigModeDialog:CreateBindingSetPicker()
 	dd:SetScript('OnShow', function(self)
 		UIDropDownMenu_SetWidth(self, 110)
 		UIDropDownMenu_Initialize(self, self.Initialize)
+		UIDropDownMenu_SetSelectedValue(self, "123")
 	end)
 
 	dd:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
 	end)
-
 	dd:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
+
+	dd.Initialize = function(self)
+		AddItem("123")
+		AddItem("Num")
+	end
 
 	return dd
 end
