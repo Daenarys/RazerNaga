@@ -380,6 +380,9 @@ function MenuBarModule:OnInitialize()
     if perf then
         perf:SetSize(28, 58)
     end
+
+    -- temp fix for 10.2.6 bug
+    MicroMenu.GetEdgeButton = function() end
 end
 
 function MenuBarModule:Load()
