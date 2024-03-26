@@ -4,7 +4,7 @@ UI_shared.xsd">
 	<StatusBar name="RazerNagaCastingBarTemplate" mixin="RazerNagaCastingBarMixin" inherits="CastingBarFrameTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="208" y="11"/>
 		<KeyValues>
-			<KeyValue key="playCastFX" value="true" type="boolean"/>
+			<KeyValue key="playCastFX" value="false" type="boolean"/>
 		</KeyValues>
 		<Scripts>
 			<OnLoad method="OnLoad" inherit="append"/>
