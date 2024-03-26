@@ -1,8 +1,5 @@
 if not _G.CharacterFrame then return end
 
-ApplyDialogBorder(ReputationDetailFrame.Border)
-ApplyDialogBorder(TokenFramePopup.Border)
-
 _G.PaperDollFrame:HookScript("OnShow", function()
 	CharacterModelScene.ControlFrame:Hide()
 end)

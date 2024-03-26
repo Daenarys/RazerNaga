@@ -4,37 +4,20 @@
 ## Notes: A Razer Naga ui skin
 ## Author: Tuller
 ## Dependencies: RazerNaga
-skins\ApplySkin.lua
-skins\Achievements.lua
 skins\AddOnList.lua
-skins\AuctionHouse.lua
 skins\Buffs.lua
-skins\Calendar.lua
 skins\Character.lua
 skins\Chat.lua
-skins\Cinematic.lua
-skins\Communities.lua
 skins\DebugTools.lua
-skins\DropDownList.lua
-skins\EditMode.lua
 skins\FlightMap.lua
-skins\Friends.lua
-skins\GameMenu.lua
 skins\Help.lua
-skins\LFG.lua
 skins\Loot.xml
 skins\Macros.lua
 skins\Merchant.lua
 skins\NamePlates.lua
-skins\PVP.lua
-skins\Quests.lua
-skins\QuickKeybind.lua
-skins\Report.lua
 skins\SettingsPanel.lua
-skins\StaticPopup.lua
 skins\TimeManager.lua
 skins\TotemFrame.lua
-skins\Wardrobe.lua
 skins\WorldMap.lua
 skins\unitframes\PlayerFrame.xml
 skins\unitframes\TargetFrame.lua

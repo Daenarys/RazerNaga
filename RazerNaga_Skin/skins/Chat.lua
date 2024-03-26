@@ -168,9 +168,6 @@ _G.QuickJoinToastButton:HookScript("OnUpdate", function(self)
     self:SetPoint("BOTTOMLEFT", ChatAlertFrame, "BOTTOMLEFT", 0, -23)
 end)
 
-ApplyDialogBorder(ChatConfigFrame.Border)
-ApplyDialogHeader(ChatConfigFrame.Header)
-
 _G.ChatConfigFrame:HookScript("OnShow", function(self)
     self:ClearAllPoints()
     self:SetPoint("CENTER")
