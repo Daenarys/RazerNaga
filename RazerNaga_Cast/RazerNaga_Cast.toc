@@ -5,4 +5,5 @@
 ## Author: Tuller
 ## Dependencies: RazerNaga
 localization.xml
+CastingBarFrame.lua
 castBar.xml
