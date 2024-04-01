@@ -174,6 +174,7 @@ function ConfigModeDialog:CreateBindingSetPicker()
 
 	dd.Initialize = function(self)
 		AddItem("123")
+		AddItem("Num")
 	end
 
 	return dd
