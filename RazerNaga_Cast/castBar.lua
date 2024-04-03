@@ -104,7 +104,8 @@ end
 function CastingBar:OnEvent(event, ...)
 	CastingBarFrame_OnEvent(self, event, ...)
 
-	local unit, spell = ...
+	local unit = self.unit
+	local spell = UnitCastingInfo(unit)
 	if unit == self.unit then
 		if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
 			self.failed = true

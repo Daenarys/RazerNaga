@@ -101,22 +101,6 @@ function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 	end
 end
 
-function CastingBarFrame_OnShow(self)
-	if ( self.unit ) then
-		if ( self.casting ) then
-			local _, _, _, startTime = UnitCastingInfo(self.unit);
-			if ( startTime ) then
-				self.value = (GetTime() - (startTime / 1000));
-			end
-		else
-			local _, _, _, _, endTime = UnitChannelInfo(self.unit);
-			if ( endTime ) then
-				self.value = ((endTime / 1000) - GetTime());
-			end
-		end
-	end
-end
-
 function CastingBarFrame_GetEffectiveStartColor(self, isChannel, notInterruptible)
 	if self.nonInterruptibleColor and notInterruptible then
 		return self.nonInterruptibleColor;
@@ -447,80 +431,4 @@ function CastingBarFrame_FinishSpell(self)
 	self.fadeOut = true;
 	self.casting = nil;
 	self.channeling = nil;
-end
-
-function CastingBarFrame_UpdateIsShown(self)
-	if ( self.casting and self.showCastbar ) then
-		CastingBarFrame_OnEvent(self, "PLAYER_ENTERING_WORLD")
-	else
-		self:Hide();
-	end
-end
-
-function CastingBarFrame_SetLook(self, look)
-	if ( look == "CLASSIC" ) then
-		self:SetWidth(195);
-		self:SetHeight(13);
-		-- border
-		self.Border:ClearAllPoints();
-		self.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border");
-		self.Border:SetWidth(256);
-		self.Border:SetHeight(64);
-		self.Border:SetPoint("TOP", 0, 28);
-		-- bordershield
-		self.BorderShield:ClearAllPoints();
-		self.BorderShield:SetWidth(256);
-		self.BorderShield:SetHeight(64);
-		self.BorderShield:SetPoint("TOP", 0, 28);
-		-- text
-		self.Text:ClearAllPoints();
-		self.Text:SetWidth(185);
-		self.Text:SetHeight(16);
-		self.Text:SetPoint("TOP", 0, 5);
-		self.Text:SetFontObject("GameFontHighlight");
-		-- icon
-		self.Icon:Hide();
-		-- bar spark
-		self.Spark.offsetY = 2;
-		-- bar flash
-		self.Flash:ClearAllPoints();
-		self.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash");
-		self.Flash:SetWidth(256);
-		self.Flash:SetHeight(64);
-		self.Flash:SetPoint("TOP", 0, 28);
-	elseif ( look == "UNITFRAME" ) then
-		self:SetWidth(150);
-		self:SetHeight(10);
-		-- border
-		self.Border:ClearAllPoints();
-		self.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small");
-		self.Border:SetWidth(0);
-		self.Border:SetHeight(49);
-		self.Border:SetPoint("TOPLEFT", -23, 20);
-		self.Border:SetPoint("TOPRIGHT", 23, 20);
-		-- bordershield
-		self.BorderShield:ClearAllPoints();
-		self.BorderShield:SetWidth(0);
-		self.BorderShield:SetHeight(49);
-		self.BorderShield:SetPoint("TOPLEFT", -28, 20);
-		self.BorderShield:SetPoint("TOPRIGHT", 18, 20);
-		-- text
-		self.Text:ClearAllPoints();
-		self.Text:SetWidth(0);
-		self.Text:SetHeight(16);
-		self.Text:SetPoint("TOPLEFT", 0, 4);
-		self.Text:SetPoint("TOPRIGHT", 0, 4);
-		self.Text:SetFontObject("SystemFont_Shadow_Small");
-		-- icon
-		self.Icon:Show();
-		-- bar spark
-		self.Spark.offsetY = 0;
-		-- bar flash
-		self.Flash:ClearAllPoints();
-		self.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small");
-		self.Flash:SetWidth(0);
-		self.Flash:SetHeight(49);
-		self.Flash:SetPoint("TOPLEFT", -23, 20);
-		self.Flash:SetPoint("TOPRIGHT", 23, 20);
-	end
 end
