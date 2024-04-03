@@ -128,24 +128,22 @@ function CastingBar:OnUpdate(elapsed)
 end
 
 function CastingBar:AdjustWidth()
-	if not InCombatLockdown() then
-		local textWidth = self.Text:GetStringWidth() + TEXT_PADDING
-		local timeWidth = (self.Time:IsShown() and (self.Time:GetStringWidth() + 4) * 2) or 0
-		local width = textWidth + timeWidth
+	local textWidth = self.Text:GetStringWidth() + TEXT_PADDING
+	local timeWidth = (self.Time:IsShown() and (self.Time:GetStringWidth() + 4) * 2) or 0
+	local width = textWidth + timeWidth
 
-		if width < self.normalWidth then
-			width = self.normalWidth
-		end
+	if width < self.normalWidth then
+		width = self.normalWidth
+	end
 
-		local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
+	local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
 
-		if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
-			self:SetWidth(width)
-			self.Border:SetWidth(width * BORDER_SCALE)
-			self.Flash:SetWidth(width * BORDER_SCALE)
+	if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
+		self:SetWidth(width)
+		self.Border:SetWidth(width * BORDER_SCALE)
+		self.Flash:SetWidth(width * BORDER_SCALE)
 
-			self:GetParent():Layout()
-		end
+		self:GetParent():Layout()
 	end
 end
 
