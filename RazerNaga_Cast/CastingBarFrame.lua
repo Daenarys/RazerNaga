@@ -50,14 +50,6 @@ function CastingBarFrame_SetUseStartColorForFlash(self, flashColorSameAsStart)
 	self.flashColorSameAsStart = flashColorSameAsStart;
 end
 
--- Fades additional widgets along with the cast bar, in case these widgets are not parented or use ignoreParentAlpha
-function CastingBarFrame_AddWidgetForFade(self, widget)
-	if not self.additionalFadeWidgets then
-		self.additionalFadeWidgets = {};
-	end
-	self.additionalFadeWidgets[widget] = true;
-end
-
 function CastingBarFrame_SetUnit(self, unit, showTradeSkills, showShield)
 	if self.unit ~= unit then
 		self.unit = unit;
