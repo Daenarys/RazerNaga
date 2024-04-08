@@ -134,6 +134,10 @@ function CastingBar:OnUpdate(elapsed)
 		self.time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
 	end
+
+	if ( self.value >= self.maxValue ) then
+		self:SetStatusBarColor(0.0, 1.0, 0.0)
+	end
 end
 
 function CastingBar:AdjustWidth()

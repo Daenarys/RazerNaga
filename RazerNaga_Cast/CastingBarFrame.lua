@@ -70,8 +70,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:Hide()
 			return;
 		end
-
-		self:SetStatusBarColor(1.0, 0.7, 0.0)
 		if ( barFlash ) then
 			barFlash:SetVertexColor(1.0, 0.7, 0.0)
 		end
@@ -127,7 +125,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:SetValue(self.maxValue)
 			if ( event == "UNIT_SPELLCAST_STOP" ) then
 				self.casting = nil;
-				self:SetStatusBarColor(0.0, 1.0, 0.0)
 			else
 				self.channeling = nil;
 			end
@@ -139,7 +136,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() and
 		     (self.casting and select(2, ...) == self.castID) and not self.fadeOut ) then
 			self:SetValue(self.maxValue)
-			self:SetStatusBarColor(1.0, 0.0, 0.0)
 			if ( barSpark ) then
 				barSpark:Hide()
 			end
@@ -167,7 +163,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.maxValue = (endTime - startTime) / 1000;
 			self:SetMinMaxValues(0, self.maxValue)
 			if ( not self.casting ) then
-				self:SetStatusBarColor(1.0, 0.7, 0.0)
 				if ( barSpark ) then
 					barSpark:Show()
 				end
@@ -188,8 +183,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:Hide()
 			return;
 		end
-
-		self:SetStatusBarColor(0.0, 1.0, 0.0)
 		if ( barFlash ) then
 			barFlash:SetVertexColor(0.0, 1.0, 0.0)
 		end
@@ -315,7 +308,6 @@ function CastingBarFrame_OnUpdate(self, elapsed)
 end
 
 function CastingBarFrame_FinishSpell(self, barSpark, barFlash)
-	self:SetStatusBarColor(0.0, 1.0, 0.0)
 	if ( barSpark ) then
 		barSpark:Hide()
 	end
