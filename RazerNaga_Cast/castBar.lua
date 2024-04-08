@@ -155,8 +155,6 @@ function CastingBar:AdjustWidth()
 		self:SetWidth(width)
 		self.borderTexture:SetWidth(width * BORDER_SCALE)
 		self.flashTexture:SetWidth(width * BORDER_SCALE)
-
-		self:GetParent():Layout()
 	end
 end
 
