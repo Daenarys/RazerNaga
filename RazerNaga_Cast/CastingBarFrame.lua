@@ -80,12 +80,22 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	local barBorderShield = _G[selfName.."BorderShield"];
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide();
 			return;
 		end
 
-		self:SetStatusBarColor(1.0, 0.7, 0.0);
+		if nameSpell and IsHelpfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.31, 0.78, 0.47)
+		elseif nameSpell and IsHarmfulSpell(nameSpell) then
+			self:SetStatusBarColor(0.63, 0.36, 0.94)
+		else
+			self:SetStatusBarColor(1.0, 0.7, 0.0);
+		end
+		if ( barFlash ) then
+			barFlash:SetVertexColor(1.0, 0.7, 0.0)
+		end
 		if ( barSpark ) then
 			barSpark:Show();
 		end
@@ -200,6 +210,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return;
 		end
 
+		if ( barFlash ) then
+			barFlash:SetVertexColor(0.0, 1.0, 0.0)
+		end
 		self:SetStatusBarColor(0.0, 1.0, 0.0);
 		self.value = ((endTime / 1000) - GetTime());
 		self.maxValue = (endTime - startTime) / 1000;
