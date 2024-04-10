@@ -180,13 +180,12 @@ PlayerCastingBarFrame:Hide()
 
 RazerNagaCastingBarMixin = {}
 
-local typeInfoTexture = "Interface\\TargetingFrame\\UI-StatusBar";
 RazerNagaCastingBarMixin.typeInfo = {
-    filling = typeInfoTexture,
-    full = typeInfoTexture,
-    glow = typeInfoTexture
+	filling = "Interface\\TargetingFrame\\UI-StatusBar",
+	full = "Interface\\TargetingFrame\\UI-StatusBar",
+	glow = "Interface\\TargetingFrame\\UI-StatusBar"
 }
 
-function RazerNagaCastingBarMixin:GetTypeInfo(barType)
-    return self.typeInfo
+function RazerNagaCastingBarMixin:GetTypeInfo()
+	return self.typeInfo
 end
