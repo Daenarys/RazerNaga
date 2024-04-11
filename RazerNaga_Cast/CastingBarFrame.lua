@@ -25,9 +25,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...
 	
 	local unit = self.unit
+	local nameChannel = UnitChannelInfo(unit)
+	local nameSpell = UnitCastingInfo(unit)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel = UnitChannelInfo(unit)
-		local nameSpell = UnitCastingInfo(unit)
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START"
 			arg1 = unit
@@ -45,7 +45,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 
 	if ( event == "UNIT_SPELLCAST_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
-		local nameSpell = UnitCastingInfo(unit)
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			self:Hide()
 			return
@@ -57,6 +56,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		else
 			self:SetStatusBarColor(1.0, 0.7, 0.0)
 		end
+		self.Flash:SetVertexColor(1.0, 0.7, 0.0)
 		if ( self.Spark ) then
 			self.Spark:Show()
 		end
@@ -152,6 +152,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return
 		end
 		self:SetStatusBarColor(0.0, 1.0, 0.0)
+		self.Flash:SetVertexColor(0.0, 1.0, 0.0)
 		self.value = ((endTime / 1000) - GetTime())
 		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
