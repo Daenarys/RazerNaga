@@ -1,7 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 UI_shared.xsd">
+	<Script file="CastingBarFrame.lua"/>
 	<Script file="castBar.lua"/>
-	<StatusBar name="RazerNagaCastingBarTemplate" mixin="CastingBarMixin, RazerNagaCastingBarMixin" inherits="CastingBarFrameAnimsFXTemplate" drawLayer="BORDER" hidden="true" virtual="true">
+	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="210" y="14"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -10,29 +11,37 @@ UI_shared.xsd">
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlight">
+				<FontString name="$parentText" font="GameFontHighlight">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
+				<FontString name="$parentTime" font="GameFontHighlight" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset x="-4" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="275" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
+					<Size>
+						<AbsDimension x="275" y="68"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -40,26 +49,17 @@ UI_shared.xsd">
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
+				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
 					<Size x="275" y="78"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
-					<Color r="1" g="0.7" b="0" a="1"/>
 				</Texture>
 			</Layer>
 		</Layers>
-		<Animations>
-			<AnimationGroup parentKey="FlashAnim" setToFinalAlpha="true">
-				<Alpha childKey="Flash" fromAlpha="0" toAlpha="1" duration="0.01"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="FadeOutAnim" setToFinalAlpha="true">
-				<Alpha fromAlpha="1" toAlpha="0" duration="0.16"/>
-			</AnimationGroup>
-		</Animations>
 		<Scripts>
 			<OnLoad>
-				self:OnLoad('player', true, false)
+				CastingBarFrame_OnLoad(self, 'player', true)
 			</OnLoad>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>

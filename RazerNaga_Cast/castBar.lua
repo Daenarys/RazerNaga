@@ -43,7 +43,7 @@ function CastBar:GetDefaults()
 		point = 'CENTER',
 		x = 0,
 		y = 30,
-		showText = true,
+		showText = true
 	}
 end
 
@@ -54,9 +54,9 @@ end
 
 function CastBar:UpdateText()
 	if self.sets.showText then
-		self.cast.Time:Show()
+		self.cast.time:Show()
 	else
-		self.cast.Time:Hide()
+		self.cast.time:Hide()
 	end
 	self.cast:AdjustWidth()
 end
@@ -95,18 +95,24 @@ function CastingBar:New(parent)
 	local f = self:Bind(CreateFrame('StatusBar', 'RazerNagaCastingBar', parent, 'RazerNagaCastingBarTemplate'))
 	f:SetPoint('CENTER')
 
+	local name = f:GetName()
+	local _G = getfenv(0)
+	f.time = _G[name .. 'Time']
+	f.text = _G[name .. 'Text']
+	f.borderTexture = _G[name .. 'Border']
+	f.flashTexture = _G[name .. 'Flash']
+
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnUpdate', self.OnUpdate)
-	f:SetScript('OnEvent', self.OnEvent)
+	f:SetScript('OnUpdate', f.OnUpdate)
+	f:SetScript('OnEvent', f.OnEvent)
 
 	return f
 end
 
 function CastingBar:OnEvent(event, ...)
-	CastingBarMixin.OnEvent(self, event, ...)
-	
-	local unit = self.unit
-	local spell = UnitCastingInfo(unit)
+	CastingBarFrame_OnEvent(self, event, ...)
+
+	local spell = UnitCastingInfo(self.unit)
 	if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
 		self.failed = true
 	elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
@@ -116,33 +122,20 @@ function CastingBar:OnEvent(event, ...)
 end
 
 function CastingBar:OnUpdate(elapsed)
-	CastingBarMixin.OnUpdate(self, elapsed)
+	CastingBarFrame_OnUpdate(self, elapsed)
 
 	if self.casting then
-		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
+		self.time:SetFormattedText('%.1f', self.maxValue - self.value)
 		self:AdjustWidth()
-		if self.Spark then
-			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
-		end
 	elseif self.channeling then
-		self.Time:SetFormattedText('%.1f', self.value)
+		self.time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
-		self:HideSpark()
-	elseif self.value >= self.maxValue then
-		self:SetStatusBarColor(0, 1, 0)
-		self:SetValue(self.maxValue)
-		self:HideSpark()
-	else
-		self:SetValue(self.maxValue)
-		self:HideSpark()
 	end
 end
 
 function CastingBar:AdjustWidth()
-	local textWidth = self.Text:GetStringWidth() + TEXT_PADDING
-	local timeWidth = (self.Time:IsShown() and (self.Time:GetStringWidth() + 4) * 2) or 0
+	local textWidth = self.text:GetStringWidth() + TEXT_PADDING
+	local timeWidth = (self.time:IsShown() and (self.time:GetStringWidth() + 4) * 2) or 0
 	local width = textWidth + timeWidth
 
 	if width < self.normalWidth then
@@ -153,8 +146,8 @@ function CastingBar:AdjustWidth()
 
 	if diff > TEXT_PADDING then
 		self:SetWidth(width)
-		self.Border:SetWidth(width * BORDER_SCALE)
-		self.Flash:SetWidth(width * BORDER_SCALE)
+		self.borderTexture:SetWidth(width * BORDER_SCALE)
+		self.flashTexture:SetWidth(width * BORDER_SCALE)
 	end
 end
 
@@ -173,19 +166,3 @@ end
 --hide the old casting bar
 PlayerCastingBarFrame:UnregisterAllEvents()
 PlayerCastingBarFrame:Hide()
-
---------------------------------------------------------------------------------
--- Mixin
---------------------------------------------------------------------------------
-
-RazerNagaCastingBarMixin = {}
-
-RazerNagaCastingBarMixin.typeInfo = {
-	filling = "Interface\\TargetingFrame\\UI-StatusBar",
-	full = "Interface\\TargetingFrame\\UI-StatusBar",
-	glow = "Interface\\TargetingFrame\\UI-StatusBar"
-}
-
-function RazerNagaCastingBarMixin:GetTypeInfo()
-	return self.typeInfo
-end
