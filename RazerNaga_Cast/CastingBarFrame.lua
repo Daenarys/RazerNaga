@@ -2,7 +2,7 @@ local CASTING_BAR_ALPHA_STEP = 0.05
 local CASTING_BAR_FLASH_STEP = 0.2
 local CASTING_BAR_HOLD_TIME = 1
 
-function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
+function CastingBarFrame_OnLoad(self, unit, showTradeSkills)
 	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
@@ -17,20 +17,10 @@ function CastingBarFrame_OnLoad(self, unit, showTradeSkills, showShield)
 
 	self.unit = unit
 	self.showTradeSkills = showTradeSkills
-	self.showShield = showShield
 	self.casting = nil
 	self.channeling = nil
 	self.holdTime = 0
 	self.showCastbar = true
-
-	if ( self.Icon ) then
-		self.Icon:Hide()
-	end
-
-	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint()
-	if ( point == "CENTER" ) then
-		self.Spark.offsetY = offsetY
-	end
 end
 
 function CastingBarFrame_OnEvent(self, event, ...)
@@ -79,28 +69,12 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text)
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture)
-		end
 		self:SetAlpha(1.0)
 		self.holdTime = 0
 		self.casting = 1
 		self.castID = castID
 		self.channeling = nil
 		self.fadeOut = nil
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show()
-				if ( self.Border ) then
-					self.Border:Hide()
-				end
-			else
-				self.BorderShield:Hide()
-				if ( self.Border ) then
-					self.Border:Show()
-				end
-			end
-		end
 		if ( self.showCastbar ) then
 			self:Show()
 		end
@@ -187,9 +161,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text)
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture)
-		end
 		if ( self.Spark ) then
 			self.Spark:Hide()
 		end
@@ -198,19 +169,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		self.casting = nil
 		self.channeling = 1
 		self.fadeOut = nil
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show()
-				if ( self.Border ) then
-					self.Border:Hide()
-				end
-			else
-				self.BorderShield:Hide()
-				if ( self.Border ) then
-					self.Border:Show()
-				end
-			end
-		end
 		if ( self.showCastbar ) then
 			self:Show()
 		end
@@ -225,20 +183,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.maxValue = (endTime - startTime) / 1000
 			self:SetMinMaxValues(0, self.maxValue)
 			self:SetValue(self.value)
-		end
-	elseif ( self.showShield and event == "UNIT_SPELLCAST_INTERRUPTIBLE" ) then
-		if ( self.BorderShield ) then
-			self.BorderShield:Hide()
-			if ( self.Border ) then
-				self.Border:Show()
-			end
-		end
-	elseif ( self.showShield and event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
-		if ( self.BorderShield ) then
-			self.BorderShield:Show()
-			if ( self.Border ) then
-				self.Border:Hide()
-			end
 		end
 	end
 end
@@ -257,7 +201,7 @@ function CastingBarFrame_OnUpdate(self, elapsed)
 		end
 		if ( self.Spark ) then
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 2)
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
 		end
 	elseif ( self.channeling ) then
 		self.value = self.value - elapsed
