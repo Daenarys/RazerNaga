@@ -92,7 +92,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:SetValue(self.maxValue)
 			if ( event == "UNIT_SPELLCAST_STOP" ) then
 				self.casting = nil
-				self:SetStatusBarColor(0.0, 1.0, 0.0)
 			else
 				self.channeling = nil
 			end
