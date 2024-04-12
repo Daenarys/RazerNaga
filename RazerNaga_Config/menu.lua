@@ -281,6 +281,28 @@ end
 
 --[[ Sliders ]]--
 
+local function BlizzardOptionsPanel_Slider_Disable(slider)
+	getmetatable(slider).__index.Disable(slider)
+	slider.Text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+	slider.Low:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+	slider.High:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+
+	if ( slider.Label ) then
+		slider.Label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
+	end
+end
+
+local function BlizzardOptionsPanel_Slider_Enable(slider)
+	getmetatable(slider).__index.Enable(slider)
+	slider.Text:SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b)
+	slider.Low:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+	slider.High:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
+
+	if ( slider.Label ) then
+		slider.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
+	end
+end
+
 --basic slider
 do
 	local function Slider_GetNearestValueOnScale(self, value)
@@ -355,6 +377,7 @@ do
 		slider:SetMinMaxValues(low, high)
 		slider:SetValueStep(step)
 		slider:EnableMouseWheel(true)
+		BlizzardOptionsPanel_Slider_Enable(slider) --colors the slider properly
 
 		_G[name .. 'Text']:SetText(text)
 		_G[name .. 'Low']:SetText('')
@@ -467,8 +490,10 @@ do
 	local function Slider_OnShow(self)
 		local min, max = 1, self:GetParent().owner:NumButtons()
 		if max > min then
+			BlizzardOptionsPanel_Slider_Enable(self)
 			self:SetMinMaxValues(min, max)
 		else
+			BlizzardOptionsPanel_Slider_Disable(self)
 			self:SetMinMaxValues(1, 1)
 		end
 		self:SetValue(self:GetParent().owner:NumColumns())
