@@ -69,7 +69,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		end
 		self:SetAlpha(1.0)
 		self.holdTime = 0
-		self.casting = 1
+		self.casting = true
 		self.castID = castID
 		self.channeling = nil
 		self.fadeOut = nil
@@ -95,8 +95,8 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			else
 				self.channeling = nil
 			end
-			self.flash = 1
-			self.fadeOut = 1
+			self.flash = true
+			self.fadeOut = true
 			self.holdTime = 0
 		end
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
@@ -116,7 +116,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			end
 			self.casting = nil
 			self.channeling = nil
-			self.fadeOut = 1
+			self.fadeOut = true
 			self.holdTime = GetTime() + CASTING_BAR_HOLD_TIME
 		end
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
@@ -138,10 +138,10 @@ function CastingBarFrame_OnEvent(self, event, ...)
 					self.Flash:SetAlpha(0.0)
 					self.Flash:Hide()
 				end
-				self.casting = 1
+				self.casting = true
 				self.channeling = nil
-				self.flash = 0
-				self.fadeOut = 0
+				self.flash = nil
+				self.fadeOut = nil
 			end
 		end
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
@@ -165,7 +165,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		self:SetAlpha(1.0)
 		self.holdTime = 0
 		self.casting = nil
-		self.channeling = 1
+		self.channeling = true
 		self.fadeOut = nil
 		if ( self.showCastbar ) then
 			self:Show()
@@ -248,8 +248,8 @@ function CastingBarFrame_FinishSpell(self)
 		self.Flash:SetAlpha(0.0)
 		self.Flash:Show()
 	end
-	self.flash = 1
-	self.fadeOut = 1
+	self.flash = true
+	self.fadeOut = true
 	self.casting = nil
 	self.channeling = nil
 end
