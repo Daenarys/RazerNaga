@@ -74,7 +74,7 @@ function LibKeyBound:Initialize()
 		f:SetScript('OnDragStop', function(f) f:StopMovingOrSizing() end)
 
 		local header = f:CreateTexture(nil, 'ARTWORK')
-		header:SetTexture('Interface\\Addons\\RazerNaga\\Icons\\UI-DialogBox-Header')
+		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
 		header:SetWidth(256); header:SetHeight(64)
 		header:SetPoint('TOP', 0, 12)
 

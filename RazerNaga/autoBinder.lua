@@ -31,7 +31,7 @@ local function CreateEnableAutomaticBindingsPrompt()
 	f:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
 	local header = f:CreateTexture(nil, 'ARTWORK')
-	header:SetTexture([[Interface\Addons\RazerNaga\Icons\UI-DialogBox-Header]])
+	header:SetTexture([[Interface\DialogFrame\UI-DialogBox-Header]])
 	header:SetWidth(320); header:SetHeight(64)
 	header:SetPoint('TOP', f, 'TOP', 0, 12)
 
