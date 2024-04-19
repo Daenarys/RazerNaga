@@ -10,6 +10,7 @@ skins\Character.lua
 skins\Chat.lua
 skins\DebugTools.lua
 skins\FlightMap.lua
+skins\Garrison.lua
 skins\Help.lua
 skins\Loot.xml
 skins\Macros.lua

@@ -13,23 +13,23 @@ PlayerFrame:HookScript("OnEvent", function(self)
 end)
 
 hooksecurefunc("PlayerFrame_ToPlayerArt", function(self)
-    local _, class = UnitClass("player");
+    local _, class = UnitClass("player")
     if ( PlayerFrame.CfClassPowerBar ) then
-        PlayerFrame.CfClassPowerBar:Setup();
+        PlayerFrame.CfClassPowerBar:Setup()
     elseif ( class == "DEATHKNIGHT" ) then
-        CfRuneFrame:Show();
+        CfRuneFrame:Show()
     end
 
-    ComboPointPlayerFrame:Setup();
+    ComboPointPlayerFrame:Setup()
 end)
 
 hooksecurefunc("PlayerFrame_ToVehicleArt", function(self)
-    local _, class = UnitClass("player");
+    local _, class = UnitClass("player")
     if ( PlayerFrame.CfClassPowerBar ) then
-        PlayerFrame.CfClassPowerBar:Hide();
+        PlayerFrame.CfClassPowerBar:Hide()
     elseif ( class == "DEATHKNIGHT" ) then
-        CfRuneFrame:Hide();
+        CfRuneFrame:Hide()
     end
 
-    ComboPointPlayerFrame:Setup();
+    ComboPointPlayerFrame:Setup()
 end)
