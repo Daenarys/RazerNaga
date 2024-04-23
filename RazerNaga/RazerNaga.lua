@@ -8,7 +8,7 @@ local AddonName, Addon = ...
 RazerNaga = LibStub('AceAddon-3.0'):NewAddon(AddonName, 'AceEvent-3.0', 'AceConsole-3.0')
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
-local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
+local CURRENT_VERSION = C_AddOns.GetAddOnMetadata(AddonName, 'Version')
 local CONFIG_ADDON_NAME = AddonName .. '_Config'
 
 -- setup custom callbacks
@@ -421,7 +421,7 @@ function RazerNaga:ShowOptions()
 		return
 	end
 
-	if LoadAddOn('RazerNaga_Config') then
+	if C_AddOns.LoadAddOn('RazerNaga_Config') then
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
@@ -431,7 +431,7 @@ end
 
 function RazerNaga:NewMenu(id)
 	if not self.Menu then
-		LoadAddOn('RazerNaga_Config')
+		C_AddOns.LoadAddOn('RazerNaga_Config')
 	end
 
 	return self.Menu and self.Menu:New(id)
@@ -539,7 +539,7 @@ function RazerNaga:PrintVersion()
 end
 
 function RazerNaga:IsConfigAddonEnabled()
-	return GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
+	return C_AddOns.GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
 end
 
 --[[ Configuration Functions ]]--
@@ -883,7 +883,7 @@ function RazerNaga:SetFirstLoad(enable)
 end
 
 --queuestatusbutton
-if not (IsAddOnLoaded("ClassicFrames")) then
+if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	--load and position the lfg eye
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
@@ -923,7 +923,7 @@ StaticPopupDialogs['RAZER_NAGA_INCOMPATIBLE_ADDON_LOADED'] = {
 --returns true if another popular actionbar addon is loaded, and false otherwise
 function RazerNaga:GetFirstLoadedIncompatibleAddon()
 	for i, addon in ipairs(INCOMPATIBLE_ADDONS) do
-		local enabled = select(4, GetAddOnInfo(addon))
+		local enabled = select(4, C_AddOns.GetAddOnInfo(addon))
 		if enabled then
 			return addon
 		end
