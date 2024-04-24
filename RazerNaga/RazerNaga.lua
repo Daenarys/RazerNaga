@@ -539,7 +539,7 @@ function RazerNaga:PrintVersion()
 end
 
 function RazerNaga:IsConfigAddonEnabled()
-	return C_AddOns.GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
+	return C_AddOns.GetAddOnEnableState(AddonName .. '_Config', UnitName('player')) >= 1
 end
 
 --[[ Configuration Functions ]]--
@@ -883,27 +883,24 @@ function RazerNaga:SetFirstLoad(enable)
 end
 
 --queuestatusbutton
-if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
-	--load and position the lfg eye
-	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-		self:SetParent(MinimapBackdrop)
-		self:SetFrameLevel(6)
-		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
-		self:SetScale(0.85)
-	end)
+hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+	self:SetParent(MinimapBackdrop)
+	self:SetFrameLevel(6)
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+	self:SetScale(0.85)
+end)
 
-	--queuestatusframe
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
+--queuestatusframe
+hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+	self:ClearAllPoints()
+	self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+end)
 
-	hooksecurefunc("QueueStatusDropDown_Show", function()
-		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
-	end)
-end
+hooksecurefunc("QueueStatusDropDown_Show", function()
+	DropDownList1:ClearAllPoints()
+	DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
+end)
 
 --[[ Incompatibility Check ]]--
 
