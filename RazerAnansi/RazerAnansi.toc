@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 40400
 ## Title: Razer Anansi
 ## Notes: Anansi keyboard enhancements to the Razer Naga addon
 ## Author: Tuller

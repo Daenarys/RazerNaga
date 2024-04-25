@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 40400
 ## Title: Razer Naga Encounter
 ## Notes: Makes the PlayerPowerBarAlt movable
 ## Author: Tuller
