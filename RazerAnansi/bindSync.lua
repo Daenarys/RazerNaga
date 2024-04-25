@@ -108,7 +108,7 @@ function BindSync:SaveChanges()
 end
 
 function BindSync:CreatePromptFrame()
-	local f = CreateFrame('Button', 'AnansiBindSyncFrame', UIParent); f:Hide()
+	local f = CreateFrame('Button', 'AnansiBindSyncFrame', UIParent, BackdropTemplateMixin and 'BackdropTemplate'); f:Hide()
 
 	f:SetPoint('CENTER', UIParent)
 
