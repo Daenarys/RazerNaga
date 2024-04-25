@@ -3,6 +3,7 @@
 --]]
 
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
+local Anansi = RazerNaga:GetModule('Anansi', true)
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 
 local Menu = RazerNaga:CreateClass('Frame'); RazerNaga.Menu = Menu
@@ -24,7 +25,7 @@ Menu.extraWidth = 20
 Menu.extraHeight = 40
 
 function Menu:New(name)
-	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent, BackdropTemplateMixin and 'BackdropTemplate'))
+	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent))
 	f.panels = {}
 
 	f:SetBackdrop(self.bg)
@@ -43,11 +44,6 @@ function Menu:New(name)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetSize(32, 32)
-	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 	f.close:SetPoint('TOPRIGHT', -5, -5)
 
 	return f
@@ -170,6 +166,43 @@ function Menu:AddAdvancedPanel()
 	return panel
 end
 
+function Menu:AddBindingSelectorPanel()
+	local panel = self:NewPanel(L.Bindings)
+
+	local enabler = panel:NewCheckButton(L.EnableAutoBindings)
+	_G[enabler:GetName() .. 'Text']:SetWidth(146)
+	_G[enabler:GetName() .. 'Text']:SetJustifyH('LEFT')
+	_G[enabler:GetName() .. 'Text']:SetJustifyV('TOP')
+
+	enabler:SetScript('OnClick', function(self)
+		RazerNaga.BindingsLoader:SetEnableAutoBinding(self:GetParent().owner, self:GetChecked())
+	end)
+
+	enabler:SetScript('OnShow', function(self)
+		if RazerNaga.AutoBinder:IsAutoBindingEnabled() then
+			self:Enable()
+		else
+			self:Disable()
+		end
+		self:SetChecked(RazerNaga.BindingsLoader:IsAutoBindingEnabled(self:GetParent().owner))
+	end)
+	
+	RazerNaga.Envoy:Register(enabler, 'UPDATE_AUTO_BINDINGS', function(self)
+		if RazerNaga.AutoBinder:IsAutoBindingEnabled() then
+			self:Enable()
+		else
+			self:Disable()
+		end
+	end)	
+
+	local selector = panel:NewBindingModifierSelector()
+	selector:SetPoint('TOPLEFT', enabler, 'BOTTOMLEFT', 2, -12)
+	selector:SetWidth(172)
+
+	return panel
+end
+
+
 do
 	local info = {}
 	local function AddItem(text, value, func, checked)
@@ -280,28 +313,6 @@ end
 
 
 --[[ Sliders ]]--
-
-local function BlizzardOptionsPanel_Slider_Disable(slider)
-	getmetatable(slider).__index.Disable(slider)
-	slider.Text:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-	slider.Low:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-	slider.High:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-
-	if ( slider.Label ) then
-		slider.Label:SetVertexColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b)
-	end
-end
-
-local function BlizzardOptionsPanel_Slider_Enable(slider)
-	getmetatable(slider).__index.Enable(slider)
-	slider.Text:SetVertexColor(NORMAL_FONT_COLOR.r , NORMAL_FONT_COLOR.g , NORMAL_FONT_COLOR.b)
-	slider.Low:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
-	slider.High:SetVertexColor(HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
-
-	if ( slider.Label ) then
-		slider.Label:SetVertexColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b)
-	end
-end
 
 --basic slider
 do
@@ -514,6 +525,56 @@ end
 --radio group
 function Panel:NewRadioGroup(name)
 	return RazerNaga.RadioGroup:New(name, self)
+end
+
+local function BindingModifier_OnSelect(self, value)
+	RazerNaga.BindingsLoader:SetFrameModifier(self:GetParent().owner, value)
+end
+
+local function BindingModifier_GetSelectedValue(self)
+	return RazerNaga.BindingsLoader:GetFrameModifier(self:GetParent().owner)
+end
+
+function Panel:NewBindingModifierSelector()
+	local f
+
+	if Anansi then
+		f = self:NewRadioGroup(L.AnansiTKey)
+
+		f:Add(NONE, 'NONE')
+		for key = 1, Anansi.Config:NumTKeys() do
+			f:Add('T' .. key)
+		end
+
+		f:SetScript('OnShow', function(self)
+			for key = 1, Anansi.Config:NumTKeys() do
+				local button = self.buttons[key + 1]
+				local keyName = Anansi.Config:GetTKeyName(key)
+				local defaultKeyName = 'T' .. key
+				if keyName and keyName ~= defaultKeyName then
+					button:SetText(defaultKeyName .. ' - ' .. keyName)
+				else
+					button:SetText(defaultKeyName)
+				end
+				button:SetValue(Anansi.Config:GetTKeyBinding(key))
+			end
+			self:OnShow()
+		end)
+	else
+		f = self:NewRadioGroup(L.BindingSetModifier)
+
+		for i, modifier in RazerNaga.BindingsLoader:GetAvailableModifiers() do
+			f:Add(RazerNaga.BindingsLoader:GetLocalizedModiferName(modifier), modifier)
+		end
+	end
+
+	f.OnSelect = BindingModifier_OnSelect
+	f.GetSelectedValue = BindingModifier_GetSelectedValue
+	f:SetColumns(1)
+	f:Layout()
+
+	self.height = self.height + 200
+	return f
 end
 
 --right to left & left to right checkboxes
