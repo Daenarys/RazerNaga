@@ -17,14 +17,14 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(36, 36)
-	b.IconBorder:SetSize(37, 37)
+	b:SetSize(30, 30)
+	b.IconBorder:SetSize(30, 30)
 
 	if b.IconOverlay ~= nil then
-		b.IconOverlay:SetSize(37, 37)
+		b.IconOverlay:SetSize(30, 30)
 	end
 
-	_G[b:GetName() .. "NormalTexture"]:SetSize(64, 64)
+	_G[b:GetName() .. "NormalTexture"]:SetSize(50, 50)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 

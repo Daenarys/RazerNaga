@@ -207,6 +207,9 @@ function ActionButton:Skin()
 	if not RazerNaga:Masque('Action Bar', self) then
 		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+		self:GetNormalTexture():ClearAllPoints()
+		self:GetNormalTexture():SetPoint("TOPLEFT", -15, 15)
+		self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 15, -15)
 
 		local floatingBG = _G[self:GetName() .. 'FloatingBG']
 		if floatingBG then

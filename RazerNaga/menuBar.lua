@@ -44,6 +44,29 @@ local MICRO_BUTTON_NAMES = {
 
 --[[ Menu Bar ]]--
 
+function MenuBar:SkinButton(button)
+    if button.skinned then return end
+
+    local normalTexture = button:GetNormalTexture()
+    if (normalTexture) then
+        normalTexture:SetTexelSnappingBias(0.0)
+    end
+    local pushedTexture = button:GetPushedTexture()
+    if (pushedTexture) then
+        pushedTexture:SetTexelSnappingBias(0.0)
+    end
+    local disabledTexture = button:GetDisabledTexture()
+    if (disabledTexture) then
+        disabledTexture:SetTexelSnappingBias(0.0)
+    end
+    local highlightTexture = button:GetHighlightTexture()
+    if (highlightTexture) then
+        highlightTexture:SetTexelSnappingBias(0.0)
+    end
+
+    button.skinned = true
+end
+
 function MenuBar:New()
 	local bar = MenuBar.super.New(self, 'menu')
 
@@ -112,6 +135,7 @@ function MenuBar:AddButton(i)
 	if button then
 		button:SetParent(self.header)
 		button:Show()
+		self:SkinButton(button)
 
 		self.buttons[i] = button
 	end
