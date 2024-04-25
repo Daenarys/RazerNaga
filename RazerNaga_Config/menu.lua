@@ -25,7 +25,7 @@ Menu.extraWidth = 20
 Menu.extraHeight = 40
 
 function Menu:New(name)
-	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent))
+	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent, BackdropTemplateMixin and 'BackdropTemplate'))
 	f.panels = {}
 
 	f:SetBackdrop(self.bg)

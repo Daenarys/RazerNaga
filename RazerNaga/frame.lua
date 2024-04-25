@@ -121,7 +121,7 @@ function Frame:Free()
 	self.docked = nil
 
 	self:ClearAllPoints()
-	self:SetUserPlaced(nil)
+	self:SetUserPlaced(false)
 	self.drag:Hide()
 	self:Hide()
 
