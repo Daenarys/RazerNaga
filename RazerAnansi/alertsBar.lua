@@ -44,7 +44,6 @@ function AlertFrame:New(parent)
 	local keyText = tKeyComboFrame:CreateFontString(nil, 'OVERLAY', 'RazerAnansi_Font')
 	keyText:SetPoint('LEFT', tKeyTexture, 'RIGHT', 0, 0)
 	keyText:SetJustifyH('CENTER')
-	keyText:SetJustifyV('CENTER')
 	keyText:SetSize(16, 16)
 	keyText:SetText('+')
 	frame.keyText = keyText
