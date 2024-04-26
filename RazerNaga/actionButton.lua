@@ -132,17 +132,6 @@ function ActionButtonMixin:OnCreate(id)
 
     -- enable cooldown bling
     self.cooldown:SetDrawBling(true)
-
-    hooksecurefunc(self, "Update", function()
-        local texture = GetActionTexture(self.action)
-
-        if not ( texture ) then
-            local hotkey = self.HotKey
-            if not ( hotkey:GetText() == RANGE_INDICATOR ) then
-                hotkey:SetVertexColor(0.6, 0.6, 0.6)
-            end
-        end
-    end)
 end
 
 function ActionButtonMixin:UpdateOverrideBindings()
@@ -538,24 +527,6 @@ end)
 hooksecurefunc("CooldownFrame_Set", function(self)
     if not self:IsForbidden() then
         self:SetEdgeTexture("Interface\\Cooldown\\edge")
-    end
-end)
-
-hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
-    if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
-        if ( checksRange ) then
-            if ( inRange ) then
-                self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB())
-            else
-                self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB())
-            end
-        end
-    else
-        if ( checksRange and not inRange ) then
-            self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB())
-        else
-            self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB())
-        end
     end
 end)
 
