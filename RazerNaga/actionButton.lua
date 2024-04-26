@@ -134,8 +134,14 @@ function ActionButtonMixin:OnCreate(id)
     self.cooldown:SetDrawBling(true)
 
     hooksecurefunc(self, "Update", function()
-        if not ( self.HotKey:GetText() == RANGE_INDICATOR ) then
-            self.HotKey:SetVertexColor(0.6, 0.6, 0.6)
+        local action = self.action
+        local texture = GetActionTexture(action)
+
+        if not ( texture ) then
+            local hotkey = self.HotKey
+            if not ( hotkey:GetText() == RANGE_INDICATOR ) then
+                hotkey:SetVertexColor(0.6, 0.6, 0.6)
+            end
         end
     end)
 end
