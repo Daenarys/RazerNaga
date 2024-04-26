@@ -134,8 +134,7 @@ function ActionButtonMixin:OnCreate(id)
     self.cooldown:SetDrawBling(true)
 
     hooksecurefunc(self, "Update", function()
-        local action = self.action
-        local texture = GetActionTexture(action)
+        local texture = GetActionTexture(self.action)
 
         if not ( texture ) then
             local hotkey = self.HotKey
