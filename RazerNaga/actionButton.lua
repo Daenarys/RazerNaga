@@ -217,7 +217,3 @@ function ActionButton:Skin()
 		end
 	end
 end
-
-hooksecurefunc(SpellFlyout, "Toggle", function(self)
-	self:SetFrameStrata("LOW")
-end)
