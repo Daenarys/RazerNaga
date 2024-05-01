@@ -515,6 +515,8 @@ function ActionBarController:Load()
 	self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
 	self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
 
+	self:RegisterEvent('PET_BAR_HIDEGRID')
+
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
@@ -538,4 +540,13 @@ function ActionBarController:UpdateOverrideBar()
 	for _, button in pairs(overrideBar.buttons) do
 		ActionButton_Update(button)
 	end
+end
+
+-- workaround for empty buttons not hiding when dropping a pet action
+function ActionBarController:PET_BAR_HIDEGRID()
+	if InCombatLockdown() then
+		return
+	end
+
+	ActionBar:ForAll('HideGrid', 1)
 end
