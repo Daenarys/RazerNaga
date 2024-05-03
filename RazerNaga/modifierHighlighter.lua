@@ -33,7 +33,7 @@ function ModHighlighter:TBAR_UPDATE_AUTO_FADE(msg, enable)
 end
 
 function ModHighlighter:UpdateEventRegistration()
-	if self:IsAutoBindingEnabled() and (self:HighlightingModifiers() or self:FadingBars()) then
+	if self:IsAutoBindingEnabled() and (self:HighlightingModifiers()) then
 		self:RegisterEvent('MODIFIER_STATE_CHANGED')
 	else
 		self:UnregisterEvent('MODIFIER_STATE_CHANGED')
@@ -55,11 +55,6 @@ end
 
 function ModHighlighter:HighlightingModifiers()
 	return RazerNaga.db.profile.highlightModifiers
-end
-
-function ModHighlighter:FadingBars()
-	local Anansi = RazerNaga:GetModule('Anansi', true)
-	return Anansi and Anansi.Config:AutoFadingTBars()
 end
 
 function ModHighlighter:IsAutoBindingEnabled()
