@@ -312,8 +312,13 @@ function XP:UpdateReputation()
 	min = 0
 
 	local color = FACTION_BAR_COLORS[reaction]
-	self.value:SetStatusBarColor(color.r, color.g, color.b)
-	self.bg:SetVertexColor(color.r - 0.3, color.g - 0.3, color.b - 0.3, 0.6)
+	if C_Reputation.IsMajorFaction(factionID) then
+		self.value:SetStatusBarColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b)
+		self.bg:SetVertexColor(BLUE_FONT_COLOR.r - 0.3, BLUE_FONT_COLOR.g - 0.3, BLUE_FONT_COLOR.b - 0.3, 0.6)
+	else 
+		self.value:SetStatusBarColor(color.r, color.g, color.b)
+		self.bg:SetVertexColor(color.r - 0.3, color.g - 0.3, color.b - 0.3, 0.6)
+	end
 
 	self.value:SetMinMaxValues(0, max)
 	self.value:SetValue(value)
