@@ -101,29 +101,22 @@ end
 
 function BindableButton:UpdateHotkeys()
     local key = (self.GetHotkey or getButtonHotkey)(self) or ''
+    local hotkey = self.HotKey
 
-    self.HotKey:SetSize(36, 10)
-    self.HotKey:SetFont("Fonts\\ARIALN.TTF", 12, "THICKOUTLINE, MONOCHROME")
-    self.HotKey:SetDrawLayer("ARTWORK", 2)
+    hotkey:SetText(key)
+    hotkey:SetShown(key ~= '')
+    hotkey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
+    hotkey:SetDrawLayer("ARTWORK", 2)
 
     if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
-        self.HotKey:SetText(key)
-        self.HotKey:Show()
-        self.HotKey:ClearAllPoints()
-        self.HotKey:SetPoint("TOPLEFT", -2, -3)
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
     elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
-        self.HotKey:SetText(key)
-        self.HotKey:Show()
-        self.HotKey:ClearAllPoints()
-        self.HotKey:SetPoint("TOPLEFT", -2, -3)
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
     elseif key ~= '' and RazerNaga:ShowBindingText() then
-        self.HotKey:SetText(key)
-        self.HotKey:Show()
-        self.HotKey:ClearAllPoints()
-        self.HotKey:SetPoint("TOPLEFT", 1, -3)
-    else
-        self.HotKey:SetText('') --blank out non blank text, such as RANGE_INDICATOR
-        self.HotKey:Hide()
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", 3, -3)
     end
 end
 
