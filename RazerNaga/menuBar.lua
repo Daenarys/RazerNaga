@@ -484,7 +484,7 @@ function MenuBar:LayoutNormal()
 
     local firstButton = self.buttons[1]
     local w = firstButton:GetWidth() + spacing - 2
-    local h = firstButton:GetHeight() + spacing - 20
+    local h = firstButton:GetHeight() + spacing - 1
 
     for i, button in pairs(self.activeButtons) do
         local col, row
@@ -503,7 +503,7 @@ function MenuBar:LayoutNormal()
         
         button:SetParent(self)
         button:ClearAllPoints()
-        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 20)
+        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
         button:Show()
     end
 
