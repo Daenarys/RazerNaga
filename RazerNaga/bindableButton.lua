@@ -102,8 +102,7 @@ end
 function BindableButton:UpdateHotkeys()
     local key = (self.GetHotkey or getButtonHotkey)(self) or ''
 
-    self.HotKey:SetSize(36, 10)
-    self.HotKey:SetFont("Fonts\\ARIALN.TTF", 12, "THICKOUTLINE, MONOCHROME")
+    self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
     self.HotKey:SetDrawLayer("ARTWORK", 2)
 
     if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
@@ -120,7 +119,7 @@ function BindableButton:UpdateHotkeys()
         self.HotKey:SetText(key)
         self.HotKey:Show()
         self.HotKey:ClearAllPoints()
-        self.HotKey:SetPoint("TOPLEFT", 1, -3)
+        self.HotKey:SetPoint("TOPLEFT", 3, -3)
     else
         self.HotKey:SetText('') --blank out non blank text, such as RANGE_INDICATOR
         self.HotKey:Hide()
