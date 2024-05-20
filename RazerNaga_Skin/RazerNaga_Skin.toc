@@ -14,6 +14,7 @@ skins\GreatVault.lua
 skins\Help.lua
 skins\Loot.xml
 skins\Merchant.lua
+skins\Minimap.lua
 skins\ObjectiveTracker.lua
 skins\SettingsPanel.lua
 skins\TotemFrame.lua
