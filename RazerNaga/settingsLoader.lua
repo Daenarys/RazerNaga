@@ -285,7 +285,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
-				['spacing'] = 0,
+				['spacing'] = -2,
 				['x'] = 250,
 				['y'] = 0
 			},
