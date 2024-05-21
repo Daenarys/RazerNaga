@@ -129,7 +129,6 @@ local SpellFlyoutFrameMixin = {}
 
 -- methods we're importing from the stock UI
 SpellFlyoutFrameMixin.SetBorderColor = SpellFlyout_SetBorderColor
-SpellFlyoutFrameMixin.SetBorderSize = SpellFlyout_SetBorderSize
 
 -- secure methods
 local SpellFlyoutFrame_Toggle = [[
@@ -250,21 +249,31 @@ function SpellFlyoutFrameMixin:Initialize()
 	self.Background = CreateFrame('Frame', nil, self)
 	self.Background:SetAllPoints()
 
-	self.Background.End = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.End:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutButton', true)
-
-	self.Background.HorizontalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.HorizontalMiddle:SetAtlas('_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft', true)
-	self.Background.HorizontalMiddle:SetHorizTile(true)
-	self.Background.HorizontalMiddle:Hide()
-
-	self.Background.VerticalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.VerticalMiddle:SetAtlas('!UI-HUD-ActionBar-IconFrame-FlyoutMid', true)
-	self.Background.VerticalMiddle:SetVertTile(true)
-	self.Background.VerticalMiddle:Hide()
-
 	self.Background.Start = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.Start:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutBottom', true)
+	self.Background.Start:Hide()
+
+	self.Background.End = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.End:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+	self.Background.End:SetSize(37,22)
+	self.Background.End:SetTexCoord(0.01562500,0.59375000,0.74218750,0.91406250)
+	self.Background.End:SetTexelSnappingBias(0)
+	self.Background.End:SetSnapToPixelGrid(false)
+
+	self.Background.HorizontalMiddle = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.HorizontalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMidLeft")
+	self.Background.HorizontalMiddle:SetHorizTile(true)
+	self.Background.HorizontalMiddle:SetSize(32,37)
+	self.Background.HorizontalMiddle:SetTexCoord(0,1,0,0.578125)
+	self.Background.HorizontalMiddle:SetTexelSnappingBias(0)
+	self.Background.HorizontalMiddle:SetSnapToPixelGrid(false)
+
+	self.Background.VerticalMiddle = self:CreateTexture(nil, "BACKGROUND")
+	self.Background.VerticalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMid")
+	self.Background.VerticalMiddle:SetVertTile(true)
+	self.Background.VerticalMiddle:SetSize(37,32)
+	self.Background.VerticalMiddle:SetTexCoord(0,0.578125,0,1)
+	self.Background.VerticalMiddle:SetTexelSnappingBias(0)
+	self.Background.VerticalMiddle:SetSnapToPixelGrid(false)
 
 	local command = [[
 		FLYOUT_INFO = newtable()
@@ -287,41 +296,40 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	self.Background.End:ClearAllPoints()
 
 	if (direction == "UP") then
-		self.Background.End:SetPoint("TOP");
-		SetClampedTextureRotation(self.Background.End, 0);
-		self.Background.HorizontalMiddle:Hide();
-		self.Background.VerticalMiddle:Show();
-		self.Background.VerticalMiddle:ClearAllPoints();
-		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM");
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance);
+		self.Background.End:SetPoint("TOP")
+		SetClampedTextureRotation(self.Background.End, 0)
+		self.Background.HorizontalMiddle:Hide()
+		self.Background.VerticalMiddle:Show()
+		self.Background.VerticalMiddle:ClearAllPoints()
+		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM")
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance)
 	elseif (direction == "DOWN") then
-		self.Background.End:SetPoint("BOTTOM");
-		SetClampedTextureRotation(self.Background.End, 180);
-		self.Background.HorizontalMiddle:Hide();
-		self.Background.VerticalMiddle:Show();
-		self.Background.VerticalMiddle:ClearAllPoints();
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP");
-		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance);
+		self.Background.End:SetPoint("BOTTOM")
+		SetClampedTextureRotation(self.Background.End, 180)
+		self.Background.HorizontalMiddle:Hide()
+		self.Background.VerticalMiddle:Show()
+		self.Background.VerticalMiddle:ClearAllPoints()
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP")
+		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance)
 	elseif (direction == "LEFT") then
-		self.Background.End:SetPoint("LEFT");
-		SetClampedTextureRotation(self.Background.End, 270);
-		self.Background.VerticalMiddle:Hide();
-		self.Background.HorizontalMiddle:Show();
-		self.Background.HorizontalMiddle:ClearAllPoints();
-		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT");
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0);
+		self.Background.End:SetPoint("LEFT")
+		SetClampedTextureRotation(self.Background.End, 270)
+		self.Background.VerticalMiddle:Hide()
+		self.Background.HorizontalMiddle:Show()
+		self.Background.HorizontalMiddle:ClearAllPoints()
+		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT")
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0)
 	elseif (direction == "RIGHT") then
-		self.Background.End:SetPoint("RIGHT");
-		SetClampedTextureRotation(self.Background.End, 90);
-		self.Background.VerticalMiddle:Hide();
-		self.Background.HorizontalMiddle:Show();
-		self.Background.HorizontalMiddle:ClearAllPoints();
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT");
-		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0);
+		self.Background.End:SetPoint("RIGHT")
+		SetClampedTextureRotation(self.Background.End, 90)
+		self.Background.VerticalMiddle:Hide()
+		self.Background.HorizontalMiddle:Show()
+		self.Background.HorizontalMiddle:ClearAllPoints()
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT")
+		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0)
 	end
 
 	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(40)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
@@ -435,10 +443,28 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	local name = ('%sSpellFlyoutButton%d'):format("RazerNaga", id)
 	local button = CreateFrame('CheckButton', name, self, 'SmallActionButtonTemplate, SecureActionButtonTemplate')
 
-	Mixin(button, SpellFlyoutButtonMixin)
-
-	-- enable cooldown bling
+	button:SetSize(28, 28)
 	button.cooldown:SetDrawBling(true)
+	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
+	button.NormalTexture:SetAlpha(0)
+	button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	button.CheckedTexture:ClearAllPoints()
+	button.CheckedTexture:SetPoint("TOPLEFT")
+	button.CheckedTexture:SetPoint("BOTTOMRIGHT")
+	button.CheckedTexture:SetBlendMode("ADD")
+	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:ClearAllPoints()
+	button.HighlightTexture:SetPoint("TOPLEFT")
+	button.HighlightTexture:SetPoint("BOTTOMRIGHT")
+	button.HighlightTexture:SetBlendMode("ADD")
+	button.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	button.PushedTexture:ClearAllPoints()
+	button.PushedTexture:SetPoint("TOPLEFT")
+	button.PushedTexture:SetPoint("BOTTOMRIGHT")
+	button.cooldown:ClearAllPoints()
+	button.cooldown:SetAllPoints()
+
+	Mixin(button, SpellFlyoutButtonMixin)
 
 	button:Initialize()
 
