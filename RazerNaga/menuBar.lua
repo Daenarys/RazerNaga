@@ -11,8 +11,8 @@ local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
-    "SpellbookMicroButton",
-    "TalentMicroButton",
+    "ProfessionMicroButton",
+    "PlayerSpellsMicroButton",
     "AchievementMicroButton",
     "QuestLogMicroButton",
     "GuildMicroButton",
@@ -25,8 +25,8 @@ local MICRO_BUTTONS = {
 
 local MICRO_BUTTON_NAMES = {
     ['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
-    ['SpellbookMicroButton'] = _G['SPELLBOOK_ABILITIES_BUTTON'],
-    ['TalentMicroButton'] = _G['TALENTS_BUTTON'],
+    ['ProfessionMicroButton'] = _G['PROFESSIONS_BUTTON'],
+    ['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
     ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
     ['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
@@ -44,8 +44,8 @@ function MenuBar:SkinButton(button)
 
     local buttons = {
         {button = CharacterMicroButton, name = "Character"},
-        {button = SpellbookMicroButton, name = "Spellbook"},
-        {button = TalentMicroButton, name = "Talents"},
+        {button = ProfessionMicroButton, name = "Spellbook"},
+        {button = PlayerSpellsMicroButton, name = "Talents"},
         {button = AchievementMicroButton, name = "Achievement"},
         {button = QuestLogMicroButton, name = "Quest"},
         {button = GuildMicroButton, name = "Socials"},
