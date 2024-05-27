@@ -98,7 +98,20 @@ function ActionButton:Create(id)
 		b:SetAttribute('useparent-unit', true)
 		b:SetAttribute("statehidden", nil)
 		b:EnableMouseWheel(true)
+
 		b:HookScript('OnEnter', self.OnEnter)
+
+		if b.UpdateHotKeys then
+			hooksecurefunc(b, 'UpdateHotkeys', self.UpdateHotkey)
+		end
+
+		if b.ShowGrid and b.ShowGrid ~= self.ShowGrid then
+			hooksecurefunc(b, 'ShowGrid', self.ShowGrid)
+		end
+
+		if b.HideGrid and b.HideGrid ~= self.HideGrid then
+			hooksecurefunc(b, 'HideGrid', self.HideGrid)
+		end
 
 		b:Skin()
 	end
@@ -146,11 +159,9 @@ function ActionButton:OnEnter()
 end
 
 --override the old update hotkeys function
-hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
-
--- hooksecurefunc('ActionBarActionEventsFrame_UnregisterFrame', function(button)
--- 	print("Unregister", button:GetName())
--- end)
+if ActionButton_UpdateHotkeys then
+	hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
+end
 
 --button visibility
 function ActionButton:ShowGrid(reason)
@@ -193,7 +204,9 @@ function ActionButton:SetFlyoutDirection(direction)
 	ActionButton_UpdateFlyout(self)
 end
 
-ActionButton.UpdateState = _G.ActionButton_UpdateState
+if ActionButton_UpdateState then
+	ActionButton.UpdateState = ActionButton_UpdateState
+end
 
 --utility function, resyncs the button's current action, modified by state
 function ActionButton:LoadAction()

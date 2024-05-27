@@ -15,18 +15,18 @@ local getStateIterator = function(type, i)
 end
 
 local BarStates = {
-	add = function(self, state, index)
+	add = function(_, state, index)
 		if index then
 			return table.insert(states, index, state)
 		end
 		return table.insert(states, state)
 	end,
 
-	getAll = function(self, type)
+	getAll = function(_, type)
 		return getStateIterator, type, 0
 	end,
 
-	get = function(self, id)
+	get = function(_, id)
 		for i, v in pairs(states) do
 			if v.id == id then
 				return v
@@ -34,9 +34,9 @@ local BarStates = {
 		end
 	end,
 
-	map = function(self, f)
+	map = function(_, f)
 		local results = {}
-		for k, v in ipairs(states) do
+		for _, v in ipairs(states) do
 			if f(v) then
 				table.insert(results, v)
 			end
@@ -74,15 +74,55 @@ end
 do
 	local class = select(2, UnitClass('player'))
 
+	local function newFormConditionLookup(spellID)
+        return function()
+            for i = 1, GetNumShapeshiftForms() do
+                local _, _, _, formSpellID = GetShapeshiftFormInfo(i)
+
+                if spellID == formSpellID then
+                    return ("[form:%d]"):format(i)
+                end
+            end
+        end
+    end
+
 	if class == 'DRUID' then
 		addState('class', 'moonkin', '[bonusbar:4]', GetSpellInfo(24858))
 		addState('class', 'bear', '[bonusbar:3]', GetSpellInfo(5487))
-		addState('class', 'tree', function() return format('[form:%d]', GetNumShapeshiftForms() + 1) end, GetSpellInfo(33891))
+		addState('class', 'tree', newFormConditionLookup(33891), GetSpellInfo(33891))
 		addState('class', 'prowl', '[bonusbar:1,stealth]', GetSpellInfo(5215))
 		addState('class', 'cat', '[bonusbar:1]', GetSpellInfo(768))
 	elseif class == 'ROGUE' then
 		addState('class', 'stealth', '[bonusbar:1]', GetSpellInfo(1784))
 		addState('class', 'shadowdance', '[form:2]', GetSpellInfo(1856))
+	elseif class == 'PALADIN' then
+		addState(
+			"class",
+			"crusader",
+			newFormConditionLookup(32223),
+			GetSpellInfo(32223)
+		)
+
+		addState(
+			"class",
+			"devotion",
+			newFormConditionLookup(465),
+			GetSpellInfo(465)
+		)
+
+		addState(
+			"class",
+			"retribution",
+			newFormConditionLookup(183435),
+			GetSpellInfo(183435)
+		)
+
+		addState(
+			"class",
+			"concentration",
+			newFormConditionLookup(317920),
+			GetSpellInfo(317920)
+		)
 	end
 
 	local race = select(2, UnitRace('player'))

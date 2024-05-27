@@ -321,7 +321,7 @@ function Frame:SetFrameScale(newScale, scaleAnchored)
 	if scaleAnchored then
 		for _, f in self:GetAll() do
 			if f:GetAnchor() == self then
-				f:SetFrameScale(scale, true)
+				f:SetFrameScale(newScale, true)
 			end
 		end
 	end
@@ -402,14 +402,6 @@ function Frame:GetExpectedAlpha()
 	--if the frame is moused over, then return the frame's normal opacity
 	if self.focused then
 		return self:GetFrameAlpha()
-	end
-
-	--if the frame is a tKey and the given tKey is presed then return the frame's normal opacity
-	local Anansi = RazerNaga:GetModule('Anansi', true)
-	if Anansi and Anansi.Config:AutoFadingTBars() and RazerNaga.BindingsLoader:IsAutoBindingEnabled(self) then
-		if Anansi:IsTKeyPressed(Anansi:GetFrameTKey(self)) then
-			return self:GetFrameAlpha()
-		end
 	end
 
 	--if there's a statealpha value for the frame, then use it
@@ -972,7 +964,7 @@ local backdrop = {
 }
 
 local function createBorder(self)
-	local f = CreateFrame('Frame', nil, self.header)
+	local f = CreateFrame('Frame', nil, self.header, BackdropTemplateMixin and 'BackdropTemplate')
 	f:SetToplevel(true)
 	f:SetPoint('TOPLEFT', -4, 4, self.header)
 	f:SetPoint('BOTTOMRIGHT', 4, -4, self.header)
@@ -989,6 +981,7 @@ function Frame:ShowHighlight()
 		ht = createBorder(self)
 		self.ht = ht
 	end
+
 	self.ht:Show()
 end
 

@@ -181,7 +181,7 @@ function ActionBar:UpdateStateDriver()
 			condition = state.value
 		end
 
-		if self:GetOffset(stateId) then
+		if condition and self:GetOffset(stateId) then
 			header = header .. condition .. 'S' .. i .. ';'
 		end
 	end
@@ -538,7 +538,7 @@ function ActionBarController:UpdateOverrideBar()
 	local overrideBar = RazerNaga:GetOverrideBar()
 
 	for _, button in pairs(overrideBar.buttons) do
-		ActionButton_Update(button)
+		button:Update()
 	end
 end
 
