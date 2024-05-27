@@ -548,6 +548,7 @@ end
 
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
@@ -691,6 +692,7 @@ end
 
 function RazerNaga:SetLock(enable)
 	if InCombatLockdown() then
+		self:Printf(_G.ERR_NOT_IN_COMBAT)
 		return
 	end
 
