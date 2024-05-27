@@ -95,34 +95,10 @@ do
 	elseif class == 'ROGUE' then
 		addState('class', 'stealth', '[bonusbar:1]', GetSpellInfo(1784))
 		addState('class', 'shadowdance', '[form:2]', GetSpellInfo(1856))
-	elseif class == 'PALADIN' then
-		addState(
-			"class",
-			"crusader",
-			newFormConditionLookup(32223),
-			GetSpellInfo(32223)
-		)
-
-		addState(
-			"class",
-			"devotion",
-			newFormConditionLookup(465),
-			GetSpellInfo(465)
-		)
-
-		addState(
-			"class",
-			"retribution",
-			newFormConditionLookup(183435),
-			GetSpellInfo(183435)
-		)
-
-		addState(
-			"class",
-			"concentration",
-			newFormConditionLookup(317920),
-			GetSpellInfo(317920)
-		)
+	elseif class == 'WARRIOR' then		
+		addState('class', 'battle', '[form:1]', GetSpellInfo(2457))
+		addState('class', 'defensive', '[form:2]', GetSpellInfo(71))
+		addState('class', 'berserker', '[form:3]', GetSpellInfo(2458))
 	end
 
 	local race = select(2, UnitRace('player'))
