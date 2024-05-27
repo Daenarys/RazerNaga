@@ -15,12 +15,12 @@ local MICRO_BUTTONS = {
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"GuildMicroButton",
-	"EJMicroButton",
-	"CollectionsMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
-	"MainMenuMicroButton",
+	"EJMicroButton",
+	"CollectionsMicroButton",
 	"HelpMicroButton",
+	"MainMenuMicroButton",
 }
 
 local overrideButtons = {}
