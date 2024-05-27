@@ -19,8 +19,8 @@ local MICRO_BUTTONS = {
 	"LFGMicroButton",
 	"EJMicroButton",
 	"CollectionsMicroButton",
-	"HelpMicroButton",
 	"MainMenuMicroButton",
+	"HelpMicroButton",
 }
 
 local overrideButtons = {}
