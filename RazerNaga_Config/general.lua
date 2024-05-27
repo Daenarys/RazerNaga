@@ -39,6 +39,7 @@ local GeneralOptions = RazerNaga.Options:NewPanel(L.General, L.GeneralPanelDesc,
 local lock = GeneralOptions:NewButton(L.EnterConfigMode, 136, 22)
 lock:SetScript('OnClick', function(self)
 	RazerNaga:ToggleLockedFrames()
+	HideUIPanel(SettingsPanel)
 end)
 lock:SetPoint('TOPLEFT', 12, -80)
 
@@ -46,6 +47,7 @@ lock:SetPoint('TOPLEFT', 12, -80)
 local bind = GeneralOptions:NewButton(L.EnterBindingMode, 116, 22)
 bind:SetScript('OnClick', function(self)
 	RazerNaga:ToggleBindingMode()
+	HideUIPanel(SettingsPanel)
 end)
 bind:SetPoint('LEFT', lock, 'RIGHT', 4, 0)
 

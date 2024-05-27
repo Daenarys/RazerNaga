@@ -739,7 +739,6 @@ function RazerNaga:ToggleBindingMode()
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
-		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
