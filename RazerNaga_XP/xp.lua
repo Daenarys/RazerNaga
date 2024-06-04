@@ -156,7 +156,7 @@ function XP:UpdateWatch()
 end
 
 function XP:ShouldWatchFaction()
-	return (not self.sets.alwaysShowXP) and C_Reputation.GetWatchedFactionData()
+	return (not self.sets.alwaysShowXP) and GetWatchedFactionInfo()
 end
 
 

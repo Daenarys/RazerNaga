@@ -1,4 +1,4 @@
-﻿## Interface: 110000
+﻿## Interface: 100207
 ## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Cast
 ## Notes: A movable casting bar, with timer

@@ -30,6 +30,10 @@ local function skinPetButton(self)
     self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
     self.Flash:ClearAllPoints()
     self.Flash:SetAllPoints()
+    self.AutoCastable:SetTexture("Interface\\Buttons\\UI-AutoCastableOverlay")
+    self.AutoCastable:SetSize(58, 58)
+    self.AutoCastable:ClearAllPoints()
+    self.AutoCastable:SetPoint("CENTER")
     if self.IconMask then
         self.IconMask:Hide()
     end
