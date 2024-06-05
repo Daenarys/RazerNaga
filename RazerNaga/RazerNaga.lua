@@ -899,10 +899,10 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 	end)
 
-	hooksecurefunc("QueueStatusDropDown_Show", function()
-		DropDownList1:ClearAllPoints()
-		DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
-	end)
+	--hooksecurefunc(QueueStatusButton, "ShowContextMenu", function()
+	--	DropDownList1:ClearAllPoints()
+	--	DropDownList1:SetPoint("TOPLEFT", QueueStatusButton, "BOTTOMLEFT")
+	--end)
 end
 
 --[[ Incompatibility Check ]]--
