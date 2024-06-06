@@ -16,7 +16,7 @@ do
 	Options.name = AddonName
 	
 	Options:SetScript('OnShow', function(self)
-		InterfaceOptionsFrame_OpenToCategory(self.panels[1])
+		RazerNaga:OpenToCategory(self.panels[1])
 	end)
 	
 	Options.NewPanel = function(self, title, subtitle, icon)
@@ -27,7 +27,7 @@ do
 		return panel
 	end
 
-	InterfaceOptions_AddCategory(Options)
+	RazerNaga:AddCategory(Options)
 end
 
 

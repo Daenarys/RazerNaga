@@ -30,7 +30,7 @@ function Panel:New(name, parent, title, subtitle, icon)
 	subtext:SetJustifyV('TOP')
 	subtext:SetText(subtitle)
 	
-	InterfaceOptions_AddCategory(f)
+	RazerNaga:AddCategory(f)
 
 	return f
 end
