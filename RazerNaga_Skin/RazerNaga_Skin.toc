@@ -1,0 +1,24 @@
+## Interface: 110000
+## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
+## Title: Razer Naga Skin
+## Notes: A Razer Naga ui skin
+## Author: Tuller
+## Dependencies: RazerNaga
+skins\AddOnList.lua
+skins\Buffs.lua
+skins\Character.lua
+skins\Chat.lua
+skins\DebugTools.lua
+skins\DressingRoom.lua
+skins\FlightMap.lua
+skins\GameMenu.lua
+skins\GreatVault.lua
+skins\Help.lua
+skins\Loot.xml
+skins\Merchant.lua
+skins\Minimap.lua
+skins\SettingsPanel.lua
+skins\TotemFrame.lua
+skins\WorldMap.lua
+skins\unitframes\NamePlate.lua
+skins\unitframes\TargetFrame.lua
