@@ -258,60 +258,62 @@ function XP:OnRepEvent(event)
 end
 
 function XP:UpdateReputation()
-	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
-	local isCapped
-	
-	local reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID)
-	local friendshipID = reputationInfo.friendshipFactionID
-	if self.factionID ~= factionID then
+	local watchedFactionData = C_Reputation.GetWatchedFactionData()
+	if not watchedFactionData or watchedFactionData.factionID == 0 then
+		return
+	end
+
+	local factionID = watchedFactionData.factionID
+	local isShowingNewFaction = self.factionID ~= factionID
+	if isShowingNewFaction then
 		self.factionID = factionID
-		reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID)
+		local reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID)
 		self.friendshipID = reputationInfo.friendshipFactionID
 	end
 
 	-- do something different for friendships
 	local level
+	local isCapped
 
+	local minBar, maxBar, value = watchedFactionData.currentReactionThreshold, watchedFactionData.nextReactionThreshold, watchedFactionData.currentStanding
 	if C_Reputation.IsFactionParagon(factionID) then
 		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID)
-		min, max  = 0, threshold
+		minBar, maxBar  = 0, threshold
 		value = currentValue % threshold
 		if hasRewardPending then
 			value = value + threshold
 		end
-		if C_Reputation.IsMajorFaction(factionID) then
-		end
 	elseif C_Reputation.IsMajorFaction(factionID) then
 		local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID)
-		min, max = 0, majorFactionData.renownLevelThreshold
-	elseif friendshipID > 0 then
+		minBar, maxBar = 0, majorFactionData.renownLevelThreshold
+		level = majorFactionData.renownLevel
+	elseif self.friendshipID > 0 then
 		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID)
 		local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID)
 		level = repRankInfo.currentLevel
 		if repInfo.nextThreshold then
-			min, max, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing
+			minBar, maxBar, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing
 		else
 			-- max rank, make it look like a full bar
-			min, max, value = 0, 1, 1
+			minBar, maxBar, value = 0, 1, 1
 			isCapped = true
 		end
-		local friendshipTextureIndex = 5 -- Friendships always use same texture
 	else
-		level = reaction
-		if reaction == MAX_REPUTATION_REACTION then
+		level = watchedFactionData.reaction
+		if watchedFactionData.reaction == MAX_REPUTATION_REACTION then
 			isCapped = true
 		end
 	end
 	
-	max = max - min
-	value = value - min
-	if isCapped and max == 0 then
-		max = 1000
+	maxBar = maxBar - minBar
+	value = value - minBar
+	if isCapped and maxBar == 0 then
+		maxBar = 1000
 		value = 999
 	end
-	min = 0
+	minBar = 0
 
-	local color = FACTION_BAR_COLORS[reaction]
+	local color = FACTION_BAR_COLORS[watchedFactionData.reaction]
 	if C_Reputation.IsMajorFaction(factionID) then
 		self.value:SetStatusBarColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b)
 		self.bg:SetVertexColor(BLUE_FONT_COLOR.r - 0.3, BLUE_FONT_COLOR.g - 0.3, BLUE_FONT_COLOR.b - 0.3, 0.6)
@@ -320,17 +322,17 @@ function XP:UpdateReputation()
 		self.bg:SetVertexColor(color.r - 0.3, color.g - 0.3, color.b - 0.3, 0.6)
 	end
 
-	self.value:SetMinMaxValues(0, max)
+	self.value:SetMinMaxValues(0, maxBar)
 	self.value:SetValue(value)
 
 	--update statusbar text
-	textEnv.faction = name
+	textEnv.faction = watchedFactionData.name
 	textEnv.rep = value
-	textEnv.repMax = max
-	textEnv.tnl = max - value
-	textEnv.pct = round(value / max * 100)
+	textEnv.repMax = maxBar
+	textEnv.tnl = maxBar - value
+	textEnv.pct = round(value / maxBar * 100)
 
-	textEnv.repLevel = _G['FACTION_STANDING_LABEL' .. reaction]
+	textEnv.repLevel = _G['FACTION_STANDING_LABEL' .. watchedFactionData.reaction]
 
 	local getRepText = assert(loadstring(self:GetRepFormat(), "getRepText"))
 	setfenv(getRepText, textEnv)
