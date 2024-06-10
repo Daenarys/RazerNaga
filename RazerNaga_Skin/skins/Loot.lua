@@ -10,8 +10,6 @@ function LootFrame_OnLoad(self)
 
 	--skin
 	self:SetTitle(ITEMS)
-	CfLootFrameTitleText:ClearAllPoints()
-	CfLootFrameTitleText:SetPoint("CENTER", self, "CENTER", 12, 108)
 	ButtonFrameTemplate_HideButtonBar(self)
 end
 
