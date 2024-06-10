@@ -9,7 +9,7 @@ function LootFrame_OnLoad(self)
 	self:RegisterEvent("LOOT_CLOSED")
 
 	--skin
-	CfLootFrameTitleText:SetText(ITEMS)
+	self:SetTitle(ITEMS)
 	CfLootFrameTitleText:ClearAllPoints()
 	CfLootFrameTitleText:SetPoint("CENTER", self, "CENTER", 12, 108)
 	ButtonFrameTemplate_HideButtonBar(self)

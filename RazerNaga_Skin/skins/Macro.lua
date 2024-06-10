@@ -2,7 +2,7 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(self, event, name)
 	if name == "Blizzard_MacroUI" then
-		MacroFrameTitleText:SetText(CREATE_MACROS)
+		MacroFrame:SetTitle(CREATE_MACROS)
 
 		MacroFrame.MacroSelector.ScrollBar:SetSize(25, 560)
 		MacroFrame.MacroSelector.ScrollBar:ClearAllPoints()
