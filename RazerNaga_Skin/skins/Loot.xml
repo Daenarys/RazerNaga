@@ -68,11 +68,6 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString inherits="GameFontNormal" text="ITEMS">
-					<Anchors>
-						<Anchor point="CENTER" x="12" y="108"/>
-					</Anchors>
-				</FontString>
 				<FontString name="LootFramePrev" inherits="GameFontNormal" text="PREV">
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="45" y="18"/>
