@@ -49,9 +49,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:Hide()
 			return
 		end
-		if nameSpell and IsHelpfulSpell(nameSpell) then
+		if nameSpell and C_Spell.IsSpellHelpful(nameSpell) then
 			self:SetStatusBarColor(0.31, 0.78, 0.47)
-		elseif nameSpell and IsHarmfulSpell(nameSpell) then
+		elseif nameSpell and C_Spell.IsSpellHarmful(nameSpell) then
 			self:SetStatusBarColor(0.63, 0.36, 0.94)
 		else
 			self:SetStatusBarColor(1.0, 0.7, 0.0)

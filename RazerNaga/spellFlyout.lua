@@ -56,7 +56,7 @@ function SpellFlyoutButtonMixin:OnFlyoutUpdated()
 	local index = self:GetAttribute("flyoutIndex")
 	local spellID, overrideSpellID, isKnown, spellName = GetFlyoutSlotInfo(id, index)
 
-	self.icon:SetTexture(GetSpellTexture(overrideSpellID))
+	self.icon:SetTexture(C_Spell.GetSpellTexture(overrideSpellID))
 	self.icon:SetDesaturated(not isKnown)
 
 	self.spellID = spellID
@@ -93,11 +93,11 @@ function SpellFlyoutButtonMixin:UpdateCooldown()
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
-	self:SetChecked(IsCurrentSpell(self.spellID) and true)
+	self:SetChecked(C_Spell.IsCurrentSpell(self.spellID) and true)
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
-	local isUsable, notEnoughMana = IsUsableSpell(self.spellID)
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID)
 	local icon = self.icon
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0)
@@ -110,7 +110,7 @@ end
 
 function SpellFlyoutButtonMixin:UpdateCount()
 	if IsConsumableSpell(self.spellID) then
-		local count = GetSpellCount(self.spellID)
+		local count = C_Spell.GetSpellCastCount(self.spellID)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
