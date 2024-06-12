@@ -6,6 +6,7 @@
 local Frame = RazerNaga:CreateClass('Frame')
 RazerNaga.Frame = Frame
 
+local FadeManager = RazerNaga.FadeManager
 local active = {}
 local unused = {}
 
@@ -17,53 +18,44 @@ function Frame:New(id, tooltipText)
 	f:LoadSettings()
 	f.buttons = {}
 	f:SetTooltipText(tooltipText)
-	
-	if RazerNaga.OverrideController then
-		RazerNaga.OverrideController:Add(f)
-	end
-	
-	f:OnAcquire(id)
+	RazerNaga.OverrideController:Add(f.header)
 
 	active[id] = f
 	return f
 end
 
 function Frame:Create(id)
-	local f = self:Bind(CreateFrame('Frame', format('RazerNagaFrame%s', id), UIParent, 'SecureHandlerStateTemplate'))
-
+	local f = self:Bind(CreateFrame('Frame', format('RazerNagaFrame%s', id), UIParent))
 	f:SetClampedToScreen(true)
 	f:SetMovable(true)
-	
 	f.id = id
-	f:SetAttribute('id', id)
 
-	f:SetAttribute('_onstate-alpha', [[
-		self:CallMethod('Fade')
-	]])
-	f:SetAttribute('_onstate-display', [[
-		self:RunAttribute('UpdateShown')
-	]])
-	f:SetAttribute('_onstate-hidden', [[
-		self:RunAttribute('UpdateShown')
-	]])
-	f:SetAttribute('_onstate-overrideui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-	f:SetAttribute('_onstate-petbattleui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-	f:SetAttribute('_onstate-showinoverrideui', [[
-		self:RunAttribute('UpdateShown')
-	]])
-	f:SetAttribute("_onstate-showinpetbattleui", [[
-		self:RunAttribute("UpdateShown")
-	]])
-	f:SetAttribute('UpdateShown', [[
-		if self:GetAttribute("state-hidden") then
-			self:Hide()
-			return
-		end
 
+	f.header = CreateFrame('Frame', nil, f, 'SecureHandlerStateTemplate')
+
+	f.header:SetAttribute('id', id)
+
+	f.header:SetAttribute('_onstate-overrideui', [[
+		self:RunAttribute('updateShown')
+	]])
+
+	f.header:SetAttribute('_onstate-showinoverrideui', [[
+		self:RunAttribute('updateShown')
+	]])
+
+	f.header:SetAttribute('_onstate-petbattleui', [[
+		self:RunAttribute('updateShown')
+	]])
+
+	f.header:SetAttribute('_onstate-showinpetbattleui', [[
+		self:RunAttribute('updateShown')
+	]])
+
+	f.header:SetAttribute('_onstate-display', [[
+		self:RunAttribute('updateShown')
+	]])
+
+	f.header:SetAttribute('updateShown', [[
 		local isOverrideUIShown = self:GetAttribute('state-overrideui') and true or false
 		local isPetBattleUIShown = self:GetAttribute('state-petbattleui') and true or false
 
@@ -93,9 +85,15 @@ function Frame:Create(id)
 		self:Show()
 	]])
 
+	f.header:SetAttribute('_onstate-alpha', [[
+		self:CallMethod('Fade')
+	]])
+
+	f.header.Fade = function() f:Fade() end
+
+	f.header:SetAllPoints(f)
+
 	f.drag = RazerNaga.DragFrame:New(f)
-	
-	f:OnCreate(id)
 
 	return f
 end
@@ -104,30 +102,28 @@ function Frame:Restore(id)
 	local f = unused[id]
 	if f then
 		unused[id] = nil
-		f:OnRestore(id)
 		return f
 	end
 end
 
 --destructor
-function Frame:Free(deleteSettings)
+function Frame:Free()
 	active[self.id] = nil
 
-	UnregisterStateDriver(self, 'display', 'show')
+	UnregisterStateDriver(self.header, 'display', 'show')
 	RazerNaga.MouseOverWatcher:Remove(self)
-	
-	if RazerNaga.OverrideController then
-		RazerNaga.OverrideController:Remove(self)
-	end
+	RazerNaga.OverrideController:Remove(self.header)
 
+	for i in pairs(self.buttons) do
+		self:RemoveButton(i)
+	end
+	self.buttons = nil
 	self.docked = nil
 
 	self:ClearAllPoints()
 	self:SetUserPlaced(false)
 	self.drag:Hide()
 	self:Hide()
-	
-	self:OnRelease(self.id, deleteSettings)
 
 	unused[self.id] = self
 end
@@ -137,38 +133,7 @@ function Frame:Delete()
 	RazerNaga:SetFrameSets(self.id, nil)
 end
 
---[[ New API ]]--
-
--- called when a frame is acquired from the pool
-function Frame:OnAcquire(id)
-    if self.OnEnable then
-        RazerNaga:Printf('Bar %q called deprecated method OnEnable', id)
-        self:OnEnable()
-    end
-end
-
--- called when a frame is first created
-function Frame:OnCreate(id)
-end
-
--- called when a frame is pulled in from the inactive pool
-function Frame:OnRestore(id)
-end
-
--- called when a frame is sent to the inactive pool
-function Frame:OnRelease(id, deleteSettings)
-    if self.OnFree then
-        RazerNaga:Printf('Bar %q called deprecated method OnFree', id)
-        self:OnFree()
-    end
-end
-
-function Frame:OnLoadSettings()
-end
-
---[[ Initialization ]]--
-
-function Frame:LoadSettings()
+function Frame:LoadSettings(defaults)
 	self.sets = RazerNaga:GetFrameSets(self.id) or RazerNaga:SetFrameSets(self.id, self:GetDefaults()) --get defaults must be provided by anything implementing the Frame type
 	self:Reposition()
 
@@ -188,8 +153,6 @@ function Frame:LoadSettings()
 
 	self:ShowInOverrideUI(self:ShowingInOverrideUI())
 	self:ShowInPetBattleUI(self:ShowingInPetBattleUI())
-	
-	self:OnLoadSettings()
 end
 
 --[[ Layout ]]--
@@ -338,14 +301,6 @@ function Frame:Layout()
 	self:SetSize(max(width, 8), max(height, 8))
 end
 
-function Frame:TrySetSize(width, height)
-    if not _G.InCombatLockdown() then
-        self:SetSize(width, height)
-        return true
-    end
-
-    return false
-end
 
 --[[ Scaling ]]--
 
@@ -395,7 +350,7 @@ end
 
 function Frame:SetFrameAlpha(alpha)
 	if alpha == 1 then
-		self.sets.alpha = nil
+		self.sets.alpha = false
 	else
 		self.sets.alpha = alpha
 	end
@@ -412,7 +367,7 @@ function Frame:SetFadeMultiplier(alpha)
 	local alpha = alpha or 1
 
 	if alpha == 1 then
-		self.sets.fadeAlpha = nil
+		self.sets.fadeAlpha = false
 	else
 		self.sets.fadeAlpha = alpha
 	end
@@ -450,7 +405,7 @@ function Frame:GetExpectedAlpha()
 	end
 
 	--if there's a statealpha value for the frame, then use it
-	local stateAlpha = self:GetAttribute('state-alpha')
+	local stateAlpha = self.header:GetAttribute('state-alpha')
 	if stateAlpha then
 		return stateAlpha / 100
 	end
@@ -570,9 +525,8 @@ end
 --[[ Visibility ]]--
 
 function Frame:ShowFrame()
-	self.sets.hidden = nil
-	
-	self:SetAttribute('state-hidden', nil)
+	self.sets.hidden = false
+	self:Show()
 	self.drag:UpdateColor()
 	self:UpdateWatched()
 	self:UpdateAlpha()
@@ -584,8 +538,7 @@ end
 
 function Frame:HideFrame()
 	self.sets.hidden = true
-	
-	self:SetAttribute('state-hidden', true)
+	self:Hide()
 	self.drag:UpdateColor()
 	self:UpdateWatched()
 	self:UpdateAlpha()
@@ -612,7 +565,7 @@ end
 
 function Frame:ShowInOverrideUI(enable)
 	self.sets.showInOverrideUI = enable and true or false
-	self:SetAttribute('state-showinoverrideui', enable)
+	self.header:SetAttribute('state-showinoverrideui', enable)
 end
 
 function Frame:ShowingInOverrideUI()
@@ -621,7 +574,7 @@ end
 
 function Frame:ShowInPetBattleUI(enable)
 	self.sets.showInPetBattleUI = enable and true or false
-	self:SetAttribute('state-showinpetbattleui', enable)
+	self.header:SetAttribute('state-showinpetbattleui', enable)
 end
 
 function Frame:ShowingInPetBattleUI()
@@ -680,12 +633,12 @@ function Frame:UpdateShowStates()
 	local showstates = self:GetShowStates()
 
 	if showstates then
-		RegisterStateDriver(self, 'display', showstates)
+		RegisterStateDriver(self.header, 'display', showstates)
 	else
-		UnregisterStateDriver(self, 'display')
+		UnregisterStateDriver(self.header, 'display')
 
-		if self:GetAttribute('state-display') then
-			self:SetAttribute('state-display', nil)
+		if self.header:GetAttribute('state-display') then
+			self.header:SetAttribute('state-display', nil)
 		end
 	end
 end
@@ -765,6 +718,7 @@ function Frame:Stick()
 	end
 
 	self:SaveRelativeFramePosition()
+	self.drag:UpdateColor()
 end
 
 function Frame:Reanchor()
@@ -776,6 +730,8 @@ function Frame:Reanchor()
 	else
 		self:SetAnchor(f, point)
 	end
+
+	self.drag:UpdateColor()
 end
 
 function Frame:SetAnchor(anchor, point)
@@ -985,26 +941,58 @@ function Frame:UpdateWatched()
 	end
 end
 
+--[[ Highlighting (lynn addition) ]]--
+
+local backdrop = {
+	-- path to the background texture
+	bgFile = nil,
+	-- path to the border texture
+	edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+	-- true to repeat the background texture to fill the frame, false to scale it
+	tile = false,
+	-- size (width or height) of the square repeating background tiles (in pixels)
+	tileSize = 16,
+	-- thickness of edge segments and square size of edge corners (in pixels)
+	edgeSize = 16,
+	-- distance from the edges of the frame to those of the background texture (in pixels)
+	insets = {
+		left = 0,
+		right = 0,
+		top = 0,
+		bottom = 0
+	}
+}
+
+local function createBorder(self)
+	local f = CreateFrame('Frame', nil, self.header, BackdropTemplateMixin and 'BackdropTemplate')
+	f:SetToplevel(true)
+	f:SetPoint('TOPLEFT', -4, 4, self.header)
+	f:SetPoint('BOTTOMRIGHT', 4, -4, self.header)
+	f:SetBackdrop(backdrop)
+	f:SetBackdropBorderColor(1, 0.8, 0, 1)
+	f:Hide()
+
+	return f
+end
+
+function Frame:ShowHighlight()
+	local ht = self.ht
+	if not ht then
+		ht = createBorder(self)
+		self.ht = ht
+	end
+
+	self.ht:Show()
+end
+
+function Frame:HideHighlight()
+	if self.ht then
+		self.ht:Hide()
+	end
+end
+
 
 --[[ Metafunctions ]]--
-
-function Frame:CallMethod(method, ...)
-    local func = self[method]
-
-    if type(func) == 'function' then
-        return func(self, ...)
-    else
-        error(('Frame %s does not have a method named %q'):format(self.id, method), 2)
-    end
-end
-
-function Frame:MaybeCallMethod(method, ...)
-    local func = self[method]
-
-    if type(func) == 'function' then
-        return func(self, ...)
-    end
-end
 
 function Frame:Get(id)
 	return active[tonumber(id) or id]
@@ -1012,6 +1000,15 @@ end
 
 function Frame:GetAll()
 	return pairs(active)
+end
+
+function Frame:ForAll(method, ...)
+	for _,f in self:GetAll() do
+		local action = f[method]
+		if action then
+			action(f, ...)
+		end
+	end
 end
 
 function Frame:ForDocked(method, ...)
@@ -1025,17 +1022,11 @@ function Frame:ForDocked(method, ...)
 	end
 end
 
-function Frame:ForEach(method, ...)
-    for _, frame in self:GetAll() do
-        frame:MaybeCallMethod(method, ...)
-    end
-end
-
 --takes a frameId, and performs the specified action on that frame
 --this adds two special IDs, 'all' for all frames and '<number>-<number>' for a range of IDs
 function Frame:ForFrame(id, method, ...)
 	if id == 'all' then
-		self:ForEach(method, ...)
+		self:ForAll(method, ...)
 	else
 		local startID, endID = tostring(id):match('(%d+)-(%d+)')
 		startID = tonumber(startID)
