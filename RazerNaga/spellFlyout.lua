@@ -7,7 +7,7 @@ local RazerNaga = _G[...]
 -- A precalculated list of all known valid flyout ids. Not robust, but also sparse.
 -- TODO: regeneate this list once every build
 local VALID_FLYOUT_IDS = {
-	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229, 230, 231, 232
+	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229
 }
 
 -- layout constants from SpellFlyout.lua
@@ -56,7 +56,7 @@ function SpellFlyoutButtonMixin:OnFlyoutUpdated()
 	local index = self:GetAttribute("flyoutIndex")
 	local spellID, overrideSpellID, isKnown, spellName = GetFlyoutSlotInfo(id, index)
 
-	self.icon:SetTexture(C_Spell.GetSpellTexture(overrideSpellID))
+	self.icon:SetTexture(GetSpellTexture(overrideSpellID))
 	self.icon:SetDesaturated(not isKnown)
 
 	self.spellID = spellID
@@ -93,15 +93,11 @@ function SpellFlyoutButtonMixin:UpdateCooldown()
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
-	if C_Spell.IsCurrentSpell(self.spellID) then
-		self:SetChecked(true)
-	else
-		self:SetChecked(false)
-	end
+	self:SetChecked(IsCurrentSpell(self.spellID) and true)
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
-	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID)
+	local isUsable, notEnoughMana = IsUsableSpell(self.spellID)
 	local icon = self.icon
 	if ( isUsable ) then
 		icon:SetVertexColor(1.0, 1.0, 1.0)
@@ -114,7 +110,7 @@ end
 
 function SpellFlyoutButtonMixin:UpdateCount()
 	if IsConsumableSpell(self.spellID) then
-		local count = C_Spell.GetSpellCastCount(self.spellID)
+		local count = GetSpellCount(self.spellID)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
