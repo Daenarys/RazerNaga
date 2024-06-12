@@ -103,6 +103,7 @@ function BindableButton:UpdateHotkeys()
     local key = (self.GetHotkey or getButtonHotkey)(self) or ''
 
     self.HotKey:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB())
+    self.TextOverlayContainer:SetFrameLevel(2)
     self.HotKey:SetDrawLayer("ARTWORK", 2)
 
     if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
