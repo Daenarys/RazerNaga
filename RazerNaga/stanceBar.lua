@@ -3,15 +3,14 @@
 --]]
 
 -- don't bother loading the module if the player is currently playing something without a stance
-local PLAYER_CLASS = UnitClassBase('player')
-
-if not (
-	PLAYER_CLASS == 'DRUID'
-	or PLAYER_CLASS == 'ROGUE'
-	or PLAYER_CLASS == 'PALADIN'
-	or PLAYER_CLASS == 'PRIEST'
-) then
-	return
+if not ({
+    DRUID = true,
+    PALADIN = true,
+    PRIEST = true,
+    ROGUE = true,
+    WARRIOR = true,
+})[UnitClassBase('player')] then
+    return
 end
 
 --[[ Globals ]]--

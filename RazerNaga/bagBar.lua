@@ -18,8 +18,13 @@ function BagBar:SkinButton(b)
 	if b.skinned then return end
 
 	b:SetSize(30, 30)
+	b.IconBorder:SetSize(30, 30)
 
-	b:GetNormalTexture():SetSize(50, 50)
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
+	end
+
+	_G[b:GetName() .. "NormalTexture"]:SetSize(50, 50)
 
 	RazerNaga:Masque('Bag Bar', b, {Icon = _G[b:GetName() .. 'IconTexture']})
 
@@ -29,7 +34,7 @@ end
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2
+		spacing = 2,
 	}
 end
 
