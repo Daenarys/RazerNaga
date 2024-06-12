@@ -25,9 +25,9 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	local arg1 = ...
 	
 	local unit = self.unit
-	local nameChannel = UnitChannelInfo(unit)
-	local nameSpell = UnitCastingInfo(unit)
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local nameChannel = UnitChannelInfo(unit)
+		local nameSpell = UnitCastingInfo(unit)
 		if ( nameChannel ) then
 			event = "UNIT_SPELLCAST_CHANNEL_START"
 			arg1 = unit
@@ -49,13 +49,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:Hide()
 			return
 		end
-		if nameSpell and C_Spell.IsSpellHelpful(nameSpell) then
-			self:SetStatusBarColor(0.31, 0.78, 0.47)
-		elseif nameSpell and C_Spell.IsSpellHarmful(nameSpell) then
-			self:SetStatusBarColor(0.63, 0.36, 0.94)
-		else
-			self:SetStatusBarColor(1.0, 0.7, 0.0)
-		end
+		self:SetStatusBarColor(1.0, 0.7, 0.0)
 		self.Flash:SetVertexColor(1.0, 0.7, 0.0)
 		if ( self.Spark ) then
 			self.Spark:Show()
