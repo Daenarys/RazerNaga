@@ -122,7 +122,7 @@ function ActionButtonMixin:OnCreate(id)
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
 
     -- apply custom flyout
-    RazerNaga.SpellFlyout:Register(self)
+    --RazerNaga.SpellFlyout:Register(self)
 
     -- use pre 10.x button size
     self:SetSize(36, 36)
@@ -297,7 +297,7 @@ function ActionButton:AddCastOnKeyPressSupport(button)
 
     bind.SetOverrideBindings = bindButton_SetOverrideBindings
 
-    RazerNaga.SpellFlyout:Register(bind)
+    --RazerNaga.SpellFlyout:Register(bind)
 
     -- translate HOTKEY button "clicks" into LeftButton
     self:WrapScript(bind, "OnClick", [[
