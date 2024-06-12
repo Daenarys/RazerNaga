@@ -93,7 +93,11 @@ function SpellFlyoutButtonMixin:UpdateCooldown()
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
-	self:SetChecked(C_Spell.IsCurrentSpell(self.spellID) and true)
+	if C_Spell.IsCurrentSpell(self.spellID) then
+		self:SetChecked(true)
+	else
+		self:SetChecked(false)
+	end
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
