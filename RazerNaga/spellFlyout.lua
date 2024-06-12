@@ -7,7 +7,7 @@ local RazerNaga = _G[...]
 -- A precalculated list of all known valid flyout ids. Not robust, but also sparse.
 -- TODO: regeneate this list once every build
 local VALID_FLYOUT_IDS = {
-	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229
+	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229, 230, 231, 232
 }
 
 -- layout constants from SpellFlyout.lua
