@@ -12,13 +12,13 @@ local trackers = {
 	_G.WorldQuestObjectiveTracker
 }
 
+hooksecurefunc(ObjectiveTrackerFrame, "AnchorSelectionFrame", function(self)
+	self.Selection:SetPoint("TOPLEFT", -18, -38)
+end)
+
 hooksecurefunc(ObjectiveTrackerFrame, "Update", function(self)
 	self:SetWidth(235)
 	self.Header:Hide()
-
-	self.Selection:ClearAllPoints()
-	self.Selection:SetPoint("TOPLEFT", -20, -38)
-	self.Selection:SetPoint("BOTTOMRIGHT", 10, 0)
 
 	for _, tracker in pairs(trackers) do
 		tracker:SetWidth(235)
