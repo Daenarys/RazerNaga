@@ -13,7 +13,12 @@ local trackers = {
 }
 
 hooksecurefunc(ObjectiveTrackerFrame, "Update", function(self)
+	self:SetWidth(235)
 	self.Header:Hide()
+
+	self.Selection:ClearAllPoints()
+	self.Selection:SetPoint("TOPLEFT", -20, -38)
+	self.Selection:SetPoint("BOTTOMRIGHT", 10, 0)
 
 	for _, tracker in pairs(trackers) do
 		tracker:SetWidth(235)
@@ -25,7 +30,7 @@ hooksecurefunc(ObjectiveTrackerFrame, "Update", function(self)
 		tracker.ContentsFrame:SetPoint("RIGHT", 10, 0)
 		tracker.Header.Text:ClearAllPoints()
 		tracker.Header.Text:SetPoint("LEFT", 4, -1)
-		tracker.Header.MinimizeButton:SetSize(17, 18)
+		tracker.Header.MinimizeButton:SetSize(16, 17)
 		tracker.Header.MinimizeButton:ClearAllPoints()
 		tracker.Header.MinimizeButton:SetPoint("RIGHT")
 		tracker.Header.MinimizeButton:SetNormalTexture("Interface/QuestFrame/QuestTracker")
