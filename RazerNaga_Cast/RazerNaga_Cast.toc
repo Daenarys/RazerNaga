@@ -4,6 +4,5 @@
 ## Notes: A movable casting bar, with timer
 ## Author: Tuller
 ## Dependencies: RazerNaga
-localization.lua
-CastingBarFrame.lua
+localization.xml
 castBar.xml
