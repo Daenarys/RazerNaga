@@ -243,7 +243,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				-- if there is no name, there is no bar
 				self:Hide()
 				return;
 			end
@@ -268,7 +267,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo(unit)
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-			-- if there is no name, there is no bar
 			self:Hide()
 			return;
 		end
@@ -318,7 +316,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				-- if there is no name, there is no bar
 				self:Hide()
 				return;
 			end
@@ -417,17 +414,10 @@ end
 
 function CastingBarFrame_ApplyAlpha(self, alpha)
 	self:SetAlpha(alpha)
-	if self.additionalFadeWidgets then
-		for widget in pairs(self.additionalFadeWidgets) do
-			widget:SetAlpha(alpha)
-		end
-	end
 end
 
 function CastingBarFrame_FinishSpell(self)
-	if not self.finishedColorSameAsStart then
-		self:SetStatusBarColor(self.finishedCastColor:GetRGB())
-	end
+	self:SetStatusBarColor(self.finishedCastColor:GetRGB())
 	if ( self.Spark ) then
 		self.Spark:Hide()
 	end
