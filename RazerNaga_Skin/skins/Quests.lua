@@ -84,3 +84,38 @@ QuestRewardScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", QuestRewardScrollFrame, 
 ApplyScrollBarArrow(QuestRewardScrollFrame.ScrollBar)
 ApplyScrollBarTrack(QuestRewardScrollFrame.ScrollBar.Track)
 ApplyScrollBarThumb(QuestRewardScrollFrame.ScrollBar.Track.Thumb)
+
+hooksecurefunc('QuestLogQuests_Update', function(self)
+	for child in _G.QuestScrollFrame.campaignHeaderFramePool:EnumerateActive() do
+		if child.Text then
+			child.Text:ClearAllPoints()
+			child.Text:SetPoint("BOTTOMLEFT", child.Background, "LEFT", 35, 6)
+		end
+		if child.Progress then
+			child.Progress:ClearAllPoints()
+			child.Progress:SetPoint("TOPLEFT", child.Text, "BOTTOMLEFT", 0, -4)
+		end
+		if child.NextObjective.Text then
+			child.NextObjective.Text:ClearAllPoints()
+			child.NextObjective.Text:SetPoint("TOP", child.NextObjective, "TOP")
+		end
+		if child.CollapseButton then
+			child.CollapseButton:ClearAllPoints()
+			child.CollapseButton:SetPoint("LEFT", child.Background, "LEFT", 10, 6)
+		end
+		if child.LoreButton then
+			child.LoreButton:ClearAllPoints()
+			child.LoreButton:SetPoint("RIGHT", child.Background, "RIGHT", -10, 7)
+		end
+	end
+	for _, child in next, { _G.QuestMapFrame.QuestsFrame.Contents:GetChildren() } do
+		if child.ButtonText and not child.questID then
+			child.ButtonText:ClearAllPoints()
+			child.ButtonText:SetPoint("LEFT", 25, 1)
+			if child.CollapseButton then
+				child.CollapseButton:ClearAllPoints()
+				child.CollapseButton:SetPoint("LEFT")
+			end
+		end
+	end
+end)
