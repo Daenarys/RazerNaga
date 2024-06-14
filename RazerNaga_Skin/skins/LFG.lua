@@ -86,14 +86,6 @@ ApplyScrollBarArrow(RaidFinderQueueFrameScrollFrame.ScrollBar)
 ApplyScrollBarTrack(RaidFinderQueueFrameScrollFrame.ScrollBar.Track)
 ApplyScrollBarThumb(RaidFinderQueueFrameScrollFrame.ScrollBar.Track.Thumb)
 
-ApplyDropDown(LFDQueueFrameTypeDropdown)
-ApplyDropDown(RaidFinderQueueFrameSelectionDropdown)
-ApplyDropDown(ScenarioQueueFrameTypeDropdown)
-ApplyDropDown(LFGListEntryCreationGroupDropdown)
-ApplyDropDown(LFGListEntryCreationActivityDropdown)
-ApplyDropDown(LFGListEntryCreationPlayStyleDropdown)
-ApplyFilterDropDown(LFGListFrame.SearchPanel.FilterButton)
-
 hooksecurefunc("GroupFinderFrame_EvaluateButtonVisibility", function(self)
 	if not PlayerGetTimerunningSeasonID() then
 		self.groupButton1:SetPoint("TOPLEFT", 10, -101)

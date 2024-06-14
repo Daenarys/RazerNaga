@@ -10,8 +10,6 @@ f:SetScript("OnEvent", function(self, event, name)
 		ApplyScrollBarArrow(HonorFrame.SpecificScrollBar)
 		ApplyScrollBarTrack(HonorFrame.SpecificScrollBar.Track)
 		ApplyScrollBarThumb(HonorFrame.SpecificScrollBar.Track.Thumb)
-
-		ApplyDropDown(HonorFrameTypeDropdown)
 	end
 end)
 

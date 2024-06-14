@@ -105,12 +105,3 @@ CommunitiesFrame:HookScript("OnUpdate", function(self)
 		ApplyScrollBarThumb(CommunitiesGuildTextEditFrame.Container.ScrollFrame.ScrollBar.Track.Thumb)
 	end
 end)
-
-ApplyDropDown(ClubFinderGuildFinderFrame.OptionsList.ClubFilterDropdown)
-ApplyDropDown(ClubFinderGuildFinderFrame.OptionsList.ClubSizeDropdown)
-ApplyDropDown(ClubFinderCommunityAndGuildFinderFrame.OptionsList.ClubFilterDropdown)
-ApplyDropDown(ClubFinderCommunityAndGuildFinderFrame.OptionsList.SortByDropdown)
-ApplyDropDown(CommunitiesFrame.NotificationSettingsDialog.CommunitiesListDropdown)
-ApplyDropDown(CommunitiesFrame.CommunitiesListDropdown)
-ApplyDropDown(CommunitiesFrame.GuildMemberListDropdown)
-ApplyDropDown(CommunitiesFrame.StreamDropdown)

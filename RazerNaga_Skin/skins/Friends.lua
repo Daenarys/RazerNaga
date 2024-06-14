@@ -53,6 +53,3 @@ RaidInfoFrame.ScrollBar:SetPoint("BOTTOMLEFT", RaidInfoFrame.ScrollBox, "BOTTOMR
 ApplyScrollBarArrow(RaidInfoFrame.ScrollBar)
 ApplyScrollBarTrack(RaidInfoFrame.ScrollBar.Track)
 ApplyScrollBarThumb(RaidInfoFrame.ScrollBar.Track.Thumb)
-
-ApplyDropDown(FriendsFrameStatusDropdown)
-ApplyDropDown(WhoFrameDropdown)

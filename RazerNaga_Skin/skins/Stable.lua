@@ -14,5 +14,3 @@ if (StableFrame.StabledPetList.ScrollBar.Backplate == nil) then
 	StableFrame.StabledPetList.ScrollBar.Backplate:SetColorTexture(0, 0, 0, 1)
 	StableFrame.StabledPetList.ScrollBar.Backplate:SetAllPoints()
 end
-
-ApplyFilterDropDown(StableFrame.StabledPetList.FilterBar.FilterDropdown)

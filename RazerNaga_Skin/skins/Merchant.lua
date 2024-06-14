@@ -17,8 +17,6 @@ if (MerchantRepairText == nil) then
 	MerchantRepairText:SetText(REPAIR_ITEMS)
 end
 
-ApplyDropDown(MerchantFrame.FilterDropdown)
-
 hooksecurefunc("MerchantFrame_UpdateMerchantInfo", function()
 	MerchantBuyBackItemItemButton.UndoFrame:Hide()
 	MerchantSellAllJunkButton:Hide()

@@ -256,11 +256,5 @@ f:SetScript("OnEvent", function(self, event, name)
 		EncounterJournal.LootJournalItems.ItemSetsFrame.ScrollBar.Forward:SetPushedAtlas("UI-ScrollBar-ScrollDownButton-Down")
 		EncounterJournal.LootJournalItems.ItemSetsFrame.ScrollBar.Forward:SetDisabledAtlas("UI-ScrollBar-ScrollDownButton-Disabled")
 		EncounterJournal.LootJournalItems.ItemSetsFrame.ScrollBar.Forward:SetHighlightAtlas("UI-ScrollBar-ScrollDownButton-Highlight")
-
-		ApplyDropDown(EncounterJournalInstanceSelect.ExpansionDropdown)
-		ApplyDropDown(EncounterJournalEncounterFrameInfo.LootContainer.filter)
-		ApplyDropDown(EncounterJournalEncounterFrameInfo.LootContainer.slotFilter)
-		ApplyDropDown(EncounterJournalEncounterFrameInfoDifficulty)
-		ApplyDropDown(EncounterJournal.LootJournalItems.ItemSetsFrame.ClassDropdown)
 	end
 end)

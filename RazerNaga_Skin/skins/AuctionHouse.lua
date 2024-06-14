@@ -151,8 +151,5 @@ f:SetScript("OnEvent", function(self, event, name)
 		ApplyScrollBarArrow(AuctionHouseFrame.WoWTokenResults.DummyScrollBar)
 		ApplyScrollBarTrack(AuctionHouseFrame.WoWTokenResults.DummyScrollBar.Track)
 		ApplyScrollBarThumb(AuctionHouseFrame.WoWTokenResults.DummyScrollBar.Track.Thumb)
-
-		ApplyDropDown(AuctionHouseFrame.ItemSellFrame.Duration.Dropdown)
-		ApplyFilterDropDown(AuctionHouseFrame.SearchBar.FilterButton)
 	end
 end)

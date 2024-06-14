@@ -14,7 +14,3 @@ if _G.CurrencyTransferLog then
 	ApplyScrollBarTrack(CurrencyTransferLog.ScrollBar.Track)
 	ApplyScrollBarThumb(CurrencyTransferLog.ScrollBar.Track.Thumb)
 end
-
-if _G.CurrencyTransferMenu then
-	ApplyDropDown(CurrencyTransferMenu.SourceSelector.Dropdown)
-end

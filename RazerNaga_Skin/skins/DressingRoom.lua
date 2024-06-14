@@ -16,8 +16,6 @@ DressUpFrame.SetSelectionPanel.ScrollBar.Track.Middle:Hide()
 ApplyScrollBarArrow(DressUpFrame.SetSelectionPanel.ScrollBar)
 ApplyScrollBarThumb(DressUpFrame.SetSelectionPanel.ScrollBar.Track.Thumb)
 
-ApplyDropDown(DressUpFrameOutfitDropdown)
-
 DressUpFrame.ModelScene.ControlFrame:HookScript("OnShow", function(self)
 	self:ClearAllPoints()
 	self:SetPoint("TOP")

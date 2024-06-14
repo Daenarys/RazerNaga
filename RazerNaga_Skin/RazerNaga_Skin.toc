@@ -39,7 +39,6 @@ skins\Help.lua
 skins\HelpTip.lua
 skins\ItemSocketing.lua
 skins\ItemText.lua
-skins\ItemUpgrade.lua
 skins\LFG.lua
 skins\Loot.xml
 skins\Macro.lua

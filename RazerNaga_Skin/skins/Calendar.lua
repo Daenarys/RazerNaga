@@ -10,10 +10,5 @@ f:SetScript("OnEvent", function(self, event, name)
 		ApplyScrollBarArrow(CalendarEventPickerFrame.ScrollBar)
 		ApplyScrollBarTrack(CalendarEventPickerFrame.ScrollBar.Track)
 		ApplyScrollBarThumb(CalendarEventPickerFrame.ScrollBar.Track.Thumb)
-
-		ApplyDropDown(CalendarCreateEventFrame.EventTypeDropdown)
-		ApplyDropDown(CalendarCreateEventFrame.HourDropdown)
-		ApplyDropDown(CalendarCreateEventFrame.MinuteDropdown)
-		ApplyFilterDropDown(CalendarFrame.FilterButton)
 	end
 end)

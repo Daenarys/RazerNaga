@@ -91,7 +91,5 @@ f:SetScript("OnEvent", function(self, event, name)
 		ApplyScrollBarArrow(AchievementFrame.SearchResults.ScrollBar)
 		ApplyScrollBarTrack(AchievementFrame.SearchResults.ScrollBar.Track)
 		ApplyScrollBarThumb(AchievementFrame.SearchResults.ScrollBar.Track.Thumb)
-
-		ApplyFilterDropDown(AchievementFrameFilterDropdown)
 	end
 end)
