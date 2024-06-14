@@ -36,6 +36,7 @@ skins\GroupLoot.lua
 skins\GuildBank.lua
 skins\GuildPetition.lua
 skins\Help.lua
+skins\HelpTip.lua
 skins\ItemSocketing.lua
 skins\ItemText.lua
 skins\ItemUpgrade.lua
