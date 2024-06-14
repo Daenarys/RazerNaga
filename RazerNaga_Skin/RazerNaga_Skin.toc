@@ -20,6 +20,7 @@ skins\ClickBindings.lua
 skins\Collections.lua
 skins\Communities.lua
 skins\CurrencyTransfer.lua
+skins\DebugTools.lua
 skins\Delves.lua
 skins\DressingRoom.lua
 skins\EditMode.lua
