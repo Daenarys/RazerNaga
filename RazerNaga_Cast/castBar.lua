@@ -96,14 +96,13 @@ function CastingBar:New(parent)
 	f:SetPoint('CENTER')
 
 	f.normalWidth = f:GetWidth()
-	f:SetScript('OnUpdate', self.OnUpdate)
-	f:SetScript('OnShow', self.OnShow)
+	f:SetScript('OnUpdate', f.OnUpdate)
 
 	return f
 end
 
 function CastingBar:OnUpdate(elapsed)
-	CastingBarMixin.OnUpdate(self, elapsed)
+	CastingBarFrame_OnUpdate(self, elapsed)
 
 	if self.casting then
 		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
@@ -112,15 +111,6 @@ function CastingBar:OnUpdate(elapsed)
 		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
 	end
-end
-
-function CastingBar:OnShow()
-	CastingBarMixin.OnShow(self)
-
-	self.Background:Hide()
-	self.Border:Hide()
-	self.Icon:Hide()
-	self.TextBorder:Hide()
 end
 
 function CastingBar:AdjustWidth()
@@ -136,7 +126,8 @@ function CastingBar:AdjustWidth()
 
 	if diff > TEXT_PADDING then
 		self:SetWidth(width)
-		self.SmallBorder:SetWidth(width * BORDER_SCALE)
+		self.Border:SetWidth(width * BORDER_SCALE)
+		self.Flash:SetWidth(width * BORDER_SCALE)
 	end
 end
 
