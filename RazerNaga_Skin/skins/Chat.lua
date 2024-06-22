@@ -1,4 +1,6 @@
-TextToSpeechButtonFrame:Hide()
+if TextToSpeechButtonFrame then
+    TextToSpeechButtonFrame:Hide()
+end
 
 QuickJoinToastButton:HookScript("OnUpdate", function(self)
     self:ClearAllPoints()

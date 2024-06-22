@@ -88,7 +88,6 @@ end
 
 CastingBar = RazerNaga:CreateClass('StatusBar')
 
-local BORDER_SCALE = 197/150
 local TEXT_PADDING = 18
 
 function CastingBar:New(parent)
@@ -117,8 +116,9 @@ end
 function CastingBar:OnShow()
 	CastingBarMixin.OnShow(self)
 
-	self.Background:Hide()
-	self.Border:Hide()
+	self.Border:SetPoint("TOPLEFT", -3, 4)
+	self.Border:SetPoint("BOTTOMRIGHT", 3, -4)
+
 	self.Icon:Hide()
 	self.TextBorder:Hide()
 end
@@ -136,7 +136,6 @@ function CastingBar:AdjustWidth()
 
 	if diff > TEXT_PADDING then
 		self:SetWidth(width)
-		self.SmallBorder:SetWidth(width * BORDER_SCALE)
 	end
 end
 

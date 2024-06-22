@@ -7,18 +7,7 @@
 			<KeyValue key="playCastFX" value="false" type="boolean"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.5"/>
-				</Texture>
-			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="SmallBorder" file="Interface\CastingBar\UI-CastingBar-Border-Small">
-					<Size x="275" y="68"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Text" inherits="SystemFont_Shadow_Med1">
 					<Anchors>
 						<Anchor point="CENTER">
