@@ -163,10 +163,10 @@ function RazerNaga:Load()
 	self:UpdateMinimapButton()
 
 	--show auto binder dialog, if fist load of this profile
-	if self:IsFirstLoad() then
+
 		self.AutoBinder:ShowEnableAutoBindingsDialog()
 		self:SetFirstLoad(false)
-	end
+
 end
 
 --unload is called when we're switching profiles
@@ -909,19 +909,22 @@ function RazerNaga:SetFirstLoad(enable)
 end
 
 --queuestatusbutton
-hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-	self:SetParent(MinimapBackdrop)
-	self:SetFrameLevel(6)
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
-	self:SetScale(0.85)
-end)
+if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
+	--load and position the lfg eye
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetScale(0.85)
+	end)
 
---queuestatusframe
-hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-	self:ClearAllPoints()
-	self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-end)
+	--queuestatusframe
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+	end)
+end
 
 --[[ Incompatibility Check ]]--
 
