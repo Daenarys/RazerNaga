@@ -6,7 +6,7 @@
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent)
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()
@@ -21,26 +21,19 @@ function ConfigModeDialog:Load()
 	self:SetClampedToScreen(true)
 	self:SetWidth(360)
 	self:SetHeight(192)
-	self:SetBackdrop{
-		bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
-		edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
-		tile = true,
-		insets = {left = 11, right = 12, top = 12, bottom = 11},
-		tileSize = 32,
-		edgeSize = 32,
-	}
 	self:RegisterForDrag('LeftButton')
 	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 	self:SetScript('OnDragStart', function() self:StartMoving() end)
 	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
 
-	local header = self:CreateTexture(nil, 'ARTWORK')
-	header:SetTexture('Interface\\Addons\\RazerNaga\\Icons\\UI-DialogBox-Header')
-	header:SetSize(326, 64)
+	local border = CreateFrame('Frame', nil, self, 'DialogBorderTemplate')
+
+	local header = CreateFrame('Frame', nil, self, 'DialogHeaderTemplate')
+	header:SetWidth(170) 
 	header:SetPoint('TOP', 0, 12)
 
-	local title = self:CreateFontString(nil, 'ARTWORK')
+	local title = header:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
 	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText(L.ConfigMode)
@@ -55,7 +48,7 @@ function ConfigModeDialog:Load()
 
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
-	exitConfig:SetPoint('TOPRIGHT', -4, -4)
+	exitConfig:SetPoint('TOPRIGHT')
 
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()
@@ -220,11 +213,6 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
-	exitConfig:SetSize(32, 32)
-	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
