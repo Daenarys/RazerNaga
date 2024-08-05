@@ -35,7 +35,7 @@ function ConfigModeDialog:Load()
 
 	local title = header:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
-	title:SetPoint('TOP', header, 'TOP', 0, -14)
+	title:SetPoint('TOP', 0, -14)
 	title:SetText(L.ConfigMode)
 
 	local desc = self:CreateFontString(nil, 'ARTWORK')
