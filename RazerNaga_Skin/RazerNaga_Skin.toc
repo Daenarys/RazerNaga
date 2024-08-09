@@ -34,4 +34,5 @@ skins\Wardrobe.lua
 skins\WeeklyRewards.lua
 skins\WorldMap.lua
 skins\unitframes\NamePlate.lua
+skins\unitframes\PartyFrame.lua
 skins\unitframes\TargetFrame.lua
