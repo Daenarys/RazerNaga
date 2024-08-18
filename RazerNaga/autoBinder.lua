@@ -66,7 +66,7 @@ local function CreateEnableAutomaticBindingsPrompt()
 
 	local desc = f:CreateFontString(nil, 'ARTWORK')
 	desc:SetFontObject('GameFontHighlight')
-	desc:SetPoint('TOP', f, 'TOP', 0, -30)
+	desc:SetPoint('TOP', f, 'TOP', 0, -32)
 	desc:SetWidth(290)
 	desc:SetHeight(0)
 	desc:SetText(L.EnableAutoBindingsPrompt)
