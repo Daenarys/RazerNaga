@@ -1,3 +1,5 @@
+if (C_AddOns.IsAddOnLoaded("SexyMap")) then return end
+
 Minimap:HookScript("OnEvent", function(self, event, ...)
 	if PlayerGetTimerunningSeasonID() then
 		ExpansionLandingPageMinimapButton:Hide()
