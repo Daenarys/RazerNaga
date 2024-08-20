@@ -28,14 +28,46 @@ function ConfigModeDialog:Load()
 	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
 
 	local border = CreateFrame('Frame', nil, self, 'DialogBorderTemplate')
+	border.TopEdge:SetSize(32, 32)
+	border.TopEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
+	border.TopEdge:SetTexCoord(0, 0.5, 0.13671875, 0.26171875)
 
-	local header = CreateFrame('Frame', nil, self, 'DialogHeaderTemplate')
-	header:SetWidth(170) 
+	border.TopLeftCorner:SetSize(32, 32)
+	border.TopLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	border.TopLeftCorner:SetTexCoord(0.015625, 0.515625, 0.53515625, 0.66015625)
+
+	border.TopRightCorner:SetSize(32, 32)
+	border.TopRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	border.TopRightCorner:SetTexCoord(0.015625, 0.515625, 0.66796875, 0.79296875)
+
+	border.BottomEdge:SetSize(32, 32)
+	border.BottomEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
+	border.BottomEdge:SetTexCoord(0, 0.5, 0.00390625, 0.12890625)
+
+	border.BottomLeftCorner:SetSize(32, 32)
+	border.BottomLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	border.BottomLeftCorner:SetTexCoord(0.015625, 0.515625, 0.26953125, 0.39453125)
+
+	border.BottomRightCorner:SetSize(32, 32)
+	border.BottomRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	border.BottomRightCorner:SetTexCoord(0.015625, 0.515625, 0.40234375, 0.52734375)
+
+	border.LeftEdge:SetSize(32, 32)
+	border.LeftEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
+	border.LeftEdge:SetTexCoord(0.0078125, 0.2578125, 0, 1)
+
+	border.RightEdge:SetSize(32, 32)
+	border.RightEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
+	border.RightEdge:SetTexCoord(0.2734375, 0.5234375, 0, 1)
+
+	local header = self:CreateTexture(nil, 'ARTWORK')
+	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+	header:SetSize(326, 64) 
 	header:SetPoint('TOP', 0, 12)
 
-	local title = header:CreateFontString(nil, 'ARTWORK')
+	local title = self:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
-	title:SetPoint('TOP', 0, -14)
+	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText(L.ConfigMode)
 
 	local desc = self:CreateFontString(nil, 'ARTWORK')
@@ -48,7 +80,7 @@ function ConfigModeDialog:Load()
 
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
-	exitConfig:SetPoint('TOPRIGHT')
+	exitConfig:SetPoint('TOPRIGHT', -4, -4)
 
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()
@@ -213,6 +245,11 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
+	exitConfig:SetSize(32, 32)
+	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
