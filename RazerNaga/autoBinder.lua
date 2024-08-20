@@ -41,7 +41,7 @@ local function CreateEnableAutomaticBindingsPrompt()
 
 	local button1 = CreateFrame('Button', nil, f, 'StaticPopupButtonTemplate')
 	button1:SetText(YES)
-	button1:SetPoint("TOPRIGHT", desc, "BOTTOM", -6, -10);
+	button1:SetPoint("TOPRIGHT", desc, "BOTTOM", -6, -12);
 	button1:SetScript('OnClick', function() f:Hide() end)
 
 	local button2 = CreateFrame('Button', nil, f, 'StaticPopupButtonTemplate')
