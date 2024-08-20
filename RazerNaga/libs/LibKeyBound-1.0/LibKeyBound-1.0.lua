@@ -48,7 +48,7 @@ local WoW10 = select(4, GetBuildInfo()) >= 100000
 -- #NODOC
 function LibKeyBound:Initialize()
 	do
-		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent)
+		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 		f:SetFrameStrata('DIALOG')
 		f:SetToplevel(true)
 		f:EnableMouse(true)
@@ -56,6 +56,14 @@ function LibKeyBound:Initialize()
 		f:SetClampedToScreen(true)
 		f:SetWidth(360)
 		f:SetHeight(140)
+		f:SetBackdrop{
+			bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
+			edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
+			tile = true,
+			insets = {left = 11, right = 12, top = 12, bottom = 11},
+			tileSize = 32,
+			edgeSize = 32,
+		}
 		f:SetPoint('TOP', 0, -24)
 		f:Hide()
 		f:SetScript('OnShow', function() PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION or 'igMainMenuOption') end)
@@ -65,50 +73,17 @@ function LibKeyBound:Initialize()
 		f:SetScript('OnDragStart', function(f) f:StartMoving() end)
 		f:SetScript('OnDragStop', function(f) f:StopMovingOrSizing() end)
 
-		local border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
-		border.TopEdge:SetSize(32, 32)
-		border.TopEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
-		border.TopEdge:SetTexCoord(0, 0.5, 0.13671875, 0.26171875)
-
-		border.TopLeftCorner:SetSize(32, 32)
-		border.TopLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
-		border.TopLeftCorner:SetTexCoord(0.015625, 0.515625, 0.53515625, 0.66015625)
-
-		border.TopRightCorner:SetSize(32, 32)
-		border.TopRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
-		border.TopRightCorner:SetTexCoord(0.015625, 0.515625, 0.66796875, 0.79296875)
-
-		border.BottomEdge:SetSize(32, 32)
-		border.BottomEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
-		border.BottomEdge:SetTexCoord(0, 0.5, 0.00390625, 0.12890625)
-
-		border.BottomLeftCorner:SetSize(32, 32)
-		border.BottomLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
-		border.BottomLeftCorner:SetTexCoord(0.015625, 0.515625, 0.26953125, 0.39453125)
-
-		border.BottomRightCorner:SetSize(32, 32)
-		border.BottomRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
-		border.BottomRightCorner:SetTexCoord(0.015625, 0.515625, 0.40234375, 0.52734375)
-
-		border.LeftEdge:SetSize(32, 32)
-		border.LeftEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
-		border.LeftEdge:SetTexCoord(0.0078125, 0.2578125, 0, 1)
-
-		border.RightEdge:SetSize(32, 32)
-		border.RightEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
-		border.RightEdge:SetTexCoord(0.2734375, 0.5234375, 0, 1)
-
 		local header = f:CreateTexture(nil, 'ARTWORK')
 		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
 		header:SetWidth(256); header:SetHeight(64)
 		header:SetPoint('TOP', 0, 12)
 
-		local title = f:CreateFontString(nil, 'ARTWORK')
+		local title = f:CreateFontString('ARTWORK')
 		title:SetFontObject('GameFontNormal')
 		title:SetPoint('TOP', header, 'TOP', 0, -14)
 		title:SetText(L.BindingMode)
 
-		local desc = f:CreateFontString(nil, 'ARTWORK')
+		local desc = f:CreateFontString('ARTWORK')
 		desc:SetFontObject('GameFontHighlight')
 		desc:SetJustifyV('TOP')
 		desc:SetJustifyH('LEFT')
