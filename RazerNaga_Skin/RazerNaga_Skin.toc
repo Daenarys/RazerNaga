@@ -4,9 +4,7 @@
 ## Notes: A Razer Naga ui skin
 ## Author: Daenarys
 ## Dependencies: RazerNaga
-## OptionalDeps: SexyMap
 skins\AddOnList.lua
-skins\Buffs.lua
 skins\Character.lua
 skins\Chat.lua
 skins\Collections.lua
@@ -22,7 +20,6 @@ skins\LFG.lua
 skins\Loot.xml
 skins\Macro.lua
 skins\Merchant.lua
-skins\Minimap.lua
 skins\ObjectiveTracker.lua
 skins\PlayerChoice.lua
 skins\PVP.lua
