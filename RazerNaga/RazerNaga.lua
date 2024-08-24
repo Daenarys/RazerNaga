@@ -910,11 +910,19 @@ end
 
 --queuestatus
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
+	ExpansionLandingPageMinimapButton:ClearAllPoints()
+	ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", 25, -167)
+
+	hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", 25, -167)
+	end)
+
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 45, -217)
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 3, -173)
 		self:SetScale(0.85)
 	end)
 
