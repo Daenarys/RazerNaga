@@ -42,6 +42,12 @@ function MenuBar:SkinButton(button)
 
     button:SetSize(28, 36)
 
+    hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
+        self:SetParent(MainMenuMicroButton)
+        self:ClearAllPoints()
+        self:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
+    end)
+
     button.skinned = true
 end
 
