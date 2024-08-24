@@ -922,7 +922,7 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 3, -173)
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", 1, -168)
 		self:SetScale(0.85)
 	end)
 
