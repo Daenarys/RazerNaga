@@ -10,24 +10,13 @@ local Menu = RazerNaga:CreateClass('Frame'); RazerNaga.Menu = Menu
 local max = math.max
 local min = math.min
 
-
-Menu.bg = {
-	bgFile = 'Interface\\DialogFrame\\UI-DialogBox-Background',
-	edgeFile = 'Interface\\DialogFrame\\UI-DialogBox-Border',
-	insets = {left = 11, right = 11, top = 12, bottom = 11},
-	tile = true,
-	tileSize = 32,
-	edgeSize = 32,
-}
-
 Menu.extraWidth = 20
 Menu.extraHeight = 40
 
 function Menu:New(name)
-	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent, BackdropTemplateMixin and 'BackdropTemplate'))
+	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent))
 	f.panels = {}
 
-	f:SetBackdrop(self.bg)
 	f:EnableMouse(true)
 	f:SetToplevel(true)
 	f:SetMovable(true)
@@ -37,18 +26,16 @@ function Menu:New(name)
 	f:SetScript('OnMouseUp', self.StopMovingOrSizing)
 	f:SetScript('OnHide', self.OnHide)
 
+	--border
+	f.border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
+
 	--title text
 	f.text = f:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
 	f.text:SetPoint('TOP', 0, -15)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetSize(32, 32)
-	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
-	f.close:SetPoint('TOPRIGHT', -5, -5)
+	f.close:SetPoint('TOPRIGHT')
 
 	return f
 end
