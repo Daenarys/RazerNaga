@@ -21,6 +21,9 @@ for id = 1, NUM_PET_ACTION_SLOTS do
 
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(button)
+
+    -- enable cooldown bling
+    button.cooldown:SetDrawBling(true)
 end
 
 --------------------------------------------------------------------------------

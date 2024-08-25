@@ -118,6 +118,9 @@ function ActionButtonMixin:OnCreate(id)
 
     -- apply button skin
     skinActionButton(self)
+
+    -- enable cooldown bling
+    self.cooldown:SetDrawBling(true)
 end
 
 function ActionButtonMixin:UpdateOverrideBindings()

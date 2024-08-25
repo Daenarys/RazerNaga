@@ -33,6 +33,9 @@ for id = 1, 10 do
 
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(button)
+
+    -- enable cooldown bling
+    button.cooldown:SetDrawBling(true)
 end
 
 --------------------------------------------------------------------------------
