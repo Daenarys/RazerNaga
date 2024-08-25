@@ -1,5 +1,12 @@
 local states = {}
 
+local GetSpellName
+if type(GetSpellInfo) == "function" then
+    GetSpellName = function(spell) return (GetSpellInfo(spell)) end
+else
+    GetSpellName = C_Spell.GetSpellName
+end
+
 local function getStateIterator(type, i)
     for j = i + 1, #states do
         local state = states[j]
@@ -65,7 +72,7 @@ local function addFormState(stateType, stateId, spellID)
         end
     end
 
-    local name = (C_Spell.GetSpellInfo(spellID))
+    local name = GetSpellName(spellID)
 
     addState(stateType, stateId, lookupFormConditional, name)
 end
@@ -91,30 +98,30 @@ local class = UnitClassBase('player')
 local race = select(2, UnitRace('player'))
 
 if class == 'DRUID' then
-	addState('class', 'bear', '[bonusbar:3]', C_Spell.GetSpellInfo(5487))
-	addState('class', 'prowl', '[bonusbar:1,stealth]', C_Spell.GetSpellInfo(5215))
-	addState('class', 'cat', '[bonusbar:1]', C_Spell.GetSpellInfo(768))
-	addState('class', 'moonkin', '[bonusbar:4]', C_Spell.GetSpellInfo(24858))
+	addState('class', 'bear', '[bonusbar:3]', GetSpellName(5487))
+	addState('class', 'prowl', '[bonusbar:1,stealth]', GetSpellName(5215))
+	addState('class', 'cat', '[bonusbar:1]', GetSpellName(768))
+	addState('class', 'moonkin', '[bonusbar:4]', GetSpellName(24858))
 	addFormState('class', 'tree', 114282)
 	addFormState('class', 'travel', 783)
 	addFormState('class', 'stag', 210053)
 elseif class == 'EVOKER' then
-    addState('class', 'soar', '[bonusbar:1]', C_Spell.GetSpellInfo(369536))
+    addState('class', 'soar', '[bonusbar:1]', GetSpellName(369536))
 elseif class == 'PALADIN' then
 	addFormState('class', 'concentration', 317920)
 	addFormState('class', 'crusader', 32223)
 	addFormState('class', 'devotion', 465)
 	addFormState('class', 'retribution', 183435)
 elseif class == 'ROGUE' then
-    if C_Spell.GetSpellInfo(185313) then
-        addState('class', 'shadowdance', '[bonusbar:1,form:2]', C_Spell.GetSpellInfo(185313))
+    if GetSpellName(185313) then
+        addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellName(185313))
     end
-    addState('class', 'stealth', '[bonusbar:1]', C_Spell.GetSpellInfo(1784))
+    addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
 end
 
 -- race
 if race == 'NightElf' then
-    local name = (C_Spell.GetSpellInfo(58984) or C_Spell.GetSpellInfo(20580))
+    local name = (GetSpellName(58984) or GetSpellName(20580))
 
     if name then
         addState('class', 'shadowmeld', '[stealth]', name)
