@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 40401
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Tuller

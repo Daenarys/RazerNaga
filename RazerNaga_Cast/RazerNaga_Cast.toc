@@ -1,4 +1,4 @@
-﻿## Interface: 40400
+﻿## Interface: 40401
 ## Title: Razer Naga Cast
 ## Notes: A movable casting bar, with timer
 ## Author: Tuller
