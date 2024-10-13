@@ -50,7 +50,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return
 		end
 		self:SetStatusBarColor(1.0, 0.7, 0.0)
-		self.Flash:SetVertexColor(1.0, 0.7, 0.0)
 		if ( self.Spark ) then
 			self.Spark:Show()
 		end
@@ -145,7 +144,6 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return
 		end
 		self:SetStatusBarColor(0.0, 1.0, 0.0)
-		self.Flash:SetVertexColor(0.0, 1.0, 0.0)
 		self.value = ((endTime / 1000) - GetTime())
 		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
