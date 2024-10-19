@@ -130,7 +130,3 @@ function CastingBar:AdjustWidth()
 		self.Flash:SetWidth(width * BORDER_SCALE)
 	end
 end
-
---hide the old casting bar
-PlayerCastingBarFrame:UnregisterAllEvents()
-PlayerCastingBarFrame:Hide()

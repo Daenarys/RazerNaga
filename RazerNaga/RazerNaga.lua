@@ -238,7 +238,8 @@ function RazerNaga:HideBlizzard()
 		"MicroButtonAndBagsBar",
 		"BagsBar",
 		"MicroMenu",
-		"MicroMenuContainer"
+		"MicroMenuContainer",
+		"PlayerCastingBarFrame"
 	)
 
 	apply(unregisterEvents,
@@ -254,7 +255,8 @@ function RazerNaga:HideBlizzard()
 		"MainMenuBarVehicleLeaveButton",
 		"BagsBar",
 		"MicroMenu",
-		"MicroMenuContainer"
+		"MicroMenuContainer",
+		"PlayerCastingBarFrame"
 	)
 
 	apply(disableActionButtons,
