@@ -269,6 +269,9 @@ function RazerNaga:HideBlizzard()
 		"MultiBarLeft",
 		"MultiBarRight"
 	)
+
+	MultiActionBar_HideAllGrids = function() end
+	MultiActionBar_ShowAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
