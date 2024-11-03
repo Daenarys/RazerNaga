@@ -269,9 +269,6 @@ function RazerNaga:HideBlizzard()
 		"MultiBarLeft",
 		"MultiBarRight"
 	)
-
-	MultiActionBar_HideAllGrids = function() end
-	MultiActionBar_ShowAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
@@ -913,7 +910,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---extra
+--queuestatus
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
@@ -926,12 +923,6 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
 		self:ClearAllPoints()
 		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
-
-	TextToSpeechButtonFrame:Hide()
-	QuickJoinToastButton:HookScript("OnUpdate", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", ChatAlertFrame, "BOTTOMLEFT")
 	end)
 end
 
