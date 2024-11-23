@@ -269,6 +269,9 @@ function RazerNaga:HideBlizzard()
 		"MultiBarLeft",
 		"MultiBarRight"
 	)
+
+	MultiActionBar_HideAllGrids = function() end
+	MultiActionBar_ShowAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
@@ -912,28 +915,12 @@ end
 
 --queuestatus
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
-	_G.Minimap:HookScript("OnEvent", function(self, event, ...)
-		if ( event == "PLAYER_ENTERING_WORLD" ) then
-			if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
-				ExpansionLandingPageMinimapButton:ClearAllPoints()
-				ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", 8, -156)
-			end
-
-			hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function(self)
-				if (self:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
-					self:ClearAllPoints()
-					self:SetPoint("TOPLEFT", 8, -156)
-				end
-			end)
-		end
-	end)
-
 	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -9, -164)
-		self:SetScale(0.8)
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -8, -175)
+		self:SetScale(0.75)
 	end)
 
 	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
