@@ -47,7 +47,7 @@ local SaveBindings = SaveBindings or AttemptToSaveBindings
 -- #NODOC
 function LibKeyBound:Initialize()
 	do
-		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent)
+		local f = CreateFrame('Frame', 'KeyboundDialog', UIParent, BackdropTemplateMixin and "BackdropTemplate" or nil)
 		f:SetFrameStrata('DIALOG')
 		f:SetToplevel(true)
 		f:EnableMouse(true)
@@ -55,6 +55,14 @@ function LibKeyBound:Initialize()
 		f:SetClampedToScreen(true)
 		f:SetWidth(360)
 		f:SetHeight(140)
+		f:SetBackdrop{
+			bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
+			edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
+			tile = true,
+			insets = {left = 11, right = 12, top = 12, bottom = 11},
+			tileSize = 32,
+			edgeSize = 32,
+		}
 		f:SetPoint('TOP', 0, -24)
 		f:Hide()
 		f:SetScript('OnShow', function() PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION or 'igMainMenuOption') end)
@@ -64,18 +72,17 @@ function LibKeyBound:Initialize()
 		f:SetScript('OnDragStart', function(f) f:StartMoving() end)
 		f:SetScript('OnDragStop', function(f) f:StopMovingOrSizing() end)
 
-		local border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
-
-		local header = CreateFrame('Frame', nil, f, 'DialogHeaderTemplate')
-		header:SetWidth(150) 
+		local header = f:CreateTexture(nil, 'ARTWORK')
+		header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+		header:SetWidth(256); header:SetHeight(64)
 		header:SetPoint('TOP', 0, 12)
 
-		local title = header:CreateFontString('ARTWORK')
+		local title = f:CreateFontString('ARTWORK')
 		title:SetFontObject('GameFontNormal')
-		title:SetPoint('TOP', 0, -14)
+		title:SetPoint('TOP', header, 'TOP', 0, -14)
 		title:SetText(L.BindingMode)
 
-		local desc = f:CreateFontString(nil, 'ARTWORK')
+		local desc = f:CreateFontString('ARTWORK')
 		desc:SetFontObject('GameFontHighlight')
 		desc:SetJustifyV('TOP')
 		desc:SetJustifyH('LEFT')
