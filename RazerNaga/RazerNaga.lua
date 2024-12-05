@@ -932,8 +932,8 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -9, -162)
-		self:SetScale(0.8)
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -8, -175)
+		self:SetScale(0.75)
 	end)
 
 	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
