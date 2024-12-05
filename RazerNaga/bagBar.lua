@@ -19,7 +19,7 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(32, 32)
+	b:SetSize(34, 34)
 
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
 	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
