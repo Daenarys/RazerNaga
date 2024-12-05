@@ -388,6 +388,15 @@ function MenuBarModule:OnInitialize()
 
     -- temp fix for 10.2.6 bug
     MicroMenu.GetEdgeButton = function() end
+
+    -- disable talent alerts
+    local function HideAlert(microButton)
+        if microButton == PlayerSpellsMicroButton then
+            MainMenuMicroButton_HideAlert(microButton)
+            MicroButtonPulseStop(microButton)
+        end
+    end
+    hooksecurefunc("MicroButtonPulse", HideAlert)
 end
 
 function MenuBarModule:Load()
