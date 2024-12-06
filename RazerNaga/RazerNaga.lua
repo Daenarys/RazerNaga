@@ -940,6 +940,11 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 		self:ClearAllPoints()
 		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
 	end)
+
+	QuickJoinToastButton:HookScript("OnUpdate", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMLEFT", ChatAlertFrame, "BOTTOMLEFT")
+	end)
 end
 
 --[[ Incompatibility Check ]]--
