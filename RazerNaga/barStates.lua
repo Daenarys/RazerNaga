@@ -105,8 +105,6 @@ if class == 'DRUID' then
 	addFormState('class', 'tree', 114282)
 	addFormState('class', 'travel', 783)
 	addFormState('class', 'stag', 210053)
-elseif class == 'EVOKER' then
-    addState('class', 'soar', '[bonusbar:1]', GetSpellName(369536))
 elseif class == 'PALADIN' then
 	addFormState('class', 'concentration', 317920)
 	addFormState('class', 'crusader', 32223)
