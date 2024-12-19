@@ -910,7 +910,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---extras
+--queuestatus
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	Minimap:HookScript("OnEvent", function(self, event, ...)
 		if ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -939,15 +939,6 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
 		self:ClearAllPoints()
 		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
-
-	if TextToSpeechButtonFrame then
-		TextToSpeechButtonFrame:Hide()
-	end
-
-	QuickJoinToastButton:HookScript("OnUpdate", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMLEFT", ChatAlertFrame, "BOTTOMLEFT")
 	end)
 end
 
