@@ -910,7 +910,7 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---extras
+--queuestatus
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	Minimap:HookScript("OnEvent", function(self, event, ...)
 		if ( event == "PLAYER_ENTERING_WORLD" ) then
