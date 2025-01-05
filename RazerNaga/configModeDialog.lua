@@ -15,17 +15,11 @@ RazerNaga.ConfigModeDialog = ConfigModeDialog
 
 function ConfigModeDialog:Load()
 	self:SetFrameStrata('DIALOG')
-	self:SetMovable(true)
-	self:SetToplevel(true)
 	self:EnableMouse(true)
 	self:SetClampedToScreen(true)
-	self:SetWidth(360)
-	self:SetHeight(192)
-	self:RegisterForDrag('LeftButton')
+	self:SetSize(360, 192)
 	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
-	self:SetScript('OnDragStart', function() self:StartMoving() end)
-	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
 
 	local border = CreateFrame('Frame', nil, self, 'DialogBorderTemplate')
 	border.TopEdge:SetSize(32, 32)
@@ -121,8 +115,7 @@ function ConfigModeDialog:CreateRotateButton()
 
 	rotator:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]])
 
-	rotator:SetWidth(32)
-	rotator:SetHeight(32)
+	rotator:SetSize(32, 32)
 
 	rotator.UpdateTexture = function(self)
 		local texture
