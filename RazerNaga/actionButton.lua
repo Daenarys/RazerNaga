@@ -311,9 +311,5 @@ if (ActionBarActionEventsFrame) then
     ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 end
 
-hooksecurefunc("StartChargeCooldown", function(parent)
-    parent.chargeCooldown:SetAllPoints(parent)
-end)
-
 -- exports
 RazerNaga.ActionButton = ActionButton

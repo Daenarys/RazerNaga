@@ -17,8 +17,7 @@ function ConfigModeDialog:Load()
 	self:SetFrameStrata('DIALOG')
 	self:EnableMouse(true)
 	self:SetClampedToScreen(true)
-	self:SetWidth(360)
-	self:SetHeight(192)
+	self:SetSize(360, 192)
 	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
@@ -84,8 +83,7 @@ function ConfigModeDialog:CreateRotateButton()
 
 	rotator:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]])
 
-	rotator:SetWidth(32)
-	rotator:SetHeight(32)
+	rotator:SetSize(32, 32)
 
 	rotator.UpdateTexture = function(self)
 		local texture
