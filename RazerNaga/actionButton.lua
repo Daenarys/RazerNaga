@@ -74,7 +74,6 @@ local function skinActionButton(self)
     self.Count:ClearAllPoints()
     self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
     self.Count:SetDrawLayer("ARTWORK", 2)
-    self.FlyoutBorderShadow:SetSize(48, 48)
     if self.IconMask then
         self.IconMask:Hide()
     end
@@ -120,9 +119,6 @@ function ActionButtonMixin:OnCreate(id)
 
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
-
-    -- apply custom flyout
-    RazerNaga.SpellFlyout:Register(self)
 
     -- use pre 10.x button size
     self:SetSize(36, 36)
@@ -296,8 +292,6 @@ function ActionButton:AddCastOnKeyPressSupport(button)
     bind:SetScript("PreClick", bindButton_PreClick)
 
     bind.SetOverrideBindings = bindButton_SetOverrideBindings
-
-    RazerNaga.SpellFlyout:Register(bind)
 
     -- translate HOTKEY button "clicks" into LeftButton
     self:WrapScript(bind, "OnClick", [[
