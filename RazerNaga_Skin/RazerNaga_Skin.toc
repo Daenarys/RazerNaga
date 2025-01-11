@@ -1,0 +1,32 @@
+## Interface: 110007
+## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
+## Title: Razer Naga Skin
+## Notes: A Razer Naga ui skin
+## Author: Daenarys
+## Dependencies: RazerNaga
+skins\AddOnList.lua
+skins\Character.lua
+skins\Chat.lua
+skins\ChromieTime.lua
+skins\Collections.lua
+skins\DressingRoom.lua
+skins\FlightMap.lua
+skins\GameMenu.lua
+skins\GarrisonUI.lua
+skins\GreatVault.lua
+skins\Help.lua
+skins\HelpTip.lua
+skins\LFG.lua
+skins\Loot.xml
+skins\Macro.lua
+skins\Merchant.lua
+skins\ModelPreview.lua
+skins\ObjectiveTracker.lua
+skins\PlayerChoice.lua
+skins\PVP.lua
+skins\QuestLog.lua
+skins\SettingsPanel.lua
+skins\Subscription.lua
+skins\TimeManager.lua
+skins\Wardrobe.lua
+skins\WorldMap.lua
