@@ -66,8 +66,11 @@ end
 CastingBar = RazerNaga:CreateClass('StatusBar')
 
 function CastingBar:New(parent)
-	local f = self:Bind(CreateFrame('StatusBar', 'RazerNagaCastingBar', parent, 'RazerNagaCastingBarTemplate'))
+	local f = self:Bind(CreateFrame('StatusBar', 'RazerNagaCastingBar', parent, 'SmallCastingBarFrameTemplate'))
+	f:SetSize(208, 11)
 	f:SetPoint('CENTER', 0, 5)
+	f:OnLoad("player", true, false)
+	f.Icon:Hide()
 
 	return f
 end
