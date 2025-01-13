@@ -29,36 +29,3 @@ Tracking:HookScript("OnMouseUp", function(self)
 	self.IconOverlay:Hide()
 end)
 MapLegend:Hide()
-
-hooksecurefunc(POIButtonMixin, "UpdateButtonStyle", function(poiButton)
-	local style = poiButton:GetStyle()
-	local questID = poiButton:GetQuestID()
-
-	if style == POIButtonUtil.Style.WorldQuest then
-		local info = C_QuestLog.GetQuestTagInfo(questID)
-		if info then
-			if (poiButton.Display.Icon:GetAtlas() == "Worldquest-icon") then
-				poiButton.Display.Icon:SetAtlas("worldquest-questmarker-questbang")
-				poiButton.Display.Icon:SetSize(6, 15)
-			end
-		end
-	end
-end)
-
-hooksecurefunc(BaseMapPoiPinMixin, "OnAcquired", function(self)
-	if self.Texture then
-		if (self.Texture:GetAtlas() == "TaxiNode_Alliance") then
-			self.Texture:SetSize(18, 18)
-			self.HighlightTexture:SetSize(18, 18)
-		elseif (self.Texture:GetAtlas() == "TaxiNode_Horde") then
-			self.Texture:SetSize(18, 18)
-			self.HighlightTexture:SetSize(18, 18)
-		elseif (self.Texture:GetAtlas() == "TaxiNode_Neutral") then
-			self.Texture:SetSize(18, 18)
-			self.HighlightTexture:SetSize(18, 18)
-		elseif (self.Texture:GetAtlas() == "TaxiNode_Undiscovered") then
-			self.Texture:SetSize(18, 18)
-			self.HighlightTexture:SetSize(18, 18)
-		end
-	end
-end)
