@@ -4,7 +4,6 @@
 ## Notes: A Razer Naga ui skin
 ## Author: Daenarys
 ## Dependencies: RazerNaga
-skins\AddOnList.lua
 skins\Character.lua
 skins\Collections.lua
 skins\DressingRoom.lua
