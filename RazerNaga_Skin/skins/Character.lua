@@ -11,6 +11,7 @@ if (ReputationFrame.StandingLabel == nil) then
 	ReputationFrame.StandingLabel:SetPoint("TOPLEFT", 215, -42)
 end
 
+CharacterFrame.Background:Hide()
 ReputationFrame.filterDropdown:Hide()
 TokenFrame.CurrencyTransferLogToggleButton:Hide()
 TokenFrame.filterDropdown:Hide()
