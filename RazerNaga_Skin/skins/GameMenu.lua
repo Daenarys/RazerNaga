@@ -1,6 +1,6 @@
 if not _G.GameMenuFrame then return end
 
-GameMenuFrame.Header:SetWidth(141)
+GameMenuFrame.Header:SetWidth(139.3777)
 GameMenuFrame.Header.Text:SetFontObject("GameFontNormal")
 
 GameMenuFrame:HookScript("OnShow", function(self)
