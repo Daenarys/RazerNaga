@@ -33,7 +33,7 @@ local trackers = {
 for _, tracker in pairs(trackers) do
 	tracker.Header.Background:SetAtlas("Objective-Header", true)
 	tracker.Header.Background:SetPoint("TOPLEFT", -19, 14)
-	tracker.Header.Text:SetPoint("LEFT", 14, -1)
+	tracker.Header.Text:SetPoint("LEFT", 14, 0)
 	tracker.Header.MinimizeButton:SetSize(15, 14)
 	tracker.Header.MinimizeButton:SetPoint("RIGHT", -15, 0)
 	tracker.Header.MinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
