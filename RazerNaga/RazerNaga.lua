@@ -913,19 +913,37 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---queuestatus
-hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-	self:SetParent(MinimapBackdrop)
-	self:SetFrameLevel(6)
-	self:ClearAllPoints()
-	self:SetPoint("TOPLEFT", -14, -167)
-	self:SetScale(0.75)
-end)
+--extras
+if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
+	Minimap:HookScript("OnEvent", function(self, event, ...)
+		if ( event == "PLAYER_ENTERING_WORLD" ) then
+			if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
+				ExpansionLandingPageMinimapButton:ClearAllPoints()
+				ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", 8, -156)
+			end
 
-hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-	self:ClearAllPoints()
-	self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-end)
+			hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function(self)
+				if (self:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
+					self:ClearAllPoints()
+					self:SetPoint("TOPLEFT", 8, -156)
+				end
+			end)
+		end
+	end)
+
+	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
+		self:SetParent(MinimapBackdrop)
+		self:SetFrameLevel(6)
+		self:ClearAllPoints()
+		self:SetPoint("TOPLEFT", MinimapBackdrop, "TOPLEFT", -8, -175)
+		self:SetScale(0.75)
+	end)
+
+	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
+		self:ClearAllPoints()
+		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
+	end)
+end
 
 --[[ Incompatibility Check ]]--
 
