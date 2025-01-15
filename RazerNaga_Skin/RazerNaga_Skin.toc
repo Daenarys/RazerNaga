@@ -9,6 +9,7 @@ skins\Collections.lua
 skins\DressingRoom.lua
 skins\GameMenu.lua
 skins\LFG.lua
+skins\Minimap.lua
 skins\ModelPreview.lua
 skins\ObjectiveTracker.lua
 skins\PVP.lua
