@@ -62,7 +62,6 @@ local function skinActionButton(self)
     self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
     self.Flash:ClearAllPoints()
     self.Flash:SetAllPoints()
-    self.FlyoutBorderShadow:SetSize(48, 48)
     if self.SlotBackground then
         self.SlotBackground:Hide()
     end
