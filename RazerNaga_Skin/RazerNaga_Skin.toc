@@ -1,9 +1,10 @@
-## Interface: 110007
+## Interface: 110100
 ## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Skin
 ## Notes: A Razer Naga ui skin
 ## Author: Daenarys
 ## Dependencies: RazerNaga
+skins\AddOnList.lua
 skins\Character.lua
 skins\Collections.lua
 skins\DressingRoom.lua
