@@ -917,17 +917,15 @@ end
 if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 	Minimap:HookScript("OnEvent", function(self, event, ...)
 		if ( event == "PLAYER_ENTERING_WORLD" ) then
-			if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "warwithin-landingbutton-up") then
-				ExpansionLandingPageMinimapButton:SetLandingPageIconFromAtlases("plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", true)
+			if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
 				ExpansionLandingPageMinimapButton:ClearAllPoints()
-				ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", -3, -150)
+				ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", 8, -156)
 			end
 
 			hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function(self)
-				if (self:GetNormalTexture():GetAtlas() == "warwithin-landingbutton-up") then
-					self:SetLandingPageIconFromAtlases("plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-down", "plunderstorm-landingpagebutton-up", "plunderstorm-landingpagebutton-up", true)
+				if (self:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
 					self:ClearAllPoints()
-					self:SetPoint("TOPLEFT", -3, -150)
+					self:SetPoint("TOPLEFT", 8, -156)
 				end
 			end)
 		end
@@ -937,7 +935,7 @@ if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
 		self:SetParent(MinimapBackdrop)
 		self:SetFrameLevel(6)
 		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", -14, -167)
+		self:SetPoint("TOPLEFT", -8, -175)
 		self:SetScale(0.75)
 	end)
 
