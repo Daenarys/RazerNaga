@@ -31,14 +31,14 @@ f:SetScript("OnEvent", function(self, event, name)
 			end
 
 			if C_WeeklyRewards.HasAvailableRewards() then
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("mythicplus-dragonflight-greatvault-collect", true)
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-collect", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("pvpqueue-chest-dragonflight-greatvault-collect", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("pvpqueue-chest-dragonflight-greatvault-collect", true)
 			elseif PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest:HasUnlockedRewards() then
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("mythicplus-dragonflight-greatvault-complete", true)
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-complete", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("pvpqueue-chest-dragonflight-greatvault-complete", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("pvpqueue-chest-dragonflight-greatvault-complete", true)
 			else
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", true)
-				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("mythicplus-dragonflight-greatvault-incomplete", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.ChestTexture:SetAtlas("pvpqueue-chest-dragonflight-greatvault-incomplete", true)
+				PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest.Highlight:SetAtlas("pvpqueue-chest-dragonflight-greatvault-incomplete", true)
 			end
 
 			PVPQueueFrame.HonorInset.CasualPanel.WeeklyChest:SetScript("OnEnter", function(self)
