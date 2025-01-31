@@ -31,6 +31,8 @@ local trackers = {
 }
 
 for _, tracker in pairs(trackers) do
+	tracker.Header.Background:SetPoint("CENTER", -5, 0)
+	tracker.Header.MinimizeButton:SetPoint("RIGHT", -10, 0)
 	tracker.Header.MinimizeButton:SetHighlightAtlas("ui-questtrackerbutton-red-highlight", "ADD")
 	SetCollapsed(tracker.Header, _G.ObjectiveTrackerFrame.isCollapsed)
 	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsed)
