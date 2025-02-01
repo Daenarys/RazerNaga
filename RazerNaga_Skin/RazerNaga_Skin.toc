@@ -8,6 +8,7 @@ skins\Character.lua
 skins\Collections.lua
 skins\DressingRoom.lua
 skins\GameMenu.lua
+skins\HelpTip.lua
 skins\LFG.lua
 skins\ModelPreview.lua
 skins\ObjectiveTracker.lua
