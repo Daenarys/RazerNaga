@@ -1,5 +1,10 @@
 if not _G.PVEFrame then return end
 
+PVEFrame:HookScript("OnShow", function(self)
+	self.tab3:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
+	self.tab4:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
+end)
+
 hooksecurefunc('LFGDungeonReadyPopup_Update', function()
 	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal()
 	
