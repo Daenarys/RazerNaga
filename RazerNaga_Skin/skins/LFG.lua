@@ -1,8 +1,10 @@
 if not _G.PVEFrame then return end
 
 PVEFrame:HookScript("OnShow", function(self)
-	self.tab3:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
-	self.tab4:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
+	if not self:TimerunningEnabled() then
+		self.tab3:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
+		self.tab4:SetShown(UnitLevel("player") == GetMaxLevelForExpansionLevel(LE_EXPANSION_WAR_WITHIN))
+	end
 end)
 
 hooksecurefunc('LFGDungeonReadyPopup_Update', function()
