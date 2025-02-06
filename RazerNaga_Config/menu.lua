@@ -28,6 +28,37 @@ function Menu:New(name)
 
 	--border
 	f.border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
+	f.border.TopEdge:SetSize(32, 32)
+	f.border.TopEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
+	f.border.TopEdge:SetTexCoord(0, 0.5, 0.13671875, 0.26171875)
+
+	f.border.TopLeftCorner:SetSize(32, 32)
+	f.border.TopLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	f.border.TopLeftCorner:SetTexCoord(0.015625, 0.515625, 0.53515625, 0.66015625)
+
+	f.border.TopRightCorner:SetSize(32, 32)
+	f.border.TopRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	f.border.TopRightCorner:SetTexCoord(0.015625, 0.515625, 0.66796875, 0.79296875)
+
+	f.border.BottomEdge:SetSize(32, 32)
+	f.border.BottomEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal", true)
+	f.border.BottomEdge:SetTexCoord(0, 0.5, 0.00390625, 0.12890625)
+
+	f.border.BottomLeftCorner:SetSize(32, 32)
+	f.border.BottomLeftCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	f.border.BottomLeftCorner:SetTexCoord(0.015625, 0.515625, 0.26953125, 0.39453125)
+
+	f.border.BottomRightCorner:SetSize(32, 32)
+	f.border.BottomRightCorner:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetal")
+	f.border.BottomRightCorner:SetTexCoord(0.015625, 0.515625, 0.40234375, 0.52734375)
+
+	f.border.LeftEdge:SetSize(32, 32)
+	f.border.LeftEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
+	f.border.LeftEdge:SetTexCoord(0.0078125, 0.2578125, 0, 1)
+
+	f.border.RightEdge:SetSize(32, 32)
+	f.border.RightEdge:SetTexture("Interface\\FrameGeneral\\UIFrameDiamondMetalVertical", false, true)
+	f.border.RightEdge:SetTexCoord(0.2734375, 0.5234375, 0, 1)
 
 	--title text
 	f.text = f:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
@@ -35,7 +66,12 @@ function Menu:New(name)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetPoint('TOPRIGHT')
+	f.close:SetSize(32, 32)
+	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+	f.close:SetPoint('TOPRIGHT', -5, -5)
 
 	return f
 end
