@@ -5,6 +5,7 @@
 ## Author: Daenarys
 ## Dependencies: RazerNaga
 skins\Character.lua
+skins\Chat.lua
 skins\Collections.lua
 skins\DressingRoom.lua
 skins\GameMenu.lua
