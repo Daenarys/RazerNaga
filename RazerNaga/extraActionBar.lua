@@ -43,7 +43,6 @@ do
 	function ExtraActionButton:Skin()
 		if not RazerNaga:Masque('Extra Bar', self) then
 			self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-			self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
 		end
 	end
 
