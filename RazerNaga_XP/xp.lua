@@ -207,7 +207,6 @@ function XP:UpdateExperience()
 	end
 
 	--update statusbar text
-	textEnv.label = _G.XP
 	textEnv.xp = xp
 	textEnv.xpMax = xpMax
 	textEnv.tnl = tnl
@@ -229,9 +228,9 @@ end
 function XP:GetXPFormat()
 	return self.sets.xpFormat or [[
 		if rest and rest > 0 then
-			return format("%s: %s / %s (+%s) [%s%%]", label, comma(xp), comma(xpMax), comma(rest), pct)
+			return format("%s / %s (+%s) [%s%%]", comma(xp), comma(xpMax), comma(rest), pct)
 		end
-		return format("%s: %s / %s [%s%%]", label, comma(xp), comma(xpMax), pct)
+		return format("%s / %s [%s%%]", comma(xp), comma(xpMax), pct)
 	]]
 end
 
