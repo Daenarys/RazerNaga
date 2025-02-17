@@ -137,10 +137,6 @@ end
 
 local SpellFlyoutFrameMixin = {}
 
--- methods we're importing from the stock UI
-SpellFlyoutFrameMixin.SetBorderColor = SpellFlyout_SetBorderColor
-SpellFlyoutFrameMixin.SetBorderSize = SpellFlyout_SetBorderSize
-
 -- secure methods
 local SpellFlyoutFrame_Toggle = [[
 	local flyoutID = ...
@@ -340,9 +336,6 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT")
 		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0)
 	end
-
-	self:SetBorderColor(0.7, 0.7, 0.7)
-	self:SetBorderSize(43)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
