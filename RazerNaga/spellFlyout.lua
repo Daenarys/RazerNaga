@@ -137,9 +137,6 @@ end
 
 local SpellFlyoutFrameMixin = {}
 
--- methods we're importing from the stock UI
-SpellFlyoutFrameMixin.SetBorderColor = SpellFlyout_SetBorderColor
-
 -- secure methods
 local SpellFlyoutFrame_Toggle = [[
 	local flyoutID = ...
@@ -473,6 +470,13 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	self:WrapScript(button, "OnClick", SpellFlyoutButton_OnClick, SpellFlyoutButton_OnClickPost)
 
 	return button
+end
+
+function SpellFlyoutFrameMixin:SetBorderColor(r, g, b)
+	self.Background.Start:SetVertexColor(r, g, b)
+	self.Background.HorizontalMiddle:SetVertexColor(r, g, b)
+	self.Background.VerticalMiddle:SetVertexColor(r, g, b)
+	self.Background.End:SetVertexColor(r, g, b)
 end
 
 function SpellFlyoutFrameMixin:ForShown(method, ...)

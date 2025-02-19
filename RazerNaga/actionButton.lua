@@ -74,7 +74,6 @@ local function skinActionButton(self)
     self.Count:ClearAllPoints()
     self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
     self.Count:SetDrawLayer("ARTWORK", 2)
-    self.FlyoutBorderShadow:SetSize(48, 48)
     if self.IconMask then
         self.IconMask:Hide()
     end
