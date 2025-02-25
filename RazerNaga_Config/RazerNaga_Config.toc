@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 70305
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Tuller

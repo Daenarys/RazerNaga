@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 70305
 ## Title: Razer Anansi
 ## Notes: Anansi keyboard enhancements to the Razer Naga addon
 ## Author: Tuller
