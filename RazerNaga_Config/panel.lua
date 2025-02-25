@@ -30,7 +30,7 @@ function Panel:New(name, parent, title, subtitle, icon)
 	subtext:SetJustifyV('TOP')
 	subtext:SetText(subtitle)
 	
-	RazerNaga:AddCategory(f)
+	InterfaceOptions_AddCategory(f)
 
 	return f
 end
@@ -80,6 +80,23 @@ end
 
 function Panel:NewCheckButton(name, getter, setter)
 	local b = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsCheckButtonTemplate')
+	_G[b:GetName() .. 'Text']:SetText(name)
+	
+	if getter then
+		b.getter = getter
+		b:SetScript('OnShow', CheckButton_OnShow)
+	end
+	
+	if setter then
+		b.setter = setter
+		b:SetScript('OnClick', CheckButton_OnClick)
+	end
+
+	return b
+end
+
+function Panel:NewSmallCheckButton(name, getter, setter)
+	local b = CreateFrame('CheckButton', self:GetName() .. name, self, 'InterfaceOptionsSmallCheckButtonTemplate')
 	_G[b:GetName() .. 'Text']:SetText(name)
 	
 	if getter then
