@@ -1,165 +1,128 @@
---------------------------------------------------------------------------------
--- Vehicle Bar
--- A movable bar for vehicles
---------------------------------------------------------------------------------
+local Addon = _G[...]
+local VehicleLeaveButton = _G.MainMenuBarVehicleLeaveButton
 
---------------------------------------------------------------------------------
--- Button
---------------------------------------------------------------------------------
+--[[ The Bar ]]--
 
-local function possessButton_OnClick(self)
-    self:SetChecked(false)
-
-    if UnitOnTaxi("player") then
-        TaxiRequestEarlyLanding()
-        self:SetChecked(true)
-        self:Disable()
-    elseif CanExitVehicle() then
-        VehicleExit()
-    else
-        CancelPetPossess()
-    end
-end
-
-local function possessButton_OnEnter(self)
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-
-    if UnitOnTaxi("player") then
-        GameTooltip_SetTitle(GameTooltip, TAXI_CANCEL)
-        GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, true)
-    elseif UnitControllingVehicle("player") and CanExitVehicle() then
-        GameTooltip_SetTitle(GameTooltip, LEAVE_VEHICLE)
-    else
-        GameTooltip:SetText(CANCEL)
-    end
-
-    GameTooltip:Show()
-end
-
-local function possessButton_OnLeave(self)
-    if GameTooltip:IsOwned(self) then
-        GameTooltip:Hide()
-    end
-end
-
-local function possessButton_OnCreate(self)
-    self:SetScript("OnClick", possessButton_OnClick)
-    self:SetScript("OnEnter", possessButton_OnEnter)
-    self:SetScript("OnLeave", possessButton_OnLeave)
-end
-
-local function getOrCreatePossessButton(id)
-    local name = ('%sVehicleButton%d'):format('RazerNaga', id)
-    local button = _G[name]
-
-    if not button then
-        if SmallActionButtonMixin then
-            button = CreateFrame("CheckButton", name, nil, "SmallActionButtonTemplate", id)
-            button.cooldown:SetSwipeColor(0, 0, 0)
-        else
-            button = CreateFrame("CheckButton", name, nil, "ActionButtonTemplate", id)
-            button:SetSize(30, 30)
-        end
-
-        possessButton_OnCreate(button)
-    end
-
-    return button
-end
-
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
-
-local VehicleBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
+local VehicleBar = Addon:CreateClass('Frame', Addon.Frame)
 
 function VehicleBar:New()
-    return VehicleBar.proto.New(self, 'vehicle')
+	local bar = VehicleBar.super.New(self, 'vehicle')
+
+	bar:LoadButtons()
+	bar:UpdateOnTaxi()
+	bar:Layout()
+
+	return bar
+end
+
+function VehicleBar:Create(...)
+	local bar = VehicleBar.super.Create(self, ...)
+
+	bar.header:SetAttribute('_onstate-taxi', [[
+		self:RunAttribute('updateVehicleButton')
+	]])
+
+	bar.header:SetAttribute('_onstate-canexitvehicle', [[
+		self:RunAttribute('updateVehicleButton')
+	]])
+
+	bar.header:SetAttribute('updateVehicleButton', [[
+		local isVisible = self:GetAttribute('state-taxi') == 1
+		 			   or self:GetAttribute('state-canexitvehicle') == 1
+
+		self:SetAttribute('state-display', isVisible and 'show' or 'hide')
+		self:CallMethod('UpdateExitButton')
+	]])
+
+	bar.header.UpdateExitButton = function(self)
+		if self:GetAttribute('state-display') == 'show' then
+			VehicleLeaveButton:Show()
+			VehicleLeaveButton:Enable()
+		else
+			VehicleLeaveButton:Hide()
+			VehicleLeaveButton:Disable()
+			VehicleLeaveButton:UnlockHighlight()
+		end
+	end
+
+	RegisterStateDriver(bar.header, 'canexitvehicle', '[canexitvehicle]1;0')
+
+	return bar
+end
+
+function VehicleBar:UpdateOnTaxi()
+	self.header:SetAttribute('state-taxi', UnitOnTaxi('player') and 1 or 0)
 end
 
 function VehicleBar:GetDefaults()
-    return {
-        point = 'CENTER',
-        x = -244,
-        y = 0,
-    }
+	return {
+		point = 'CENTER',
+		x = -244,
+		y = 0,
+	}
 end
 
 function VehicleBar:GetShowStates()
-    return '[canexitvehicle][possessbar]show;hide'
+	return nil
 end
 
 function VehicleBar:NumButtons()
-    return 1
+	return 1
 end
 
-function VehicleBar:AcquireButton()
-    return getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
+function VehicleBar:AddButton(i)
+	local button = VehicleLeaveButton
+
+	if button then
+		button:SetParent(self.header)
+		button:Show()
+
+		self.buttons[i] = button
+	end
 end
 
-function VehicleBar:OnAttachButton(button)
-    RazerNaga:GetModule('Tooltips'):Register(button)
+function VehicleBar:RemoveButton(i)
+	local button = self.buttons[i]
+
+	if button then
+		button:SetParent(nil)
+		button:Hide()
+
+		self.buttons[i] = nil
+	end
 end
 
-function VehicleBar:OnDetachButton(button)
-    RazerNaga:GetModule('Tooltips'):Unregister(button)
+
+--[[ Controller ]]--
+
+local VehicleBarController = Addon:NewModule('VehicleBar', 'AceEvent-3.0')
+
+function VehicleBarController:OnInitialize()
+	VehicleLeaveButton:UnregisterAllEvents()
 end
 
-function VehicleBar:Update()
-    local button = getOrCreatePossessButton(POSSESS_CANCEL_SLOT)
-    local texture = (GetPossessInfo(button:GetID()))
-    local icon = button.icon
+function VehicleBarController:Load()
+	self.frame = VehicleBar:New()
 
-    if (UnitControllingVehicle("player") and CanExitVehicle()) or not texture then
-        icon:SetTexture([[Interface\Vehicles\UI-Vehicles-Button-Exit-Up]])
-        icon:SetTexCoord(0.140625, 0.859375, 0.140625, 0.859375)
-    else
-        icon:SetTexture(texture)
-        icon:SetTexCoord(0, 1, 0, 1)
-    end
-
-    icon:SetVertexColor(1, 1, 1)
-    icon:SetDesaturated(false)
-    
-    button.NormalTexture:SetAlpha(0)
-
-    button:SetChecked(false)
-    button:Enable()
+	self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'UpdateOnTaxi')
+	self:RegisterEvent('UPDATE_MULTI_CAST_ACTIONBAR', 'UpdateOnTaxi')
+	self:RegisterEvent('UNIT_ENTERED_VEHICLE', 'UpdateOnTaxi')
+	self:RegisterEvent('UNIT_EXITED_VEHICLE', 'UpdateOnTaxi')
+	self:RegisterEvent('VEHICLE_UPDATE', 'UpdateOnTaxi')
+	self:RegisterEvent('PLAYER_REGEN_ENABLED', 'UpdateOnTaxi')
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+function VehicleBarController:Unload()
+	self:UnregisterAllEvents()
 
-local VehicleBarModule = RazerNaga:NewModule('VehicleBar', 'AceEvent-3.0')
-
-function VehicleBarModule:Load()
-    self.bar = VehicleBar:New()
-
-    self:RegisterEvent("UNIT_ENTERED_VEHICLE", "Update")
-    self:RegisterEvent("UNIT_EXITED_VEHICLE", "Update")
-    self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "Update")
-    self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update")
-    self:RegisterEvent("VEHICLE_UPDATE", "Update")
-    self:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR", "Update")
-    self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "Update")
-    self:RegisterEvent("UPDATE_POSSESS_BAR", "Update")
-    self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "Update")
+	if self.frame then
+		self.frame:Free()
+		self.frame = nil
+	end
 end
 
-function VehicleBarModule:Unload()
-    self:UnregisterAllEvents()
+function VehicleBarController:UpdateOnTaxi()
+	if InCombatLockdown() then return end
 
-    if self.bar then
-        self.bar:Free()
-        self.bar = nil
-    end
-end
-
-function VehicleBarModule:Update()
-    if InCombatLockdown() then return end
-
-    if self.bar then
-        self.bar:Update()
-    end
+	self.frame:UpdateOnTaxi()
 end
