@@ -1,7 +1,8 @@
-## Interface: 70305
+## Interface: 110100
+## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
-## Author: Tuller
+## Author: Daenarys
 ## Dependencies: RazerNaga
 ## LoadOnDemand: 1
 localization.xml
@@ -10,5 +11,4 @@ dropdown.lua
 menu.lua
 panel.lua
 general.lua
-anansi.lua
 profiles.lua
