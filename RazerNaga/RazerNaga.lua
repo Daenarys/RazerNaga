@@ -392,6 +392,11 @@ function RazerNaga:UpdateUseOverrideUI()
 	end
 end
 
+hooksecurefunc("WorldMap_ToggleSizeDown", function()
+	WorldMapFrame:ClearAllPoints()
+	WorldMapFrame:SetPoint("TOPLEFT", 15, -115)
+end)
+
 
 --[[ Keybound Events ]]--
 
