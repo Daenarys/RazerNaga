@@ -393,6 +393,10 @@ function RazerNaga:UpdateUseOverrideUI()
 end
 
 hooksecurefunc("WorldMap_ToggleSizeDown", function()
+	if InCombatLockdown() then
+		return
+	end
+
 	WorldMapFrame:ClearAllPoints()
 	WorldMapFrame:SetPoint("TOPLEFT", 15, -115)
 end)
