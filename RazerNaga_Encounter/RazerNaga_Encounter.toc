@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 70305
 ## Title: Razer Naga Encounter
 ## Notes: Makes the PlayerPowerBarAlt movable
 ## Author: Tuller
