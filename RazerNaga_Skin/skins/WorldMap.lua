@@ -10,7 +10,6 @@ end
 
 local Dropdown, Tracking, Pin = unpack(WorldMapFrame.overlayFrames)
 Tracking.Icon:SetTexture("Interface\\Minimap\\Tracking\\None")
-Tracking.Icon:SetPoint("TOPLEFT", 6, -6)
 if (Tracking.IconOverlay == nil) then
 	Tracking.IconOverlay = Tracking:CreateTexture(nil, "OVERLAY")
 	Tracking.IconOverlay:SetPoint("TOPLEFT", Tracking.Icon)
@@ -32,7 +31,7 @@ Tracking:HookScript("OnMouseDown", function(self)
 end)
 Tracking:HookScript("OnMouseUp", function(self)
 	self.Icon:SetTexture("Interface\\Minimap\\Tracking\\None")
-	self.Icon:SetPoint("TOPLEFT", 6, -6)
+	self.Icon:SetPoint("TOPLEFT", 7, -6)
 	self.IconOverlay:Hide()
 end)
 Pin:SetPoint("TOPRIGHT", WorldMapFrame.ScrollContainer, "TOPRIGHT", -36, -2)
