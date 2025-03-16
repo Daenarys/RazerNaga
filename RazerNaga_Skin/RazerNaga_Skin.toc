@@ -4,6 +4,7 @@
 ## Notes: A Razer Naga UI skin
 ## Author: Daenarys
 ## Dependencies: RazerNaga
+skins\AddonList.lua
 skins\Character.lua
 skins\Chat.lua
 skins\Collections.lua
