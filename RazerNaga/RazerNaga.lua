@@ -393,10 +393,9 @@ function RazerNaga:UpdateUseOverrideUI()
 end
 
 hooksecurefunc("WorldMap_ToggleSizeDown", function()
-	if not WorldMapFrame.IsSkinned then
+	if not WorldMapFrame:IsForbidden() then
 		WorldMapFrame:ClearAllPoints()
 		WorldMapFrame:SetPoint("TOPLEFT", 15, -115)
-		WorldMapFrame.IsSkinned = true
 	end
 end)
 
