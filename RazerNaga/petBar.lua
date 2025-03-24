@@ -30,6 +30,8 @@ local function skinPetButton(self)
     self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
     self.Flash:ClearAllPoints()
     self.Flash:SetAllPoints()
+    self.AutoCastOverlay.Mask:SetPoint("TOPLEFT")
+    self.AutoCastOverlay.Mask:SetPoint("BOTTOMRIGHT")
     if self.IconMask then
         self.IconMask:Hide()
     end
