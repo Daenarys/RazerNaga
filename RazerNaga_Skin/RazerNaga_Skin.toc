@@ -9,6 +9,7 @@ skins\Character.lua
 skins\Chat.lua
 skins\Collections.lua
 skins\DressingRoom.lua
+skins\ExpansionLandingPage.lua
 skins\GameMenu.lua
 skins\LFG.lua
 skins\ModelPreview.lua
