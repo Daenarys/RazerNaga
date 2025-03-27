@@ -19,22 +19,21 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
 
+	self.HotKey:SetSize(36, 10)
+
 	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
 		self.HotKey:SetText(key)
 		self.HotKey:Show()
-		self.HotKey:SetSize(36, 10)
 		self.HotKey:ClearAllPoints()
 		self.HotKey:SetPoint("TOPLEFT", -2, -3)
 	elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
 		self.HotKey:SetText(key)
 		self.HotKey:Show()
-		self.HotKey:SetSize(36, 10)
 		self.HotKey:ClearAllPoints()
 		self.HotKey:SetPoint("TOPLEFT", -2, -3)
 	elseif key ~= '' and RazerNaga:ShowBindingText() then
 		self.HotKey:SetText(key)
 		self.HotKey:Show()
-		self.HotKey:SetSize(36, 10)
 		self.HotKey:ClearAllPoints()
 		self.HotKey:SetPoint("TOPLEFT", 1, -3)
 	else
