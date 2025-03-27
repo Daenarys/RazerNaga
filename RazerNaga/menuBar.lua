@@ -19,8 +19,8 @@ local MICRO_BUTTONS = {
 	"LFGMicroButton",
 	"EJMicroButton",
 	"CollectionsMicroButton",
-	"MainMenuMicroButton",
 	"HelpMicroButton",
+	"MainMenuMicroButton"
 }
 
 local overrideButtons = {}
@@ -258,7 +258,6 @@ function MenuBar:LayoutOverrideUI()
 end
 
 function MenuBar:FixButtonPositions()
-	local isStoreEnabled = C_StorePublic.IsEnabled()
 	local overrideButtons = {}
 
 	for i, buttonName in ipairs(MICRO_BUTTONS) do
@@ -266,19 +265,7 @@ function MenuBar:FixButtonPositions()
 		button:ClearAllPoints()
 		button:Hide()
 
-		local shouldAddButton 
-
-		if buttonName == 'HelpMicroButton' then
-			shouldAddButton = not isStoreEnabled 
-		elseif buttonName == 'StoreMicroButton' then
-			shouldAddButton = isStoreEnabled
-		else
-			shouldAddButton = true
-		end
-
-		if shouldAddButton then
-			table.insert(overrideButtons, button)
-		end
+		table.insert(overrideButtons, button)
 	end
 
 	for i, button in ipairs(overrideButtons) do
