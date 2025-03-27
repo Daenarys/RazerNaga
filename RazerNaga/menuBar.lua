@@ -8,6 +8,8 @@ RazerNaga.MenuBar = MenuBar
 local WIDTH_OFFSET = 2
 local HEIGHT_OFFSET = 20
 
+local overrideButtons = {}
+
 local MICRO_BUTTONS = {
 	"CharacterMicroButton",
 	"SpellbookMicroButton",
@@ -23,12 +25,10 @@ local MICRO_BUTTONS = {
 	"MainMenuMicroButton"
 }
 
-local overrideButtons = {}
-
 local MICRO_BUTTON_NAMES = {
 	['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
 	['SpellbookMicroButton'] = _G['SPELLBOOK_ABILITIES_BUTTON'],
-	['TalentMicroButton'] = _G['TALENTS_BUTTON'],
+	['TalentMicroButton'] = _G['TALENTS'],
 	['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
 	['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
 	['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
@@ -36,11 +36,9 @@ local MICRO_BUTTON_NAMES = {
 	['LFGMicroButton'] = _G['LFG_BUTTON'],
 	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],	
 	['CollectionsMicroButton'] = _G['COLLECTIONS'],
-	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
 	['HelpMicroButton'] = _G['HELP_BUTTON'],
-	['StoreMicroButton'] = _G['BLIZZARD_STORE']	
+	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
 }
-
 
 --[[ Menu Bar ]]--
 
