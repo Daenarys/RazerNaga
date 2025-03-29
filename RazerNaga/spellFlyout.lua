@@ -222,6 +222,7 @@ local SpellFlyoutFrame_Toggle = [[
 	local bH = FLYOUT_SLOTS[1]:GetHeight()
 	local vertical = false
 
+	self:SetFrameStrata("LOW")
 	self:ClearAllPoints()
 
 	if direction == "UP" then
