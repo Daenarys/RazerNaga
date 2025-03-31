@@ -2,6 +2,10 @@ local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(self, event, name)
 	if name == "Blizzard_Collections" then
+		if CollectionsJournalTab6 then
+			CollectionsJournalTab6:Hide()
+		end
+
 		hooksecurefunc(WardrobeCollectionFrame, "SetContainer", function(self, parent)
 			if parent == CollectionsJournal then
 				self.ItemsCollectionFrame.ModelR1C1:SetPoint("TOP", -238, -85)
