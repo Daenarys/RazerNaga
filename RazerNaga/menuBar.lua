@@ -19,10 +19,10 @@ local MICRO_BUTTONS = {
 	"GuildMicroButton",
 	"PVPMicroButton",
 	"LFGMicroButton",
-	"EJMicroButton",
 	"CollectionsMicroButton",
-	"HelpMicroButton",
-	"MainMenuMicroButton"
+	"EJMicroButton",
+	"MainMenuMicroButton",
+	"HelpMicroButton"
 }
 
 local MICRO_BUTTON_NAMES = {
@@ -34,10 +34,10 @@ local MICRO_BUTTON_NAMES = {
 	['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
 	['PVPMicroButton'] = _G['PLAYER_V_PLAYER'],
 	['LFGMicroButton'] = _G['LFG_BUTTON'],
-	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],	
 	['CollectionsMicroButton'] = _G['COLLECTIONS'],
-	['HelpMicroButton'] = _G['HELP_BUTTON'],
-	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
+	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],	
+	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
+	['HelpMicroButton'] = _G['HELP_BUTTON']
 }
 
 --[[ Menu Bar ]]--
