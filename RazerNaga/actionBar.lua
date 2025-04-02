@@ -538,7 +538,7 @@ function ActionBarController:UpdateOverrideBar()
 	local overrideBar = RazerNaga:GetOverrideBar()
 
 	for _, button in pairs(overrideBar.buttons) do
-		button:Update()
+		ActionButton_Update(button)
 	end
 end
 
