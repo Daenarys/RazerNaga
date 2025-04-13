@@ -58,8 +58,7 @@ function ModHighlighter:HighlightingModifiers()
 end
 
 function ModHighlighter:FadingBars()
-	local Anansi = RazerNaga:GetModule('Anansi', true)
-	return Anansi and Anansi.Config:AutoFadingTBars()
+	return false
 end
 
 function ModHighlighter:IsAutoBindingEnabled()
@@ -68,7 +67,7 @@ end
 
 function ModHighlighter:GetActiveFrameModifier(frame)
 	local BindingsLoader = RazerNaga.BindingsLoader
-	return BindingsLoader:IsAutoBindingEnabled(frame) and BindingsLoader:GetFrameModifier(frame) 
+	return BindingsLoader:IsAutoBindingEnabled(frame) and BindingsLoader:GetFrameModifier(frame)
 end
 
 

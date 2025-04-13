@@ -2,8 +2,15 @@
 	StanceBar.lua: A RazerNaga stance bar
 --]]
 
-if select(2, UnitClass('player')) == 'MAGE' or select(2, UnitClass('player')) == 'SHAMAN' then
-	return
+-- don't bother loading the module if the player is currently playing something without a stance
+if not ({
+    DRUID = true,
+    PALADIN = true,
+    PRIEST = true,
+    ROGUE = true,
+    WARRIOR = true,
+})[UnitClassBase('player')] then
+    return
 end
 
 --[[ Globals ]]--
@@ -11,7 +18,6 @@ end
 local _G = _G
 local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
-local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
 
 --[[ Button ]]--
@@ -27,6 +33,7 @@ do
 		local button = self:Restore(id) or self:Create(id)
 
 		RazerNaga.BindingsController:Register(button)
+		RazerNaga:GetModule('Tooltips'):Register(button)
 
 		return button
 	end
@@ -35,11 +42,11 @@ do
 		local button = self:Bind(_G['StanceButton' .. id])
 
 		if button then
-			button:SetScript('OnEnter', self.OnEnter)
+			button:HookScript('OnEnter', self.OnEnter)
 			button:Skin()
 		end
 
-		return button		
+		return button
 	end
 
 	--if we have button facade support, then skin the button that way
@@ -57,7 +64,7 @@ do
 		nt:SetPoint('BOTTOMRIGHT', 15 * r, -15 * r)
 
 		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)	
+		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
 	end
 
 	function StanceButton:Restore(id)
@@ -76,26 +83,15 @@ do
 
 		self:SetParent(nil)
 		self:Hide()
+
 		RazerNaga.BindingsController:Unregister(self)
+		RazerNaga:GetModule('Tooltips'):Unregister(self)
 	end
 
 	--keybound support
 	function StanceButton:OnEnter()
-		if RazerNaga:ShowTooltips() then
-			-- this should be the sameish as what is normally called by a stance button
-			if GetCVarBool("UberTooltips") then
-				GameTooltip_SetDefaultAnchor(GameTooltip, self)
-			else
-				GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-			end
-
-			GameTooltip:SetShapeshift(self:GetID())
-		end
-
 		KeyBound:Set(self)
 	end
-
-	StanceButton.UpdateTooltip = StanceButton.OnEnter
 end
 
 
@@ -109,10 +105,11 @@ do
 	function StanceBar:New()
 		local f = RazerNaga.Frame.New(self, 'class')
 
-		f:SetTooltipText(L['ClassBarHelp_' .. playerClass])	
+		local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
+		f:SetTooltipText(L['ClassBarHelp_' .. playerClass])
 
 		f:SetScript('OnEvent', f.OnEvent)
-		
+
 		f:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
 		f:RegisterEvent('PLAYER_REGEN_ENABLED')
 		f:RegisterEvent('PLAYER_ENTERING_WORLD')
@@ -179,7 +176,7 @@ do
 
 	function StanceBar:RemoveButton(i)
 		local b = self.buttons[i]
-		
+
 		self.buttons[i] = nil
 
 		b:Free()
@@ -210,14 +207,14 @@ do
 		menu:AddAdvancedPanel()
 
 		StanceBar.menu = menu
-	end	
+	end
 end
 
 
 --[[ Module ]]--
 
 do
-	local StanceBarController = RazerNaga:NewModule('StanceBarController')
+	local StanceBarController = RazerNaga:NewModule('StanceBar')
 
 	function StanceBarController:Load()
 		self.bar = StanceBar:New()

@@ -8,6 +8,8 @@ RazerNaga.MenuBar = MenuBar
 local WIDTH_OFFSET = 2
 local HEIGHT_OFFSET = 20
 
+local overrideButtons = {}
+
 local MICRO_BUTTONS = {
 	"CharacterMicroButton",
 	"SpellbookMicroButton",
@@ -16,34 +18,52 @@ local MICRO_BUTTONS = {
 	"QuestLogMicroButton",
 	"GuildMicroButton",
 	"PVPMicroButton",
-	"LFDMicroButton",
+	"LFGMicroButton",
+	"CollectionsMicroButton",
 	"EJMicroButton",
-	"CompanionsMicroButton",
-	"StoreMicroButton",
-	"HelpMicroButton",
 	"MainMenuMicroButton",
+	"HelpMicroButton"
 }
-
-local overrideButtons = {}
 
 local MICRO_BUTTON_NAMES = {
 	['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
 	['SpellbookMicroButton'] = _G['SPELLBOOK_ABILITIES_BUTTON'],
-	['TalentMicroButton'] = _G['TALENTS_BUTTON'],
+	['TalentMicroButton'] = _G['TALENTS'],
 	['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
 	['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
 	['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
 	['PVPMicroButton'] = _G['PLAYER_V_PLAYER'],
-	['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
+	['LFGMicroButton'] = _G['LFG_BUTTON'],
+	['CollectionsMicroButton'] = _G['COLLECTIONS'],
 	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],	
-	['CompanionsMicroButton'] = _G['MOUNTS_AND_PETS'],
 	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
-	['HelpMicroButton'] = _G['HELP_BUTTON'],
-	['StoreMicroButton'] = _G['BLIZZARD_STORE']	
+	['HelpMicroButton'] = _G['HELP_BUTTON']
 }
 
-
 --[[ Menu Bar ]]--
+
+function MenuBar:SkinButton(button)
+    if button.skinned then return end
+
+    local normalTexture = button:GetNormalTexture()
+    if (normalTexture) then
+        normalTexture:SetTexelSnappingBias(0.0)
+    end
+    local pushedTexture = button:GetPushedTexture()
+    if (pushedTexture) then
+        pushedTexture:SetTexelSnappingBias(0.0)
+    end
+    local disabledTexture = button:GetDisabledTexture()
+    if (disabledTexture) then
+        disabledTexture:SetTexelSnappingBias(0.0)
+    end
+    local highlightTexture = button:GetHighlightTexture()
+    if (highlightTexture) then
+        highlightTexture:SetTexelSnappingBias(0.0)
+    end
+
+    button.skinned = true
+end
 
 function MenuBar:New()
 	local bar = MenuBar.super.New(self, 'menu')
@@ -83,19 +103,6 @@ function MenuBar:Create(frameId)
 
 	hooksecurefunc('UpdateMicroButtons', function() requestLayoutUpdate() end)	
 	
-	local petBattleFrame = _G['PetBattleFrame'].BottomFrame.MicroButtonFrame
-	
-	getOrHook(petBattleFrame, 'OnShow', function()
-		bar.isPetBattleUIShown = true
-		requestLayoutUpdate()
-	end)
-	
-	getOrHook(petBattleFrame, 'OnHide', function()
-		bar.isPetBattleUIShown = nil
-		requestLayoutUpdate()
-	end)
-	
-	
 	local overrideActionBar = _G['OverrideActionBar']
 	
 	getOrHook(overrideActionBar, 'OnShow', function()
@@ -126,6 +133,7 @@ function MenuBar:AddButton(i)
 	if button then
 		button:SetParent(self.header)
 		button:Show()
+		self:SkinButton(button)
 
 		self.buttons[i] = button
 	end
@@ -180,9 +188,7 @@ function MenuBar:IsMenuButtonDisabled(button)
 end
 
 function MenuBar:Layout()
-	if self.isPetBattleUIShown then
-		self:LayoutPetBattle()
-	elseif self.isOverrideUIShown then
+	if self.isOverrideUIShown then
 		self:LayoutOverrideUI()
 	else
 		self:LayoutNormal()
@@ -245,16 +251,11 @@ function MenuBar:LayoutNormal()
 	end
 end
 
-function MenuBar:LayoutPetBattle()				
-	self:FixButtonPositions()
-end
-
 function MenuBar:LayoutOverrideUI()
 	self:FixButtonPositions()
 end
 
 function MenuBar:FixButtonPositions()
-	local isStoreEnabled = C_StorePublic.IsEnabled()
 	local overrideButtons = {}
 
 	for i, buttonName in ipairs(MICRO_BUTTONS) do
@@ -262,19 +263,7 @@ function MenuBar:FixButtonPositions()
 		button:ClearAllPoints()
 		button:Hide()
 
-		local shouldAddButton 
-
-		if buttonName == 'HelpMicroButton' then
-			shouldAddButton = not isStoreEnabled 
-		elseif buttonName == 'StoreMicroButton' then
-			shouldAddButton = isStoreEnabled
-		else
-			shouldAddButton = true
-		end
-
-		if shouldAddButton then
-			table.insert(overrideButtons, button)
-		end
+		table.insert(overrideButtons, button)
 	end
 
 	for i, button in ipairs(overrideButtons) do

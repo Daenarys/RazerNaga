@@ -29,6 +29,19 @@ local MODIFIER_NAMES = {
 	['ALT-CTRL-SHIFT'] = L.AltKey .. '-' .. CTRL_KEY_TEXT .. '-' .. SHIFT_KEY_TEXT
 }
 
+-- special case for wow post a 7.1 for shift + numpad
+local SHIFT_KEY_MODIFIER_OVERRIDES = {
+	NUMPAD1 = 'END',
+	NUMPAD2 = 'DARROW',
+	NUMPAD3 = 'PAGEDOWN',
+	NUMPAD4 = 'LARROW',
+	NUMPAD6 = 'RARROW',
+	NUMPAD7 = 'HOME',
+	NUMPAD8 = 'UARROW',
+	NUMPAD9 = 'PAGEUP',
+	NUMPAD0 = 'INSERT'
+}
+
 local bindingsSets = {}
 
 local function isValidBlizzardBindingSet(bindingSet)
@@ -50,7 +63,7 @@ function BindingsLoader:LoadBindings(set)
 	if InCombatLockdown() then
 		RazerNaga:Print(L.CannotAlterBindingsInCombat)
 	end
-	
+
 	for id, frame in RazerNaga.Frame:GetAll() do
 		local modifier = self:GetFrameModifier(frame)
 		if modifier and self:IsAutoBindingEnabled(frame) then
@@ -69,8 +82,15 @@ function BindingsLoader:AssignBindingsToFrame(frame, bindings, modifier)
 
 	for i = 1, min(#bindings, frame:NumButtons()) do
 		local key = bindings[i]
+		local override = SHIFT_KEY_MODIFIER_OVERRIDES[key]
+		local modifier = modifier
 
-		if modifier and modifier ~= 'NONE' then
+		if override and modifier:match('SHIFT') then
+			modifier = modifier:gsub('(%-?SHIFT)', '')
+			key = override
+		end
+
+		if modifier and modifier ~= '' and modifier ~= 'NONE' then
 			key = modifier .. '-' .. key
 		end
 
@@ -335,7 +355,7 @@ BindingsLoader:AddBindingsSet{
 		10,
 		11,
 		12
-	},	
+	},
 }
 
 BindingsLoader:AddBindingsSet{
@@ -370,5 +390,5 @@ BindingsLoader:AddBindingsSet{
 		4,
 		7,
 		10
-	},	
+	},
 }

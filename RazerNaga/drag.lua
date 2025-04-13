@@ -20,12 +20,12 @@ function Drag:New(owner)
 	f:SetFrameLevel(owner:GetFrameLevel() + 5)
 
 	local bg = f:CreateTexture(nil, 'BACKGROUND')
-	bg:SetTexture(1, 1, 1, 0.4)
+	bg:SetColorTexture(1, 1, 1, 0.4)
 	bg:SetAllPoints(f)
 	f:SetNormalTexture(bg)
 
 	local t = f:CreateTexture(nil, 'BACKGROUND')
-	t:SetTexture(0.2, 0.3, 0.4, 0.5)
+	t:SetColorTexture(0.2, 0.3, 0.4, 0.5)
 	t:SetAllPoints(f)
 	f:SetHighlightTexture(t)
 
@@ -133,15 +133,15 @@ end
 function Drag:UpdateColor()
 	if self.owner:IsShown() then
 		if self.owner:GetAnchor() then
-			self:GetNormalTexture():SetTexture(0, 0.2, 0.2, 0.4)
+			self:GetNormalTexture():SetColorTexture(0, 0.2, 0.2, 0.4)
 		else
-			self:GetNormalTexture():SetTexture(0, 0.5, 0.7, 0.4)
+			self:GetNormalTexture():SetColorTexture(0, 0.5, 0.7, 0.4)
 		end
 	else
 		if self.owner:GetAnchor() then
-			self:GetNormalTexture():SetTexture(0.1, 0.1, 0.1, 0.4)
+			self:GetNormalTexture():SetColorTexture(0.1, 0.1, 0.1, 0.4)
 		else
-			self:GetNormalTexture():SetTexture(0.5, 0.5, 0.5, 0.4)
+			self:GetNormalTexture():SetColorTexture(0.5, 0.5, 0.5, 0.4)
 		end
 	end
 end

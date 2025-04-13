@@ -6,7 +6,7 @@ local overrideBarStates = {
 	possessbar = '[possessbar]1;0',
 	vehicleui = '[vehicleui]1;0',
 	vehicle = '[@vehicle,exists]1;0',
-	sstemp = '[bonusbar]1;0',
+	sstemp = '[shapeshift]1;0',
 	form = '[form]1;0',
 	modifier = '[mod]1;0'
 }
@@ -91,13 +91,10 @@ function OverrideController:Load()
 		elseif HasTempShapeshiftActionBar() then
 			newPage = GetTempShapeshiftBarIndex() or 0
 		else
-			newPage = 0
+			newPage = GetBonusBarOffset() or 0
 		end
 		
-		local oldPage = self:GetAttribute('state-overridepage') or 0
-		if oldPage ~= newPage then
-			self:SetAttribute('state-overridepage', newPage)
-		end
+		self:SetAttribute('state-overridepage', newPage)
 	]])
 	
 	
@@ -154,6 +151,12 @@ function OverrideController:DumpStates()
 	end
 	print('------------------------------')
 	print('effective actionpage', self:GetAttribute('state-overridepage'))
+end
+
+-- returns true if the player is in a state where they should be using actions
+-- normally found on the override bar
+function OverrideController:OverrideBarActive()
+	return (self:GetAttribute('state-overridepage') or 0) > 10
 end
 
 OverrideController:Load()

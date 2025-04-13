@@ -11,7 +11,6 @@ local ICON_SHOW_MENU = [[Interface\Addons\RazerNaga\Icons\Configure]]
 local ICON_SHOW_FRAME = [[Interface\Addons\RazerNaga\Icons\Show]]
 local ICON_HIDE_FRAME = [[Interface\Addons\RazerNaga\Icons\Hide]]
 
-RazerNaga.HoverMenu = HoverMenu
 
 function HoverMenu:Set(frame)
 	if not self.isLoaded then
@@ -25,6 +24,7 @@ function HoverMenu:Set(frame)
 	self.owner = frame
 	if frame then
 		self:Hide()
+		self:ClearAllPoints()
 		self:SetPoint('BOTTOMLEFT', frame, 'TOPLEFT')
 		frame.drag:LockHighlight()
 		UIFrameFadeIn(self, 0.1)
@@ -155,3 +155,5 @@ function HoverMenu:CreateToggleConfigMenuButton()
 
 	return b
 end
+
+RazerNaga.HoverMenu = HoverMenu

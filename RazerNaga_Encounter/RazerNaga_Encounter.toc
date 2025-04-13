@@ -1,7 +1,0 @@
-## Interface: 40402
-## Title: Razer Naga Encounter
-## Notes: Makes the PlayerPowerBarAlt movable
-## Author: Tuller
-## Dependencies: RazerNaga
-bar.lua
-controller.lua

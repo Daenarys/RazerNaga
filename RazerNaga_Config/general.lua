@@ -16,7 +16,7 @@ do
 	Options.name = AddonName
 	
 	Options:SetScript('OnShow', function(self)
-		InterfaceOptionsFrame_OpenToCategory(self.panels[1])
+		RazerNaga:OpenToCategory(self.panels[1])
 	end)
 	
 	Options.NewPanel = function(self, title, subtitle, icon)
@@ -27,7 +27,7 @@ do
 		return panel
 	end
 
-	InterfaceOptions_AddCategory(Options)
+	RazerNaga:AddCategory(Options)
 end
 
 
@@ -39,6 +39,7 @@ local GeneralOptions = RazerNaga.Options:NewPanel(L.General, L.GeneralPanelDesc,
 local lock = GeneralOptions:NewButton(L.EnterConfigMode, 136, 22)
 lock:SetScript('OnClick', function(self)
 	RazerNaga:ToggleLockedFrames()
+	HideUIPanel(SettingsPanel)
 end)
 lock:SetPoint('TOPLEFT', 12, -80)
 
@@ -46,6 +47,7 @@ lock:SetPoint('TOPLEFT', 12, -80)
 local bind = GeneralOptions:NewButton(L.EnterBindingMode, 116, 22)
 bind:SetScript('OnClick', function(self)
 	RazerNaga:ToggleBindingMode()
+	HideUIPanel(SettingsPanel)
 end)
 bind:SetPoint('LEFT', lock, 'RIGHT', 4, 0)
 
@@ -64,7 +66,7 @@ stickyBars:SetScript('OnClick', function(self)
 end)
 stickyBars:SetPoint('TOPLEFT', lock, 'BOTTOMLEFT', 0, -24)
 
-local linkedOpacity = GeneralOptions:NewSmallCheckButton(L.LinkedOpacity)
+local linkedOpacity = GeneralOptions:NewCheckButton(L.LinkedOpacity)
 linkedOpacity:SetScript('OnShow', function(self)
 	self:SetChecked(RazerNaga:IsLinkedOpacityEnabled())
 end)
@@ -138,7 +140,7 @@ end)
 showTooltips:SetPoint('TOP', showMacros, 'BOTTOM', 0, -10)
 
 --show tooltips in combat
-local showTooltipsCombat = GeneralOptions:NewSmallCheckButton(L.ShowTooltipsCombat)
+local showTooltipsCombat = GeneralOptions:NewCheckButton(L.ShowTooltipsCombat)
 showTooltipsCombat:SetScript('OnShow', function(self)
 	self:SetChecked(RazerNaga:ShowCombatTooltips())
 end)

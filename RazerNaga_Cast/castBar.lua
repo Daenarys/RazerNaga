@@ -29,7 +29,7 @@ function CastBar:New()
 		f.cast = CastingBar:New(f)
 		f.header:SetParent(nil)
 		f.header:ClearAllPoints()
-		f:SetWidth(240) 
+		f:SetWidth(240)
 		f:SetHeight(24)
 	end
 
@@ -55,9 +55,9 @@ end
 
 function CastBar:UpdateText()
 	if self.sets.showText then
-		self.cast.time:Show()
+		self.cast.Time:Show()
 	else
-		self.cast.time:Hide()
+		self.cast.Time:Hide()
 	end
 	self.cast:AdjustWidth()
 end
@@ -96,13 +96,6 @@ function CastingBar:New(parent)
 	local f = self:Bind(CreateFrame('StatusBar', 'RazerNagaCastingBar', parent, 'RazerNagaCastingBarTemplate'))
 	f:SetPoint('CENTER')
 
-	local name = f:GetName()
-	local _G = getfenv(0)
-	f.time = _G[name .. 'Time']
-	f.text = _G[name .. 'Text']
-	f.borderTexture = _G[name .. 'Border']
-	f.flashTexture = _G[name .. 'Flash']
-
 	f.normalWidth = f:GetWidth()
 	f:SetScript('OnUpdate', f.OnUpdate)
 	f:SetScript('OnEvent', f.OnEvent)
@@ -128,29 +121,29 @@ function CastingBar:OnUpdate(elapsed)
 	CastingBarFrame_OnUpdate(self, elapsed)
 
 	if self.casting then
-		self.time:SetFormattedText('%.1f', self.maxValue - self.value)
+		self.Time:SetFormattedText('%.1f', self.maxValue - self.value)
 		self:AdjustWidth()
 	elseif self.channeling then
-		self.time:SetFormattedText('%.1f', self.value)
+		self.Time:SetFormattedText('%.1f', self.value)
 		self:AdjustWidth()
 	end
 end
 
 function CastingBar:AdjustWidth()
-	local textWidth = self.text:GetStringWidth() + TEXT_PADDING
-	local timeWidth = (self.time:IsShown() and (self.time:GetStringWidth() + 4) * 2) or 0
+	local textWidth = self.Text:GetStringWidth() + TEXT_PADDING
+	local timeWidth = (self.Time:IsShown() and (self.Time:GetStringWidth() + 4) * 2) or 0
 	local width = textWidth + timeWidth
 
 	if width < self.normalWidth then
 		width = self.normalWidth
 	end
-	 	
+
 	local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
-	
+
 	if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
 		self:SetWidth(width)
-		self.borderTexture:SetWidth(width * BORDER_SCALE)
-		self.flashTexture:SetWidth(width * BORDER_SCALE)
+		self.Border:SetWidth(width * BORDER_SCALE)
+		self.Flash:SetWidth(width * BORDER_SCALE)
 
 		self:GetParent():Layout()
 	end

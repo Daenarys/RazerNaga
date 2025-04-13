@@ -75,11 +75,12 @@ end
 
 --binding confirmation dialog
 local function CreateEnableAutomaticBindingsPrompt()
-	local f = CreateFrame('Frame', nil, UIParent)
+	local f = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 	f:SetFrameStrata('DIALOG')
 	f:SetToplevel(true)
 	f:EnableMouse(true)
 	f:SetClampedToScreen(true)
+	f:SetMovable(true)
 	f:SetWidth(320)
 	f:SetHeight(72)
 
@@ -93,11 +94,12 @@ local function CreateEnableAutomaticBindingsPrompt()
 	}
 	f:SetPoint('TOP', 0, -24)
 	f:Hide()
-	f:SetScript('OnShow', function() PlaySound('igMainMenuOption') end)
-	f:SetScript('OnHide', function() PlaySound('gsTitleOptionExit') end)
 
-	local tr = f:CreateTitleRegion()
-	tr:SetAllPoints(f)
+	f:RegisterForDrag('LeftButton')
+	f:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
+	f:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
+	f:SetScript('OnDragStart', function() f:StartMoving() end)
+	f:SetScript('OnDragStop', function() f:StopMovingOrSizing() end)
 
 	local header = f:CreateTexture(nil, 'ARTWORK')
 	header:SetTexture([[Interface\DialogFrame\UI-DialogBox-Header]])
