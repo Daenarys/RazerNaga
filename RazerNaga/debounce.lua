@@ -20,7 +20,7 @@ local function Updater_Create(owner)
 	updater:SetScript('OnFinished', Updater_OnFinished)
 
 	local ani = updater:CreateAnimation('Animation')
-	-- ani:SetOrder(1)
+	ani:SetOrder(1)	
 	updater.ani = ani
 
 	return updater
@@ -54,8 +54,8 @@ function Debounce:New(func, wait, isImmediate)
 				else
 					func()
 				end
-			end
-		end
+			end		
+		end 
 	}
 
 	return function(...)

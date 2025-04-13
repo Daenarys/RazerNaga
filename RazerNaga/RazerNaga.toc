@@ -1,8 +1,8 @@
-## Interface: 40402
+## Interface: 50400
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Tuller
-## Version: 1.06
+## Version: 2.6.4
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
 ## OptionalDeps: Ace3, LibKeyBound-1.0, Masque, FlyPaper
 embeds.xml
@@ -13,7 +13,6 @@ timer.lua
 debounce.lua
 fadeManager.lua
 overrideController.lua
-tooltipController.lua
 settingsLoader.lua
 bindingsLoader.lua
 autoBinder.lua

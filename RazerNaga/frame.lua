@@ -13,7 +13,7 @@ local unused = {}
 --constructor
 function Frame:New(id, tooltipText)
 	local id = tonumber(id) or id
-
+	
 	local f = self:Restore(id) or self:Create(id)
 	f:LoadSettings()
 	f.buttons = {}
@@ -29,46 +29,46 @@ function Frame:Create(id)
 	f:SetClampedToScreen(true)
 	f:SetMovable(true)
 	f.id = id
-
-
+	
+	
 	f.header = CreateFrame('Frame', nil, f, 'SecureHandlerStateTemplate')
 
 	f.header:SetAttribute('id', id)
-
+	
 	f.header:SetAttribute('_onstate-overrideui', [[
 		self:RunAttribute('updateShown')
 	]])
-
+	
 	f.header:SetAttribute('_onstate-showinoverrideui', [[
 		self:RunAttribute('updateShown')
 	]])
-
+	
 	f.header:SetAttribute('_onstate-petbattleui', [[
 		self:RunAttribute('updateShown')
 	]])
-
+	
 	f.header:SetAttribute('_onstate-showinpetbattleui', [[
 		self:RunAttribute('updateShown')
 	]])
-
+	
 	f.header:SetAttribute('_onstate-display', [[
 		self:RunAttribute('updateShown')
 	]])
-
+	
 	f.header:SetAttribute('updateShown', [[
 		local isOverrideUIShown = self:GetAttribute('state-overrideui') and true or false
 		local isPetBattleUIShown = self:GetAttribute('state-petbattleui') and true or false
-
+		
 		if isPetBattleUIShown and not self:GetAttribute('state-showinpetbattleui') then
 			self:Hide()
 			return
 		end
-
+		
 		if isOverrideUIShown and not self:GetAttribute('state-showinoverrideui') then
 			self:Hide()
 			return
 		end
-
+		
 		local displayState = self:GetAttribute('state-display')
 		if displayState == 'hide' then
 			if self:GetAttribute('state-alpha') then
@@ -77,20 +77,20 @@ function Frame:Create(id)
 			self:Hide()
 			return
 		end
-
+		
 		local stateAlpha = tonumber(displayState)
 		if self:GetAttribute('state-alpha') ~= stateAlpha then
 			self:SetAttribute('state-alpha', stateAlpha)
 		end
 		self:Show()
 	]])
-
-	f.header:SetAttribute('_onstate-alpha', [[
-		self:CallMethod('Fade')
+	
+	f.header:SetAttribute('_onstate-alpha', [[ 
+		self:CallMethod('Fade') 
 	]])
-
+	
 	f.header.Fade = function() f:Fade() end
-
+	
 	f.header:SetAllPoints(f)
 
 	f.drag = RazerNaga.DragFrame:New(f)
@@ -121,7 +121,7 @@ function Frame:Free()
 	self.docked = nil
 
 	self:ClearAllPoints()
-	self:SetUserPlaced(false)
+	self:SetUserPlaced(nil)
 	self.drag:Hide()
 	self:Hide()
 
@@ -150,7 +150,7 @@ function Frame:LoadSettings(defaults)
 	end
 
 	self:UpdateShowStates()
-
+	
 	self:ShowInOverrideUI(self:ShowingInOverrideUI())
 	self:ShowInPetBattleUI(self:ShowingInPetBattleUI())
 end
@@ -160,11 +160,11 @@ end
 --this function is used in a lot of places, but never called in Frame
 function Frame:LoadButtons()
 	if not self.AddButton then return end
-
+	
 	for i = 1, self:NumButtons() do
 		self:AddButton(i)
 	end
-
+	
 	self:UpdateClickThrough()
 end
 
@@ -259,7 +259,6 @@ end
 
 function Frame:Layout()
 	local width, height
-
 	if #self.buttons > 0 then
 		local cols = min(self:NumColumns(), #self.buttons)
 		local rows = ceil(#self.buttons / cols)
@@ -314,14 +313,14 @@ function Frame:SetFrameScale(newScale, scaleAnchored)
 
 	if not self:GetAnchor() then
 		local point, x, y = self:GetSavedFramePosition()
-
+		
 		self:SetAndSaveFramePosition(point, x * ratio, y * ratio)
 	end
 
 	if scaleAnchored then
 		for _, f in self:GetAll() do
 			if f:GetAnchor() == self then
-				f:SetFrameScale(newScale, true)
+				f:SetFrameScale(scale, true)
 			end
 		end
 	end
@@ -339,22 +338,12 @@ end
 
 --[[ Opacity ]]--
 
-hooksecurefunc(Frame, 'SetAlpha', function(self, alpha)
-	self:OnSetAlpha(alpha)
-end)
-
--- empty hook
-function Frame:OnSetAlpha(alpha)
-
-end
-
 function Frame:SetFrameAlpha(alpha)
 	if alpha == 1 then
 		self.sets.alpha = false
 	else
 		self.sets.alpha = alpha
 	end
-
 	self:UpdateAlpha()
 end
 
@@ -365,13 +354,11 @@ end
 --faded opacity (mouse not over the frame)
 function Frame:SetFadeMultiplier(alpha)
 	local alpha = alpha or 1
-
 	if alpha == 1 then
 		self.sets.fadeAlpha = false
 	else
 		self.sets.fadeAlpha = alpha
 	end
-
 	self:UpdateWatched()
 	self:UpdateAlpha()
 end
@@ -382,7 +369,7 @@ end
 
 function Frame:UpdateAlpha()
 	self:SetAlpha(self:GetExpectedAlpha())
-
+	
 	if RazerNaga:IsLinkedOpacityEnabled() then
 		self:ForDocked('UpdateAlpha')
 	end
@@ -402,6 +389,14 @@ function Frame:GetExpectedAlpha()
 	--if the frame is moused over, then return the frame's normal opacity
 	if self.focused then
 		return self:GetFrameAlpha()
+	end
+
+	--if the frame is a tKey and the given tKey is presed then return the frame's normal opacity
+	local Anansi = RazerNaga:GetModule('Anansi', true)
+	if Anansi and Anansi.Config:AutoFadingTBars() and RazerNaga.BindingsLoader:IsAutoBindingEnabled(self) then
+		if Anansi:IsTKeyPressed(Anansi:GetFrameTKey(self)) then
+			return self:GetFrameAlpha()
+		end
 	end
 
 	--if there's a statealpha value for the frame, then use it
@@ -481,17 +476,16 @@ local function fader_Create(parent)
 
 	local fade = fadeGroup:CreateAnimation('Alpha')
 	fade:SetSmoothing('NONE')
-	-- fade:SetOrder(1)
+	fade:SetOrder(1)
 
 	return function(targetAlpha, duration)
 		if fadeGroup:IsPlaying() then
 			fadeGroup:Pause()
-			parent:SetAlpha(parent:GetAlpha() + (fade:GetToAlpha() - fade:GetFromAlpha()) * fade:GetProgress())
+			parent:SetAlpha(parent:GetAlpha() + (fade:GetChange() * fade:GetProgress()))
 		end
-
+		
 		fadeGroup.targetAlpha = targetAlpha
-		fade:SetFromAlpha(parent:GetAlpha())
-		fade:SetToAlpha(targetAlpha)
+		fade:SetChange(targetAlpha - parent:GetAlpha())
 		fade:SetDuration(duration)
 		fadeGroup:Play()
 	end
@@ -569,7 +563,7 @@ function Frame:ShowInOverrideUI(enable)
 end
 
 function Frame:ShowingInOverrideUI()
-	return self.sets.showInOverrideUI
+	return self.sets.showInOverrideUI 
 end
 
 function Frame:ShowInPetBattleUI(enable)
@@ -631,12 +625,12 @@ end
 
 function Frame:UpdateShowStates()
 	local showstates = self:GetShowStates()
-
+	
 	if showstates then
 		RegisterStateDriver(self.header, 'display', showstates)
 	else
 		UnregisterStateDriver(self.header, 'display')
-
+		
 		if self.header:GetAttribute('state-display') then
 			self.header:SetAttribute('state-display', nil)
 		end
@@ -675,7 +669,7 @@ Frame.stickyTolerance = 1
 
 function Frame:StickToEdge()
 	local point, x, y = self:GetRelativeFramePosition()
-	local rTolerance = self.stickyTolerance / self:GetFrameScale()
+	local rTolerance = self.stickyTolerance / self:GetFrameScale()	
 	local changed = false
 
 	if abs(x) <= rTolerance then
@@ -696,7 +690,7 @@ end
 
 function Frame:Stick()
 	local rTolerance = self.stickyTolerance / self:GetFrameScale()
-
+	
 	self:ClearAnchor()
 
 	--only do sticky code if the alt key is not currently down
@@ -723,14 +717,14 @@ end
 
 function Frame:Reanchor()
 	local f, point = self:GetAnchor()
-
+	
 	if not(f and FlyPaper.StickToPoint(self, f, point)) then
 		self:ClearAnchor()
 		self:Reposition()
 	else
 		self:SetAnchor(f, point)
 	end
-
+	
 	self.drag:UpdateColor()
 end
 
@@ -759,7 +753,7 @@ end
 
 function Frame:ClearAnchor()
 	local anchor, point = self:GetAnchor()
-
+	
 	if anchor and anchor.docked then
 		for i,f in pairs(anchor.docked) do
 			if f == self then
@@ -767,7 +761,7 @@ function Frame:ClearAnchor()
 				break
 			end
 		end
-
+		
 		if not next(anchor.docked) then
 			anchor.docked = nil
 		end
@@ -780,7 +774,7 @@ end
 
 function Frame:GetAnchor()
 	local anchorString = self.sets.anchor
-
+	
 	if anchorString then
 		local pointStart = #anchorString - 1
 		return self:Get(anchorString:sub(1, pointStart - 1)), anchorString:sub(pointStart)
@@ -797,7 +791,7 @@ end
 
 function Frame:SetAndSaveFramePosition(point, x, y)
 	self:SetFramePosition(point, x, y)
-	self:SaveFramePosition(point, x, y)
+	self:SaveFramePosition(point, x, y)	
 end
 
 
@@ -817,7 +811,7 @@ function Frame:GetRelativeFramePosition()
 
 	local parent = self:GetParent() or _G['UIParent']
 	local pwidth = parent:GetWidth() / self:GetScale()
-	local pheight = parent:GetHeight() / self:GetScale()
+	local pheight = parent:GetHeight() / self:GetScale()	
 
 	local x , y, point
 	if left < (pwidth - right) and left < abs((left+right)/2 - pwidth/2) then
@@ -830,7 +824,7 @@ function Frame:GetRelativeFramePosition()
 		x = (left+right)/2 - pwidth/2
 		point = '';
 	end
-
+	
 	if bottom < (pheight - top) and bottom < abs((bottom + top)/2 - pheight/2) then
 		y = bottom
 		point = 'BOTTOM' .. point
@@ -840,11 +834,11 @@ function Frame:GetRelativeFramePosition()
 	else
 		y = (bottom + top)/2 - pheight/2
 	end
-
+	
 	if point == '' then
 		point = 'CENTER'
 	end
-
+	
 	return point, x, y
 end
 
@@ -853,13 +847,13 @@ end
 
 local roundPoint = function(point)
 	local point = point or 0
-
+	
 	if point > 0 then
 		point = floor(point + 0.5)
 	else
 		point = ceil(point - 0.5)
-	end
-
+	end	
+	
 	return point
 end
 
@@ -868,11 +862,11 @@ function Frame:Reposition()
 	self:SetFramePosition(self:GetSavedFramePosition())
 end
 
-function Frame:SaveFramePosition(point, x, y)
+function Frame:SaveFramePosition(point, x, y)	
 	local point = point or 'CENTER'
 	local x = roundPoint(x)
 	local y = roundPoint(y)
-
+	
 	local sets = self.sets
 	sets.point = point
 	sets.x = x
@@ -886,7 +880,7 @@ function Frame:GetSavedFramePosition()
 	local point = sets.point or 'CENTER'
 	local x = sets.x or 0
 	local y = sets.y or 0
-
+	
 	return point, x, y
 end
 
@@ -900,7 +894,9 @@ function Frame:CreateMenu()
 end
 
 function Frame:ShowMenu()
-	if RazerNaga:IsConfigAddonEnabled() then
+	local enabled = select(4, GetAddOnInfo('RazerNaga_Config'))
+	
+	if enabled then
 		if not self.menu then
 			self:CreateMenu()
 		end
@@ -964,7 +960,7 @@ local backdrop = {
 }
 
 local function createBorder(self)
-	local f = CreateFrame('Frame', nil, self.header, BackdropTemplateMixin and 'BackdropTemplate')
+	local f = CreateFrame('Frame', nil, self.header)
 	f:SetToplevel(true)
 	f:SetPoint('TOPLEFT', -4, 4, self.header)
 	f:SetPoint('BOTTOMRIGHT', 4, -4, self.header)
@@ -975,14 +971,111 @@ local function createBorder(self)
 	return f
 end
 
-function Frame:ShowHighlight()
-	local ht = self.ht
-	if not ht then
-		ht = createBorder(self)
-		self.ht = ht
-	end
+--[[ anansi specific border ]]--
 
+local function createAnansiBorder(self)
+	local BORDER_SIZE = 32
+	local OFFSET = 12
+
+	local f = CreateFrame('Frame', nil, self.header)
+	f:SetPoint('TOPLEFT', -OFFSET, OFFSET, self.header)
+	f:SetPoint('BOTTOMRIGHT', OFFSET, -OFFSET, self.header)
+
+
+	local tl = f:CreateTexture(nil, 'BACKGROUND')
+	tl:SetSize(BORDER_SIZE, BORDER_SIZE)
+	tl:SetPoint('TOPLEFT')
+	f.tl = tl
+
+	local tr = f:CreateTexture(nil, 'BACKGROUND')
+	tr:SetSize(BORDER_SIZE, BORDER_SIZE)
+	tr:SetPoint('TOPRIGHT')
+	f.tr = tr
+
+	local t = f:CreateTexture(nil, 'BACKGROUND')
+	t:SetPoint('LEFT', tl, 'RIGHT', 0, 1)
+	t:SetPoint('RIGHT', tr, 'LEFT', 0, 1)
+	t:SetHeight(BORDER_SIZE)
+	t:SetHorizTile(true)
+	f.t = t
+
+	local bl = f:CreateTexture(nil, 'BACKGROUND')
+	bl:SetSize(BORDER_SIZE, BORDER_SIZE)
+	bl:SetPoint('BOTTOMLEFT')
+	f.bl = bl
+
+	local br = f:CreateTexture(nil, 'BACKGROUND')
+	br:SetSize(BORDER_SIZE, BORDER_SIZE)
+	br:SetPoint('BOTTOMRIGHT')
+	f.br = br
+
+	local b = f:CreateTexture(nil, 'BACKGROUND')
+	b:SetPoint('LEFT', bl, 'RIGHT', 0, 0)
+	b:SetPoint('RIGHT', br, 'LEFT', 0, 0)
+	b:SetHeight(BORDER_SIZE)
+	b:SetHorizTile(true)
+	f.b = b
+
+	local l = f:CreateTexture(nil, 'BACKGROUND')
+	l:SetPoint('TOP', tl, 'BOTTOM', -4, 0)
+	l:SetPoint('BOTTOM', bl, 'TOP', -4, 0)
+	l:SetWidth(BORDER_SIZE)
+	l:SetVertTile(true)
+	f.l = l
+
+	local r = f:CreateTexture(nil, 'BACKGROUND')
+	r:SetPoint('TOP', tr, 'BOTTOM', 4, 0)
+	r:SetPoint('BOTTOM', br, 'TOP', 4, 0)
+	r:SetWidth(BORDER_SIZE)
+	r:SetVertTile(true)
+	f.r = r
+
+	local m = f:CreateTexture(nil, 'BACKGROUND')
+	m:SetPoint('TOP', t, 'BOTTOM')
+	m:SetPoint('BOTTOM', b, 'TOP')
+	m:SetPoint('LEFT', l, 'RIGHT', 0, 0)
+	m:SetPoint('RIGHT', r, 'LEFT', 0, 0)
+	m:SetHorizTile(true)
+	m:SetVertTile(true)
+	f.m = m
+
+	return f
+end
+
+function Frame:ShowHighlight()
+	if not self:ShowAnansiHighlight() then
+		local ht = self.ht
+		if not ht then
+			ht = createBorder(self)
+			self.ht = ht
+		end
+	end
 	self.ht:Show()
+end
+
+function Frame:ShowAnansiHighlight()
+	local Anansi = RazerNaga:GetModule('Anansi', true)
+	if not Anansi then return false end
+
+	local tKey = Anansi:GetFrameTKey(self)
+	if tKey then
+		local ht = self.ht
+		if not ht then
+			ht = createAnansiBorder(self)
+			self.ht = ht
+		end
+
+		ht.tl:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_topleft]]):format(tKey))
+		ht.tr:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_topright]]):format(tKey))
+		ht.t:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_top]]):format(tKey))
+		ht.bl:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_bottomleft]]):format(tKey))
+		ht.br:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_bottomright]]):format(tKey))
+		ht.b:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_bottom]]):format(tKey))
+		ht.l:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_left]]):format(tKey))
+		ht.r:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_right]]):format(tKey))
+		ht.m:SetTexture(([[Interface\AddOns\RazerAnansi\images\border\boxoutline_T%d_centre]]):format(tKey))
+	end
+	return true
 end
 
 function Frame:HideHighlight()

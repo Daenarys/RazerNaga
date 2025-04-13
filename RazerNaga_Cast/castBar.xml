@@ -15,15 +15,14 @@
 			</Layer>
 
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlight">
+				<FontString name="$parentText" font="GameFontHighlight">
 					<Anchors>
 						<Anchor point="CENTER">
 							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
-
-				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
+				<FontString name="$parentTime" font="GameFontHighlight" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset x="-4" y="0"/>
@@ -31,14 +30,14 @@
 					</Anchors>
 				</FontString>
 
-				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
+				<Texture name="$parentBorder" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="275" y="68"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 
-				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
+				<Texture name="$parentBorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
 					<Size>
 						<AbsDimension x="275" y="68"/>
 					</Size>
@@ -49,7 +48,7 @@
 			</Layer>
 
 			<Layer level="OVERLAY">
-				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+				<Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER">
@@ -57,7 +56,7 @@
 						</Anchor>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
+				<Texture name="$parentFlash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
 					<Size x="275" y="78"/>
 					<Anchors>
 						<Anchor point="CENTER"/>

@@ -5,16 +5,26 @@
 
 --[[ globals ]]--
 
-local RazerNaga = _G[...]
+local RazerNaga = _G['RazerNaga']
 local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
-local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
-local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
+
+local ceil = math.ceil
+local min = math.min
+local format = string.format
+local MAX_BUTTONS = 120
+local NUM_POSSESS_BAR_BUTTONS = 12
+local KeyBound = LibStub('LibKeyBound-1.0')
+local ActionButton = RazerNaga.ActionButton
+
 
 --[[ Action Bar ]]--
 
-local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame); RazerNaga.ActionBar = ActionBar
+local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+RazerNaga.ActionBar = ActionBar
+
+--[[ Constructor Code ]]--
 
 --metatable magic.  Basically this says, 'create a new table for this index'
 --I do this so that I only create page tables for classes the user is actually playing
@@ -42,9 +52,9 @@ ActionBar.mainbarOffsets = {
 			pages.bear = 8
 			pages.moonkin = 9
 			pages.tree = 7
-		elseif i == 'WARRIOR' then
-			pages.battle = 6
-			pages.defensive = 7
+		-- elseif i == 'WARRIOR' then
+			-- pages.battle = 6
+			-- pages.defensive = 7
 			-- pages.berserker = 8
 		elseif i == 'PRIEST' then
 			pages.shadow = 6
@@ -166,7 +176,7 @@ function ActionBar:GetOffset(stateId)
 end
 
 -- note to self:
--- if you leave a ; on the end of a statebutton string, it causes evaluation issues,
+-- if you leave a ; on the end of a statebutton string, it causes evaluation issues, 
 -- especially if you're doing right click selfcast on the base state
 function ActionBar:UpdateStateDriver()
 	UnregisterStateDriver(self.header, 'page', 0)
@@ -181,7 +191,7 @@ function ActionBar:UpdateStateDriver()
 			condition = state.value
 		end
 
-		if condition and self:GetOffset(stateId) then
+		if self:GetOffset(stateId) then
 			header = header .. condition .. 'S' .. i .. ';'
 		end
 	end
@@ -194,28 +204,26 @@ function ActionBar:UpdateStateDriver()
 	self:RefreshActions()
 end
 
-do
-	local function ToValidID(id)
-		return (id - 1) % MAX_BUTTONS + 1
-	end
+local function ToValidID(id)
+	return (id - 1) % MAX_BUTTONS + 1
+end
 
-	--updates the actionID of a given button for all states
-	function ActionBar:UpdateAction(i)
-		local b = self.buttons[i]
-		local maxSize = self:MaxLength()
+--updates the actionID of a given button for all states
+function ActionBar:UpdateAction(i)
+	local b = self.buttons[i]
+	local maxSize = self:MaxLength()
 
-		b:SetAttribute('button--index', i)
+	b:SetAttribute('button--index', i)
 
-		for i, state in RazerNaga.BarStates:getAll() do
-			local offset = self:GetOffset(state.id)
-			local actionId = nil
+	for i, state in RazerNaga.BarStates:getAll() do
+		local offset = self:GetOffset(state.id)
+		local actionId = nil
 
-			if offset then
-				actionId = ToValidID(b:GetAttribute('action--base') + offset * maxSize)
-			end
-
-			b:SetAttribute('action--S' .. i, actionId)
+		if offset then
+			actionId = ToValidID(b:GetAttribute('action--base') + offset * maxSize)
 		end
+
+		b:SetAttribute('action--S' .. i, actionId)
 	end
 end
 
@@ -241,12 +249,12 @@ function ActionBar:LoadStateController()
 
 	self.header:SetAttribute('updateState', [[
 		local state
-		if self:GetAttribute('state-overridepage') > 10 and self:GetAttribute('state-overridebar') then
+		if self:GetAttribute('state-overridepage') > 0 and self:GetAttribute('state-overridebar') then
 			state = 'override'
 		else
 			state = self:GetAttribute('state-page')
 		end
-
+		
 		control:ChildUpdate('action', state)
 	]])
 
@@ -270,33 +278,44 @@ end
 
 
 --Empty button display
-function ActionBar:ShowGrid(reason)
+function ActionBar:ShowGrid()
 	for _,b in pairs(self.buttons) do
-		b:ShowGrid(reason)
+		b:SetAttribute('showgrid', b:GetAttribute('showgrid') + 1)
+		b:UpdateGrid()
 	end
 end
 
-function ActionBar:HideGrid(reason)
+function ActionBar:HideGrid()
 	for _,b in pairs(self.buttons) do
-		b:HideGrid(reason)
+		b:SetAttribute('showgrid', max(b:GetAttribute('showgrid') - 1, 0))
+		b:UpdateGrid()
 	end
 end
 
 function ActionBar:UpdateGrid()
 	if RazerNaga:ShowGrid() then
-		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+		self:ShowGrid()
 	else
-		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+		self:HideGrid()
+	end
+end
+
+function ActionBar:UPDATE_BINDINGS()
+	for _,b in pairs(self.buttons) do
+		b:UpdateHotkey(b.buttonType)
 	end
 end
 
 ---keybound support
 function ActionBar:KEYBOUND_ENABLED()
-	self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+	self:ShowGrid()
+	for _, b in pairs(self.buttons) do
+		b:RegisterEvent('UPDATE_BINDINGS')
+	end
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-	self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+	self:HideGrid()
 end
 
 --right click targeting support
@@ -379,9 +398,6 @@ do
 		s.UpdateValue = ConditionSlider_UpdateValue
 		s.UpdateText = ConditionSlider_UpdateText
 		s.stateId = stateId
-
-
-
 		s:SetWidth(s:GetWidth() + 28)
 
 		local title = _G[s:GetName() .. 'Text']
@@ -511,42 +527,13 @@ end
 local ActionBarController = RazerNaga:NewModule('ActionBars', 'AceEvent-3.0')
 
 function ActionBarController:Load()
-	self:RegisterEvent('UPDATE_BONUS_ACTIONBAR', 'UpdateOverrideBar')
-	self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
-	self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
-
-	self:RegisterEvent('PET_BAR_HIDEGRID')
-
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
 end
 
 function ActionBarController:Unload()
-	self:UnregisterAllEvents()
-
 	for i = 1, RazerNaga:NumBars() do
 		RazerNaga.Frame:ForFrame(i, 'Free')
-	end
-end
-
-function ActionBarController:UpdateOverrideBar()
-	if InCombatLockdown() or (not RazerNaga.OverrideController:OverrideBarActive()) then
-		return
-	end
-
-	local overrideBar = RazerNaga:GetOverrideBar()
-
-	for _, button in pairs(overrideBar.buttons) do
-		ActionButton_Update(button)
-	end
-end
-
--- workaround for empty buttons not hiding when dropping a pet action
-function ActionBarController:PET_BAR_HIDEGRID()
-	if InCombatLockdown() then
-		return
-	end
-
-	ActionBar:ForAll('HideGrid', 1)
+	end	
 end

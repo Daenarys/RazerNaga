@@ -3,13 +3,9 @@
 		Driver for RazerNaga Frames
 --]]
 
-local AddonName, Addon = ...
-
-RazerNaga = LibStub('AceAddon-3.0'):NewAddon(AddonName, 'AceEvent-3.0', 'AceConsole-3.0')
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
-
-local CURRENT_VERSION = GetAddOnMetadata(AddonName, 'Version')
-local CONFIG_ADDON_NAME = AddonName .. '_Config'
+RazerNaga = LibStub('AceAddon-3.0'):NewAddon('RazerNaga', 'AceEvent-3.0', 'AceConsole-3.0')
+local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
+local CURRENT_VERSION = GetAddOnMetadata('RazerNaga', 'Version')
 
 
 --[[ Startup ]]--
@@ -37,6 +33,13 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
+	--create a loader for the options menu
+	local f = CreateFrame('Frame', nil, InterfaceOptionsFrame)
+	f:SetScript('OnShow', function(self)
+		self:SetScript('OnShow', nil)
+		LoadAddOn('RazerNaga_Config')
+	end)
+
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
@@ -44,7 +47,7 @@ function RazerNaga:OnInitialize()
 end
 
 function RazerNaga:OnEnable()
-	local incompatibleAddon = self:GetFirstLoadedIncompatibleAddon()
+	local incompatibleAddon = self:GetFirstLoadedIncompatibleAddon() 
 	if incompatibleAddon then
 		self:ShowIncompatibleAddonDialog(incompatibleAddon)
 		return
@@ -56,7 +59,7 @@ function RazerNaga:OnEnable()
 end
 
 function RazerNaga:CreateDataBrokerPlugin()
-	local dataObject = LibStub:GetLibrary('LibDataBroker-1.1'):NewDataObject(AddonName, {
+	local dataObject = LibStub:GetLibrary('LibDataBroker-1.1'):NewDataObject('RazerNaga', {
 		type = 'launcher',
 
 		icon = [[Interface\Addons\RazerNaga\Icons\RazerNagaMini]],
@@ -75,7 +78,7 @@ function RazerNaga:CreateDataBrokerPlugin()
 
 		OnTooltipShow = function(tooltip)
 			if not tooltip or not tooltip.AddLine then return end
-			tooltip:AddLine(AddonName)
+			tooltip:AddLine('RazerNaga')
 
 			if RazerNaga:Locked() then
 				tooltip:AddLine(L.ConfigEnterTip)
@@ -92,13 +95,14 @@ function RazerNaga:CreateDataBrokerPlugin()
 				end
 			end
 
-			if self:IsConfigAddonEnabled() then
+			local enabled = select(4, GetAddOnInfo('RazerNaga_Config'))
+			if enabled then
 				tooltip:AddLine(L.ShowOptionsTip)
 			end
 		end,
 	})
-
-	LibStub('LibDBIcon-1.0'):Register(AddonName, dataObject, self.db.profile.minimap)
+	
+	LibStub('LibDBIcon-1.0'):Register('RazerNaga', dataObject, self.db.profile.minimap)
 end
 
 --[[ Version Updating ]]--
@@ -125,18 +129,19 @@ function RazerNaga:GetDefaults()
 				{r = 63, g = 48, b = 103, a = 255},   --curtains to heaven
 			}
 		},
-
+		
 		profile = {
 			possessBar = 1,
 
 			sticky = false,
 			linkedOpacity = false,
+			
 			showMacroText = true,
 			showBindingText = true,
 			showTooltips = true,
 			showTooltipsCombat = true,
 			useVehicleUI = true,
-
+			
 			minimap = {
 				hide = false,
 			},
@@ -153,6 +158,21 @@ function RazerNaga:GetDefaults()
 			autoBindKeys = false,
 			highlightModifiers = false,
 			bindingSet = 'Simple',
+			
+			--anansi settings
+			showTPanel = 'always',
+			
+			tKeyNames = {
+				'T1',
+				'T2',
+				'T3',
+				'T4',
+				'T5',
+				'T6',
+				'T7'
+			},
+			
+			enableTKeyNotifications = true,
 		}
 	}
 
@@ -166,7 +186,7 @@ function RazerNaga:UpdateSettings(major, minor, bugfix)
 	if self:ShouldUpgradePagingSettings(major, minor, bugfix) then
 		self:UpgradePagingSettings()
 	end
-
+	
 	if self:ShouldFixRogueSettings(major, minor, bugfix) then
 		self:FixRoguePagingSettings()
 	end
@@ -188,7 +208,7 @@ function RazerNaga:UpgradePagingSettings()
 				if frameSets.pages then
 					for class, oldStates in pairs(frameSets.pages) do
 						local newStates = {}
-
+						
 						--convert class states
 						if class == 'WARRIOR' then
 							newStates['battle'] = oldStates['[bonusbar:1]']
@@ -209,27 +229,27 @@ function RazerNaga:UpgradePagingSettings()
 						elseif class == 'WARLOCK' then
 							newStates['meta'] = oldStates['[form:2]']
 						end
-
+					
 						--modifier states
 						for i, state in RazerNaga.BarStates:getAll('modifier') do
 							newStates[state.id] = oldStates[state.value]
 						end
-
+						
 						--possess states
 						for i, state in RazerNaga.BarStates:getAll('possess') do
 							newStates[state.id] = oldStates[state.value]
 						end
-
+						
 						--page states
 						for i, state in RazerNaga.BarStates:getAll('page') do
 							newStates[state.id] = oldStates[state.value]
 						end
-
+						
 						--targeting states
 						for i, state in RazerNaga.BarStates:getAll('target') do
 							newStates[state.id] = oldStates[state.value]
 						end
-
+						
 						frameSets.pages[class] = newStates
 					end
 				end
@@ -257,17 +277,19 @@ end
 
 function RazerNaga:UpdateVersion()
 	RazerNagaVersion = CURRENT_VERSION
-
-	self:Print(string.format(L.Updated, RazerNagaVersion))
+	self:Print(format(L.Updated, RazerNagaVersion))
 end
 
 
 --Load is called  when the addon is first enabled, and also whenever a profile is loaded
 function RazerNaga:Load()
+	-- load frame modules
+	self.PetBar:New()
+	self.BagBar:New()
+	self.VehicleBar:New()
+
 	for i, module in self:IterateModules() do
-		if module.Load then
-			module:Load()
-		end
+		module:Load()
 	end
 
 	self.Frame:ForAll('Reanchor')
@@ -282,11 +304,13 @@ end
 
 --unload is called when we're switching profiles
 function RazerNaga:Unload()
+	self.Frame:ForFrame('pet', 'Free')
+	self.Frame:ForFrame('bags', 'Free')
+	self.Frame:ForFrame('vehicle', 'Free')
+
 	--unload any module stuff
 	for i, module in self:IterateModules() do
-		if module.Unload then
-			module:Unload()
-		end
+		module:Unload()
 	end
 end
 
@@ -371,14 +395,14 @@ function RazerNaga:SetUseOverrideUI(enable)
 end
 
 function RazerNaga:UsingOverrideUI()
-	return self.db.profile.useOverrideUI
+	return self.db.profile.useOverrideUI 
 end
 
 function RazerNaga:UpdateUseOverrideUI()
 	local usingOverrideUI = self:UsingOverrideUI()
-
+	
 	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
-
+	
 	local oab = _G['OverrideActionBar']
 	oab:ClearAllPoints()
 	if usingOverrideUI then
@@ -539,43 +563,13 @@ end
 
 --[[ Options Menu Display ]]--
 
-function RazerNaga:AddCategory(frame, addOn, position)
-	frame.OnCommit = frame.okay;
-	frame.OnDefault = frame.default;
-	frame.OnRefresh = frame.refresh;
-
-	if frame.parent then
-		local category = Settings.GetCategory(frame.parent)
-		local subcategory, layout = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name)
-		subcategory.ID = frame.name;
-		return subcategory, category;
-	else
-		local category, layout = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name)
-		category.ID = frame.name;
-		Settings.RegisterAddOnCategory(category)
-		return category;
-	end
-end
-
-function RazerNaga:OpenToCategory(categoryIDOrFrame)
-	if type(categoryIDOrFrame) == "table" then
-		local categoryID = categoryIDOrFrame.name;
-		return Settings.OpenToCategory(categoryID)
-	else
-		return Settings.OpenToCategory(categoryIDOrFrame)
-	end
-end
-
 function RazerNaga:ShowOptions()
-	if InCombatLockdown() then
-		self:Printf(_G.ERR_NOT_IN_COMBAT)
-		return
-	end
-
-	if C_AddOns.LoadAddOn('RazerNaga_Config') then
-		self:OpenToCategory(self.Options)
+	if LoadAddOn('RazerNaga_Config') then
+		InterfaceOptionsFrame_Show()		
+		InterfaceOptionsFrame_OpenToCategory(self.Options)
 		return true
 	end
+	
 	return false
 end
 
@@ -583,7 +577,6 @@ function RazerNaga:NewMenu(id)
 	if not self.Menu then
 		LoadAddOn('RazerNaga_Config')
 	end
-
 	return self.Menu and self.Menu:New(id)
 end
 
@@ -647,9 +640,6 @@ function RazerNaga:OnCmd(args)
 		self:PrintHelp()
 	elseif cmd == 'statedump' then
 		self.OverrideController:DumpStates()
-	elseif cmd == 'configstatus' then
-		local status = self:IsConfigAddonEnabled() and 'ENABLED' or 'DISABLED'
-		print(('Config Mode Status: %s'):format(status))
 	--options stuff
 	else
 		if not self:ShowOptions() then
@@ -658,41 +648,34 @@ function RazerNaga:OnCmd(args)
 	end
 end
 
-do
+function RazerNaga:PrintHelp(cmd)
 	local function PrintCmd(cmd, desc)
 		print(format(' - |cFF33FF99%s|r: %s', cmd, desc))
 	end
 
-	function RazerNaga:PrintHelp(cmd)
-		self:Print('Commands (/dom, /RazerNaga)')
-
-		PrintCmd('config', L.ConfigDesc)
-		PrintCmd('scale <frameList> <scale>', L.SetScaleDesc)
-		PrintCmd('setalpha <frameList> <opacity>', L.SetAlphaDesc)
-		PrintCmd('fade <frameList> <opacity>', L.SetFadeDesc)
-		PrintCmd('setcols <frameList> <columns>', L.SetColsDesc)
-		PrintCmd('pad <frameList> <padding>', L.SetPadDesc)
-		PrintCmd('space <frameList> <spacing>', L.SetSpacingDesc)
-		PrintCmd('show <frameList>', L.ShowFramesDesc)
-		PrintCmd('hide <frameList>', L.HideFramesDesc)
-		PrintCmd('toggle <frameList>', L.ToggleFramesDesc)
-		PrintCmd('save <profile>', L.SaveDesc)
-		PrintCmd('set <profile>', L.SetDesc)
-		PrintCmd('copy <profile>', L.CopyDesc)
-		PrintCmd('delete <profile>', L.DeleteDesc)
-		PrintCmd('reset', L.ResetDesc)
-		PrintCmd('list', L.ListDesc)
-		PrintCmd('version', L.PrintVersionDesc)
-	end
+	self:Print('Commands (/rz, /razernaga)')
+	PrintCmd('config', L.ConfigDesc)
+	PrintCmd('scale <frameList> <scale>', L.SetScaleDesc)
+	PrintCmd('setalpha <frameList> <opacity>', L.SetAlphaDesc)
+	PrintCmd('fade <frameList> <opacity>', L.SetFadeDesc)
+	PrintCmd('setcols <frameList> <columns>', L.SetColsDesc)
+	PrintCmd('pad <frameList> <padding>', L.SetPadDesc)
+	PrintCmd('space <frameList> <spacing>', L.SetSpacingDesc)
+	PrintCmd('show <frameList>', L.ShowFramesDesc)
+	PrintCmd('hide <frameList>', L.HideFramesDesc)
+	PrintCmd('toggle <frameList>', L.ToggleFramesDesc)
+	PrintCmd('save <profile>', L.SaveDesc)
+	PrintCmd('set <profile>', L.SetDesc)
+	PrintCmd('copy <profile>', L.CopyDesc)
+	PrintCmd('delete <profile>', L.DeleteDesc)
+	PrintCmd('reset', L.ResetDesc)
+	PrintCmd('list', L.ListDesc)
+	PrintCmd('version', L.PrintVersionDesc)
 end
 
 --version info
 function RazerNaga:PrintVersion()
 	self:Print(RazerNagaVersion)
-end
-
-function RazerNaga:IsConfigAddonEnabled()
-	return GetAddOnEnableState(UnitName('player'), AddonName .. '_Config') >= 1
 end
 
 
@@ -710,13 +693,7 @@ function RazerNaga:HideConfigHelper()
 end
 
 function RazerNaga:SetLock(enable)
-	if InCombatLockdown() then
-		self:Printf(_G.ERR_NOT_IN_COMBAT)
-		return
-	end
-
 	self.locked = enable or false
-
 	if self:Locked() then
 		self.Frame:ForAll('Lock')
 		self:HideConfigHelper()
@@ -734,6 +711,7 @@ end
 
 function RazerNaga:ToggleLockedFrames()
 	self:SetLock(not self:Locked())
+	HideUIPanel(InterfaceOptionsFrame)
 end
 
 
@@ -758,6 +736,7 @@ function RazerNaga:ToggleBindingMode()
 	else
 		self:SetLock(true)
 		LibStub('LibKeyBound-1.0'):Toggle()
+		HideUIPanel(InterfaceOptionsFrame)
 	end
 end
 
@@ -869,7 +848,6 @@ end
 
 function RazerNaga:SetShowGrid(enable)
 	self.db.profile.showgrid = enable or false
-
 	self.ActionBar:ForAll('UpdateGrid')
 end
 
@@ -961,20 +939,24 @@ function RazerNaga:NumBars()
 	return self.db.profile.ab.count
 end
 
-
 --tooltips
+function RazerNaga:ShouldShowTooltips()
+	if self:ShowTooltips() then
+		return (not InCombatLockdown()) or self:ShowCombatTooltips()
+	end
+	return false;	
+end
+
 function RazerNaga:ShowTooltips()
 	return self.db.profile.showTooltips
 end
 
 function RazerNaga:SetShowTooltips(enable)
 	self.db.profile.showTooltips = enable or false
-	self:GetModule('Tooltips'):SetShowTooltips(enable)
 end
 
 function RazerNaga:SetShowCombatTooltips(enable)
 	self.db.profile.showTooltipsCombat = enable or false
-	self:GetModule('Tooltips'):SetShowTooltipsInCombat(enable)
 end
 
 function RazerNaga:ShowCombatTooltips()

@@ -4,11 +4,17 @@
 		Necessary since using the blizzard fading functions can cause issues in combat
 --]]
 
-local MouseOverWatcher = {};
-local Timer_After = _G['C_Timer'].After
+local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
+
+--[[ Code to watch frames as they're moused over ]]--
+
 local watched = {}
 
-function MouseOverWatcher:Update()
+local MouseOverWatcher = RazerNaga.Timer:New()
+
+MouseOverWatcher.delay = 0.15
+
+function MouseOverWatcher:OnFinished()
 	for f in pairs(watched) do
 		if f:IsFocus() then
 			if not f.focused then
@@ -24,42 +30,28 @@ function MouseOverWatcher:Update()
 	end
 
 	if next(watched) then
-		self:RequestUpdate()
-	end
-end
-
-function MouseOverWatcher:RequestUpdate()
-	if not self.__Update then
-		self.__Update = function()
-			self.__Waiting = false
-			self:Update()
-		end
-	end
-
-	if not self.__Waiting then
-		self.__Waiting = true
-		Timer_After(0.15, self.__Update)
+		self:Start()
 	end
 end
 
 function MouseOverWatcher:Add(f)
-	if not watched[f] then
-		watched[f] = true
+	if watched[f] then return end
 
-		f.focused = f:IsFocus() and true or nil
-		f:UpdateAlpha()
+	watched[f] = true
+	f.focused = f:IsFocus() and true or nil
+	f:UpdateAlpha()
 
-		self:RequestUpdate()
+	if not self:IsRunning() then
+		self:Start()
 	end
 end
 
 function MouseOverWatcher:Remove(f)
-	if watched[f] then
-		watched[f] = nil
+	if not watched[f] then return end
 
-		f.focused = nil
-		f:UpdateAlpha()
-	end
+	watched[f] = nil
+	f.focused = nil
+	f:UpdateAlpha()
 end
 
 RazerNaga.MouseOverWatcher = MouseOverWatcher

@@ -6,16 +6,15 @@
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent)
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()
-
+	
 RazerNaga.ConfigModeDialog = ConfigModeDialog
 
 function ConfigModeDialog:Load()
 	self:SetFrameStrata('DIALOG')
-	self:SetMovable(true)
 	self:SetToplevel(true)
 	self:EnableMouse(true)
 	self:SetClampedToScreen(true)
@@ -29,11 +28,11 @@ function ConfigModeDialog:Load()
 		tileSize = 32,
 		edgeSize = 32,
 	}
-	self:RegisterForDrag('LeftButton')
-	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
-	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
-	self:SetScript('OnDragStart', function() self:StartMoving() end)
-	self:SetScript('OnDragStop', function() self:StopMovingOrSizing() end)
+	self:SetScript('OnShow', function() PlaySound('igMainMenuOption') end)
+	self:SetScript('OnHide', function() PlaySound('gsTitleOptionExit') end)
+
+	local tr = self:CreateTitleRegion()
+	tr:SetAllPoints(f)
 
 	local header = self:CreateTexture(nil, 'ARTWORK')
 	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
@@ -52,18 +51,18 @@ function ConfigModeDialog:Load()
 	desc:SetPoint('TOPLEFT', 18, -32)
 	desc:SetPoint('BOTTOMRIGHT', -18, 120)
 	desc:SetText(L.ConfigModeHelp)
-
+	
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
 	exitConfig:SetPoint('TOPRIGHT', -4, -4)
-
+	
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()
 	bindingMode:SetPoint('TOPLEFT', 12, -12)
-
+		
 	local uiMenu = self:CreateUIMenuButton()
 	uiMenu:SetPoint('LEFT', bindingMode, 'RIGHT', 2, 0)
-
+	
 
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
@@ -77,7 +76,7 @@ function ConfigModeDialog:Load()
 
 	local perChar = self:CreatePerCharacterBindingToggle()
 	perChar:SetPoint('TOPLEFT', autoBinder, 'BOTTOMLEFT')
-
+	
 	--force all widgets to init to proper values, since they use onshow scripts
 	self:Hide()
 	self:Show()
@@ -173,7 +172,7 @@ function ConfigModeDialog:CreateBindingSetPicker()
 		UIDropDownMenu_Initialize(self, self.Initialize)
 		UIDropDownMenu_SetSelectedValue(self, RazerNaga.BindingsLoader:GetCurrentBindingsSetID())
 	end)
-
+	
 	dd:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
@@ -194,7 +193,7 @@ function ConfigModeDialog:CreateBindingSetPicker()
 			AddItem(set.localizedName, set.id, Item_OnClick, set.id == selected, nil, set.tooltip)
 		end
 	end
-
+	
 	return dd
 end
 
@@ -246,16 +245,16 @@ end
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
-
-	exitConfig:SetScript('OnEnter', function(self)
+	
+	exitConfig:SetScript('OnEnter', function(self) 
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.ConfigModeExit, nil, nil, nil, nil, 1)
 	end)
-
+	
 	exitConfig:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
-
+	
 	return exitConfig
 end
 
@@ -284,21 +283,21 @@ function ConfigModeDialog:CreateUIMenuButton()
 	local b = self:CreateBasicButton('ShowOptionsMenu', 16)
 	_G[b:GetName() .. 'NormalTexture']:SetTexture([[Interface\Addons\RazerNaga\Icons\Configure]])
 	_G[b:GetName() .. 'PushedTexture']:SetTexture([[Interface\Addons\RazerNaga\Icons\Configure]])
-
-	b:SetScript('OnClick', function(self)
+	
+	b:SetScript('OnClick', function(self) 
 		RazerNaga:SetLock(true)
 		RazerNaga:ShowOptions()
 	end)
-
-	b:SetScript('OnEnter', function(self)
+	
+	b:SetScript('OnEnter', function(self) 
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.ConfigModeShowOptions, nil, nil, nil, nil, 1)
 	end)
-
+	
 	b:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
-
+	
 	return b
 end
 
@@ -306,19 +305,19 @@ function ConfigModeDialog:CreateBindingModeButton()
 	local b = self:CreateBasicButton('SwitchToBindingMode', 16)
 	_G[b:GetName() .. 'NormalTexture']:SetTexture([[Interface\Addons\RazerNaga\Icons\Manual]])
 	_G[b:GetName() .. 'PushedTexture']:SetTexture([[Interface\Addons\RazerNaga\Icons\Manual]])
-
-	b:SetScript('OnClick', function(self)
+	
+	b:SetScript('OnClick', function(self) 
 		RazerNaga:ToggleBindingMode()
 	end)
-
-	b:SetScript('OnEnter', function(self)
+	
+	b:SetScript('OnEnter', function(self) 
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.ConfigModeSwitchToBindingMode, nil, nil, nil, nil, 1)
 	end)
-
+	
 	b:SetScript('OnLeave', function(self)
 		GameTooltip:Hide()
 	end)
-
+	
 	return b
 end

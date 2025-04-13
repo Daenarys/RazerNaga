@@ -22,7 +22,6 @@ function PetButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	RazerNaga.BindingsController:Register(b)
-	RazerNaga:GetModule('Tooltips'):Register(b)
 
 	return b
 end
@@ -30,8 +29,8 @@ end
 function PetButton:Create(id)
 	local b = self:Bind(_G['PetActionButton' .. id])
 	b.buttonType = 'BONUSACTIONBUTTON'
-	
-	b:HookScript('OnEnter', self.OnEnter)
+	b:SetScript('OnEnter', self.OnEnter)
+	b:UnregisterEvent('UPDATE_BINDINGS')
 	b:Skin()
 
 	return b
@@ -61,7 +60,6 @@ function PetButton:Free()
 	unused[self:GetID()] = self
 
 	RazerNaga.BindingsController:Unregister(self)
-	RazerNaga:GetModule('Tooltips'):Unregister(self)
 
 	self:SetParent(nil)
 	self:Hide()
@@ -69,6 +67,10 @@ end
 
 --keybound support
 function PetButton:OnEnter()
+	if RazerNaga:ShowTooltips() then
+		PetActionButton_OnEnter(self)
+	end
+	
 	KeyBound:Set(self)
 end
 
@@ -79,6 +81,7 @@ hooksecurefunc('PetActionButton_SetHotkeys', PetButton.UpdateHotkey)
 --[[ Pet Bar ]]--
 
 local PetBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+RazerNaga.PetBar  = PetBar
 
 function PetBar:New()
 	local f = self.super.New(self, 'pet')
@@ -125,7 +128,7 @@ end
 function PetBar:KEYBOUND_ENABLED()
 	self.header:SetAttribute('state-visibility', 'display')
 
-	for _, button in pairs(self.buttons) do
+	for _,button in pairs(self.buttons) do
 		button:Show()
 	end
 end
@@ -135,7 +138,7 @@ function PetBar:KEYBOUND_DISABLED()
 
 	local petBarShown = PetHasActionBar()
 
-	for _, button in pairs(self.buttons) do
+	for _,button in pairs(self.buttons) do
 		if petBarShown and GetPetActionInfo(button:GetID()) then
 			button:Show()
 		else
@@ -144,17 +147,21 @@ function PetBar:KEYBOUND_DISABLED()
 	end
 end
 
---[[ controller good times ]]--
-
-local PetBarController = RazerNaga:NewModule('PetBar')
-
-function PetBarController:Load()
-	self.frame = PetBar:New()
+function PetBar:UPDATE_BINDINGS()
+	for _,b in pairs(self.buttons) do
+		b:UpdateHotkey(b.buttonType)
+	end
 end
 
-function PetBarController:Unload()
-	if self.frame then
-		self.frame:Free()
-		self.frame = nil
-	end
+
+--[[ custom menu ]]--
+
+function PetBar:CreateMenu()
+	local menu = RazerNaga:NewMenu(self.id)
+
+	menu:AddBindingSelectorPanel()
+	menu:AddLayoutPanel()
+	menu:AddAdvancedPanel()
+
+	PetBar.menu = menu
 end

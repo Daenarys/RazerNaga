@@ -18,27 +18,13 @@ local BindableButton = RazerNaga:CreateClass('CheckButton'); RazerNaga.BindableB
 --the call here is wacky because this functionality is actually called for the blizzard buttons _before_ I'm able to bind the action button methods to them
 function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
-
-	self.HotKey:SetSize(36, 10)
-
-	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
-		self.HotKey:SetText(key)
-		self.HotKey:Show()
-		self.HotKey:ClearAllPoints()
-		self.HotKey:SetPoint("TOPLEFT", -2, -3)
-	elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
-		self.HotKey:SetText(key)
-		self.HotKey:Show()
-		self.HotKey:ClearAllPoints()
-		self.HotKey:SetPoint("TOPLEFT", -2, -3)
-	elseif key ~= '' and RazerNaga:ShowBindingText() then
-		self.HotKey:SetText(key)
-		self.HotKey:Show()
-		self.HotKey:ClearAllPoints()
-		self.HotKey:SetPoint("TOPLEFT", 1, -3)
+	
+	if key ~= ''  and RazerNaga:ShowBindingText() then
+		_G[self:GetName()..'HotKey']:SetText(key)
+		_G[self:GetName()..'HotKey']:Show()
 	else
-		self.HotKey:SetText('') --blank out non blank text, such as RANGE_INDICATOR
-		self.HotKey:Hide()
+		_G[self:GetName()..'HotKey']:SetText('') --blank out non blank text, such as RANGE_INDICATOR
+		_G[self:GetName()..'HotKey']:Hide()
 	end
 end
 
@@ -60,46 +46,35 @@ end
 
 --returns all click bindings assigned to the button
 function BindableButton:GetClickBindings()
-	return GetBindingKey(('CLICK %s:LeftButton'):format(self:GetName()))
+	return GetBindingKey(format('CLICK %s:LeftButton', self:GetName()))
 end
 
 --returns a comma separated list of all bindings for the given action button
 --used for keybound support
-do
-	local strjoin = string.join
-	local select = select
-	local unpack = unpack
-	local _mapTemp = {}
-
-	local function map(func, ...)
-		for k, v in pairs(_mapTemp) do
-			_mapTemp[k] = nil
-		end
-
-		for i = 1, select('#', ...) do
-			local arg = (select(i, ...))
-			_mapTemp[i] = func(arg)
-		end
-
-		return unpack(_mapTemp)
-	end
-
-	local function getKeyStrings(...)
-		return strjoin(', ', map(GetBindingText, ...))
-	end
-
-	function BindableButton:GetBindings()
-		local blizzKeys = getKeyStrings(self:GetBlizzBindings())
-		local clickKeys = getKeyStrings(self:GetClickBindings())
-
-		if blizzKeys then
-			if clickKeys then
-				return strjoin(', ', blizzKeys, clickKeys)
-			end
-			return blizzKeys
+local function getKeyStrings(...)
+	local keys
+	for i = 1, select('#', ...) do
+		local key = select(i, ...)
+		if keys then
+			keys = keys .. ", " .. GetBindingText(key, "KEY_")
 		else
-			return clickKeys
+			keys = GetBindingText(key, "KEY_")
 		end
+	end
+	return keys
+end
+
+function BindableButton:GetBindings()
+	local blizzKeys = getKeyStrings(self:GetBlizzBindings())
+	local clickKeys = getKeyStrings(self:GetClickBindings())
+
+	if blizzKeys then
+		if clickKeys then
+			return blizzKeys .. ', ' .. clickKeys
+		end
+		return blizzKeys
+	else
+		return clickKeys
 	end
 end
 

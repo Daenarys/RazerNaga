@@ -7,8 +7,7 @@ end
 local _G = _G
 local RazerNaga = _G['RazerNaga']
 local KeyBound = LibStub('LibKeyBound-1.0')
-local Tooltips = RazerNaga:GetModule('Tooltips')
-local Bindings = RazerNaga.BindingsController
+
 
 --[[ buttons ]]--
 
@@ -20,18 +19,17 @@ do
 	function ExtraActionButton:New(id)
 		local button = self:Restore(id) or self:Create(id)
 
-		Tooltips:Register(button)
-		Bindings:Register(button)
+		RazerNaga.BindingsController:Register(button)
 
 		return button
 	end
 
 	function ExtraActionButton:Create(id)
-		local b = self:Bind(_G[('ExtraActionButton%d'):format(id)])
+		local b = self:Bind(_G['ExtraActionButton' .. id])
 
 		if b then
 			b.buttonType = 'EXTRAACTIONBUTTON'
-			b:HookScript('OnEnter', self.OnEnter)
+			b:SetScript('OnEnter', self.OnEnter)
 			b:Skin()
 
 			return b
@@ -42,7 +40,8 @@ do
 	--otherwise, apply the RazerNaga style to the button to make it pretty
 	function ExtraActionButton:Skin()
 		if not RazerNaga:Masque('Extra Bar', self) then
-			self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+			_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+			self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
 		end
 	end
 
@@ -64,12 +63,18 @@ do
 		self:SetParent(nil)
 		self:Hide()
 
-		Tooltips:Unregister(button)
-		Bindings:Unregister(self)
+		RazerNaga.BindingsController:Unregister(self)
 	end
 
 	--keybound support
 	function ExtraActionButton:OnEnter()
+		if RazerNaga:ShouldShowTooltips() then
+			ActionButton_SetTooltip(self)
+			ActionBarButtonEventsFrame.tooltipOwner = self
+			ActionBarActionEventsFrame.tooltipOwner = self
+			ActionButton_UpdateFlyout(self)
+		end
+
 		KeyBound:Set(self)
 	end
 end

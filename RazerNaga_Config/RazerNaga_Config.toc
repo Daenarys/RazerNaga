@@ -1,4 +1,4 @@
-## Interface: 40402
+## Interface: 50400
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Tuller
@@ -10,4 +10,5 @@ dropdown.lua
 menu.lua
 panel.lua
 general.lua
+anansi.lua
 profiles.lua
