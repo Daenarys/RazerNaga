@@ -1,16 +1,14 @@
-﻿--------------------------------------------------------------------------------
--- Bag Bar
--- Defines the RazerNaga bagBar object
---------------------------------------------------------------------------------
+﻿--[[
+	bagBar.lua
+		Defines the RazerNaga bagBar object
+--]]
 
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
+--[[ Bag Bar ]]--
 
 local BagBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function BagBar:New()
-	local f = self.proto.New(self, 'bags')
+	local f = self.super.New(self, 'bags')
 	f:Reload()
 
 	return f
@@ -82,17 +80,12 @@ end)
 function BagBar:GetDefaults()
 	return {
 		point = 'BOTTOMRIGHT',
-		spacing = 2
+		spacing = 2,
 	}
 end
 
 function BagBar:SetSetOneBag(enable)
 	self.sets.oneBag = enable or false
-	self:Reload()
-end
-
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
 	self:Reload()
 end
 
@@ -110,9 +103,6 @@ function BagBar:Reload()
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
 		end
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
-		end
 	end
 
 	table.insert(self.bags, _G['MainMenuBarBackpackButton'])
@@ -121,13 +111,12 @@ function BagBar:Reload()
 	self:UpdateClickThrough()
 end
 
---------------------------------------------------------------------------------
--- Frame Overrides
---------------------------------------------------------------------------------
+
+--[[ Frame Overrides ]]--
 
 function BagBar:AddButton(i)
 	local b = self.bags[i]
-	b:SetParent(self)
+	b:SetParent(self.header)
 	b:Show()
 	self:SkinButton(b)
 
@@ -157,16 +146,12 @@ function BagBar:NumButtons()
 	return #self.bags
 end
 
---------------------------------------------------------------------------------
--- Menu
---------------------------------------------------------------------------------
-
 function BagBar:CreateMenu()
 	local menu = RazerNaga:NewMenu(self.id)
 	local panel = menu:AddLayoutPanel()
 	local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 
-	--add onebag option
+	--add onebag and showkeyring options
 	local oneBag = panel:NewCheckButton(L.OneBag)
 	oneBag:SetScript('OnShow', function()
 		oneBag:SetChecked(self.sets.oneBag)
@@ -177,28 +162,16 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
-	end)
-
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
-		_G[panel:GetName() .. L.Columns]:OnShow()
-	end)
 
 	menu:AddAdvancedPanel()
 	self.menu = menu
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
+--[[ Bag Bar Controller ]]
 
-local BagBarModule = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
+local BagBarController = RazerNaga:NewModule('BagBar')
 
-function BagBarModule:OnInitialize()
+function BagBarController:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
@@ -222,11 +195,11 @@ function BagBarModule:OnInitialize()
     end
 end
 
-function BagBarModule:Load()
+function BagBarController:Load()
 	self.frame = BagBar:New()
 end
 
-function BagBarModule:Unload()
+function BagBarController:Unload()
 	if self.frame then
 		self.frame:Free()
 		self.frame = nil

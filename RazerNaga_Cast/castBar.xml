@@ -1,22 +1,29 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\Blizzard_SharedXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<!--  RazerNaga CastBar - Puts the casting bar in a movable bar -->
+
 	<Script file="CastingBarFrame.lua"/>
 	<Script file="castBar.lua"/>
+
 	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="210" y="14"/>
+
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture setAllPoints="true">
 					<Color r="0" g="0" b="0" a="0.5"/>
 				</Texture>
 			</Layer>
+
 			<Layer level="ARTWORK">
 				<FontString parentKey="Text" inherits="GameFontHighlight">
 					<Anchors>
 						<Anchor point="CENTER">
+							<Offset x="0" y="0"/>
 						</Anchor>
 					</Anchors>
 				</FontString>
+
 				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
 					<Anchors>
 						<Anchor point="RIGHT">
@@ -24,6 +31,7 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+
 				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
 					<Size x="275" y="68"/>
 					<Anchors>
@@ -31,11 +39,13 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+
 			<Layer level="OVERLAY">
 				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
 					<Size x="32" y="32"/>
 					<Anchors>
 						<Anchor point="CENTER">
+							<Offset x="0" y="-4"/>
 						</Anchor>
 					</Anchors>
 				</Texture>
@@ -47,12 +57,15 @@
 				</Texture>
 			</Layer>
 		</Layers>
+
 		<Scripts>
 			<OnLoad>
 				CastingBarFrame_OnLoad(self, 'player', true)
 			</OnLoad>
-			<OnEvent function="CastingBarFrame_OnEvent"/>
+			<OnEvent function="CastingBarFrame_OnEvent" />
+			<OnShow function="CastingBarFrame_OnShow" />
 		</Scripts>
+
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
