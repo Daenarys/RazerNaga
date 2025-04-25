@@ -56,7 +56,18 @@ function ActionButton:New(id)
 
 			if newActionID ~= self:GetAttribute('action') then
 				self:SetAttribute('action', newActionID)
+				self:RunAttribute("UpdateShown")
 				self:CallMethod('UpdateState')
+			end
+		]])
+		b:SetAttribute("UpdateShown", [[
+			local show = (HasAction(self:GetAttribute("action")))
+			and not self:GetAttribute("statehidden")
+
+			if show then
+				self:SetAlpha(1)
+			else
+				self:SetAlpha(0)
 			end
 		]])
 
