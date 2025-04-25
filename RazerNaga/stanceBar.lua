@@ -45,6 +45,14 @@ do
 		if button then
 			button:HookScript('OnEnter', self.OnEnter)
 			button:Skin()
+
+			if b.cooldown then
+				b.cooldown:SetDrawBling(true)
+			end
+
+			if b.UpdateButtonArt then
+				b.UpdateButtonArt = function() end
+			end
 		end
 
 		return button

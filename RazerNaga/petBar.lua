@@ -34,6 +34,14 @@ function PetButton:Create(id)
 	b:HookScript('OnEnter', self.OnEnter)
 	b:Skin()
 
+	if b.cooldown then
+		b.cooldown:SetDrawBling(true)
+	end
+
+	if b.UpdateButtonArt then
+		b.UpdateButtonArt = function() end
+	end
+
 	return b
 end
 

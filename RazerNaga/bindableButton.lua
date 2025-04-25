@@ -20,7 +20,6 @@ function BindableButton:UpdateHotkey(buttonType)
 	local key = BindableButton.GetHotkey(self, buttonType)
 
 	self.HotKey:SetWidth(32)
-	self.TextOverlayContainer:SetFrameLevel(3)
 
 	if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
         self.HotKey:SetText(key)

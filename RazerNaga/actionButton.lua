@@ -95,9 +95,17 @@ function ActionButton:Create(id)
 			hooksecurefunc(b, 'UpdateHotkeys', self.UpdateHotkey)
 		end
 
-		-- use pre 10.x button size
+		-- pre 10.x button skin
 		b:SetSize(36, 36)
 		b:Skin()
+
+		if b.cooldown then
+			b.cooldown:SetDrawBling(true)
+		end
+
+		if b.UpdateButtonArt then
+			b.UpdateButtonArt = function() end
+		end
 	end
 	return b
 end
