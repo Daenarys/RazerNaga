@@ -8,7 +8,8 @@ local overrideBarStates = {
 	vehicle = '[@vehicle,exists]1;0',
 	sstemp = '[shapeshift]1;0',
 	form = '[form]1;0',
-	modifier = '[mod]1;0'
+	modifier = '[mod]1;0',
+	bonusbar = '[bonusbar:5]1;0'
 }
 
 function OverrideController:Load()
@@ -90,6 +91,8 @@ function OverrideController:Load()
 			newPage = GetOverrideBarIndex() or 0
 		elseif HasTempShapeshiftActionBar() then
 			newPage = GetTempShapeshiftBarIndex() or 0
+		elseif GetBonusBarOffset() > 4 then
+			newPage = GetBonusBarOffset() + 6
 		else
 			newPage = GetBonusBarOffset() or 0
 		end
