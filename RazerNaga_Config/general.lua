@@ -138,16 +138,6 @@ showTooltipsCombat:SetScript('OnClick', function(self)
 end)
 showTooltipsCombat:SetPoint('TOP', showTooltips, 'BOTTOM', 8, -2)
 
---pressed modifiers
-local highlightModifiers = GeneralOptions:NewCheckButton(L.HighlightModifiers)
-highlightModifiers:SetScript('OnShow', function(self)
-	self:SetChecked(RazerNaga.ModHighlighter:HighlightingModifiers())
-end)
-highlightModifiers:SetScript('OnClick', function(self)
-	RazerNaga.ModHighlighter:SetHighlightModifiers(self:GetChecked())
-end)
-highlightModifiers:SetPoint('TOP', showTooltipsCombat, 'BOTTOM', -8, -10)
-
 --show override ui
 local showOverrideUI = GeneralOptions:NewCheckButton(L.ShowOverrideUI)
 showOverrideUI:SetScript('OnShow', function(self)
@@ -156,7 +146,7 @@ end)
 showOverrideUI:SetScript('OnClick', function(self)
 	RazerNaga:SetUseOverrideUI(self:GetChecked())
 end)
-showOverrideUI:SetPoint('TOP', highlightModifiers, 'BOTTOM', 0, -10)
+showOverrideUI:SetPoint('TOP', showTooltipsCombat, 'BOTTOM', -8, -10)
 
 
 --[[ Dropdowns ]]--
