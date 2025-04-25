@@ -1,4 +1,4 @@
-﻿## Interface: 90002
+﻿## Interface: 110105
 ## Title: Razer Naga Cast
 ## Notes: A movable casting bar, with timer
 ## Author: Tuller
