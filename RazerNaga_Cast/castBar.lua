@@ -1,7 +1,7 @@
---[[
-	castBar.lua
-		A dominos based casting bar
---]]
+--------------------------------------------------------------------------------
+-- Cast Bar
+-- A dominos based casting bar
+--------------------------------------------------------------------------------
 
 local DCB = RazerNaga:NewModule('CastingBar')
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
@@ -15,22 +15,18 @@ function DCB:Unload()
 	self.frame:Free()
 end
 
-
---[[ RazerNaga Frame Object ]]--
+--------------------------------------------------------------------------------
+-- Frame Object
+--------------------------------------------------------------------------------
 
 CastBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function CastBar:New()
-	local f = self.super.New(self, 'cast')
+	local f = self.proto.New(self, 'cast')
 	f:SetTooltipText(L.CastBarHelp)
-	f:SetFrameStrata('HIGH')
 
 	if not f.cast then
 		f.cast = CastingBar:New(f)
-		f.header:SetParent(nil)
-		f.header:ClearAllPoints()
-		f:SetWidth(240)
-		f:SetHeight(24)
 	end
 
 	f:UpdateText()
@@ -44,7 +40,7 @@ function CastBar:GetDefaults()
 		point = 'CENTER',
 		x = 0,
 		y = 30,
-		showText = true,
+		showText = true
 	}
 end
 
@@ -83,13 +79,13 @@ function CastBar:Layout()
 	self:SetHeight(max(24 + self:GetPadding()*2, 8))
 end
 
-
---[[ CastingBar Object ]]--
+--------------------------------------------------------------------------------
+-- CastingBar Object
+--------------------------------------------------------------------------------
 
 CastingBar = RazerNaga:CreateClass('StatusBar')
 
---omg speed
-local BORDER_SCALE = 197/150 --its magic!
+local BORDER_SCALE = 197/150
 local TEXT_PADDING = 18
 
 function CastingBar:New(parent)
@@ -123,9 +119,9 @@ function CastingBar:AdjustWidth()
 		width = self.normalWidth
 	end
 
-	local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
+	local diff = math.abs(width - self:GetWidth())
 
-	if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
+	if diff > TEXT_PADDING then
 		self:SetWidth(width)
 		self.Border:SetWidth(width * BORDER_SCALE)
 		self.Flash:SetWidth(width * BORDER_SCALE)

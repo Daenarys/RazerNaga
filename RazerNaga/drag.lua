@@ -1,13 +1,12 @@
---[[
-	drag.lua
-		A RazerNaga frame component that controls frame movement
---]]
+--------------------------------------------------------------------------------
+-- drag
+-- A RazerNaga frame component that controls frame movement
+--------------------------------------------------------------------------------
 
 local Drag = RazerNaga:CreateClass('Button')
 RazerNaga.DragFrame = Drag
 
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
-
 
 function Drag:New(owner)
 	local f = self:Bind(CreateFrame('Button', nil, UIParent))
@@ -15,9 +14,8 @@ function Drag:New(owner)
 
 	f:EnableMouseWheel(true)
 	f:SetClampedToScreen(true)
-	f:SetFrameStrata(owner:GetFrameStrata())
 	f:SetAllPoints(owner)
-	f:SetFrameLevel(owner:GetFrameLevel() + 5)
+	f:SetFrameStrata("HIGH")
 
 	local bg = f:CreateTexture(nil, 'BACKGROUND')
 	bg:SetColorTexture(1, 1, 1, 0.4)
@@ -44,7 +42,6 @@ function Drag:New(owner)
 
 	return f
 end
-
 
 function Drag:OnEnter()
 	RazerNaga.HoverMenu:Set(self.owner)
@@ -129,7 +126,6 @@ function Drag:OnClick(button)
 	self:OnEnter()
 end
 
---updates the drag button color of a given bar if its attached to another bar
 function Drag:UpdateColor()
 	if self.owner:IsShown() then
 		if self.owner:GetAnchor() then

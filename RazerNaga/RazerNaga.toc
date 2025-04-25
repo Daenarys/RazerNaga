@@ -3,27 +3,23 @@
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Daenarys
-## Version: 3.1.5
+## Version: 1.14
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
-## OptionalDeps: Ace3, LibKeyBound-1.0, Masque, FlyPaper
+## OptionalDeps: Ace3, LibKeyBound-1.0, FlyPaper
 embeds.xml
 localization.xml
 RazerNaga.lua
-envoy.lua
-timer.lua
-debounce.lua
 fadeManager.lua
 overrideController.lua
 tooltipController.lua
 settingsLoader.lua
-bindingsLoader.lua
 autoBinder.lua
-modifierHighlighter.lua
 drag.lua
 frame.lua
-bindableButton.lua
-bindingsController.lua
 barStates.lua
+buttonBar.lua
+bindableButton.lua
+spellFlyout.lua
 actionButton.lua
 actionBar.lua
 petBar.lua
