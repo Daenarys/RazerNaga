@@ -3,15 +3,15 @@
 --]]
 
 -- don't bother loading the module if the player is currently playing something without a stance
-local PLAYER_CLASS = UnitClassBase('player')
-
-if not (
-	PLAYER_CLASS == 'DRUID'
-	or PLAYER_CLASS == 'ROGUE'
-	or PLAYER_CLASS == 'PALADIN'
-	or PLAYER_CLASS == 'PRIEST'
-) then
-	return
+if not ({
+    DRUID = true,
+    EVOKER = true,
+    PALADIN = true,
+    PRIEST = true,
+    ROGUE = true,
+    WARRIOR = true,
+})[UnitClassBase('player')] then
+    return
 end
 
 --[[ Globals ]]--
@@ -53,19 +53,27 @@ do
 	--if we have button facade support, then skin the button that way
 	--otherwise, apply the RazerNaga style to the button to make it pretty
 	function StanceButton:Skin()
-		if RazerNaga:Masque('Class Bar', self) then
-			return
+		if not RazerNaga:Masque('Class Bar', self) then
+			_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+		    self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+		    self.NormalTexture:SetSize(54, 54)
+		    self.NormalTexture:ClearAllPoints()
+		    self.NormalTexture:SetPoint("CENTER", 0, -1)
+		    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+		    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+		    self.PushedTexture:SetSize(30, 30)
+		    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+		    self.HighlightTexture:SetSize(30, 30)
+		    self.HighlightTexture:SetBlendMode("ADD")
+		    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+		    self.CheckedTexture:ClearAllPoints()
+		    self.CheckedTexture:SetPoint("TOPLEFT", self.icon, "TOPLEFT")
+		    self.CheckedTexture:SetPoint("BOTTOMRIGHT", self.icon, "BOTTOMRIGHT")
+		    self.CheckedTexture:SetBlendMode("ADD")
+		    if self.IconMask then
+		        self.IconMask:Hide()
+		    end
 		end
-
-		local r = self:GetWidth() / _G['ActionButton1']:GetWidth()
-
-		local nt = self:GetNormalTexture()
-		nt:ClearAllPoints()
-		nt:SetPoint('TOPLEFT', -15 * r, 15 * r)
-		nt:SetPoint('BOTTOMRIGHT', 15 * r, -15 * r)
-
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
 	end
 
 	function StanceButton:Restore(id)

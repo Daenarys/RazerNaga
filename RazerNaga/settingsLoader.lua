@@ -62,16 +62,6 @@ function SettingsLoader:LoadSettings(settings)
 	--reenable dominos
 	RazerNaga:Load()
 	RazerNaga.AutoBinder:EnforceBindings()
-
-	--hack, need to do a slightly more advanced layout method for the class bar to place it properly across all resolutions
-	-- local classBar = RazerNaga.Frame:Get('class')
-	-- if classBar then
-	-- 	if self:GetLayoutType() == '3x4' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -370, 270)
-	-- 	elseif self:GetLayoutType() == '4x3' then
-	-- 		classBar:SetFramePoint('BOTTOMLEFT', UIParent, 'BOTTOMRIGHT', -450, 230)
-	-- 	end
-	-- end
 end
 
 --replace any items in toTble that are in fromTbl
@@ -276,18 +266,6 @@ function SettingsLoader:GetThreeByFour()
 				['x'] = 0,
 				['y'] = 0,
 			},
-			['itemroll'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['numButtons'] = 4,
-				['point'] = 'BOTTOM',
-				['x'] = 0,
-				['y'] = 100,
-				['spacing'] = 2,
-			},
 			['xp'] = {
 				['alwaysShowText'] = true,
 				['anchor'] = false,
@@ -298,17 +276,6 @@ function SettingsLoader:GetThreeByFour()
 				['width'] = 0.75,
 				['x'] = 0,
 				['y'] = 38,
-			},
-			['artifact'] = {
-				['alwaysShowText'] = true,
-				['anchor'] = false,
-				['height'] = 14,
-				['hidden'] = false,
-				['point'] = 'TOP',
-				['texture'] = 'blizzard',
-				['width'] = 0.75,
-				['x'] = 0,
-				['y'] = 0,
 			},
 			['vehicle'] = {
 				['isRightToLeft'] = false,
@@ -345,17 +312,6 @@ function SettingsLoader:GetThreeByFour()
 				['y'] = 110,
 				['enableAutoBinding'] = true,
 				['autoBindingModifier'] = 'CTRL'
-			},
-			['extra'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 6,
-				['x'] = -400,
-				['y'] = 305,
 			},
 			['class'] = {
 				['isRightToLeft'] = false,
@@ -552,18 +508,6 @@ function SettingsLoader:GetFourByThree()
 				['x'] = 0,
 				['y'] = 0,
 			},
-			['itemroll'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['numButtons'] = 4,
-				['point'] = 'BOTTOM',
-				['x'] = 0,
-				['y'] = 100,
-				['spacing'] = 2,
-			},
 			['xp'] = {
 				['alwaysShowText'] = true,
 				['anchor'] = false,
@@ -574,17 +518,6 @@ function SettingsLoader:GetFourByThree()
 				['width'] = 0.75,
 				['x'] = 0,
 				['y'] = 38,
-			},
-			['artifact'] = {
-				['alwaysShowText'] = true,
-				['anchor'] = false,
-				['height'] = 14,
-				['hidden'] = false,
-				['point'] = 'TOP',
-				['texture'] = 'blizzard',
-				['width'] = 0.75,
-				['x'] = 0,
-				['y'] = 0,
 			},
 			['vehicle'] = {
 				['isRightToLeft'] = false,
@@ -621,17 +554,6 @@ function SettingsLoader:GetFourByThree()
 				['y'] = 110,
 				['enableAutoBinding'] = true,
 				['autoBindingModifier'] = 'CTRL'
-			},
-			['extra'] = {
-				['isRightToLeft'] = false,
-				['isBottomToTop'] = false,
-				['anchor'] = false,
-				['columns'] = 1,
-				['hidden'] = false,
-				['point'] = 'BOTTOMRIGHT',
-				['spacing'] = 6,
-				['x'] = -480,
-				['y'] = 265,
 			},
 			['class'] = {
 				['isRightToLeft'] = false,

@@ -22,19 +22,15 @@ local function GetOrCreateActionButton(id)
 		return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-12), nil, 'ActionBarButtonTemplate')
 	elseif id <= 36 then
 		local b = _G['MultiBarRightButton' .. (id-24)]
-		b.noGrid = 1
 		return b
 	elseif id <= 48 then
 		local b = _G['MultiBarLeftButton' .. (id-36)]
-		b.noGrid = 1
 		return b
 	elseif id <= 60 then
 		local b = _G['MultiBarBottomRightButton' .. (id-48)]
-		b.noGrid = 1
 		return b
 	elseif id <= 72 then
 		local b = _G['MultiBarBottomLeftButton' .. (id-60)]
-		b.noGrid = 1
 		return b
 	end
 	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-60), nil, 'ActionBarButtonTemplate')
@@ -45,7 +41,7 @@ function ActionButton:New(id)
 	local b = self:Restore(id) or self:Create(id)
 
 	if b then
-		b:SetAttribute('showgrid', 0)
+		b:SetAttribute('showgrid', 1)
 		b:SetAttribute('action--base', id)
 		b:SetAttribute('_childupdate-action', [[
 			local state = message
@@ -66,12 +62,6 @@ function ActionButton:New(id)
 
 		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
 		Tooltips:Register(b)
-
-		--get rid of range indicator text
-		local hotkey = b.HotKey
-		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
-			hotkey:SetText('')
-		end
 
 		b:UpdateMacro()
 
@@ -105,14 +95,8 @@ function ActionButton:Create(id)
 			hooksecurefunc(b, 'UpdateHotkeys', self.UpdateHotkey)
 		end
 
-		if b.ShowGrid and b.ShowGrid ~= self.ShowGrid then
-			hooksecurefunc(b, 'ShowGrid', self.ShowGrid)
-		end
-
-		if b.HideGrid and b.HideGrid ~= self.HideGrid then
-			hooksecurefunc(b, 'HideGrid', self.HideGrid)
-		end
-
+		-- use pre 10.x button size
+		b:SetSize(36, 36)
 		b:Skin()
 	end
 	return b
@@ -158,36 +142,6 @@ function ActionButton:OnEnter()
 	KeyBound:Set(self)
 end
 
---override the old update hotkeys function
-if ActionButton_UpdateHotkeys then
-	hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
-end
-
---button visibility
-function ActionButton:ShowGrid(reason)
-	if InCombatLockdown() then return end
-
-	self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason))
-
-	if self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") then
-		self:Show()
-	end
-end
-
-function ActionButton:HideGrid(reason)
-	if InCombatLockdown() then return end
-
-	local showgrid = self:GetAttribute("showgrid");
-	if showgrid > 0 then
-		self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
-	end
-
-	if self:GetAttribute("showgrid") == 0 and not HasAction(self.action) then
-		self:Hide()
-	end
-end
-
-
 --macro text
 function ActionButton:UpdateMacro()
 	if RazerNaga:ShowMacroText() then
@@ -201,11 +155,7 @@ function ActionButton:SetFlyoutDirection(direction)
 	if InCombatLockdown() then return end
 
 	self:SetAttribute('flyoutDirection', direction)
-	ActionButton_UpdateFlyout(self)
-end
-
-if ActionButton_UpdateState then
-	ActionButton.UpdateState = ActionButton_UpdateState
+	self:UpdateFlyout()
 end
 
 --utility function, resyncs the button's current action, modified by state
@@ -218,12 +168,70 @@ end
 
 function ActionButton:Skin()
 	if not RazerNaga:Masque('Action Bar', self) then
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
-
-		local floatingBG = _G[self:GetName() .. 'FloatingBG']
-		if floatingBG then
-			floatingBG:Hide()
-		end
+	    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	    self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+	    self.NormalTexture:ClearAllPoints()
+	    self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+	    self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+	    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+	    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	    self.PushedTexture:ClearAllPoints()
+	    self.PushedTexture:SetAllPoints()
+	    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	    self.HighlightTexture:ClearAllPoints()
+	    self.HighlightTexture:SetAllPoints()
+	    self.HighlightTexture:SetBlendMode("ADD")
+	    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	    self.CheckedTexture:ClearAllPoints()
+	    self.CheckedTexture:SetAllPoints()
+	    self.CheckedTexture:SetBlendMode("ADD")
+	    self.NewActionTexture:SetSize(44, 44)
+	    self.NewActionTexture:SetAtlas("bags-newitem")
+	    self.NewActionTexture:ClearAllPoints()
+	    self.NewActionTexture:SetPoint("CENTER")
+	    self.NewActionTexture:SetBlendMode("ADD")
+	    self.SpellHighlightTexture:SetSize(44, 44)
+	    self.SpellHighlightTexture:SetAtlas("bags-newitem")
+	    self.SpellHighlightTexture:ClearAllPoints()
+	    self.SpellHighlightTexture:SetPoint("CENTER")
+	    self.SpellHighlightTexture:SetBlendMode("ADD")
+	    self.Border:SetTexture([[Interface\Buttons\UI-ActionButton-Border]])
+	    self.Border:SetSize(62, 62)
+	    self.Border:ClearAllPoints()
+	    self.Border:SetPoint("CENTER")
+	    self.Border:SetBlendMode("ADD")
+	    self.cooldown:ClearAllPoints()
+	    self.cooldown:SetAllPoints()
+	    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+	    self.Flash:ClearAllPoints()
+	    self.Flash:SetAllPoints()
+	    self.Count:ClearAllPoints()
+	    self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
+	    self.Count:SetDrawLayer("ARTWORK", 2)
+	    if self.IconMask then
+	        self.IconMask:Hide()
+	    end
+	   	if self.SlotArt then
+	        self.SlotArt:SetAlpha(0)
+	    end
+	    if self.SlotBackground then
+	        self.SlotBackground:SetAlpha(0)
+	    end
 	end
+end
+
+-- disable new animations
+if (ActionBarActionEventsFrame) then
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
+    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 end

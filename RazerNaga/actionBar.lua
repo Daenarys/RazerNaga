@@ -9,8 +9,6 @@ local RazerNaga = _G[...]
 local ActionButton = RazerNaga.ActionButton
 
 local MAX_BUTTONS = 120
-local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
-local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 --[[ Action Bar ]]--
 
@@ -42,19 +40,9 @@ ActionBar.mainbarOffsets = {
 			pages.bear = 8
 			pages.moonkin = 9
 			pages.tree = 7
-		elseif i == 'WARRIOR' then
-			pages.battle = 6
-			pages.defensive = 7
-			-- pages.berserker = 8
-		elseif i == 'PRIEST' then
-			pages.shadow = 6
 		elseif i == 'ROGUE' then
 			pages.stealth = 6
 			pages.shadowdance = 6
-		elseif i == 'MONK' then
-			pages.tiger = 6
-			pages.ox = 7
-			pages.serpent = 8
 		end
 
 		t[i] = pages
@@ -270,33 +258,45 @@ end
 
 
 --Empty button display
-function ActionBar:ShowGrid(reason)
+function ActionBar:ShowGrid()
 	for _,b in pairs(self.buttons) do
-		b:ShowGrid(reason)
+        if b:IsShown() then
+            b:SetAlpha(1)
+        end
 	end
 end
 
-function ActionBar:HideGrid(reason)
+function ActionBar:HideGrid()
 	for _,b in pairs(self.buttons) do
-		b:HideGrid(reason)
+        if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
+            b:SetAlpha(0)
+        end
 	end
 end
 
 function ActionBar:UpdateGrid()
 	if RazerNaga:ShowGrid() then
-		self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+		self:ShowGrid()
 	else
-		self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+		self:HideGrid()
 	end
+end
+
+function ActionBar:UpdateSlot()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and b:HasAction() then
+            b:SetAlpha(1)
+        end
+    end
 end
 
 ---keybound support
 function ActionBar:KEYBOUND_ENABLED()
-	self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+	self:ShowGrid()
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-	self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+	self:HideGrid()
 end
 
 --right click targeting support
@@ -518,6 +518,11 @@ function ActionBarController:Load()
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
+
+	self:RegisterEvent("ACTIONBAR_SHOWGRID")
+	self:RegisterEvent("ACTIONBAR_HIDEGRID")
+	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+	self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarController:Unload()
@@ -538,4 +543,20 @@ function ActionBarController:UpdateOverrideBar()
 	for _, button in pairs(overrideBar.buttons) do
 		button:Update()
 	end
+end
+
+function ActionBarController:ACTIONBAR_SHOWGRID()
+    ActionBar:ForAll('ShowGrid')
+end
+
+function ActionBarController:ACTIONBAR_HIDEGRID()
+    ActionBar:ForAll('HideGrid')
+end
+
+function ActionBarController:ACTIONBAR_SLOT_CHANGED()
+    ActionBar:ForAll('UpdateSlot')
+end
+
+function ActionBarController:SPELLS_CHANGED()
+    ActionBar:ForAll('UpdateGrid')
 end

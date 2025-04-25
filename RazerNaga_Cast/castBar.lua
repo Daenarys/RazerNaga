@@ -98,23 +98,8 @@ function CastingBar:New(parent)
 
 	f.normalWidth = f:GetWidth()
 	f:SetScript('OnUpdate', f.OnUpdate)
-	f:SetScript('OnEvent', f.OnEvent)
 
 	return f
-end
-
-function CastingBar:OnEvent(event, ...)
-	CastingBarFrame_OnEvent(self, event, ...)
-
-	local unit, spell = ...
-	if unit == self.unit then
-		if event == 'UNIT_SPELLCAST_FAILED' or event == 'UNIT_SPELLCAST_INTERRUPTED' then
-			self.failed = true
-		elseif event == 'UNIT_SPELLCAST_START' or event == 'UNIT_SPELLCAST_CHANNEL_START' then
-			self.failed = nil
-		end
-		self:UpdateColor(spell)
-	end
 end
 
 function CastingBar:OnUpdate(elapsed)
@@ -144,23 +129,5 @@ function CastingBar:AdjustWidth()
 		self:SetWidth(width)
 		self.Border:SetWidth(width * BORDER_SCALE)
 		self.Flash:SetWidth(width * BORDER_SCALE)
-
-		self:GetParent():Layout()
 	end
 end
-
-function CastingBar:UpdateColor(spell)
-	if self.failed then
-		self:SetStatusBarColor(0.86, 0.08, 0.24)
-	elseif spell and IsHelpfulSpell(spell) then
-		self:SetStatusBarColor(0.31, 0.78, 0.47)
-	elseif spell and IsHarmfulSpell(spell) then
-		self:SetStatusBarColor(0.63, 0.36, 0.94)
-	else
-		self:SetStatusBarColor(1, 0.7, 0)
-	end
-end
-
---hide the old casting bar
-CastingBarFrame:UnregisterAllEvents()
-CastingBarFrame:Hide()

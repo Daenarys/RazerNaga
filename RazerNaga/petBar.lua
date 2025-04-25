@@ -41,8 +41,47 @@ end
 --otherwise, apply the RazerNaga style to the button to make it pretty
 function PetButton:Skin()
 	if not RazerNaga:Masque('Pet Bar', self) then
-		_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+	    _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	    self.IconMask:SetSize(64, 64)
+	    self.SlotBackground:Hide()
+	    self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	    self.PushedTexture:ClearAllPoints()
+	    self.PushedTexture:SetAllPoints()
+	    self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	    self.HighlightTexture:ClearAllPoints()
+	    self.HighlightTexture:SetAllPoints()
+	    self.HighlightTexture:SetBlendMode("ADD")
+	    self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	    self.CheckedTexture:ClearAllPoints()
+	    self.CheckedTexture:SetAllPoints()
+	    self.CheckedTexture:SetBlendMode("ADD")
+	    self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
+	    self.Flash:ClearAllPoints()
+	    self.Flash:SetAllPoints()
+	    self.AutoCastOverlay.Mask:SetPoint("TOPLEFT")
+	    self.AutoCastOverlay.Mask:SetPoint("BOTTOMRIGHT")
+	    if self.IconMask then
+	        self.IconMask:Hide()
+	    end
+
+	    --simulate old floatingbg
+	    hooksecurefunc(PetActionBar, 'Update', function()
+	        local petActionID = self:GetID()
+	        local texture = GetPetActionInfo(petActionID);
+	        if ( texture ) then
+	            self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+	            self.NormalTexture:SetSize(54, 54)
+	            self.NormalTexture:ClearAllPoints()
+	            self.NormalTexture:SetPoint("CENTER", 0, -1)
+	            self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+	        else
+	            self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
+	            self.NormalTexture:SetSize(54, 54)
+	            self.NormalTexture:ClearAllPoints()
+	            self.NormalTexture:SetPoint("CENTER", 0, -1)
+	            self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+	        end
+	    end)
 	end
 end
 
@@ -71,10 +110,6 @@ end
 function PetButton:OnEnter()
 	KeyBound:Set(self)
 end
-
---override keybinding display
-hooksecurefunc('PetActionButton_SetHotkeys', PetButton.UpdateHotkey)
-
 
 --[[ Pet Bar ]]--
 

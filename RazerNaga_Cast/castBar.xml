@@ -2,6 +2,7 @@
 
 	<!--  RazerNaga CastBar - Puts the casting bar in a movable bar -->
 
+	<Script file="CastingBarFrame.lua"/>
 	<Script file="castBar.lua"/>
 
 	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
@@ -37,15 +38,6 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
-
-				<Texture parentKey="BorderShield" file="Interface\CastingBar\UI-CastingBar-Small-Shield" hidden="true">
-					<Size>
-						<AbsDimension x="275" y="68"/>
-					</Size>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 
 			<Layer level="OVERLAY">
@@ -70,6 +62,8 @@
 			<OnLoad>
 				CastingBarFrame_OnLoad(self, 'player', true)
 			</OnLoad>
+			<OnEvent function="CastingBarFrame_OnEvent" />
+			<OnShow function="CastingBarFrame_OnShow" />
 		</Scripts>
 
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
