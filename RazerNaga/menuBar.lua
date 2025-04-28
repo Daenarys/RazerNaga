@@ -198,6 +198,10 @@ function MenuBar:SkinButton(button)
         end
     end)
 
+    hooksecurefunc(MainMenuMicroButton, "UpdateNotificationIcon", function(self)
+        self.NotificationOverlay:Hide()
+    end)
+
     if not GuildMicroButtonTabard then
         local GuildMicroButtonTabard = CreateFrame("Frame", "GuildMicroButtonTabard", GuildMicroButton)
         GuildMicroButtonTabard:SetSize(28, 58)
