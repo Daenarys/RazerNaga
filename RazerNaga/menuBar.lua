@@ -17,8 +17,8 @@ local MICRO_BUTTONS = {
     "QuestLogMicroButton",
     "GuildMicroButton",
     "LFDMicroButton",
-    "EJMicroButton",
     "CollectionsMicroButton",
+    "EJMicroButton",
     "StoreMicroButton",
     "MainMenuMicroButton"
 }
@@ -31,10 +31,10 @@ local MICRO_BUTTON_NAMES = {
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
     ['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
     ['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
+    ['CollectionsMicroButton'] = _G['COLLECTIONS'],
     ['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
-    ['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
     ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
-    ['CollectionsMicroButton'] = _G['COLLECTIONS']
+    ['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
 }
 
 function MenuBar:SkinButton(button)
@@ -382,8 +382,6 @@ function MenuBarModule:OnInitialize()
     local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
     if perf then
         perf:SetSize(28, 58)
-        perf:ClearAllPoints()
-        perf:SetPoint("BOTTOM", 0, -2)
     end
 
     -- temp fix for 10.2.6 bug
