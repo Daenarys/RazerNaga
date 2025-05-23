@@ -1,4 +1,4 @@
-## Interface: 40402
+## Interface: 50500
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Tuller
