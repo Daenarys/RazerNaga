@@ -42,9 +42,9 @@ ActionBar.mainbarOffsets = {
 			pages.bear = 8
 			pages.moonkin = 9
 			pages.tree = 7
-		elseif i == 'WARRIOR' then
-			pages.battle = 6
-			pages.defensive = 7
+		-- elseif i == 'WARRIOR' then
+			-- pages.battle = 6
+			-- pages.defensive = 7
 			-- pages.berserker = 8
 		elseif i == 'PRIEST' then
 			pages.shadow = 6
@@ -379,9 +379,6 @@ do
 		s.UpdateValue = ConditionSlider_UpdateValue
 		s.UpdateText = ConditionSlider_UpdateText
 		s.stateId = stateId
-
-
-
 		s:SetWidth(s:GetWidth() + 28)
 
 		local title = _G[s:GetName() .. 'Text']
@@ -515,8 +512,6 @@ function ActionBarController:Load()
 	self:RegisterEvent('UPDATE_VEHICLE_ACTIONBAR', 'UpdateOverrideBar')
 	self:RegisterEvent('UPDATE_OVERRIDE_ACTIONBAR', 'UpdateOverrideBar')
 
-	self:RegisterEvent('PET_BAR_HIDEGRID')
-
 	for i = 1, RazerNaga:NumBars() do
 		ActionBar:New(i)
 	end
@@ -540,13 +535,4 @@ function ActionBarController:UpdateOverrideBar()
 	for _, button in pairs(overrideBar.buttons) do
 		ActionButton_Update(button)
 	end
-end
-
--- workaround for empty buttons not hiding when dropping a pet action
-function ActionBarController:PET_BAR_HIDEGRID()
-	if InCombatLockdown() then
-		return
-	end
-
-	ActionBar:ForAll('HideGrid', 1)
 end
