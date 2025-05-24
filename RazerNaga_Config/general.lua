@@ -5,7 +5,7 @@
 
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config')
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
-local AddonName, AddonDesc = select(2, GetAddOnInfo('RazerNaga'))
+local AddonName, AddonDesc = select(2, C_AddOns.GetAddOnInfo('RazerNaga'))
 
 do
 	local Options = CreateFrame('Frame', 'RazerNagaOptions'); Options:Hide()
