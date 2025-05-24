@@ -51,6 +51,7 @@ function RazerNaga:OnEnable()
 	end
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -329,13 +330,11 @@ function RazerNaga:HideBlizzard()
 
 	ReputationWatchBar:SetParent(UIHider)
 
-
 	--[[ disable stance bar ]]--
 
 	local stanceBar = _G['StanceBarFrame']
 	-- stanceBar:UnregisterAllEvents()
 	stanceBar:SetParent(UIHider)
-
 
 	-- [[ disable possess bar ]]--
 
@@ -343,13 +342,11 @@ function RazerNaga:HideBlizzard()
 	possessBar:UnregisterAllEvents()
 	possessBar:SetParent(UIHider)
 
-
 	-- [[ disable pet action bar ]]--
 
 	local petActionBar = _G['PetActionBarFrame']
 	-- petActionBar:UnregisterAllEvents()
 	petActionBar:SetParent(UIHider)
-
 
 	--[[ disable ui position manager ]]--
 
@@ -359,10 +356,6 @@ function RazerNaga:HideBlizzard()
 	_G['StanceBarFrame'].ignoreFramePositionManager = true
 	_G['PossessBarFrame'].ignoreFramePositionManager = true
 	_G['MultiCastActionBarFrame'].ignoreFramePositionManager = true
-	
-
-	--[[ disable the override ui, if we need to ]]
-	self:UpdateUseOverrideUI()
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
