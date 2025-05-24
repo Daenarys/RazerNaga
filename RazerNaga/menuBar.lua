@@ -21,8 +21,8 @@ local MICRO_BUTTONS = {
 	"LFGMicroButton",
 	"CollectionsMicroButton",
 	"EJMicroButton",
-	"MainMenuMicroButton",
-	"HelpMicroButton"
+	"StoreMicroButton",
+	"MainMenuMicroButton"
 }
 
 local MICRO_BUTTON_NAMES = {
@@ -35,9 +35,9 @@ local MICRO_BUTTON_NAMES = {
 	['PVPMicroButton'] = _G['PLAYER_V_PLAYER'],
 	['LFGMicroButton'] = _G['LFG_BUTTON'],
 	['CollectionsMicroButton'] = _G['COLLECTIONS'],
-	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],	
-	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
-	['HelpMicroButton'] = _G['HELP_BUTTON']
+	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
+	['StoreMicroButton'] = _G['BLIZZARD_STORE'],
+	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
 }
 
 --[[ Menu Bar ]]--
@@ -345,10 +345,12 @@ end
 local MenuBarController = RazerNaga:NewModule('MenuBar')
 
 function MenuBarController:OnInitialize()
-	-- fixed blizzard nil bug
-	if not _G['AchievementMicroButton_Update'] then
-		_G['AchievementMicroButton_Update'] = function() end
-	end	
+    local perf = MainMenuMicroButton and MainMenuBarPerformanceBar
+    if perf then
+        perf:SetSize(28, 58)
+        perf:ClearAllPoints()
+        perf:SetPoint('CENTER')
+    end
 end
 
 function MenuBarController:Load()

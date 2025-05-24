@@ -187,7 +187,6 @@ function ActionButton:HideGrid(reason)
 	end
 end
 
-
 --macro text
 function ActionButton:UpdateMacro()
 	if RazerNaga:ShowMacroText() then
