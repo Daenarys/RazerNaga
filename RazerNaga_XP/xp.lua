@@ -1,4 +1,4 @@
---[[
+﻿--[[
         xp.lua
 			The dominos xp bar
 --]]
@@ -16,7 +16,6 @@ local function comma_value(n)
 	local left,num,right = string.match(tostring(n), '^([^%d]*%d)(%d*)(.-)$')
 	return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
-
 
 
 --[[ Module Stuff ]]--
@@ -193,6 +192,7 @@ function XP:UpdateExperience()
 		self.text:SetFormattedText(XP_FORMAT, comma_value(value), comma_value(max), pct)
 	end
 end
+
 
 --[[ Reputation ]]--
 
