@@ -39,6 +39,10 @@ local function skinActionButton(self)
     self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
     self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
     self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    local floatingBG = _G[self:GetName() .. 'FloatingBG']
+    if floatingBG then
+        floatingBG:Hide()
+    end
 end
 
 function ActionButtonMixin:OnCreate(id)
@@ -50,6 +54,10 @@ function ActionButtonMixin:OnCreate(id)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
 
+    -- register for clicks on all buttons, and enable mousewheel bindings
+    self:EnableMouseWheel()
+    self:RegisterForClicks("AnyUp", "AnyDown")
+
     -- secure handlers
     self:SetAttributeNoHandler('_childupdate-offset', [[
         local offset = message or 0
@@ -60,15 +68,11 @@ function ActionButtonMixin:OnCreate(id)
         end
     ]])
 
-    -- register for clicks on all buttons, and enable mousewheel bindings
-    self:EnableMouseWheel()
-    self:RegisterForClicks("AnyUp", "AnyDown")
+    -- apply hooks for quick binding
+    RazerNaga.BindableButton:AddQuickBindingSupport(self)
 
     -- apply button skin
     skinActionButton(self)
-
-    -- apply hooks for quick binding
-    RazerNaga.BindableButton:AddQuickBindingSupport(self)
 end
 
 --------------------------------------------------------------------------------
@@ -173,16 +177,16 @@ local function GetActionButtonName(id)
         return ACTION_BUTTON_NAME_TEMPLATE:format(id)
     -- 3
     elseif id <= 36 then
-        return "MultiBarRightButton" .. (id - 24), true
+        return "MultiBarRightButton" .. (id - 24)
     -- 4
     elseif id <= 48 then
-        return "MultiBarLeftButton" .. (id - 36), true
+        return "MultiBarLeftButton" .. (id - 36)
     -- 5
     elseif id <= 60 then
-        return "MultiBarBottomRightButton" .. (id - 48), true
+        return "MultiBarBottomRightButton" .. (id - 48)
     -- 6
     elseif id <= 72 then
-        return "MultiBarBottomLeftButton" .. (id - 60), true
+        return "MultiBarBottomLeftButton" .. (id - 60)
     -- 7+
     elseif id <= 168 then
         return ACTION_BUTTON_NAME_TEMPLATE:format(id)
@@ -190,7 +194,7 @@ local function GetActionButtonName(id)
 end
 
 function ActionButton:GetOrCreateActionButton(id, parent)
-    local name, noGrid = GetActionButtonName(id)
+    local name = GetActionButtonName(id)
     local button = _G[name]
     local new = false
 
@@ -205,10 +209,6 @@ function ActionButton:GetOrCreateActionButton(id, parent)
         Mixin(button, RazerNaga.ActionButtonMixin)
 
         button:SetID(0)
-
-        if noGrid then
-            button.noGrid = true
-        end
 
         new = true
     end

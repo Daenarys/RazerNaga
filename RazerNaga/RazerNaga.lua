@@ -236,8 +236,9 @@ function RazerNaga:HideBlizzard()
 
 	-- [[ disable cast bar ]]--
 
-	local castingBar = _G['CastingBarFrame']
-	castingBar:SetParent(UIHider)
+	local castBar = _G['CastingBarFrame']
+	castBar:UnregisterAllEvents()
+	castBar:SetParent(UIHider)
 
 	--[[ disable ui position manager ]]--
 

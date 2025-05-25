@@ -113,6 +113,18 @@ function BindableButton:UpdateHotkeys()
 
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
+    hotkey:SetSize(36, 10)
+
+    if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
+    elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", -2, -3)
+    elseif key ~= '' and RazerNaga:ShowBindingText() then
+        hotkey:ClearAllPoints()
+        hotkey:SetPoint("TOPLEFT", 1, -3)
+    end
 end
 
 function BindableButton:OnEnter()
