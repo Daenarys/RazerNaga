@@ -24,6 +24,7 @@ petBar.lua
 stanceBar.lua
 bagBar.lua
 menuBar.lua
+extraActionBar.lua
 vehicleBar.lua
 configModeDialog.lua
 hoverMenu.lua
