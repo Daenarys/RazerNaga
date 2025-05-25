@@ -14,7 +14,7 @@ Menu.extraWidth = 20
 Menu.extraHeight = 40
 
 function Menu:New(name)
-	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent))
+	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent, BackdropTemplateMixin and 'BackdropTemplate'))
 	f.panels = {}
 
 	f:EnableMouse(true)
@@ -26,8 +26,14 @@ function Menu:New(name)
 	f:SetScript('OnMouseUp', self.StopMovingOrSizing)
 	f:SetScript('OnHide', self.OnHide)
 
-	--border
-	f.border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
+	f:SetBackdrop {
+		bgFile = 'Interface\\DialogFrame\\UI-DialogBox-Background',
+		edgeFile = 'Interface\\DialogFrame\\UI-DialogBox-Border',
+		insets = {left = 11, right = 11, top = 12, bottom = 11},
+		tile = true,
+		tileSize = 32,
+		edgeSize = 32,
+	}
 
 	--title text
 	f.text = f:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
