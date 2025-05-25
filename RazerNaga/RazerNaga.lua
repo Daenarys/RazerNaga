@@ -214,6 +214,9 @@ function RazerNaga:HideBlizzard()
 	MainMenuBarMaxLevelBar:Hide()
 	MainMenuBarMaxLevelBar:SetParent(UIHider)
 
+	MainMenuBarVehicleLeaveButton:Hide()
+	MainMenuBarVehicleLeaveButton:SetParent(UIHider)
+
 	ReputationWatchBar:SetParent(UIHider)
 
 	--[[ disable stance bar ]]--
