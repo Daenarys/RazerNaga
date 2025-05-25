@@ -86,7 +86,7 @@ end
 CastingBar = RazerNaga:CreateClass('StatusBar')
 
 --omg speed
-local BORDER_SCALE = 197/150 --its magic!
+local BORDER_SCALE = 197/150 -- its magic!
 local TEXT_PADDING = 18
 
 function CastingBar:New(parent)
@@ -120,9 +120,9 @@ function CastingBar:AdjustWidth()
 		width = self.normalWidth
 	end
 
-	local diff = math.abs(width - self:GetWidth())	-- calculate an absolute difference between needed size and last size
+	local diff = math.abs(width - self:GetWidth()) -- calculate an absolute difference between needed size and last size
 
-	if diff > TEXT_PADDING then			-- is the difference big enough to redraw the bar ?
+	if diff > TEXT_PADDING then -- is the difference big enough to redraw the bar ?
 		self:SetWidth(width)
 		self.Border:SetWidth(width * BORDER_SCALE)
 		self.Flash:SetWidth(width * BORDER_SCALE)
