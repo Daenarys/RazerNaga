@@ -94,36 +94,36 @@ for i = 2, NUM_ACTIONBAR_PAGES do
 end
 
 -- class
-local class = UnitClassBase('player')
-local race = select(2, UnitRace('player'))
-
-if class == 'DRUID' then
-	addState('class', 'bear', '[bonusbar:3]', GetSpellName(5487))
-	addState('class', 'prowl', '[bonusbar:1,stealth]', GetSpellName(5215))
-	addState('class', 'cat', '[bonusbar:1]', GetSpellName(768))
-	addState('class', 'moonkin', '[bonusbar:4]', GetSpellName(24858))
-	addFormState('class', 'tree', 114282)
-	addFormState('class', 'travel', 783)
-	addFormState('class', 'stag', 210053)
-elseif class == 'PALADIN' then
-	addFormState('class', 'concentration', 317920)
-	addFormState('class', 'crusader', 32223)
-	addFormState('class', 'devotion', 465)
-	addFormState('class', 'retribution', 183435)
+local class = select(2, UnitClass('player'))
+if class == 'WARRIOR' then      
+    addState('class', 'battle', '[form:1]', GetSpellInfo(2457))
+    addState('class', 'defensive', '[form:2]', GetSpellInfo(71))
+    addState('class', 'berserker', '[form:3]', GetSpellInfo(2458))
+elseif class == 'DRUID' then
+    addState('class', 'moonkin', '[bonusbar:4]', GetSpellInfo(24858))
+    addState('class', 'bear', '[bonusbar:3]', GetSpellInfo(5487))
+    addState('class', 'tree', function() return format('[form:%d]', GetNumShapeshiftForms() + 1) end, GetSpellInfo(33891))
+    addState('class', 'prowl', '[bonusbar:1,stealth]', GetSpellInfo(5215))
+    addState('class', 'cat', '[bonusbar:1]', GetSpellInfo(768))
+elseif class == 'PRIEST' then
+    addState('class', 'shadow', '[bonusbar:1]', GetSpellInfo(15473))
 elseif class == 'ROGUE' then
-    if GetSpellName(185313) then
-        addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellName(185313))
-    end
-    addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
+    ---addState('class', 'vanish', '[bonusbar:1,form:3]', GetSpellInfo(1856))
+    addState('class', 'shadowdance', '[form:3]', GetSpellInfo(51713) .. '/' .. GetSpellInfo(1856))
+    addState('class', 'stealth', '[bonusbar:1]', GetSpellInfo(1784))
+elseif class == 'WARLOCK' then
+    addState('class', 'meta', '[form:1]', GetSpellInfo(103958))
+    -- addState('class', 'darkapotheosis', '[form:2]', GetSpellInfo(114168))
+elseif class == 'MONK' then
+    addState('class', 'tiger', '[bonusbar:1]', GetSpellInfo(103985))
+    addState('class', 'ox', '[bonusbar:2]', GetSpellInfo(115069))
+    addState('class', 'serpent', '[bonusbar:3]', GetSpellInfo(115070))      
 end
 
 -- race
+local race = select(2, UnitRace('player'))
 if race == 'NightElf' then
-    local name = (GetSpellName(58984) or GetSpellName(20580))
-
-    if name then
-        addState('class', 'shadowmeld', '[stealth]', name)
-    end
+    addState('class', 'shadowmeld', '[stealth]', GetSpellInfo(58984))
 end
 
 -- target reaction

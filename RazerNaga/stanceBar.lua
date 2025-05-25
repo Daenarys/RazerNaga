@@ -7,7 +7,6 @@ local RazerNaga = _G[...]
 -- don't bother loading the module if the player is currently playing something without a stance
 if not ({
     DRUID = true,
-    EVOKER = true,
     PALADIN = true,
     PRIEST = true,
     ROGUE = true,
