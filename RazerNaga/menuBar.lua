@@ -78,62 +78,6 @@ function MenuBar:Create(frameId)
     bar.activeButtons = {}
     bar.overrideButtons = {}
 
-    bar.updateLayout = function()
-        bar:Layout()
-        bar.updatingLayout = nil
-    end
-
-    local function getOrHook(frame, script, action)
-        if frame:GetScript(script) then
-            frame:HookScript(script, action)
-        else
-            frame:SetScript(script, action)
-        end
-    end
-
-    local function requestLayoutUpdate()
-        if not bar.updatingLayout then
-            bar.updatingLayout = true
-            C_Timer.After(0.1, bar.updateLayout)
-        end
-    end
-
-    hooksecurefunc('UpdateMicroButtons', requestLayoutUpdate)
-
-    if PetBattleFrame and PetBattleFrame.BottomFrame and PetBattleFrame.BottomFrame.MicroButtonFrame then
-        local petMicroButtons = PetBattleFrame.BottomFrame.MicroButtonFrame
-
-        getOrHook(
-            petMicroButtons, 'OnShow', function()
-                self.isPetBattleUIShown = true
-                requestLayoutUpdate()
-            end
-        )
-
-        getOrHook(
-            petMicroButtons, 'OnHide', function()
-                self.isPetBattleUIShown = nil
-                requestLayoutUpdate()
-            end
-        )
-    end
-
-    if OverrideActionBar then
-        getOrHook(
-            OverrideActionBar, 'OnShow', function()
-                self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
-                requestLayoutUpdate()
-            end
-        )
-
-        getOrHook(
-            OverrideActionBar, 'OnHide', function()
-                self.isOverrideUIShown = nil
-                requestLayoutUpdate()
-            end
-        )
-    end
-
     return bar
 end
 
@@ -396,6 +340,15 @@ function MenuBarModule:OnInitialize()
         perf:ClearAllPoints()
         perf:SetPoint('CENTER')
     end
+
+    local layout = RazerNaga:Debounce(function()
+        local frame = self.frame
+        if frame then
+            self.frame:Layout()
+        end
+    end)
+
+    hooksecurefunc('UpdateMicroButtons', layout)
 end
 
 function MenuBarModule:Load()
