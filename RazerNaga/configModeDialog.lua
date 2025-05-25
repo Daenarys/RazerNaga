@@ -42,7 +42,7 @@ function ConfigModeDialog:Load()
 
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
-	exitConfig:SetPoint('TOPRIGHT')
+	exitConfig:SetPoint('TOPRIGHT', -5, -5)
 
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()

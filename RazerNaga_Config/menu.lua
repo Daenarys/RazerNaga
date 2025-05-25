@@ -35,7 +35,7 @@ function Menu:New(name)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetPoint('TOPRIGHT')
+	f.close:SetPoint('TOPRIGHT', -5, -5)
 
 	return f
 end
