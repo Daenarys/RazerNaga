@@ -1,0 +1,6 @@
+## Interface: 50500
+## Title: Razer Naga Encounter
+## Notes: Makes the PlayerPowerBarAlt movable
+## Author: Daenarys
+## Dependencies: RazerNaga
+encounterBar.lua
