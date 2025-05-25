@@ -1,5 +1,4 @@
-## Interface: 110105
-## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
+## Interface: 50500
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Daenarys
@@ -19,7 +18,6 @@ frame.lua
 barStates.lua
 buttonBar.lua
 bindableButton.lua
-spellFlyout.lua
 actionButton.lua
 actionBar.lua
 petBar.lua

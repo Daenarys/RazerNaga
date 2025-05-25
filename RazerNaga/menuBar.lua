@@ -11,12 +11,13 @@ local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
-    "ProfessionMicroButton",
-    "PlayerSpellsMicroButton",
+    "SpellbookMicroButton",
+    "TalentMicroButton",
     "AchievementMicroButton",
     "QuestLogMicroButton",
     "GuildMicroButton",
-    "LFDMicroButton",
+    "PVPMicroButton",
+    "LFGMicroButton",
     "CollectionsMicroButton",
     "EJMicroButton",
     "StoreMicroButton",
@@ -25,12 +26,13 @@ local MICRO_BUTTONS = {
 
 local MICRO_BUTTON_NAMES = {
     ['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
-    ['ProfessionMicroButton'] = _G['PROFESSIONS_BUTTON'],
-    ['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
+    ['SpellbookMicroButton'] = _G['SPELLBOOK_ABILITIES_BUTTON'],
+    ['TalentMicroButton'] = _G['TALENTS'],
     ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
     ['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
-    ['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
+    ['PVPMicroButton'] = _G['PLAYER_V_PLAYER'],
+    ['LFGMicroButton'] = _G['LFG_BUTTON'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS'],
     ['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
     ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
@@ -40,13 +42,22 @@ local MICRO_BUTTON_NAMES = {
 function MenuBar:SkinButton(button)
     if button.skinned then return end
 
-    button:SetSize(28, 36)
-
-    hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
-        self:SetParent(MainMenuMicroButton)
-        self:ClearAllPoints()
-        self:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
-    end)
+    local normalTexture = button:GetNormalTexture()
+    if (normalTexture) then
+        normalTexture:SetTexelSnappingBias(0.0)
+    end
+    local pushedTexture = button:GetPushedTexture()
+    if (pushedTexture) then
+        pushedTexture:SetTexelSnappingBias(0.0)
+    end
+    local disabledTexture = button:GetDisabledTexture()
+    if (disabledTexture) then
+        disabledTexture:SetTexelSnappingBias(0.0)
+    end
+    local highlightTexture = button:GetHighlightTexture()
+    if (highlightTexture) then
+        highlightTexture:SetTexelSnappingBias(0.0)
+    end
 
     button.skinned = true
 end
@@ -225,7 +236,7 @@ function MenuBar:LayoutNormal()
 
     local firstButton = self.buttons[1]
     local w = firstButton:GetWidth() + spacing - 2
-    local h = firstButton:GetHeight() + spacing - 1
+    local h = firstButton:GetHeight() + spacing - 20
 
     for i, button in pairs(self.activeButtons) do
         local col, row
@@ -244,7 +255,7 @@ function MenuBar:LayoutNormal()
         
         button:SetParent(self)
         button:ClearAllPoints()
-        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
+        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 20)
         button:Show()
     end
 
@@ -278,11 +289,11 @@ function MenuBar:FixButtonPositions()
         button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
         button:ClearAllPoints()
         if i == 1 then
-            button:SetPoint('TOPLEFT', -4, 3)
+            button:SetPoint('TOPLEFT', -12, 25)
         elseif i == 7 then
-            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
+            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 25)
         else
-            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
+            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', 0, 0)
         end
 
         button:Show()
@@ -379,13 +390,12 @@ end
 local MenuBarModule = RazerNaga:NewModule('MenuBar')
 
 function MenuBarModule:OnInitialize()
-    local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
+    local perf = MainMenuMicroButton and MainMenuBarPerformanceBar
     if perf then
         perf:SetSize(28, 58)
+        perf:ClearAllPoints()
+        perf:SetPoint('CENTER')
     end
-
-    -- temp fix for 10.2.6 bug
-    MicroMenu.GetEdgeButton = function() end
 end
 
 function MenuBarModule:Load()

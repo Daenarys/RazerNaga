@@ -19,17 +19,22 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(34, 34)
+	b:SetSize(30, 30)
+	b.IconBorder:SetSize(30, 30)
 
-	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
+	end
+
+	_G[b:GetName() .. "NormalTexture"]:SetSize(50, 50)
 
 	b.skinned = true
 end
 
 function BagBar:GetDefaults()
 	return {
-		point = 'BOTTOMRIGHT'
+		point = 'BOTTOMRIGHT',
+		spacing = 2
 	}
 end
 
@@ -144,30 +149,6 @@ end
 --------------------------------------------------------------------------------
 
 local BagBarModule = RazerNaga:NewModule('BagBar', 'AceEvent-3.0')
-
-function BagBarModule:OnInitialize()
-	if not self.frame then
-		local noopFunc = function() end
-
-		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
-		CharacterBag3Slot.SetBarExpanded = noopFunc
-		CharacterBag2Slot.SetBarExpanded = noopFunc
-		CharacterBag1Slot.SetBarExpanded = noopFunc
-		CharacterBag0Slot.SetBarExpanded = noopFunc
-		BagsBar.Layout = noopFunc
-	end
-
-    if BagsBar and BagsBar.Layout then
-    	hooksecurefunc(BagsBar, "Layout", function()
-    		if InCombatLockdown() then return end
-
-			if self.frame then
-				self.frame:Layout()
-			end
-    	end)
-        EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
-    end
-end
 
 function BagBarModule:Load()
 	self.frame = BagBar:New()

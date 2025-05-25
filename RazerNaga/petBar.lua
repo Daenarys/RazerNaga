@@ -12,6 +12,11 @@ local function getPetButton(id)
     return _G[('PetActionButton%d'):format(id)]
 end
 
+local function skinPetButton(self)
+    _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+end
+
 for id = 1, NUM_PET_ACTION_SLOTS do
     local button = getPetButton(id)
 
@@ -22,8 +27,8 @@ for id = 1, NUM_PET_ACTION_SLOTS do
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(button)
 
-    -- enable cooldown bling
-    button.cooldown:SetDrawBling(true)
+    -- apply pre 10.x button skin
+    skinPetButton(button)
 end
 
 --------------------------------------------------------------------------------

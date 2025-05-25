@@ -1,32 +1,22 @@
---[[
+﻿--[[
         xp.lua
 			The dominos xp bar
 --]]
 
-local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-XP')
+local XP_FORMAT = '%s / %s [%s%%]'
+local REST_FORMAT = '%s / %s (+%s) [%s%%]'
+local REP_FORMAT = '%s:  %s / %s (%s)'
 local DEFAULT_STATUSBAR_TEXTURE = [[Interface\TargetingFrame\UI-StatusBar]]
+local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga-XP')
+local _G = getfenv(0)
 
---taken from http://lua-users.org/wiki/FormattingNumbers
+--taken from http://lua-users.org/wiki/FormattingNumbers 
 --a semi clever way to format numbers with commas (ex, 1,000,000)
-local round = function(x)
-	return math.floor(x + 0.5)
+local function comma_value(n)
+	local left,num,right = string.match(tostring(n), '^([^%d]*%d)(%d*)(.-)$')
+	return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
 end
 
-local comma = function(n)
-	local left, num, right = tostring(n):match('^([^%d]*%d)(%d*)(.-)$')
-	return left .. (num:reverse():gsub('(%d%d%d)','%1,'):reverse()) .. right
-end
-
-local short = TextStatusBar_CapDisplayOfNumericValue
-
-local textEnv = {
-	format = string.format,
-	math = math,
-	string = string,
-	short = short,
-	round = round,
-	comma = comma,
-}
 
 --[[ Module Stuff ]]--
 
@@ -91,16 +81,11 @@ function XP:Load()
 	value:SetAllPoints(self)
 	self.value = value
 
-	local blank = CreateFrame('StatusBar', nil, value)
-	blank:EnableMouse(false)
-	blank:SetAllPoints(self)
-	self.blank = blank
-
-	local text = blank:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
+	local text = value:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
 	text:SetPoint('CENTER')
 	self.text = text
 
-	local click = CreateFrame('Button', nil, blank)
+	local click = CreateFrame('Button', nil, value)
 	click:SetScript('OnClick', function(_, ...) self:OnClick(...) end)
 	click:SetScript('OnEnter', function(_, ...) self:OnEnter(...) end)
 	click:SetScript('OnLeave', function(_, ...) self:OnLeave(...) end)
@@ -111,7 +96,7 @@ end
 function XP:OnClick(button)
 	if button == 'RightButton' and FFF_ReputationWatchBar_OnClick then
 		self:SetAlwaysShowXP(false)
-		FFF_ReputationWatchBar_OnClick(self, button)
+		FFF_ReputationWatchBar_OnClick(self, button)		
 	else
 		self:SetAlwaysShowXP(not self.sets.alwaysShowXP)
 		self:OnEnter()
@@ -129,7 +114,7 @@ end
 
 function XP:OnLeave()
 	self:UpdateTextShown()
-
+	
 	if (FFF_ReputationWatchBar_OnLeave) then
 		FFF_ReputationWatchBar_OnLeave(self)
 	end
@@ -156,14 +141,13 @@ function XP:UpdateWatch()
 end
 
 function XP:ShouldWatchFaction()
-	return (not self.sets.alwaysShowXP) and C_Reputation.GetWatchedFactionData()
+	return (not self.sets.alwaysShowXP) and GetWatchedFactionInfo()
 end
 
 
 --[[ Experience ]]--
 
 function XP:WatchExperience()
-	self.watchingXP = true
 	self:UnregisterAllEvents()
 	self:SetScript('OnEvent', self.OnXPEvent)
 
@@ -190,57 +174,29 @@ function XP:OnXPEvent(event)
 end
 
 function XP:UpdateExperience()
-	local xp, xpMax = UnitXP('player'), UnitXPMax('player')
-	local tnl = xpMax - xp
-	local pct = (xpMax > 0 and round((xp / xpMax) * 100)) or 0
+	local value = UnitXP('player')
+	local max = UnitXPMax('player')
+	local pct = math.floor((value / max) * 100 + 0.5)
+
+	self.value:SetMinMaxValues(0, max)
+	self.value:SetValue(value)
+
 	local rest = GetXPExhaustion()
-
-	--update statusbar
-	self.value:SetMinMaxValues(0, xpMax)
-	self.value:SetValue(xp)
-	self.rest:SetMinMaxValues(0, xpMax)
-
-	if rest and rest > 0 then
-		self.rest:SetValue(xp + rest)
+	self.rest:SetMinMaxValues(0, max)
+	
+	if rest then
+		self.rest:SetValue(value + rest)
+		self.text:SetFormattedText(REST_FORMAT, comma_value(value), comma_value(max), comma_value(rest), pct)
 	else
 		self.rest:SetValue(0)
-	end
-
-	--update statusbar text
-	textEnv.label = _G.XP
-	textEnv.xp = xp
-	textEnv.xpMax = xpMax
-	textEnv.tnl = tnl
-	textEnv.pct = pct
-	textEnv.rest = rest
-
-	local getXPText = assert(loadstring(self:GetXPFormat(), "getXPText"))
-	setfenv(getXPText, textEnv)
-	self.text:SetText(getXPText())
-end
-
-function XP:SetXPFormat(fmt)
-	self.sets.xpFormat = fmt
-	if self.watchingXP then
-		self:UpdateExperience()
+		self.text:SetFormattedText(XP_FORMAT, comma_value(value), comma_value(max), pct)
 	end
 end
-
-function XP:GetXPFormat()
-	return self.sets.xpFormat or [[
-		if rest and rest > 0 then
-			return format("%s: %s / %s (+%s) [%s%%]", label, comma(xp), comma(xpMax), comma(rest), pct)
-		end
-		return format("%s: %s / %s [%s%%]", label, comma(xp), comma(xpMax), pct)
-	]]
-end
-
 
 
 --[[ Reputation ]]--
 
 function XP:WatchReputation()
-	self.watchingXP = nil
 	self:UnregisterAllEvents()
 	self:RegisterEvent('UPDATE_FACTION')
 	self:SetScript('OnEvent', self.OnRepEvent)
@@ -259,100 +215,19 @@ function XP:OnRepEvent(event)
 end
 
 function XP:UpdateReputation()
-	local watchedFactionData = C_Reputation.GetWatchedFactionData()
-	if not watchedFactionData or watchedFactionData.factionID == 0 then
-		return
-	end
+	local name, reaction, min, max, value = GetWatchedFactionInfo()
+	max = max - min
+	value = value - min
 
-	local factionID = watchedFactionData.factionID
-	local isShowingNewFaction = self.factionID ~= factionID
-	if isShowingNewFaction then
-		self.factionID = factionID
-		local reputationInfo = C_GossipInfo.GetFriendshipReputation(factionID)
-		self.friendshipID = reputationInfo.friendshipFactionID
-	end
+	local color = FACTION_BAR_COLORS[reaction]
+	self.value:SetStatusBarColor(color.r, color.g, color.b)
+	self.bg:SetVertexColor(color.r - 0.3, color.g - 0.3, color.b - 0.3, 0.6)
 
-	-- do something different for friendships
-	local level
-	local isCapped
-
-	local minBar, maxBar, value = watchedFactionData.currentReactionThreshold, watchedFactionData.nextReactionThreshold, watchedFactionData.currentStanding
-	if C_Reputation.IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID)
-		minBar, maxBar  = 0, threshold
-		if currentValue and threshold then
-			value = currentValue % threshold
-		end
-		if hasRewardPending then
-			value = value + threshold
-		end
-	elseif C_Reputation.IsMajorFaction(factionID) then
-		local majorFactionData = C_MajorFactions.GetMajorFactionData(factionID)
-		minBar, maxBar = 0, majorFactionData.renownLevelThreshold
-		level = majorFactionData.renownLevel
-	elseif self.friendshipID > 0 then
-		local repInfo = C_GossipInfo.GetFriendshipReputation(factionID)
-		local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID)
-		level = repRankInfo.currentLevel
-		if repInfo.nextThreshold then
-			minBar, maxBar, value = repInfo.reactionThreshold, repInfo.nextThreshold, repInfo.standing
-		else
-			-- max rank, make it look like a full bar
-			minBar, maxBar, value = 0, 1, 1
-			isCapped = true
-		end
-	else
-		level = watchedFactionData.reaction
-		if watchedFactionData.reaction == MAX_REPUTATION_REACTION then
-			isCapped = true
-		end
-	end
-	
-	maxBar = maxBar - minBar
-	value = value - minBar
-	if isCapped and maxBar == 0 then
-		maxBar = 1000
-		value = 999
-	end
-	minBar = 0
-
-	local color = FACTION_BAR_COLORS[watchedFactionData.reaction]
-	if C_Reputation.IsMajorFaction(factionID) then
-		self.value:SetStatusBarColor(BLUE_FONT_COLOR.r, BLUE_FONT_COLOR.g, BLUE_FONT_COLOR.b)
-		self.bg:SetVertexColor(BLUE_FONT_COLOR.r - 0.3, BLUE_FONT_COLOR.g - 0.3, BLUE_FONT_COLOR.b - 0.3, 0.6)
-	else 
-		self.value:SetStatusBarColor(color.r, color.g, color.b)
-		self.bg:SetVertexColor(color.r - 0.3, color.g - 0.3, color.b - 0.3, 0.6)
-	end
-
-	self.value:SetMinMaxValues(0, maxBar)
+	self.value:SetMinMaxValues(0, max)
 	self.value:SetValue(value)
 
-	--update statusbar text
-	textEnv.faction = watchedFactionData.name
-	textEnv.rep = value
-	textEnv.repMax = maxBar
-	textEnv.tnl = maxBar - value
-	textEnv.pct = round(value / maxBar * 100)
-
-	textEnv.repLevel = _G['FACTION_STANDING_LABEL' .. watchedFactionData.reaction]
-
-	local getRepText = assert(loadstring(self:GetRepFormat(), "getRepText"))
-	setfenv(getRepText, textEnv)
-	self.text:SetText(getRepText())
-end
-
-function XP:SetRepFormat(fmt)
-	self.sets.repFormat = fmt
-	if not self.watchingXP then
-		self:UpdateReputation()
-	end
-end
-
-function XP:GetRepFormat()
-	return self.sets.repFormat or [[
-		return format('%s: %s / %s (%s)', faction, comma(rep), comma(repMax), repLevel)
-	]]
+	local repLevel = _G['FACTION_STANDING_LABEL' .. reaction]
+	self.text:SetFormattedText(REP_FORMAT, name, comma_value(value), comma_value(max), repLevel)
 end
 
 
@@ -373,19 +248,18 @@ end
 --if libsharedmedia is present, then use the user's selected texture
 function XP:UpdateTexture()
 	local LSM = LibStub('LibSharedMedia-3.0', true)
-
+	
 	local texture = (LSM and LSM:Fetch('statusbar', self.sets.texture)) or DEFAULT_STATUSBAR_TEXTURE
-
 	self.value:SetStatusBarTexture(texture)
-	self.value:GetStatusBarTexture():SetHorizTile(false)
-
+	if self.value:GetStatusBarTexture().SetHorizTile then
+		self.value:GetStatusBarTexture():SetHorizTile(false)
+	end
 	self.rest:SetStatusBarTexture(texture)
-	self.rest:GetStatusBarTexture():SetHorizTile(false)
-
+	if self.rest:GetStatusBarTexture().SetHorizTile then
+		self.rest:GetStatusBarTexture():SetHorizTile(false)
+	end
 	self.bg:SetTexture(texture)
-	self.bg:SetHorizTile(false)
 end
-
 
 function XP:SetAlwaysShowXP(enable)
 	self.sets.alwaysShowXP = enable
@@ -515,10 +389,10 @@ local function Panel_UpdateList(self)
 
 	local scroll = self.scroll
 	FauxScrollFrame_Update(scroll, #textures, #self.buttons, height + offset)
-
+	
 	for i,button in pairs(self.buttons) do
 		local index = i + scroll.offset
-
+	
 		if index <= #textures then
 			button:SetText(textures[index])
 			button.bg:SetTexture(SML:Fetch('statusbar', textures[index]))
@@ -535,7 +409,7 @@ local function AddTexturePanel(menu)
 	if not LSM then
 		return
 	end
-
+	
 	local p = menu:NewPanel(L.Texture)
 	p.UpdateList = Panel_UpdateList
 	p:SetScript('OnShow', function() p:UpdateList() end)
