@@ -43,11 +43,6 @@ function BagBar:SetSetOneBag(enable)
 	self:Reload()
 end
 
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
-	self:Reload()
-end
-
 function BagBar:Reload()
 	if not self.bags then
 		self.bags = {}
@@ -61,9 +56,6 @@ function BagBar:Reload()
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
-		end
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
 		end
 	end
 
@@ -126,17 +118,6 @@ function BagBar:CreateMenu()
 
 	oneBag:SetScript('OnClick', function()
 		self:SetSetOneBag(oneBag:GetChecked())
-		_G[panel:GetName() .. L.Columns]:OnShow()
-	end)
-
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
-	end)
-
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
