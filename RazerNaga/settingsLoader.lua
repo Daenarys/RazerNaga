@@ -274,7 +274,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 3,
 				['point'] = 'BOTTOM',
-				['showstates'] = '[target=vehicle,exists]',
+				['showstates'] = '[canexitvehicle][possessbar][bonusbar:5]show;hide',
 				['x'] = -190,
 				['y'] = 0
 			},
@@ -300,6 +300,17 @@ function SettingsLoader:GetThreeByFour()
 				['spacing'] = 6,
 				['x'] = -400,
 				['y'] = 110
+			},
+			['extra'] = {
+				['isRightToLeft'] = false,
+				['isBottomToTop'] = false,
+				['anchor'] = false,
+				['columns'] = 1,
+				['hidden'] = false,
+				['point'] = 'BOTTOMRIGHT',
+				['spacing'] = 6,
+				['x'] = -400,
+				['y'] = 305,
 			},
 			['class'] = {
 				['isRightToLeft'] = false,

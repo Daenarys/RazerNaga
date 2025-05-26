@@ -1,16 +1,11 @@
-if not _G.ExtraActionBarFrame then return end
-
---------------------------------------------------------------------------------
--- Extra Bar
--- Defines the RazerNaga Extra Bar object
---------------------------------------------------------------------------------
+local ExtraActionBarFrame = _G.ExtraActionBarFrame
+if not _G.ExtraActionBarFrame then 
+	return 
+end
 
 local RazerNaga = _G[...]
 
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
-
+-- bar
 local ExtraBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function ExtraBar:New()
@@ -49,10 +44,6 @@ function ExtraBar:Layout()
     self:SetSize(w + pW, h + pH)
 end
 
---------------------------------------------------------------------------------
--- Menu
---------------------------------------------------------------------------------
-
 function ExtraBar:CreateMenu()
 	local menu = RazerNaga:NewMenu(self.id)
 
@@ -74,10 +65,7 @@ function ExtraBar:AddLayoutPanel(menu)
 	return panel
 end
 
---------------------------------------------------------------------------------
--- Module
---------------------------------------------------------------------------------
-
+-- module
 local ExtraBarModule = RazerNaga:NewModule('ExtraBar')
 
 function ExtraBarModule:Load()
@@ -104,5 +92,7 @@ function ExtraBarModule:Load()
 end
 
 function ExtraBarModule:Unload()
-	self.frame:Free()
+    if self.frame then
+        self.frame:Free()
+    end
 end
