@@ -1,6 +1,6 @@
 ﻿if not _G.PlayerPowerBarAlt then return end
 
-local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
+local RazerNaga = _G[...]
 local EncounterBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function EncounterBar:New()
@@ -54,13 +54,11 @@ end
 
 -- always reparent + position the bar due to UIParent.lua moving it whenever its shown
 function EncounterBar:Layout()
-	local width, height = 0, 0
-
 	for _, frame in pairs(self.frames) do
 		local w, h = frame:GetSize()
 
-		width = math.max(w, width)
-		height = math.max(h, height)
+		width = math.max(w, 36 * 6)
+		height = math.max(h, 36)
 	end
 
 	if width > 0 and height > 0 then
