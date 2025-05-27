@@ -1,25 +1,29 @@
 local ExtraActionBarFrame = _G.ExtraActionBarFrame
-if not _G.ExtraActionBarFrame then 
-	return 
+if not ExtraActionBarFrame then
+    return
 end
 
-local RazerNaga = _G[...]
+local RazerNaga = _G.RazerNaga
 
--- bar
+--[[ bar ]]--
+
 local ExtraBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function ExtraBar:New()
 	local frame = RazerNaga.Frame.New(self, 'extra')
 
+	-- attach the ExtraActionBarFrame to the bar
 	local container = ExtraActionBarFrame
 
 	container:ClearAllPoints()
-	container:SetPoint('CENTER', frame)
-	container:SetParent(frame)
+	container:SetPoint('CENTER', frame.header)
+	container:SetParent(frame.header)
 	container:SetToplevel(false)
 
 	frame.container = container
 
+	-- drop need for showstates for this case, as the extra bar can show in more
+	-- conditions with shadowlands
     if frame:GetShowStates() == '[extrabar]show;hide' then
         frame:SetShowStates(nil)
     end
@@ -60,39 +64,35 @@ function ExtraBar:AddLayoutPanel(menu)
 	panel.opacitySlider = panel:NewOpacitySlider()
 	panel.fadeSlider = panel:NewFadeSlider()
 	panel.scaleSlider = panel:NewScaleSlider()
-	panel.paddingSlider = panel:NewPaddingSlider()
 
 	return panel
 end
 
--- module
-local ExtraBarModule = RazerNaga:NewModule('ExtraBar')
 
-function ExtraBarModule:Load()
-    if not self.initialized then
-        self.initialized = true
+--[[ module ]]--
 
-        -- disable mouse interactions on the extra action bar
-        -- as it can sometimes block the UI from being interactive
-        if ExtraActionBarFrame:IsMouseEnabled() then
-            ExtraActionBarFrame:EnableMouse(false)
-        end
+local ExtraBarController = RazerNaga:NewModule('ExtraBar')
 
-        -- prevent the stock UI from messing with the extra ability bar position
-        ExtraActionBarFrame.ignoreFramePositionManager = true
+function ExtraBarController:OnInitialize()
+	-- disable mouse interactions on the extra action bar
+	-- as it can sometimes block the UI from being interactive
+	if ExtraActionBarFrame:IsMouseEnabled() then
+		ExtraActionBarFrame:EnableMouse(false)
+	end
 
-        -- onshow/hide call UpdateManagedFramePositions on the blizzard end so
-        -- turn that bit off
-        ExtraActionBarFrame:SetScript("OnShow", nil)
-        ExtraActionBarFrame:SetScript("OnHide", nil)
+	-- prevent the stock UI from messing with the extra ability bar position
+	ExtraActionBarFrame.ignoreFramePositionManager = true
 
-    end
+	-- onshow/hide call UpdateManagedFramePositions on the blizzard end so
+	-- turn that bit off
+	ExtraActionBarFrame:SetScript("OnShow", nil)
+	ExtraActionBarFrame:SetScript("OnHide", nil)
+end
 
+function ExtraBarController:Load()
     self.frame = ExtraBar:New()
 end
 
-function ExtraBarModule:Unload()
-    if self.frame then
-        self.frame:Free()
-    end
+function ExtraBarController:Unload()
+	self.frame:Free()
 end

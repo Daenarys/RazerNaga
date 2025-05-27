@@ -10,4 +10,5 @@ dropdown.lua
 menu.lua
 panel.lua
 general.lua
+anansi.lua
 profiles.lua

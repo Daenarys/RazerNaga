@@ -4,7 +4,7 @@
 		Necessary since using the blizzard fading functions can cause issues in combat
 --]]
 
-local MouseOverWatcher = {};
+local MouseOverWatcher = {}; RazerNaga.MouseOverWatcher = MouseOverWatcher
 local Timer_After = _G['C_Timer'].After
 local watched = {}
 
@@ -24,7 +24,7 @@ function MouseOverWatcher:Update()
 	end
 
 	if next(watched) then
-		self:RequestUpdate()
+		self:RequestUpdate()		
 	end
 end
 
@@ -61,5 +61,3 @@ function MouseOverWatcher:Remove(f)
 		f:UpdateAlpha()
 	end
 end
-
-RazerNaga.MouseOverWatcher = MouseOverWatcher
