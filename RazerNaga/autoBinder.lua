@@ -24,7 +24,6 @@ local function CreateEnableAutomaticBindingsPrompt()
 	}
 	f:SetPoint('TOP', 0, -24)
 	f:Hide()
-
 	f:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	f:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
@@ -46,7 +45,7 @@ local function CreateEnableAutomaticBindingsPrompt()
 
 	local button1 = CreateFrame('Button', nil, f, 'StaticPopupButtonTemplate')
 	button1:SetText(YES)
-	button1:SetPoint("TOPRIGHT", desc, "BOTTOM", -6, -12)
+	button1:SetPoint("TOPRIGHT", desc, "BOTTOM", -6, -8)
 	button1:SetScript('OnClick', function() f:Hide() end)
 
 	local button2 = CreateFrame('Button', nil, f, 'StaticPopupButtonTemplate')
