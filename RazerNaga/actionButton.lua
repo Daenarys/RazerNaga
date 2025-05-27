@@ -1,198 +1,229 @@
---[[ 
-	Action Button.lua
-		A RazerNaga action button
---]]
+--------------------------------------------------------------------------------
+-- ActionButtonMixin
+-- Additional methods we define on action buttons
+--------------------------------------------------------------------------------
+local RazerNaga = _G[...]
+local ActionButtonMixin = {}
 
-local KeyBound = LibStub('LibKeyBound-1.0')
-local Bindings = RazerNaga.BindingsController
-local Tooltips = RazerNaga:GetModule('Tooltips')
+local function GetActionButtonCommand(id)
+    -- 0
+    if id <= 0 then
+        return
+    -- 1
+    elseif id <= 12 then
+        return "ACTIONBUTTON" .. id
+    -- 2
+    elseif id <= 24 then
+        return
+    -- 3
+    elseif id <= 36 then
+        return "MULTIACTIONBAR3BUTTON" .. (id - 24)
+    -- 4
+    elseif id <= 48 then
+        return "MULTIACTIONBAR4BUTTON" .. (id - 36)
+    -- 5
+    elseif id <= 60 then
+        return "MULTIACTIONBAR2BUTTON" .. (id - 48)
+    -- 6
+    elseif id <= 72 then
+        return "MULTIACTIONBAR1BUTTON" .. (id - 60)
+    -- 7-10
+    elseif id <= 120 then
+        return
+    end
+end
 
-local ActionButton = RazerNaga:CreateClass('CheckButton', RazerNaga.BindableButton)
+local function skinActionButton(self)
+    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.NormalTexture:ClearAllPoints()
+    self.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+    self.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    local floatingBG = _G[self:GetName() .. 'FloatingBG']
+    if floatingBG then
+        floatingBG:Hide()
+    end
+end
+
+function ActionButtonMixin:OnCreate(id)
+    -- initialize secure state
+    self:SetAttributeNoHandler("action", 0)
+    self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or ("CLICK %s:HOTKEY"):format(self:GetName()))
+    self:SetAttributeNoHandler("showgrid", 0)
+    self:SetAttributeNoHandler("useparent-checkfocuscast", true)
+    self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
+    self:SetAttributeNoHandler("useparent-checkselfcast", true)
+
+    -- register for clicks on all buttons, and enable mousewheel bindings
+    self:EnableMouseWheel()
+    self:RegisterForClicks("AnyUp", "AnyDown")
+
+    -- secure handlers
+    self:SetAttributeNoHandler('_childupdate-offset', [[
+        local offset = message or 0
+        local id = self:GetAttribute('index') + offset
+
+        if self:GetAttribute('action') ~= id then
+            self:SetAttribute('action', id)
+        end
+    ]])
+
+    -- apply hooks for quick binding
+    RazerNaga.BindableButton:AddQuickBindingSupport(self)
+
+    -- apply button skin
+    skinActionButton(self)
+end
+
+--------------------------------------------------------------------------------
+-- Configuration
+--------------------------------------------------------------------------------
+
+function ActionButtonMixin:SetFlyoutDirection(direction)
+    if InCombatLockdown() then return end
+
+    self:SetAttribute("flyoutDirection", direction)
+    ActionButton_UpdateFlyout(self)
+end
+
+function ActionButtonMixin:SetShowBindingText(show)
+    self.HotKey:SetAlpha(show and 1 or 0)
+end
+
+function ActionButtonMixin:SetShowMacroText(show)
+    self.Name:SetShown(show and true)
+end
+
+function ActionButtonMixin:ShowGrid(reason)
+    if InCombatLockdown() then return end
+
+    self:SetAttribute("showgrid", bit.bor(self:GetAttribute("showgrid"), reason))
+
+    if self:GetAttribute("showgrid") > 0 and not self:GetAttribute("statehidden") then
+        self:Show()
+    end
+end
+
+function ActionButtonMixin:HideGrid(reason)
+    if InCombatLockdown() then return end
+
+    local showgrid = self:GetAttribute("showgrid");
+    if showgrid > 0 then
+        self:SetAttribute("showgrid", bit.band(showgrid, bit.bnot(reason)));
+    end
+
+    if self:GetAttribute("showgrid") == 0 and not HasAction(self.action) then
+        self:Hide()
+    end
+end
+
+if ActionButton_UpdateHotkeys then
+    hooksecurefunc("ActionButton_UpdateHotkeys", RazerNaga.BindableButton.UpdateHotkeys)
+end
+
+-- exports
+RazerNaga.ActionButtonMixin = ActionButtonMixin
+
+--------------------------------------------------------------------------------
+-- Action Button 
+-- A pool of action buttons
+--------------------------------------------------------------------------------
+local ActionButton = CreateFrame('Frame', nil, nil, 'SecureHandlerBaseTemplate')
+
+-- constants
+local ACTION_BUTTON_NAME_TEMPLATE = "RazerNaga" .. "ActionButton%d"
+
+ActionButton.buttons = {}
+
+--------------------------------------------------------------------------------
+-- Event and Callback Handling
+--------------------------------------------------------------------------------
+
+function ActionButton:Initialize()
+    self:SetScript("OnEvent", function(f, event, ...) f[event](f, ...) end)
+
+    -- load initial state
+    self:SetAttribute("ActionButtonUseKeyDown", GetCVarBool("ActionButtonUseKeyDown"))
+
+    self.Initialize = nil
+end
+
+--------------------------------------------------------------------------------
+-- Action Button Construction
+--------------------------------------------------------------------------------
+
+local ActionButton_ClickBefore = [[
+    if button == "HOTKEY" then
+        if down == control:GetAttribute("ActionButtonUseKeyDown") then
+            return "LeftButton"
+        end
+        return false
+    end
+
+    if down then
+        return false
+    end
+]]
+
+local function GetActionButtonName(id)
+    -- 0
+    if id <= 0 then
+        return
+    -- 1
+    elseif id <= 12 then
+        return "ActionButton" .. id
+    -- 2
+    elseif id <= 24 then
+        return ACTION_BUTTON_NAME_TEMPLATE:format(id)
+    -- 3
+    elseif id <= 36 then
+        return "MultiBarRightButton" .. (id - 24)
+    -- 4
+    elseif id <= 48 then
+        return "MultiBarLeftButton" .. (id - 36)
+    -- 5
+    elseif id <= 60 then
+        return "MultiBarBottomRightButton" .. (id - 48)
+    -- 6
+    elseif id <= 72 then
+        return "MultiBarBottomLeftButton" .. (id - 60)
+    -- 7+
+    elseif id <= 168 then
+        return ACTION_BUTTON_NAME_TEMPLATE:format(id)
+    end
+end
+
+function ActionButton:GetOrCreateActionButton(id, parent)
+    local name = GetActionButtonName(id)
+    local button = _G[name]
+    local new = false
+
+    -- a button we're creating
+    if button == nil then
+        button = CreateFrame("CheckButton", name, parent, "ActionBarButtonTemplate")
+        Mixin(button, RazerNaga.ActionButtonMixin)
+
+        new = true
+    -- a standard UI button we're reusing
+    elseif self.buttons[button] == nil then
+        Mixin(button, RazerNaga.ActionButtonMixin)
+
+        button:SetID(0)
+
+        new = true
+    end
+
+    if new then
+        button:OnCreate(id)
+        self:WrapScript(button, "OnClick", ActionButton_ClickBefore)
+        self.buttons[button] = id
+    end
+
+    return button
+end
+
+-- startup and export
+ActionButton:Initialize()
+
+-- exports
 RazerNaga.ActionButton = ActionButton
-ActionButton.unused = {}
-ActionButton.active = {}
-
-local function GetOrCreateActionButton(id)
-	if id <= 12 then
-		local b = _G['ActionButton' .. id]
-		b.buttonType = 'ACTIONBUTTON'
-		return b
-	elseif id <= 24 then
-		return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-12), nil, 'ActionBarButtonTemplate')
-	elseif id <= 36 then
-		return _G['MultiBarRightButton' .. (id-24)]
-	elseif id <= 48 then
-		return _G['MultiBarLeftButton' .. (id-36)]
-	elseif id <= 60 then
-		return _G['MultiBarBottomRightButton' .. (id-48)]
-	elseif id <= 72 then
-		return _G['MultiBarBottomLeftButton' .. (id-60)]
-	end
-	return CreateFrame('CheckButton', 'RazerNagaActionButton' .. (id-60), nil, 'ActionBarButtonTemplate')
-end
-
---constructor
-function ActionButton:New(id)
-	local b = self:Restore(id) or self:Create(id)
-
-	if b then
-		b:SetAttribute('showgrid', 0)
-		b:SetAttribute('action--base', id)
-		b:SetAttribute('_childupdate-action', [[
-			local state = message
-			local overridePage = self:GetParent():GetAttribute('state-overridepage')
-			local newActionID
-			
-			if state == 'override' then
-				newActionID = self:GetAttribute('button--index') + (overridePage - 1) * 12
-			else
-				newActionID = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
-			end
-			
-			if newActionID ~= self:GetAttribute('action') then
-				self:SetAttribute('action', newActionID)
-				self:CallMethod('UpdateState')
-			end
-		]])
-
-		Bindings:Register(b, b:GetName():match('RazerNagaActionButton%d'))
-		Tooltips:Register(b)
-
-		--get rid of range indicator text
-		local hotkey = b.HotKey
-		if hotkey:GetText() == _G['RANGE_INDICATOR'] then
-			hotkey:SetText('')
-		end		
-
-		b:UpdateGrid()
-		b:UpdateMacro()
-
-		self.active[id] = b
-	end
-
-	return b	
-end
-
-function ActionButton:Create(id)
-	local b = GetOrCreateActionButton(id)
-
-	if b then
-		self:Bind(b)
-
-		--this is used to preserve the button's old id
-		--we cannot simply keep a button's id at > 0 or blizzard code will take control of paging
-		--but we need the button's id for the old bindings system
-		b:SetAttribute('bindingid', b:GetID())
-		b:SetID(0)
-
-		b:ClearAllPoints()
-		b:SetAttribute('useparent-actionpage', nil)
-		b:SetAttribute('useparent-unit', true)
-		b:EnableMouseWheel(true)
-		b:HookScript('OnEnter', self.OnEnter)
-		b:Skin()
-	end
-	return b
-end
-
-function ActionButton:Restore(id)
-	local b = self.unused[id]
-
-	if b then
-		self.unused[id] = nil
-		b:LoadEvents()
-		ActionButton_UpdateAction(b)
-		b:Show()
-		self.active[id] = b
-		return b
-	end
-end
-
---destructor
-do
-	local HiddenActionButtonFrame = CreateFrame('Frame')
-	HiddenActionButtonFrame:Hide() 
-
-	function ActionButton:Free()
-		local id = self:GetAttribute('action--base')
-
-		self.active[id] = nil
-		
-		ActionBarActionEventsFrame_UnregisterFrame(self)
-		Tooltips:Unregister(self)
-		Bindings:Unregister(self)
-		
-		self:SetParent(HiddenActionButtonFrame)
-		self:Hide()
-		self.action = nil
-
-		self.unused[id] = self
-	end
-end
-
---these are all events that are registered OnLoad for action buttons
-function ActionButton:LoadEvents()
-	ActionBarActionEventsFrame_RegisterFrame(self)
-end
-
---keybound support
-function ActionButton:OnEnter()
-	KeyBound:Set(self)
-end
-
---override the old update hotkeys function
-hooksecurefunc('ActionButton_UpdateHotkeys', ActionButton.UpdateHotkey)
-
---button visibility
-function ActionButton:UpdateGrid()
-	if InCombatLockdown() then return end
-	
-	if self:GetAttribute('showgrid') > 0 then
-		ActionButton_ShowGrid(self)
-	else
-		ActionButton_HideGrid(self)
-	end
-end
-
---macro text
-function ActionButton:UpdateMacro()
-	if RazerNaga:ShowMacroText() then
-		self.Name:Show()
-	else
-		self.Name:Hide()
-	end
-end
-
-function ActionButton:SetFlyoutDirection(direction)
-	if InCombatLockdown() then return end
-	
-	self:SetAttribute('flyoutDirection', direction)
-	ActionButton_UpdateFlyout(self)
-end
-
-function ActionButton:UpdateState()
-	ActionButton_UpdateState(self)
-end
-
---utility function, resyncs the button's current action, modified by state
-function ActionButton:LoadAction()
-	local state = self:GetParent():GetAttribute('state-page')
-	local id = state and self:GetAttribute('action--' .. state) or self:GetAttribute('action--base')
-	
-	self:SetAttribute('action', id)
-end
-
-function ActionButton:Skin()
-	if not RazerNaga:Masque('Action Bar', self) then
-		self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-		self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
-		self:GetNormalTexture():ClearAllPoints()
-		self:GetNormalTexture():SetPoint("TOPLEFT", -15, 15)
-		self:GetNormalTexture():SetPoint("BOTTOMRIGHT", 15, -15)
-		
-		local floatingBG = _G[self:GetName() .. 'FloatingBG'] 
-		if floatingBG then
-			floatingBG:Hide()
-		end
-	end
-end

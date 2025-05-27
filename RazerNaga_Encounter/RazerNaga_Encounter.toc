@@ -3,5 +3,4 @@
 ## Notes: Makes the PlayerPowerBarAlt movable
 ## Author: Daenarys
 ## Dependencies: RazerNaga
-bar.lua
-controller.lua
+encounterBar.lua
