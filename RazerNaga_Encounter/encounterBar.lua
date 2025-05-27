@@ -1,19 +1,52 @@
 ﻿if not _G.PlayerPowerBarAlt then return end
 
-local _, Addon = ...
 local RazerNaga = LibStub('AceAddon-3.0'):GetAddon('RazerNaga')
 local EncounterBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 function EncounterBar:New()
-	local f = EncounterBar.proto.New(self, 'encounter')
+	local frame = EncounterBar.proto.New(self, 'encounter')
 
-	f:InitPlayerPowerBarAlt()
-	f:ShowInOverrideUI(true)
-	f:ShowInPetBattleUI(true)
-	f:Layout()
+	frame:ShowInOverrideUI(true)
+	frame:ShowInPetBattleUI(true)
+	frame:Layout()
 
-	return f
+	return frame
 end
+
+EncounterBar:Extend('OnCreate', function(self)
+	self.frames = {}
+
+	local ppb = PlayerPowerBarAlt
+	if ppb then
+		ppb:ClearAllPoints()
+		ppb:SetParent(self)
+		ppb:SetPoint('CENTER', self)
+
+		if type(ppb.SetupPlayerPowerBarPosition) == "function" then
+			hooksecurefunc(ppb, "SetupPlayerPowerBarPosition", function(bar)
+				if bar:GetParent() ~= self then
+					bar:SetParent(self)
+					bar:ClearAllPoints()
+					bar:SetPoint('CENTER', self)
+				end
+			end)
+		end
+
+		if type(UnitPowerBarAlt_SetUp) == "function" then
+			hooksecurefunc("UnitPowerBarAlt_SetUp", function(bar)
+				if bar.isPlayerBar and bar:GetParent() ~= self then
+					bar:SetParent(self)
+					bar:ClearAllPoints()
+					bar:SetPoint('CENTER', self)
+				end
+			end)
+		end
+
+		ppb:HookScript("OnSizeChanged", function() self:Layout() end)
+
+		self.frames[#self.frames+1] = ppb
+	end
+end)
 
 function EncounterBar:GetDefaults()
 	return { point = 'CENTER' }
@@ -21,36 +54,20 @@ end
 
 -- always reparent + position the bar due to UIParent.lua moving it whenever its shown
 function EncounterBar:Layout()
-	local bar = self.__PlayerPowerBarAlt
-	bar:ClearAllPoints()
-	bar:SetParent(self)
-	bar:SetPoint('CENTER', self)
+	local width, height = 0, 0
 
-	-- resize out of combat
-	if not InCombatLockdown() then
-		local width, height = bar:GetSize()
-		local pW, pH = self:GetPadding()
+	for _, frame in pairs(self.frames) do
+		local w, h = frame:GetSize()
 
-		width = math.max(width, 36 * 6)
-		height = math.max(height, 36)
-
-		self:SetSize(width + pW, height + pH)
+		width = math.max(w, width)
+		height = math.max(h, height)
 	end
-end
 
--- grab a reference to the bar
--- and hook the scripts we need to hook
-function EncounterBar:InitPlayerPowerBarAlt()
-	if not self.__PlayerPowerBarAlt then
-		local bar = PlayerPowerBarAlt
-
-		if bar:GetScript('OnSizeChanged') then
-			bar:HookScript('OnSizeChanged', function() self:Layout() end)
-		else
-			bar:SetScript('OnSizeChanged', function() self:Layout() end)
-		end
-
-		self.__PlayerPowerBarAlt = bar
+	if width > 0 and height > 0 then
+		local pW, pH = self:GetPadding()
+		self:TrySetSize(width + pW, height + pH)
+	else
+		self:TrySetSize(36 * 6, 36)
 	end
 end
 
@@ -58,37 +75,38 @@ end
 local EncounterBarModule = RazerNaga:NewModule('EncounterBar', 'AceEvent-3.0')
 
 function EncounterBarModule:Load()
-	if not self.initialized then
-		self.initialized = true
-
-		-- tell blizzard that we don't it to manage this frame's position
-		PlayerPowerBarAlt.ignoreFramePositionManager = true
-
-		-- the standard UI will check to see if the power bar is user placed before
-		-- doing anything to its position, so mark as user placed to prevent that
-		-- from happening
-		PlayerPowerBarAlt:SetMovable(true)
-		PlayerPowerBarAlt:SetUserPlaced(true)
-
-		-- onshow/hide call UpdateManagedFramePositions on the blizzard end so turn
-		-- that bit off
-		PlayerPowerBarAlt:SetScript("OnShow", nil)
-		PlayerPowerBarAlt:SetScript("OnHide", nil)
-
-		self:RegisterEvent("PLAYER_LOGOUT")
+	if self.frame == nil then
+		self.frame = EncounterBar:New()
 	end
-
-	self.frame = Addon.EncounterBar:New()
 end
 
 function EncounterBarModule:Unload()
-	self.frame:Free()
+    if self.frame then
+        self.frame:Free()
+        self.frame = nil
+    end
+end
+
+function EncounterBarModule:OnFirstLoad()
+	local ppb = PlayerPowerBarAlt
+	if ppb then
+		-- the standard UI will check to see if the power bar is user placed before
+		-- doing anything to its position, so mark as user placed to prevent that
+		-- from happening
+		ppb:SetMovable(true)
+		ppb:SetUserPlaced(true)
+
+		-- tell blizzard that we don't it to manage this frame's position
+		ppb.ignoreFramePositionManager = true
+
+		self:RegisterEvent("PLAYER_LOGOUT")
+	end
 end
 
 function EncounterBarModule:PLAYER_LOGOUT()
 	-- SetUserPlaced is persistent, so revert upon logout
-	PlayerPowerBarAlt:SetUserPlaced(false)
+	local ppb = PlayerPowerBarAlt
+	if ppb then
+		ppb:SetUserPlaced(false)
+	end
 end
-
--- exports
-Addon.EncounterBar = EncounterBar
