@@ -44,19 +44,19 @@ function MenuBar:SkinButton(button)
 
     local normalTexture = button:GetNormalTexture()
     if (normalTexture) then
-        normalTexture:SetTexelSnappingBias(0.0)
+        normalTexture:SetTexelSnappingBias(0)
     end
     local pushedTexture = button:GetPushedTexture()
     if (pushedTexture) then
-        pushedTexture:SetTexelSnappingBias(0.0)
+        pushedTexture:SetTexelSnappingBias(0)
     end
     local disabledTexture = button:GetDisabledTexture()
     if (disabledTexture) then
-        disabledTexture:SetTexelSnappingBias(0.0)
+        disabledTexture:SetTexelSnappingBias(0)
     end
     local highlightTexture = button:GetHighlightTexture()
     if (highlightTexture) then
-        highlightTexture:SetTexelSnappingBias(0.0)
+        highlightTexture:SetTexelSnappingBias(0)
     end
 
     button.skinned = true
