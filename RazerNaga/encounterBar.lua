@@ -18,16 +18,16 @@ EncounterBar:Extend('OnCreate', function(self)
 
 	local ppb = PlayerPowerBarAlt
 	if ppb then
-		ppb:ClearAllPoints()
 		ppb:SetParent(self)
-		ppb:SetPoint('CENTER', self)
+		ppb:ClearAllPoints()
+		ppb:SetPoint('CENTER')
 
 		if type(ppb.SetupPlayerPowerBarPosition) == "function" then
 			hooksecurefunc(ppb, "SetupPlayerPowerBarPosition", function(bar)
 				if bar:GetParent() ~= self then
 					bar:SetParent(self)
 					bar:ClearAllPoints()
-					bar:SetPoint('CENTER', self)
+					bar:SetPoint('CENTER')
 				end
 			end)
 		end
@@ -37,7 +37,7 @@ EncounterBar:Extend('OnCreate', function(self)
 				if bar.isPlayerBar and bar:GetParent() ~= self then
 					bar:SetParent(self)
 					bar:ClearAllPoints()
-					bar:SetPoint('CENTER', self)
+					bar:SetPoint('CENTER')
 				end
 			end)
 		end
@@ -72,20 +72,7 @@ end
 -- module
 local EncounterBarModule = RazerNaga:NewModule('EncounterBar', 'AceEvent-3.0')
 
-function EncounterBarModule:Load()
-	if self.frame == nil then
-		self.frame = EncounterBar:New()
-	end
-end
-
-function EncounterBarModule:Unload()
-    if self.frame then
-        self.frame:Free()
-        self.frame = nil
-    end
-end
-
-function EncounterBarModule:OnFirstLoad()
+function EncounterBarModule:OnInitialize()
 	local ppb = PlayerPowerBarAlt
 	if ppb then
 		-- the standard UI will check to see if the power bar is user placed before
@@ -99,6 +86,19 @@ function EncounterBarModule:OnFirstLoad()
 
 		self:RegisterEvent("PLAYER_LOGOUT")
 	end
+end
+
+function EncounterBarModule:Load()
+	if self.frame == nil then
+		self.frame = EncounterBar:New()
+	end
+end
+
+function EncounterBarModule:Unload()
+    if self.frame then
+        self.frame:Free()
+        self.frame = nil
+    end
 end
 
 function EncounterBarModule:PLAYER_LOGOUT()
