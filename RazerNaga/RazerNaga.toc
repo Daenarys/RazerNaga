@@ -28,4 +28,3 @@ extraActionBar.lua
 vehicleBar.lua
 configModeDialog.lua
 hoverMenu.lua
-encounterBar.lua
