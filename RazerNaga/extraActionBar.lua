@@ -80,12 +80,6 @@ function ExtraBarModule:Load()
 
         -- prevent the stock UI from messing with the extra ability bar position
         ExtraActionBarFrame.ignoreFramePositionManager = true
-
-        -- onshow/hide call UpdateManagedFramePositions on the blizzard end so
-        -- turn that bit off
-        ExtraActionBarFrame:SetScript("OnShow", nil)
-        ExtraActionBarFrame:SetScript("OnHide", nil)
-
     end
 
     self.frame = ExtraBar:New()
