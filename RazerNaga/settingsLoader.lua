@@ -253,7 +253,6 @@ function SettingsLoader:GetThreeByFour()
 				['anchor'] = false,
 				['hidden'] = false,
 				['point'] = 'BOTTOM',
-				['spacing'] = 1,
 				['x'] = 0,
 				['y'] = 0
 			},
@@ -286,6 +285,7 @@ function SettingsLoader:GetThreeByFour()
 				['hidden'] = false,
 				['numButtons'] = 6,
 				['point'] = 'BOTTOM',
+				['spacing'] = 2,
 				['x'] = 250,
 				['y'] = 0
 			},
