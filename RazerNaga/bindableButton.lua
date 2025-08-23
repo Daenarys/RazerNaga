@@ -1,15 +1,22 @@
 ﻿-- Binding code that's shared between the various flavors of action buttons
 local RazerNaga = _G[...]
 local KeyBound = LibStub('LibKeyBound-1.0')
+local COMMAND_TEMPLATE = 'CLICK %s:HOTKEY'
 
 -- binding method definitions
 -- returns the binding action associated with the button
+
+-- we use a virtual button (arbitrarily named HOTKEY)
+-- to enable cast on key press support
 local function getButtonBindingAction(button)
     return button:GetAttribute("commandName")
+        or COMMAND_TEMPLATE:format(button:GetName())
 end
 
-local function getButtonActionName(button)
-    return button:GetName()
+local function getButtonBindingActionName(button)
+    return button:GetAttribute("displayName")
+        or _G["BINDING_NAME_" .. getButtonBindingAction(button)]
+        or button:GetName()
 end
 
 local function getButtonBindings(button)
@@ -75,7 +82,7 @@ function BindableButtonProxy:ClearBindings()
 end
 
 function BindableButtonProxy:GetActionName()
-    return whenExists(self:GetParent(), getButtonActionName) or UNKNOWN
+    return whenExists(self:GetParent(), getButtonBindingActionName) or UNKNOWN
 end
 
 BindableButtonProxy:SetScript('OnLeave', function(self)
@@ -84,6 +91,7 @@ BindableButtonProxy:SetScript('OnLeave', function(self)
 end)
 
 -- methods to inject onto a bar to add in common binding functionality
+-- previously, this was a mixin
 local BindableButton = {}
 
 -- adds quickbinding support to buttons
