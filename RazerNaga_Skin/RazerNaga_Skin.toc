@@ -13,5 +13,6 @@ skins\GameMenu.lua
 skins\LFG.lua
 skins\ObjectiveTracker.lua
 skins\QuestLog.lua
+skins\StaticPopup.lua
 skins\TimeManager.lua
 skins\WorldMap.lua
