@@ -24,7 +24,14 @@ local function getStanceButton(id)
 end
 
 local function skinStanceButton(self)
-    _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    local r = self:GetWidth() / _G['ActionButton1']:GetWidth()
+
+    local nt = self:GetNormalTexture()
+    nt:ClearAllPoints()
+    nt:SetPoint('TOPLEFT', -15 * r, 15 * r)
+    nt:SetPoint('BOTTOMRIGHT', 15 * r, -15 * r)
+
+    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
     self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
 end
 
