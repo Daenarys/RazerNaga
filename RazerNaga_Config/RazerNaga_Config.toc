@@ -1,4 +1,4 @@
-## Interface: 50501
+## Interface: 50502
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Daenarys

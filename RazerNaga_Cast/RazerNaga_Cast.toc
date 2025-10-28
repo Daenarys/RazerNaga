@@ -1,4 +1,4 @@
-﻿## Interface: 50501
+﻿## Interface: 50502
 ## Title: Razer Naga Cast
 ## Notes: A movable casting bar, with timer
 ## Author: Daenarys
