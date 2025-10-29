@@ -42,8 +42,6 @@ function MenuBar:SkinButton(button)
 
     button:SetSize(28, 36)
 
-    LoadMicroButtonTextures(ProfessionMicroButton, "SpellbookAbilities")
-
     hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
         self:SetParent(MainMenuMicroButton)
         self:ClearAllPoints()
