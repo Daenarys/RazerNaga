@@ -19,13 +19,65 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(34, 34)
+	b:SetSize(30, 30)
 
+	if b.IconBorder ~= nil then
+		b.IconBorder:SetSize(30, 30)
+	end
+
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
+	end
+
+	if b.CircleMask then
+		b.CircleMask:Hide()
+	end
+
+	local function updateTextures(self)
+		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
+		self:GetNormalTexture():SetSize(50, 50)
+		self:GetNormalTexture():SetAlpha(1)
+		self:GetNormalTexture():ClearAllPoints()
+		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
+		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
+		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+		self:GetHighlightTexture():SetAlpha(1)
+		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		self.SlotHighlightTexture:SetBlendMode("ADD")
+	end
+
+	hooksecurefunc(b, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
+	hooksecurefunc(b, "UpdateTextures", updateTextures)
+
+	updateTextures(b)
+	MainMenuBarBackpackButtonIconTexture:SetTexture("Interface\\Buttons\\Button-Backpack-Up")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
+	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
 
 	b.skinned = true
 end
+
+local function Disable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Disable()
+		SetDesaturation(bagButton.icon, true)
+	end
+end
+
+local function Enable_BagButtons()
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		bagButton:Enable()
+		SetDesaturation(bagButton.icon, false)
+	end
+end
+
+GameMenuFrame:HookScript("OnShow", function()
+	Disable_BagButtons()
+end)
+
+GameMenuFrame:HookScript("OnHide", function()
+	Enable_BagButtons()
+end)
 
 function BagBar:GetDefaults()
 	return {
