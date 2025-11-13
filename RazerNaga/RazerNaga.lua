@@ -222,7 +222,7 @@ function RazerNaga:HideBlizzard()
 	end
 
 	apply(banish,
-		"MainMenuBar",
+		"MainActionBar",
 		"MultiBarBottomLeft",
 		"MultiBarBottomRight",
 		"MultiBarLeft",
@@ -260,7 +260,7 @@ function RazerNaga:HideBlizzard()
 	)
 
 	apply(disableActionButtons,
-		"MainMenuBar",
+		"MainActionBar",
 		"MultiBar5",
 		"MultiBar6",
 		"MultiBar7",
