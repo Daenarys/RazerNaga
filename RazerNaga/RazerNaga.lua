@@ -889,25 +889,6 @@ function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
 end
 
---extras
-if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
-	Minimap:HookScript("OnEvent", function(self, event, ...)
-		if ( event == "PLAYER_ENTERING_WORLD" ) then
-			if (ExpansionLandingPageMinimapButton:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
-				ExpansionLandingPageMinimapButton:ClearAllPoints()
-				ExpansionLandingPageMinimapButton:SetPoint("TOPLEFT", 8, -156)
-			end
-
-			hooksecurefunc(ExpansionLandingPageMinimapButton, "UpdateIcon", function(self)
-				if (self:GetNormalTexture():GetAtlas() == "dragonflight-landingbutton-up") then
-					self:ClearAllPoints()
-					self:SetPoint("TOPLEFT", 8, -156)
-				end
-			end)
-		end
-	end)
-end
-
 --[[ Incompatibility Check ]]--
 
 local INCOMPATIBLE_ADDONS = {
