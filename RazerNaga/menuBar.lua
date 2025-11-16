@@ -666,6 +666,13 @@ function MenuBarModule:OnInitialize()
         perf:SetPoint('CENTER')
     end
 
+    if FramerateFrame then
+        hooksecurefunc(FramerateFrame, "UpdatePosition", function()
+            FramerateFrame:ClearAllPoints()
+            FramerateFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 75)
+        end)
+    end
+
     -- temp fix for 10.2.6 bug
     MicroMenu.GetEdgeButton = function() end
 end
