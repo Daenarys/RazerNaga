@@ -8,23 +8,23 @@ local RazerNaga = _G[...]
 -- Button
 --------------------------------------------------------------------------------
 
-local function getPetButton(id)
-    return _G[('PetActionButton%d'):format(id)]
-end
+local PetButtons = setmetatable({}, {
+    __index = function(self, index)
+        local button =  (PetActionBar and PetActionBar.actionButtons[index])
+            or _G['PetActionButton' .. index]
 
-for id = 1, NUM_PET_ACTION_SLOTS do
-    local button = getPetButton(id)
+        if button then
+            button.buttonType = 'BONUSACTIONBUTTON'
+            button:SetAttribute("commandName", "BONUSACTIONBUTTON" .. index)
+            RazerNaga.BindableButton:AddQuickBindingSupport(button)
+            button.cooldown:SetDrawBling(true)
 
-    -- set the buttontype
-    button.buttonType = 'BONUSACTIONBUTTON'
-    button:SetAttribute("commandName", "BONUSACTIONBUTTON" .. id)
+            self[index] = button
+        end
 
-    -- apply hooks for quick binding
-    RazerNaga.BindableButton:AddQuickBindingSupport(button)
-
-    -- enable cooldown bling
-    button.cooldown:SetDrawBling(true)
-end
+        return button
+    end
+})
 
 --------------------------------------------------------------------------------
 -- Bar
@@ -54,7 +54,7 @@ function PetBar:NumButtons()
 end
 
 function PetBar:AcquireButton(index)
-    return getPetButton(index)
+    return PetButtons[index]
 end
 
 function PetBar:OnAttachButton(button)
@@ -71,14 +71,11 @@ function PetBar:KEYBOUND_ENABLED()
 end
 
 function PetBar:KEYBOUND_DISABLED()
-    local petBarShown = PetHasActionBar()
+    local hasPetBar = PetHasActionBar()
 
     for _, button in pairs(self.buttons) do
-        if petBarShown and GetPetActionInfo(button:GetID()) then
-            button:Show()
-        else
-            button:Hide()
-        end
+        local show = hasPetBar and GetPetActionInfo(button.index or button:GetID())
+        button:SetShown(show)
     end
 end
 
@@ -90,8 +87,6 @@ local PetBarModule = RazerNaga:NewModule('PetBar', 'AceEvent-3.0')
 
 function PetBarModule:Load()
     self.bar = PetBar:New()
-
-    self:RegisterEvent('UPDATE_BINDINGS')
 end
 
 function PetBarModule:Unload()
@@ -101,8 +96,4 @@ function PetBarModule:Unload()
         self.bar:Free()
         self.bar = nil
     end
-end
-
-function PetBarModule:UPDATE_BINDINGS()
-    self.bar:ForButtons('UpdateHotkeys')
 end

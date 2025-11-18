@@ -20,23 +20,23 @@ end
 -- Button
 --------------------------------------------------------------------------------
 
-local function getStanceButton(id)
-    return _G[('StanceButton%d'):format(id)]
-end
+local StanceButtons = setmetatable({}, {
+    __index = function(self, index)
+        local button =  (StanceBar and StanceBar.actionButtons[index])
+            or _G['StanceButton' .. index]
 
-for id = 1, 10 do
-    local button = getStanceButton(id)
+        if button then
+            button.buttonType = 'SHAPESHIFTBUTTON'
+            button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. index)
+            RazerNaga.BindableButton:AddQuickBindingSupport(button)
+            button.cooldown:SetDrawBling(true)
 
-    -- set the buttontype
-    button.buttonType = 'SHAPESHIFTBUTTON'
-    button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. id)
+            self[index] = button
+        end
 
-    -- apply hooks for quick binding
-    RazerNaga.BindableButton:AddQuickBindingSupport(button)
-
-    -- enable cooldown bling
-    button.cooldown:SetDrawBling(true)
-end
+        return button
+    end
+})
 
 --------------------------------------------------------------------------------
 -- Bar
@@ -60,7 +60,7 @@ function StanceBar:NumButtons()
 end
 
 function StanceBar:AcquireButton(index)
-    return getStanceButton(index)
+    return StanceButtons[index]
 end
 
 function StanceBar:OnAttachButton(button)
@@ -87,7 +87,6 @@ function StanceBarModule:Load()
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS', 'UpdateNumForms')
     self:RegisterEvent('PLAYER_REGEN_ENABLED', 'UpdateNumForms')
     self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateNumForms')
-    self:RegisterEvent('UPDATE_BINDINGS')
 end
 
 function StanceBarModule:Unload()
@@ -104,8 +103,4 @@ function StanceBarModule:UpdateNumForms()
     end
 
     self.bar:UpdateNumButtons()
-end
-
-function StanceBarModule:UPDATE_BINDINGS()
-    self.bar:ForButtons('UpdateHotkeys')
 end
