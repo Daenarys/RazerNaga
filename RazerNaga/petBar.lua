@@ -83,15 +83,13 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local PetBarModule = RazerNaga:NewModule('PetBar', 'AceEvent-3.0')
+local PetBarModule = RazerNaga:NewModule('PetBar')
 
 function PetBarModule:Load()
     self.bar = PetBar:New()
 end
 
 function PetBarModule:Unload()
-    self:UnregisterAllEvents()
-
     if self.bar then
         self.bar:Free()
         self.bar = nil

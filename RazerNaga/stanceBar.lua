@@ -72,35 +72,19 @@ function StanceBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
 
--- exports
-RazerNaga.StanceBar = StanceBar
-
 --------------------------------------------------------------------------------
 -- Module
 --------------------------------------------------------------------------------
 
-local StanceBarModule = RazerNaga:NewModule('StanceBar', 'AceEvent-3.0')
+local StanceBarModule = RazerNaga:NewModule('StanceBar')
 
 function StanceBarModule:Load()
     self.bar = StanceBar:New()
-
-    self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS', 'UpdateNumForms')
-    self:RegisterEvent('PLAYER_REGEN_ENABLED', 'UpdateNumForms')
-    self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateNumForms')
 end
 
 function StanceBarModule:Unload()
-    self:UnregisterAllEvents()
-
     if self.bar then
         self.bar:Free()
+        self.bar = nil
     end
-end
-
-function StanceBarModule:UpdateNumForms()
-    if InCombatLockdown() then
-        return
-    end
-
-    self.bar:UpdateNumButtons()
 end
