@@ -43,8 +43,6 @@ end
 function PetBar:GetDefaults()
     return {
         point = 'CENTER',
-        x = 0,
-        y = -32,
         spacing = 6
     }
 end
