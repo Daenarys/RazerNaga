@@ -218,6 +218,7 @@ function RazerNaga:HideBlizzard()
 	        button:UnregisterAllEvents()
 	        button:SetAttributeNoHandler("statehidden", true)
 	        button:Hide()
+	        button.bar = nil
 	    end
 	end
 
@@ -269,9 +270,6 @@ function RazerNaga:HideBlizzard()
 		"MultiBarLeft",
 		"MultiBarRight"
 	)
-
-	_G.MultiActionBar_HideAllGrids = function() end
-	_G.MultiActionBar_ShowAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
