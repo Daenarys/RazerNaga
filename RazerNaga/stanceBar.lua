@@ -20,23 +20,23 @@ end
 -- Button
 --------------------------------------------------------------------------------
 
-local StanceButtons = setmetatable({}, {
-    __index = function(self, index)
-        local button =  (StanceBar and StanceBar.actionButtons[index])
-            or _G['StanceButton' .. index]
+local function getStanceButton(id)
+    return _G[('StanceButton%d'):format(id)]
+end
 
-        if button then
-            button.buttonType = 'SHAPESHIFTBUTTON'
-            button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. index)
-            RazerNaga.BindableButton:AddQuickBindingSupport(button)
-            button.cooldown:SetDrawBling(true)
+for id = 1, 10 do
+    local button = getStanceButton(id)
 
-            self[index] = button
-        end
+    -- set the buttontype
+    button.buttonType = 'SHAPESHIFTBUTTON'
+    button:SetAttribute("commandName", "SHAPESHIFTBUTTON" .. id)
 
-        return button
-    end
-})
+    -- apply hooks for quick binding
+    RazerNaga.BindableButton:AddQuickBindingSupport(button)
+
+    -- enable cooldown bling
+    button.cooldown:SetDrawBling(true)
+end
 
 --------------------------------------------------------------------------------
 -- Bar
@@ -60,7 +60,7 @@ function StanceBar:NumButtons()
 end
 
 function StanceBar:AcquireButton(index)
-    return StanceButtons[index]
+    return getStanceButton(index)
 end
 
 function StanceBar:OnAttachButton(button)
@@ -76,15 +76,33 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local StanceBarModule = RazerNaga:NewModule('StanceBar')
+local StanceBarModule = RazerNaga:NewModule('StanceBar', 'AceEvent-3.0')
 
 function StanceBarModule:Load()
     self.bar = StanceBar:New()
+
+    self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS', 'UpdateNumForms')
+    self:RegisterEvent('PLAYER_REGEN_ENABLED', 'UpdateNumForms')
+    self:RegisterEvent('PLAYER_ENTERING_WORLD', 'UpdateNumForms')
+    self:RegisterEvent('UPDATE_BINDINGS')
 end
 
 function StanceBarModule:Unload()
+    self:UnregisterAllEvents()
+
     if self.bar then
         self.bar:Free()
-        self.bar = nil
     end
+end
+
+function StanceBarModule:UpdateNumForms()
+    if InCombatLockdown() then
+        return
+    end
+
+    self.bar:UpdateNumButtons()
+end
+
+function StanceBarModule:UPDATE_BINDINGS()
+    self.bar:ForButtons('UpdateHotkeys')
 end
