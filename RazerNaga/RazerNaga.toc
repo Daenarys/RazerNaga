@@ -3,7 +3,7 @@
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
 ## Author: Daenarys
-## Version: 1.21
+## Version: 1.20
 ## SavedVariables: RazerNagaDB, RazerNagaVersion
 ## OptionalDeps: Ace3, LibKeyBound-1.0, FlyPaper
 embeds.xml
@@ -19,7 +19,6 @@ frame.lua
 barStates.lua
 buttonBar.lua
 bindableButton.lua
-spellFlyout.lua
 actionButton.lua
 actionBar.lua
 petBar.lua
