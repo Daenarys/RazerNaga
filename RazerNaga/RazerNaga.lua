@@ -996,28 +996,11 @@ do
 
     function RazerNaga:CreateClass(frameType, prototype)
         local class = self:CreateHiddenFrame(frameType)
-        local function mixin(target, source)
-            for k, v in pairs(source) do
-                if target[k] == nil then
-                    target[k] = v
-                end
-            end
-        end
+
+        local class_mt = {__index = class}
 
         class.Bind = function(_, object)
-            -- copy methods from the class and its prototype chain without
-            -- replacing the frame's Blizzard-provided metatable (keeps
-            -- secure handles intact).
-            local source = class
-            local seen = {}
-
-            while source and not seen[source] do
-                seen[source] = true
-                mixin(object, source)
-                source = rawget(source, 'proto')
-            end
-
-            return object
+            return setmetatable(object, class_mt)
         end
 
         if type(prototype) == 'table' then
