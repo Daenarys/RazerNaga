@@ -15,6 +15,7 @@ local MICRO_BUTTONS = {
     "PlayerSpellsMicroButton",
     "AchievementMicroButton",
     "QuestLogMicroButton",
+    "HousingMicroButton",
     "GuildMicroButton",
     "LFDMicroButton",
     "CollectionsMicroButton",
@@ -29,6 +30,7 @@ local MICRO_BUTTON_NAMES = {
     ['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
     ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
+    ['HousingMicroButton'] = _G['HOUSING_MICRO_BUTTON'],
     ['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
     ['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS'],
@@ -41,8 +43,6 @@ function MenuBar:SkinButton(button)
     if button.skinned then return end
 
     button:SetSize(28, 36)
-
-    LoadMicroButtonTextures(ProfessionMicroButton, "SpellbookAbilities")
 
     hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
         self:SetParent(MainMenuMicroButton)
