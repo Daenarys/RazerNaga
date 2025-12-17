@@ -144,11 +144,6 @@ function ConfigModeDialog:CreateAutoBindingToggle()
 	_G[autoBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
 	_G[autoBindings:GetName() .. 'Text']:SetPoint("LEFT", autoBindings, "RIGHT", 2, 1)
 
-	autoBindings:SetNormalTexture("checkbox-minimal")
-	autoBindings:SetPushedTexture("checkbox-minimal")
-	autoBindings:SetCheckedTexture("checkmark-minimal")
-	autoBindings:SetDisabledCheckedTexture("checkmark-minimal-disabled")
-
 	autoBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
 		GameTooltip:SetText(L.AutomaticBindingsToggle, nil, nil, nil, nil, 1)
@@ -167,11 +162,6 @@ function ConfigModeDialog:CreatePerCharacterBindingToggle()
 	_G[perCharBindings:GetName() .. 'Text']:SetText(CHARACTER_SPECIFIC_KEYBINDINGS)
 	_G[perCharBindings:GetName() .. 'Text']:SetTextColor(255, 255, 255, 1)
 	_G[perCharBindings:GetName() .. 'Text']:SetPoint("LEFT", perCharBindings, "RIGHT", 2, 1)
-
-	perCharBindings:SetNormalTexture("checkbox-minimal")
-	perCharBindings:SetPushedTexture("checkbox-minimal")
-	perCharBindings:SetCheckedTexture("checkmark-minimal")
-	perCharBindings:SetDisabledCheckedTexture("checkmark-minimal-disabled")
 
 	perCharBindings:SetScript('OnEnter', function(self)
 		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
