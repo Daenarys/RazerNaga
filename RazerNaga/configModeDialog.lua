@@ -53,13 +53,13 @@ function ConfigModeDialog:Load()
 
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
-	bindingSetPicker:SetPoint('BOTTOMLEFT', 0, 66)
+	bindingSetPicker:SetPoint('BOTTOMLEFT', 15, 66)
 
 	local rotator = self:CreateRotateButton()
-	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', -4, 7)
+	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', 10, 7)
 
 	local autoBinder = self:CreateAutoBindingToggle()
-	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', 14, -4)
+	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', 0, -4)
 
 	local perChar = self:CreatePerCharacterBindingToggle()
 	perChar:SetPoint('TOPLEFT', autoBinder, 'BOTTOMLEFT')
@@ -126,44 +126,15 @@ function ConfigModeDialog:CreateRotateButton()
 end
 
 function ConfigModeDialog:CreateBindingSetPicker()
-	local info = {}
-	local function AddItem(text, value, func, checked, arg1, tooltip)
-		info.text = text
-		info.func = func
-		info.value = value
-		info.checked = checked
-		info.arg1 = arg1
-		info.tooltipTitle = tooltip
-		UIDropDownMenu_AddButton(info)
-	end
+	local dropdown = CreateFrame('DropdownButton', self:GetName() .. 'BindingSet', self, 'WowStyle1DropdownTemplate')
+	dropdown:SetDefaultText("123")
+	dropdown:SetPoint("CENTER", 0, -250)
 
-	local dd = CreateFrame('Frame', self:GetName() .. 'BindingSet', self, 'UIDropDownMenuTemplate')
-	dd:EnableMouse(true)
-
-	local text = dd:CreateFontString(nil, 'BACKGROUND', 'GameFontNormalSmall')
-	text:SetPoint('BOTTOMLEFT', dd, 'TOPLEFT', 21, 0)
+	local text = dropdown:CreateFontString(nil, 'BACKGROUND', 'GameFontNormalSmall')
+	text:SetPoint('BOTTOMLEFT', dropdown, 'TOPLEFT')
 	text:SetText(L.BindingSet)
 
-	dd:SetScript('OnShow', function(self)
-		UIDropDownMenu_SetWidth(self, 110)
-		UIDropDownMenu_Initialize(self, self.Initialize)
-		UIDropDownMenu_SetSelectedValue(self, "123")
-	end)
-
-	dd:SetScript('OnEnter', function(self)
-		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
-	end)
-	dd:SetScript('OnLeave', function(self)
-		GameTooltip:Hide()
-	end)
-
-	dd.Initialize = function(self)
-		AddItem("123")
-		AddItem("Num")
-	end
-
-	return dd
+	return dropdown
 end
 
 function ConfigModeDialog:CreateAutoBindingToggle()
