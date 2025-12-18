@@ -208,18 +208,14 @@ function RazerNaga:HideBlizzard()
 	    frame:UnregisterAllEvents()
 	end
 
-	local function disableActionButtons(bar)
-	    local buttons = bar.actionButtons
-	    if type(buttons) ~= "table" then
-	        return
-	    end
-
-	    for _, button in pairs(buttons) do
-	        button:UnregisterAllEvents()
-	        button:SetAttributeNoHandler("statehidden", true)
-	        button:Hide()
-	        button.bar = nil
-	    end
+	local function disableActionButtons(frame)
+		if frame.actionButtons and type(frame.actionButtons) == "table" then
+			for _, button in pairs(frame.actionButtons) do
+				button:UnregisterAllEvents()
+				button:SetAttributeNoHandler("statehidden", true)
+				button:Hide()
+			end
+		end
 	end
 
 	apply(banish,
@@ -271,8 +267,8 @@ function RazerNaga:HideBlizzard()
 		"MultiBarRight"
 	)
 
-	_G.MultiActionBar_HideAllGrids = function() end
 	_G.MultiActionBar_ShowAllGrids = function() end
+	_G.MultiActionBar_HideAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
