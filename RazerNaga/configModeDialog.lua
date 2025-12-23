@@ -53,13 +53,13 @@ function ConfigModeDialog:Load()
 
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
-	bindingSetPicker:SetPoint('BOTTOMLEFT', 15, 66)
+	bindingSetPicker:SetPoint('BOTTOMLEFT', 20, 72)
 
 	local rotator = self:CreateRotateButton()
-	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', 10, 7)
+	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', 16, 8)
 
 	local autoBinder = self:CreateAutoBindingToggle()
-	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', 0, -8)
+	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', -7, -10)
 
 	local perChar = self:CreatePerCharacterBindingToggle()
 	perChar:SetPoint('TOPLEFT', autoBinder, 'BOTTOMLEFT')
@@ -128,10 +128,9 @@ end
 function ConfigModeDialog:CreateBindingSetPicker()
 	local dropdown = CreateFrame('DropdownButton', self:GetName() .. 'BindingSet', self, 'WowStyle1DropdownTemplate')
 	dropdown:SetDefaultText("123")
-	dropdown:SetPoint("CENTER", 0, -250)
 
 	local text = dropdown:CreateFontString(nil, 'BACKGROUND', 'GameFontNormalSmall')
-	text:SetPoint('BOTTOMLEFT', dropdown, 'TOPLEFT')
+	text:SetPoint('BOTTOMLEFT', dropdown, 'TOPLEFT', 0, 3)
 	text:SetText(L.BindingSet)
 
 	return dropdown
