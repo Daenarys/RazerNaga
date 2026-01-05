@@ -253,7 +253,7 @@ function SettingsLoader:GetThreeByFour()
 				['anchor'] = false,
 				['hidden'] = false,
 				['point'] = 'BOTTOM',
-				['spacing'] = 1,
+				['spacing'] = 0,
 				['x'] = 0,
 				['y'] = 0
 			},
