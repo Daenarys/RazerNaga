@@ -15,6 +15,7 @@ local MICRO_BUTTONS = {
     "PlayerSpellsMicroButton",
     "AchievementMicroButton",
     "QuestLogMicroButton",
+    "HousingMicroButton",
     "GuildMicroButton",
     "LFDMicroButton",
     "CollectionsMicroButton",
@@ -29,6 +30,7 @@ local MICRO_BUTTON_NAMES = {
     ['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
     ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
+    ['HousingMicroButton'] = _G['HOUSING_MICRO_BUTTON'],
     ['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
     ['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS'],
@@ -41,29 +43,6 @@ function MenuBar:SkinButton(button)
     if button.skinned then return end
 
     button:SetSize(28, 36)
-
-    local buttons = {
-        {button = ProfessionMicroButton, name = "SpellbookAbilities"}
-    }
-
-    local function replaceAtlases(self, name)
-        local prefix = "UI-HUD-MicroMenu-"
-        self:SetNormalAtlas(prefix..name.."-Up")
-        self:SetPushedAtlas(prefix..name.."-Down")
-        self:SetDisabledAtlas(prefix..name.."-Disabled")
-        self:SetHighlightAtlas(prefix..name.."-Mouseover")
-
-        self:HookScript("OnUpdate", function()
-            self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND")
-        end)
-    end
-
-    local function replaceAllAtlases()
-        for _, data in pairs(buttons) do
-            replaceAtlases(data.button, data.name)
-        end
-    end
-    replaceAllAtlases()
 
     hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
         self:SetParent(MainMenuMicroButton)
