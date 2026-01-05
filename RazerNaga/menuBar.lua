@@ -42,7 +42,28 @@ function MenuBar:SkinButton(button)
 
     button:SetSize(28, 36)
 
-    LoadMicroButtonTextures(ProfessionMicroButton, "SpellbookAbilities")
+    local buttons = {
+        {button = ProfessionMicroButton, name = "SpellbookAbilities"}
+    }
+
+    local function replaceAtlases(self, name)
+        local prefix = "UI-HUD-MicroMenu-"
+        self:SetNormalAtlas(prefix..name.."-Up")
+        self:SetPushedAtlas(prefix..name.."-Down")
+        self:SetDisabledAtlas(prefix..name.."-Disabled")
+        self:SetHighlightAtlas(prefix..name.."-Mouseover")
+
+        self:HookScript("OnUpdate", function()
+            self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND")
+        end)
+    end
+
+    local function replaceAllAtlases()
+        for _, data in pairs(buttons) do
+            replaceAtlases(data.button, data.name)
+        end
+    end
+    replaceAllAtlases()
 
     hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
         self:SetParent(MainMenuMicroButton)
