@@ -17,3 +17,4 @@ skins\QuestLog.lua
 skins\StaticPopup.lua
 skins\TimeManager.lua
 skins\WorldMap.lua
+skins\unitframes\PartyFrame.lua
