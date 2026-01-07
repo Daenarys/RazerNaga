@@ -9,6 +9,10 @@ for _, f in next, WorldMapFrame.overlayFrames do
 end
 
 local Dropdown, Tracking, Pin = unpack(WorldMapFrame.overlayFrames)
+ApplyDropDown(Dropdown)
+Dropdown:SetWidth(145)
+Dropdown.Text:SetJustifyH("RIGHT")
+Dropdown.Text:SetPoint("TOPLEFT", 9, -7)
 Tracking.Icon:SetTexture("Interface\\Minimap\\Tracking\\None")
 if (Tracking.IconOverlay == nil) then
 	Tracking.IconOverlay = Tracking:CreateTexture(nil, "OVERLAY")

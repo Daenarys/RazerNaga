@@ -1,5 +1,24 @@
 if not _G.PVEFrame then return end
 
+ApplyDropDown(LFDQueueFrameTypeDropdown)
+ApplyDropDown(RaidFinderQueueFrameSelectionDropdown)
+ApplyDropDown(LFGListEntryCreationGroupDropdown)
+ApplyDropDown(LFGListEntryCreationActivityDropdown)
+ApplyDropDown(LFGListEntryCreationPlayStyleDropdown)
+ApplyFilterDropDown(LFGListFrame.SearchPanel.FilterButton)
+
+LFDQueueFrameTypeDropdown:SetWidth(195)
+LFDQueueFrameTypeDropdown:SetPoint("BOTTOMLEFT", 135, 291)
+LFDQueueFrameTypeDropdown.Text:SetJustifyH("RIGHT")
+LFDQueueFrameTypeDropdown.Text:SetPoint("TOPLEFT", 9, -7)
+LFDQueueFrameTypeDropdownName:SetPoint("RIGHT", LFDQueueFrameTypeDropdown, "LEFT", -18, 0)
+
+RaidFinderQueueFrameSelectionDropdown:SetWidth(195)
+RaidFinderQueueFrameSelectionDropdown:SetPoint("BOTTOMLEFT", 135, 293)
+RaidFinderQueueFrameSelectionDropdown.Text:SetJustifyH("RIGHT")
+RaidFinderQueueFrameSelectionDropdown.Text:SetPoint("TOPLEFT", 9, -6)
+RaidFinderQueueFrameSelectionDropdownName:SetPoint("RIGHT", RaidFinderQueueFrameSelectionDropdown, "LEFT", -18, 0)
+
 hooksecurefunc('LFGDungeonReadyPopup_Update', function()
 	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal()
 	

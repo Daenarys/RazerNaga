@@ -6,6 +6,24 @@ f:SetScript("OnEvent", function(self, event, name)
 			CollectionsJournalTab6:Hide()
 		end
 
+		ApplyDropDown(HeirloomsJournal.ClassDropdown)
+		ApplyDropDown(WardrobeCollectionFrame.ClassDropdown)
+		ApplyDropDown(WardrobeCollectionFrame.ItemsCollectionFrame.WeaponDropdown)
+		ApplyDropDown(WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame.VariantSetsDropdown)
+
+		HeirloomsJournal.ClassDropdown.Text:SetJustifyH("RIGHT")
+		HeirloomsJournal.ClassDropdown.Text:SetPoint("TOPLEFT", 9, -7)
+		WardrobeCollectionFrame.ClassDropdown.Text:SetJustifyH("RIGHT")
+		WardrobeCollectionFrame.ClassDropdown.Text:SetPoint("TOPLEFT", 9, -7)
+		WardrobeCollectionFrame.ItemsCollectionFrame.WeaponDropdown.Text:SetJustifyH("RIGHT")
+		WardrobeCollectionFrame.ItemsCollectionFrame.WeaponDropdown.Text:SetPoint("TOPLEFT", 9, -7)
+
+		ApplyFilterDropDown(MountJournal.FilterDropdown)
+		ApplyFilterDropDown(PetJournal.FilterDropdown)
+		ApplyFilterDropDown(ToyBox.FilterDropdown)
+		ApplyFilterDropDown(HeirloomsJournal.FilterDropdown)
+		ApplyFilterDropDown(WardrobeCollectionFrame.FilterButton)
+
 		hooksecurefunc(WardrobeCollectionFrame, "SetContainer", function(self, parent)
 			if parent == CollectionsJournal then
 				self.ItemsCollectionFrame.ModelR1C1:SetPoint("TOP", -238, -85)

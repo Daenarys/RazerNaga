@@ -16,6 +16,8 @@ ReputationFrame.filterDropdown:Hide()
 TokenFrame.CurrencyTransferLogToggleButton:Hide()
 TokenFrame.filterDropdown:Hide()
 
+ApplyDropDown(GearManagerPopupFrame.BorderBox.IconTypeDropdown)
+
 hooksecurefunc(CharacterFrame, "UpdatePortrait", function(self)
 	self:SetPortraitToSpecIcon()
 end)
