@@ -1,4 +1,8 @@
 for i = 1, 4 do
+	_G["StaticPopup"..i].BG:SetAlpha(0)
+
+	local border= CreateFrame('Frame', nil, _G["StaticPopup"..i], "DialogBorderDarkTemplate")
+
 	_G["StaticPopup"..i.."EditBox"].NineSlice:SetAlpha(0)
 
 	if (_G["StaticPopup"..i.."EditBox"].Left == nil) then
