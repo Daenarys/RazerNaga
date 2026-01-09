@@ -51,10 +51,13 @@ function MenuBar:SkinButton(button)
         self:SetNormalAtlas(prefix..name.."-Up")
         self:SetPushedAtlas(prefix..name.."-Down")
         self:SetDisabledAtlas(prefix..name.."-Disabled")
-        self:SetHighlightAtlas(prefix..name.."-Mouseover")
 
         self:HookScript("OnUpdate", function()
-            self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND")
+            if(self:GetButtonState() == "NORMAL") then 
+                self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND")
+            else 
+                self:SetHighlightAtlas(prefix..name.."-Down", "ADD")
+            end 
         end)
     end
 
