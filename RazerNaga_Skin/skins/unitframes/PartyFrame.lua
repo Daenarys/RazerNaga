@@ -137,3 +137,6 @@ end)
 hooksecurefunc("CompactRaidFrameManager_Collapse", function()
 	CompactRaidFrameManager.ToggleButton:SetTexCoord(0, 0.5, 0, 1)
 end)
+
+ApplyDropDown(CompactRaidFrameManagerDisplayFrameModeControlDropdown)
+ApplyDropDown(CompactRaidFrameManagerDisplayFrameRestrictPingsDropdown)
