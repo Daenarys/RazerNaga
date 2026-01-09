@@ -36,6 +36,8 @@ end
 local function skinActionButton(self)
     self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
     self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    self.Flash:ClearAllPoints()
+    self.Flash:SetAllPoints()
     if self.IconMask then
         self.IconMask:Hide()
     end
