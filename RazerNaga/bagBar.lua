@@ -19,10 +19,14 @@ end
 function BagBar:SkinButton(b)
 	if b.skinned then return end
 
-	b:SetSize(32, 32)
+	b:SetSize(30, 30)
+	b.IconBorder:SetSize(30, 30)
 
-	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 0, -7)
+	if b.IconOverlay ~= nil then
+		b.IconOverlay:SetSize(30, 30)
+	end
+
+	_G[b:GetName() .. "NormalTexture"]:SetSize(50, 50)
 
 	b.skinned = true
 end
@@ -35,11 +39,6 @@ end
 
 function BagBar:SetSetOneBag(enable)
 	self.sets.oneBag = enable or false
-	self:Reload()
-end
-
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
 	self:Reload()
 end
 
@@ -56,9 +55,6 @@ function BagBar:Reload()
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
-		end
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
 		end
 	end
 
@@ -124,17 +120,6 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
-	end)
-
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
-		_G[panel:GetName() .. L.Columns]:OnShow()
-	end)
-
 	menu:AddAdvancedPanel()
 	self.menu = menu
 end
@@ -149,7 +134,6 @@ function BagBarModule:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
-		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
 		CharacterBag3Slot.SetBarExpanded = noopFunc
 		CharacterBag2Slot.SetBarExpanded = noopFunc
 		CharacterBag1Slot.SetBarExpanded = noopFunc

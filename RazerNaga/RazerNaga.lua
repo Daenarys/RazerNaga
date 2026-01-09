@@ -232,11 +232,12 @@ function RazerNaga:HideBlizzard()
 		"PetActionBar",
 		"StatusTrackingBarManager",
 		"MainMenuBarVehicleLeaveButton",
-		"MicroButtonAndBagsBar",
 		"BagsBar",
 		"MicroMenu",
 		"MicroMenuContainer",
-		"PlayerCastingBarFrame"
+		"PlayerCastingBarFrame",
+		"MainMenuBarArtFrame",
+		"MainMenuBarMaxLevelBar"
 	)
 
 	apply(unregisterEvents,
@@ -908,22 +909,6 @@ end
 
 function RazerNaga:SetFirstLoad(enable)
 	self.db.profile.firstLoad = enable or false
-end
-
---extras
-if not (C_AddOns.IsAddOnLoaded("ClassicFrames")) then
-	hooksecurefunc(QueueStatusButton, "UpdatePosition", function(self)
-		self:SetParent(MinimapBackdrop)
-		self:SetFrameLevel(6)
-		self:ClearAllPoints()
-		self:SetPoint("TOPLEFT", -8, -175)
-		self:SetScale(0.75)
-	end)
-
-	hooksecurefunc(QueueStatusFrame, "UpdatePosition", function(self)
-		self:ClearAllPoints()
-		self:SetPoint("TOPRIGHT", QueueStatusButton, "TOPLEFT")
-	end)
 end
 
 --[[ Incompatibility Check ]]--

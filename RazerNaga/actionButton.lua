@@ -35,33 +35,10 @@ end
 
 local function skinActionButton(self)
     self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-    self.NormalTexture:ClearAllPoints()
-    self.NormalTexture:SetPoint("TOPLEFT", -3, 3)
-    self.NormalTexture:SetPoint("BOTTOMRIGHT", 7, -7)
-    self.PushedTexture:ClearAllPoints()
-    self.PushedTexture:SetPoint("TOPLEFT", -2, 2)
-    self.PushedTexture:SetPoint("BOTTOMRIGHT", 6, -6)
-    self.HighlightTexture:ClearAllPoints()
-    self.HighlightTexture:SetPoint("TOPLEFT", -3, 3)
-    self.HighlightTexture:SetPoint("BOTTOMRIGHT", 3, -2)
-    self.CheckedTexture:ClearAllPoints()
-    self.CheckedTexture:SetPoint("TOPLEFT", -3, 3)
-    self.CheckedTexture:SetPoint("BOTTOMRIGHT", 3, -2)
-    self.NewActionTexture:ClearAllPoints()
-    self.NewActionTexture:SetPoint("TOPLEFT", -3, 3)
-    self.NewActionTexture:SetPoint("BOTTOMRIGHT", 3, -2)
-    self.SpellHighlightTexture:ClearAllPoints()
-    self.SpellHighlightTexture:SetPoint("TOPLEFT", -3, 3)
-    self.SpellHighlightTexture:SetPoint("BOTTOMRIGHT", 3, -2)
-    self.Border:ClearAllPoints()
-    self.Border:SetPoint("TOPLEFT", -3, 3)
-    self.Border:SetPoint("BOTTOMRIGHT", 2, -2)
-    self.cooldown:ClearAllPoints()
-    self.cooldown:SetAllPoints()
-    self.Count:ClearAllPoints()
-    self.Count:SetPoint("BOTTOMRIGHT", -2, 2)
-    self.Flash:ClearAllPoints()
-    self.Flash:SetAllPoints()
+    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+    if self.IconMask then
+        self.IconMask:Hide()
+    end
     if self.SlotBackground then
         self.SlotBackground:Hide()
     end
@@ -105,19 +82,8 @@ function ActionButtonMixin:OnCreate(id)
     -- apply hooks for quick binding
     RazerNaga.BindableButton:AddQuickBindingSupport(self)
 
-    -- apply custom flyout
-    if RazerNaga.SpellFlyout then
-        RazerNaga.SpellFlyout:Register(self)
-    end
-
-    -- use pre 10.x button size
-    self:SetSize(36, 36)
-
     -- apply button skin
     skinActionButton(self)
-
-    -- enable cooldown bling
-    self.cooldown:SetDrawBling(true)
 end
 
 function ActionButtonMixin:UpdateOverrideBindings()
@@ -287,10 +253,6 @@ function ActionButton:AddCastOnKeyPressSupport(button)
 
     bind.SetOverrideBindings = bindButton_SetOverrideBindings
 
-    if RazerNaga.SpellFlyout then
-        RazerNaga.SpellFlyout:Register(bind)
-    end
-
     -- translate HOTKEY button "clicks" into LeftButton
     self:WrapScript(bind, "OnClick", [[
         if button == "HOTKEY" then
@@ -300,22 +262,6 @@ function ActionButton:AddCastOnKeyPressSupport(button)
 
     button.bind = bind
     button:UpdateOverrideBindings()
-end
-
--- disable new animations
-if (ActionBarActionEventsFrame) then
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_TARGET")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_RETICLE_CLEAR")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_SENT")
-    ActionBarActionEventsFrame:UnregisterEvent("UNIT_SPELLCAST_FAILED")
 end
 
 -- exports

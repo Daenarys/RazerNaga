@@ -428,6 +428,7 @@ function ActionBarsModule:Load()
     self:RegisterEvent("ACTIONBAR_HIDEGRID")
     self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
     self:RegisterEvent("SPELLS_CHANGED")
+    self:RegisterEvent('PET_BAR_HIDEGRID')
 end
 
 function ActionBarsModule:Unload()
@@ -463,6 +464,15 @@ end
 
 function ActionBarsModule:SPELLS_CHANGED()
     self:ForActive('UpdateGrid')
+end
+
+-- workaround for empty buttons not hiding when dropping a pet action
+function ActionBarsModule:PET_BAR_HIDEGRID()
+    if InCombatLockdown() then
+        return
+    end
+
+    self:ForActive('HideGrid')
 end
 
 function ActionBarsModule:SetBarCount(count)

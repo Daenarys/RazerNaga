@@ -11,65 +11,43 @@ local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
 
 local MICRO_BUTTONS = {
     "CharacterMicroButton",
-    "ProfessionMicroButton",
-    "PlayerSpellsMicroButton",
-    "AchievementMicroButton",
+    "SpellbookMicroButton",
+    "TalentMicroButton",
     "QuestLogMicroButton",
-    "GuildMicroButton",
-    "LFDMicroButton",
-    "CollectionsMicroButton",
-    "EJMicroButton",
-    "StoreMicroButton",
-    "MainMenuMicroButton"
+    "SocialsMicroButton",
+    "MainMenuMicroButton",
+    "HelpMicroButton"
 }
 
 local MICRO_BUTTON_NAMES = {
     ['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
-    ['ProfessionMicroButton'] = _G['PROFESSIONS_BUTTON'],
-    ['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
-    ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
+    ['SpellbookMicroButton'] = _G['SPELLBOOK_ABILITIES_BUTTON'],
+    ['TalentMicroButton'] = _G['TALENTS'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
-    ['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
-    ['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
-    ['CollectionsMicroButton'] = _G['COLLECTIONS'],
-    ['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
-    ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
-    ['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
+    ['SocialsMicroButton'] = _G['SOCIAL_BUTTON'],
+    ['MainMenuMicroButton'] = _G['MAINMENU_BUTTON'],
+    ['HelpMicroButton'] = _G['HELP_BUTTON']
 }
 
 function MenuBar:SkinButton(button)
     if button.skinned then return end
 
-    button:SetSize(28, 36)
-
-    local buttons = {
-        {button = ProfessionMicroButton, name = "SpellbookAbilities"}
-    }
-
-    local function replaceAtlases(self, name)
-        local prefix = "UI-HUD-MicroMenu-"
-        self:SetNormalAtlas(prefix..name.."-Up")
-        self:SetPushedAtlas(prefix..name.."-Down")
-        self:SetDisabledAtlas(prefix..name.."-Disabled")
-        self:SetHighlightAtlas(prefix..name.."-Mouseover")
-
-        self:HookScript("OnUpdate", function()
-            self:SetHighlightAtlas(prefix..name.."-Mouseover", "BLEND")
-        end)
+    local normalTexture = button:GetNormalTexture()
+    if (normalTexture) then
+        normalTexture:SetTexelSnappingBias(0.0)
     end
-
-    local function replaceAllAtlases()
-        for _, data in pairs(buttons) do
-            replaceAtlases(data.button, data.name)
-        end
+    local pushedTexture = button:GetPushedTexture()
+    if (pushedTexture) then
+        pushedTexture:SetTexelSnappingBias(0.0)
     end
-    replaceAllAtlases()
-
-    hooksecurefunc("HelpOpenWebTicketButton_OnUpdate", function(self)
-        self:SetParent(MainMenuMicroButton)
-        self:ClearAllPoints()
-        self:SetPoint("CENTER", MainMenuMicroButton, "TOPRIGHT", -3, -26)
-    end)
+    local disabledTexture = button:GetDisabledTexture()
+    if (disabledTexture) then
+        disabledTexture:SetTexelSnappingBias(0.0)
+    end
+    local highlightTexture = button:GetHighlightTexture()
+    if (highlightTexture) then
+        highlightTexture:SetTexelSnappingBias(0.0)
+    end
 
     button.skinned = true
 end
@@ -111,40 +89,6 @@ function MenuBar:Create(frameId)
     end
 
     hooksecurefunc('UpdateMicroButtons', requestLayoutUpdate)
-
-    if PetBattleFrame and PetBattleFrame.BottomFrame and PetBattleFrame.BottomFrame.MicroButtonFrame then
-        local petMicroButtons = PetBattleFrame.BottomFrame.MicroButtonFrame
-
-        getOrHook(
-            petMicroButtons, 'OnShow', function()
-                self.isPetBattleUIShown = true
-                requestLayoutUpdate()
-            end
-        )
-
-        getOrHook(
-            petMicroButtons, 'OnHide', function()
-                self.isPetBattleUIShown = nil
-                requestLayoutUpdate()
-            end
-        )
-    end
-
-    if OverrideActionBar then
-        getOrHook(
-            OverrideActionBar, 'OnShow', function()
-                self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
-                requestLayoutUpdate()
-            end
-        )
-
-        getOrHook(
-            OverrideActionBar, 'OnHide', function()
-                self.isOverrideUIShown = nil
-                requestLayoutUpdate()
-            end
-        )
-    end
 
     return bar
 end
@@ -402,15 +346,11 @@ end
 local MenuBarModule = RazerNaga:NewModule('MenuBar')
 
 function MenuBarModule:OnInitialize()
-    local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
+    local perf = MainMenuBarPerformanceBarFrame
     if perf then
-        perf:SetSize(28, 58)
-    end
-
-    if FramerateFrame then
-        hooksecurefunc(FramerateFrame, "UpdatePosition", function()
-            FramerateFrame:ClearAllPoints()
-            FramerateFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 75)
+        hooksecurefunc("MainMenuBar_UpdateKeyRing", function()
+            perf:ClearAllPoints()
+            perf:SetPoint('BOTTOMRIGHT', self.frame, "BOTTOMRIGHT", 15, -12)
         end)
     end
 
