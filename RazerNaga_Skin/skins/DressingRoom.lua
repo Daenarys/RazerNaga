@@ -4,9 +4,10 @@ ApplyDropDown(DressUpFrameOutfitDropdown)
 
 hooksecurefunc(DressUpFrame, "ConfigureSize", function(self, isMinimized)
 	if isMinimized then
-		self.OutfitDropdown:SetPoint("TOP", -37, -29)
+		self.OutfitDropdown:SetWidth(135)
+		self.OutfitDropdown:SetPoint("TOP", -42, -29)
 	else
 		self.OutfitDropdown:SetWidth(178)
-		self.OutfitDropdown:SetPoint("TOP", -23, -29)
+		self.OutfitDropdown:SetPoint("TOP", -22, -29)
 	end
 end)
