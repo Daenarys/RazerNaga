@@ -19,6 +19,14 @@ RaidFinderQueueFrameSelectionDropdown.Text:SetJustifyH("RIGHT")
 RaidFinderQueueFrameSelectionDropdown.Text:SetPoint("TOPLEFT", 9, -6)
 RaidFinderQueueFrameSelectionDropdownName:SetPoint("RIGHT", RaidFinderQueueFrameSelectionDropdown, "LEFT", -18, 0)
 
+hooksecurefunc("GroupFinderFrame_EvaluateButtonVisibility", function(self)
+	if not PlayerIsTimerunning() then
+		self.groupButton1:SetPoint("TOPLEFT", self, "TOPLEFT", 10, -70)
+		self.groupButton2:SetPoint("TOP", self.groupButton1, "BOTTOM", 0, -23)
+		self.groupButton3:SetPoint("TOP", self.groupButton2, "BOTTOM", 0, -23)
+	end
+end)
+
 hooksecurefunc('LFGDungeonReadyPopup_Update', function()
 	local proposalExists, id, typeID, subtypeID, name, backgroundTexture, role, hasResponded, totalEncounters, completedEncounters, numMembers, isLeader, _, _, isSilent = GetLFGProposal()
 	
