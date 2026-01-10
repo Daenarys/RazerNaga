@@ -153,3 +153,116 @@ function ApplyFilterDropDown(frame)
 		self.Text:SetFontObject(GameFontHighlightSmall)
 	end)
 end
+
+function ApplyTopTab(frame)
+
+
+	local TOP_TAB_HEIGHT_PERCENT = 0.75
+	local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT
+
+	if (frame.LeftDisabled == nil) then
+		frame.LeftDisabled = frame:CreateTexture(nil, "BACKGROUND")
+		frame.LeftDisabled:SetAtlas("uiframe-activetab-left", true)
+		frame.LeftDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.LeftDisabled:SetHeight(frame.LeftDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.LeftDisabled:SetPoint("BOTTOMLEFT", -1, 0)
+	end
+
+	if (frame.RightDisabled == nil) then
+		frame.RightDisabled = frame:CreateTexture(nil, "BACKGROUND")
+		frame.RightDisabled:SetAtlas("uiframe-activetab-right", true)
+		frame.RightDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.RightDisabled:SetHeight(frame.RightDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.RightDisabled:SetPoint("BOTTOMRIGHT", 8, 0)
+	end
+
+	if (frame.MiddleDisabled == nil) then
+		frame.MiddleDisabled = frame:CreateTexture(nil, "BACKGROUND")
+		frame.MiddleDisabled:SetAtlas("_uiframe-activetab-center", true)
+		frame.MiddleDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.MiddleDisabled:SetHeight(frame.MiddleDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.MiddleDisabled:SetHorizTile(true)
+		frame.MiddleDisabled:SetPoint("TOPLEFT", frame.LeftDisabled, "TOPRIGHT")
+		frame.MiddleDisabled:SetPoint("TOPRIGHT", frame.RightDisabled, "TOPLEFT")
+	end
+
+	if (frame.CfLeft == nil) then
+		frame.CfLeft = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfLeft:SetAtlas("uiframe-tab-left", true)
+		frame.CfLeft:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfLeft:SetHeight(frame.CfLeft:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfLeft:SetPoint("BOTTOMLEFT", -3, 0)
+	end
+
+	if (frame.CfRight == nil) then
+		frame.CfRight = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfRight:SetAtlas("uiframe-tab-right", true)
+		frame.CfRight:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfRight:SetHeight(frame.CfRight:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfRight:SetPoint("BOTTOMRIGHT", 7, 0)
+	end
+
+	if (frame.CfMiddle == nil) then
+		frame.CfMiddle = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfMiddle:SetAtlas("_uiframe-tab-center", true)
+		frame.CfMiddle:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfMiddle:SetHeight(frame.CfMiddle:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfMiddle:SetHorizTile(true)
+		frame.CfMiddle:SetPoint("TOPLEFT", frame.CfLeft, "TOPRIGHT")
+		frame.CfMiddle:SetPoint("TOPRIGHT", frame.CfRight, "TOPLEFT")
+	end
+
+	if (frame.CfLeftHighlight == nil) then
+		frame.CfLeftHighlight = frame:CreateTexture(nil, "HIGHLIGHT")
+		frame.CfLeftHighlight:SetAtlas("uiframe-tab-left", true)
+		frame.CfLeftHighlight:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfLeftHighlight:SetBlendMode("ADD")
+		frame.CfLeftHighlight:SetHeight(frame.CfLeftHighlight:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfLeftHighlight:SetPoint("TOPLEFT", frame.CfLeft, "TOPLEFT")
+		frame.CfLeftHighlight:SetAlpha(0.4)
+	end
+
+	if (frame.CfMiddleHighlight== nil) then
+		frame.CfMiddleHighlight = frame:CreateTexture(nil, "HIGHLIGHT")
+		frame.CfMiddleHighlight:SetAtlas("_uiframe-tab-center", true)
+		frame.CfMiddleHighlight:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfMiddleHighlight:SetBlendMode("ADD")
+		frame.CfMiddleHighlight:SetHeight(frame.CfMiddleHighlight:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfMiddleHighlight:SetHorizTile(true)
+		frame.CfMiddleHighlight:SetPoint("TOPLEFT", frame.CfMiddle, "TOPLEFT")
+		frame.CfMiddleHighlight:SetPoint("TOPRIGHT", frame.CfMiddle, "TOPRIGHT")
+		frame.CfMiddleHighlight:SetAlpha(0.4)
+	end
+
+	if (frame.CfRightHighlight == nil) then
+		frame.CfRightHighlight = frame:CreateTexture(nil, "HIGHLIGHT")
+		frame.CfRightHighlight:SetAtlas("uiframe-tab-right", true)
+		frame.CfRightHighlight:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfRightHighlight:SetBlendMode("ADD")
+		frame.CfRightHighlight:SetHeight(frame.CfRightHighlight:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfRightHighlight:SetPoint("TOPRIGHT", frame.CfRight, "TOPRIGHT")
+		frame.CfRightHighlight:SetAlpha(0.4)
+	end
+
+	frame.LeftHighlight:Hide()
+	frame.MiddleHighlight:Hide()
+	frame.RightHighlight:Hide()
+
+	hooksecurefunc(frame, "SetTabSelected", function(frame, isSelected)
+		frame.isSelected = isSelected
+
+		frame.Left:Hide()
+		frame.Middle:Hide()
+		frame.Right:Hide()
+		frame.LeftActive:Hide()
+		frame.RightActive:Hide()
+		frame.MiddleActive:Hide()
+
+		frame.CfLeft:SetShown(not isSelected)
+		frame.CfMiddle:SetShown(not isSelected)
+		frame.CfRight:SetShown(not isSelected)
+		frame.LeftDisabled:SetShown(isSelected)
+		frame.MiddleDisabled:SetShown(isSelected)
+		frame.RightDisabled:SetShown(isSelected)
+	end)
+end
