@@ -86,40 +86,56 @@ function SpellFlyoutButtonMixin:Update()
 end
 
 function SpellFlyoutButtonMixin:UpdateCooldown()
-	ActionButton_UpdateCooldown(self)
+	local spellID = self.spellID
+
+	if spellID then
+		ActionButton_UpdateCooldown(self)
+	end
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
-	if C_Spell.IsCurrentSpell(self.spellID) then
-		self:SetChecked(true)
-	else
-		self:SetChecked(false)
+	local spellID = self.spellID
+
+	if spellID then
+		if C_Spell.IsCurrentSpell(spellID) then
+			self:SetChecked(true)
+		else
+			self:SetChecked(false)
+		end
 	end
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
-	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID)
-	local icon = self.icon
-	if isUsable then
-		icon:SetVertexColor(1.0, 1.0, 1.0)
-	elseif notEnoughMana then
-		icon:SetVertexColor(0.5, 0.5, 1.0)
-	else
-		icon:SetVertexColor(0.4, 0.4, 0.4)
+	local spellID = self.spellID
+
+	if spellID then
+		local isUsable, notEnoughMana = C_Spell.IsSpellUsable(spellID)
+		local icon = self.icon
+		if isUsable then
+			icon:SetVertexColor(1.0, 1.0, 1.0)
+		elseif notEnoughMana then
+			icon:SetVertexColor(0.5, 0.5, 1.0)
+		else
+			icon:SetVertexColor(0.4, 0.4, 0.4)
+		end
 	end
 end
 
 function SpellFlyoutButtonMixin:UpdateCount()
-	local text = self.Count
-	if IsConsumableSpell(self.spellID) then
-		local count = C_Spell.GetSpellCastCount(self.spellID)
-		if count > (self.maxDisplayCount or 9999 ) then
-			text:SetText("*")
+	local spellID = self.spellID
+
+	if spellID then
+		local text = self.Count
+		if IsConsumableSpell(self.spellID) then
+			local count = C_Spell.GetSpellCastCount(self.spellID)
+			if count > (self.maxDisplayCount or 9999 ) then
+				text:SetText("*")
+			else
+				text:SetText(count)
+			end
 		else
-			text:SetText(count)
+			text:SetText("")
 		end
-	else
-		text:SetText("")
 	end
 end
 
