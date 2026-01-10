@@ -6,6 +6,10 @@ WhoFrameColumnHeader1:SetWidth(83)
 FriendsFrameBattlenetFrame:ClearAllPoints()
 FriendsFrameBattlenetFrame:SetPoint("TOPLEFT", FriendsTabHeader, "TOPLEFT", 109, -26)
 
+FriendsFrameBattlenetFrame.ContactsMenuButton.Icon:Hide()
+FriendsFrameBattlenetFrame.ContactsMenuButton:SetNormalTexture("Interface\\FriendsFrame\\broadcast-normal")
+FriendsFrameBattlenetFrame.ContactsMenuButton:SetPushedTexture("Interface\\FriendsFrame\\broadcast-press")
+
 ApplyDropDown(FriendsFrameStatusDropdown)
 ApplyDropDown(WhoFrameDropdown)
 
