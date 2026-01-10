@@ -6,7 +6,7 @@
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent)
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()
@@ -18,25 +18,18 @@ function ConfigModeDialog:Load()
 	self:EnableMouse(true)
 	self:SetClampedToScreen(true)
 	self:SetSize(360, 192)
-	self:SetBackdrop{
-		bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
-		edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
-		tile = true,
-		insets = {left = 11, right = 12, top = 12, bottom = 11},
-		tileSize = 32,
-		edgeSize = 32,
-	}
 	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
-	local header = self:CreateTexture(nil, 'ARTWORK')
-	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
-	header:SetSize(326, 64) 
+	local border = CreateFrame('Frame', nil, self, 'DialogBorderTemplate')
+
+	local header = CreateFrame('Frame', nil, self, 'DialogHeaderTemplate')
+	header:SetWidth(170) 
 	header:SetPoint('TOP', 0, 12)
 
-	local title = self:CreateFontString(nil, 'ARTWORK')
+	local title = header:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
-	title:SetPoint('TOP', header, 'TOP', 0, -14)
+	title:SetPoint('TOP', 0, -14)
 	title:SetText(L.ConfigMode)
 
 	local desc = self:CreateFontString(nil, 'ARTWORK')
@@ -49,7 +42,7 @@ function ConfigModeDialog:Load()
 
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
-	exitConfig:SetPoint('TOPRIGHT', -4, -4)
+	exitConfig:SetPoint('TOPRIGHT')
 
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()
@@ -60,13 +53,13 @@ function ConfigModeDialog:Load()
 
 	--lynn setttings (rotate layout, binding set picker, auto binder toggle, per character toggle)
 	local bindingSetPicker = self:CreateBindingSetPicker()
-	bindingSetPicker:SetPoint('BOTTOMLEFT', 0, 66)
+	bindingSetPicker:SetPoint('BOTTOMLEFT', 20, 72)
 
 	local rotator = self:CreateRotateButton()
-	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', -4, 7)
+	rotator:SetPoint('TOPLEFT', bindingSetPicker, 'TOPRIGHT', 16, 8)
 
 	local autoBinder = self:CreateAutoBindingToggle()
-	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', 14, -4)
+	autoBinder:SetPoint('TOPLEFT', bindingSetPicker, 'BOTTOMLEFT', -7, -10)
 
 	local perChar = self:CreatePerCharacterBindingToggle()
 	perChar:SetPoint('TOPLEFT', autoBinder, 'BOTTOMLEFT')
@@ -133,44 +126,14 @@ function ConfigModeDialog:CreateRotateButton()
 end
 
 function ConfigModeDialog:CreateBindingSetPicker()
-	local info = {}
-	local function AddItem(text, value, func, checked, arg1, tooltip)
-		info.text = text
-		info.func = func
-		info.value = value
-		info.checked = checked
-		info.arg1 = arg1
-		info.tooltipTitle = tooltip
-		UIDropDownMenu_AddButton(info)
-	end
+	local dropdown = CreateFrame('DropdownButton', self:GetName() .. 'BindingSet', self, 'WowStyle1DropdownTemplate')
+	dropdown:SetDefaultText("123")
 
-	local dd = CreateFrame('Frame', self:GetName() .. 'BindingSet', self, 'UIDropDownMenuTemplate')
-	dd:EnableMouse(true)
-
-	local text = dd:CreateFontString(nil, 'BACKGROUND', 'GameFontNormalSmall')
-	text:SetPoint('BOTTOMLEFT', dd, 'TOPLEFT', 21, 0)
+	local text = dropdown:CreateFontString(nil, 'BACKGROUND', 'GameFontNormalSmall')
+	text:SetPoint('BOTTOMLEFT', dropdown, 'TOPLEFT', 0, 3)
 	text:SetText(L.BindingSet)
 
-	dd:SetScript('OnShow', function(self)
-		UIDropDownMenu_SetWidth(self, 110)
-		UIDropDownMenu_Initialize(self, self.Initialize)
-		UIDropDownMenu_SetSelectedValue(self, "123")
-	end)
-
-	dd:SetScript('OnEnter', function(self)
-		GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-		GameTooltip:SetText(L.BindingSetHelp, nil, nil, nil, nil, 1)
-	end)
-	dd:SetScript('OnLeave', function(self)
-		GameTooltip:Hide()
-	end)
-
-	dd.Initialize = function(self)
-		AddItem("123")
-		AddItem("Num")
-	end
-
-	return dd
+	return dropdown
 end
 
 function ConfigModeDialog:CreateAutoBindingToggle()
@@ -213,11 +176,6 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
-	exitConfig:SetSize(32, 32)
-	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
-	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
-	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
-	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 
