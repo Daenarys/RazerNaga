@@ -7,7 +7,7 @@ local RazerNaga = _G[...]
 -- A precalculated list of all known valid flyout ids. Not robust, but also sparse.
 -- TODO: regeneate this list once every build
 local VALID_FLYOUT_IDS = {
-	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229, 230, 231, 232
+	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224, 225, 226, 227, 229
 }
 
 -- layout constants from SpellFlyout.lua
@@ -20,20 +20,26 @@ local SPELLFLYOUT_INITIAL_SPACING = 7
 
 local SpellFlyoutButtonMixin = {}
 
+--------------------------------------------------------------------------------
+-- Initialization
+--------------------------------------------------------------------------------
+
 function SpellFlyoutButtonMixin:Initialize()
 	self:SetAttribute("type", "spell")
 	self:RegisterForClicks("AnyUp", "AnyDown")
 
 	self:SetScript("OnEnter", self.OnEnter)
 	self:SetScript("OnLeave", self.OnLeave)
-	self:SetScript("PreClick", self.OnPreClick)
 	self:SetScript("PostClick", self.OnPostClick)
 end
+
+--------------------------------------------------------------------------------
+-- SpellFlyoutButton Event Handlers
+--------------------------------------------------------------------------------
 
 function SpellFlyoutButtonMixin:OnEnter()
 	if GetCVarBool("UberTooltips") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4)
-
 		if GameTooltip:SetSpellByID(self.spellID) then
 			self.UpdateTooltip = self.OnEnter
 		else
@@ -42,7 +48,6 @@ function SpellFlyoutButtonMixin:OnEnter()
 	else
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(self.spellName, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b)
-
 		self.UpdateTooltip = nil
 	end
 end
@@ -65,19 +70,13 @@ function SpellFlyoutButtonMixin:OnFlyoutUpdated()
 	self:Update()
 end
 
-function SpellFlyoutButtonMixin:OnPreClick(_, down)
-	if down then
-		SetCVar("ActionButtonUseKeyDown", false)
-	end
-end
-
 function SpellFlyoutButtonMixin:OnPostClick(_, down)
-	if not down then
-		SetCVar("ActionButtonUseKeyDown", true)
-	end
-
 	self:UpdateState()
 end
+
+--------------------------------------------------------------------------------
+-- SpellFlyoutButton Methods
+--------------------------------------------------------------------------------
 
 function SpellFlyoutButtonMixin:Update()
 	self:UpdateCooldown()
@@ -87,47 +86,40 @@ function SpellFlyoutButtonMixin:Update()
 end
 
 function SpellFlyoutButtonMixin:UpdateCooldown()
-	if self.spellID then
-		ActionButton_UpdateCooldown(self)
-	end
+	ActionButton_UpdateCooldown(self)
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
-	if self.spellID then
-		if C_Spell.IsCurrentSpell(self.spellID) then
-			self:SetChecked(true)
-		else
-			self:SetChecked(false)
-		end
+	if C_Spell.IsCurrentSpell(self.spellID) then
+		self:SetChecked(true)
+	else
+		self:SetChecked(false)
 	end
 end
 
 function SpellFlyoutButtonMixin:UpdateUsable()
-	if self.spellID then
-		local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID)
-		local icon = self.icon
-		if ( isUsable ) then
-			icon:SetVertexColor(1.0, 1.0, 1.0)
-		elseif ( notEnoughMana ) then
-			icon:SetVertexColor(0.5, 0.5, 1.0)
-		else
-			icon:SetVertexColor(0.4, 0.4, 0.4)
-		end
+	local isUsable, notEnoughMana = C_Spell.IsSpellUsable(self.spellID)
+	local icon = self.icon
+	if isUsable then
+		icon:SetVertexColor(1.0, 1.0, 1.0)
+	elseif notEnoughMana then
+		icon:SetVertexColor(0.5, 0.5, 1.0)
+	else
+		icon:SetVertexColor(0.4, 0.4, 0.4)
 	end
 end
 
 function SpellFlyoutButtonMixin:UpdateCount()
-	if self.spellID then
-		if IsConsumableSpell(self.spellID) then
-			local count = C_Spell.GetSpellCastCount(self.spellID)
-			if count > (self.maxDisplayCount or 9999) then
-				self.Count:SetText("*")
-			else
-				self.Count:SetText(count)
-			end
+	local text = self.Count
+	if IsConsumableSpell(self.spellID) then
+		local count = C_Spell.GetSpellCastCount(self.spellID)
+		if count > (self.maxDisplayCount or 9999 ) then
+			text:SetText("*")
 		else
-			self.Count:SetText("")
+			text:SetText(count)
 		end
+	else
+		text:SetText("")
 	end
 end
 
