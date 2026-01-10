@@ -11,16 +11,15 @@ FriendsFrameBattlenetFrame.ContactsMenuButton:SetNormalTexture("Interface\\Frien
 FriendsFrameBattlenetFrame.ContactsMenuButton:SetPushedTexture("Interface\\FriendsFrame\\broadcast-press")
 
 ApplyDropDown(FriendsFrameStatusDropdown)
-ApplyDropDown(WhoFrameDropdown)
-
 FriendsFrameStatusDropdown:SetWidth(43)
 FriendsFrameStatusDropdown:SetPoint("RIGHT", FriendsFrameBattlenetFrame, "LEFT", -5, 0)
 FriendsFrameStatusDropdown.Text:ClearAllPoints()
 FriendsFrameStatusDropdown.Text:SetPoint("CENTER", -7, -2)
 
+ApplyDropDown(WhoFrameDropdown)
 WhoFrameDropdown:SetPoint("TOPLEFT", 0, -2)
 
-FriendsTabHeader.TabSystem:SetPoint("TOPLEFT", 18, -59)
+FriendsTabHeader.TabSystem:SetPoint("TOPLEFT", 18, -51)
 
 for i = 1, FriendsTabHeader.TabSystem:GetNumChildren() do
 	local tab = select(i, FriendsTabHeader.TabSystem:GetChildren())

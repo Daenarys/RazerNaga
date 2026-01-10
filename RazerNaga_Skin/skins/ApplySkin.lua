@@ -155,7 +155,7 @@ function ApplyFilterDropDown(frame)
 end
 
 function ApplyTopTab(frame)
-
+	frame:SetHeight(32)
 
 	local TOP_TAB_HEIGHT_PERCENT = 0.75
 	local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT
@@ -250,6 +250,12 @@ function ApplyTopTab(frame)
 
 	hooksecurefunc(frame, "SetTabSelected", function(frame, isSelected)
 		frame.isSelected = isSelected
+
+		if isSelected then
+			frame.Text:SetPoint("CENTER", 0, -4)
+		else
+			frame.Text:SetPoint("CENTER", 0, -8)
+		end
 
 		frame.Left:Hide()
 		frame.Middle:Hide()
