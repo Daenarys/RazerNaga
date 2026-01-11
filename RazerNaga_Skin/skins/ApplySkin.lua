@@ -160,30 +160,30 @@ function ApplyTopTab(frame)
 	local TOP_TAB_HEIGHT_PERCENT = 0.75
 	local TOP_TAB_BOTTOM_TEX_COORD = 1 - TOP_TAB_HEIGHT_PERCENT
 
-	if (frame.LeftDisabled == nil) then
-		frame.LeftDisabled = frame:CreateTexture(nil, "BACKGROUND")
-		frame.LeftDisabled:SetAtlas("uiframe-activetab-left", true)
-		frame.LeftDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
-		frame.LeftDisabled:SetHeight(frame.LeftDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
-		frame.LeftDisabled:SetPoint("BOTTOMLEFT", -1, 0)
+	if (frame.CfLeftActive == nil) then
+		frame.CfLeftActive = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfLeftActive:SetAtlas("uiframe-activetab-left", true)
+		frame.CfLeftActive:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfLeftActive:SetHeight(frame.CfLeftActive:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfLeftActive:SetPoint("BOTTOMLEFT", -1, 0)
 	end
 
-	if (frame.RightDisabled == nil) then
-		frame.RightDisabled = frame:CreateTexture(nil, "BACKGROUND")
-		frame.RightDisabled:SetAtlas("uiframe-activetab-right", true)
-		frame.RightDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
-		frame.RightDisabled:SetHeight(frame.RightDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
-		frame.RightDisabled:SetPoint("BOTTOMRIGHT", 8, 0)
+	if (frame.CfRightActive == nil) then
+		frame.CfRightActive = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfRightActive:SetAtlas("uiframe-activetab-right", true)
+		frame.CfRightActive:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfRightActive:SetHeight(frame.CfRightActive:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfRightActive:SetPoint("BOTTOMRIGHT", 8, 0)
 	end
 
-	if (frame.MiddleDisabled == nil) then
-		frame.MiddleDisabled = frame:CreateTexture(nil, "BACKGROUND")
-		frame.MiddleDisabled:SetAtlas("_uiframe-activetab-center", true)
-		frame.MiddleDisabled:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
-		frame.MiddleDisabled:SetHeight(frame.MiddleDisabled:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
-		frame.MiddleDisabled:SetHorizTile(true)
-		frame.MiddleDisabled:SetPoint("TOPLEFT", frame.LeftDisabled, "TOPRIGHT")
-		frame.MiddleDisabled:SetPoint("TOPRIGHT", frame.RightDisabled, "TOPLEFT")
+	if (frame.CfMiddleActive == nil) then
+		frame.CfMiddleActive = frame:CreateTexture(nil, "BACKGROUND")
+		frame.CfMiddleActive:SetAtlas("_uiframe-activetab-center", true)
+		frame.CfMiddleActive:SetTexCoord(0, 1, 1, TOP_TAB_BOTTOM_TEX_COORD)
+		frame.CfMiddleActive:SetHeight(frame.CfMiddleActive:GetHeight() * TOP_TAB_HEIGHT_PERCENT)
+		frame.CfMiddleActive:SetHorizTile(true)
+		frame.CfMiddleActive:SetPoint("TOPLEFT", frame.CfLeftActive, "TOPRIGHT")
+		frame.CfMiddleActive:SetPoint("TOPRIGHT", frame.CfRightActive, "TOPLEFT")
 	end
 
 	if (frame.CfLeft == nil) then
@@ -251,12 +251,6 @@ function ApplyTopTab(frame)
 	hooksecurefunc(frame, "SetTabSelected", function(frame, isSelected)
 		frame.isSelected = isSelected
 
-		if isSelected then
-			frame.Text:SetPoint("CENTER", 0, -4)
-		else
-			frame.Text:SetPoint("CENTER", 0, -8)
-		end
-
 		frame.Left:Hide()
 		frame.Middle:Hide()
 		frame.Right:Hide()
@@ -267,8 +261,14 @@ function ApplyTopTab(frame)
 		frame.CfLeft:SetShown(not isSelected)
 		frame.CfMiddle:SetShown(not isSelected)
 		frame.CfRight:SetShown(not isSelected)
-		frame.LeftDisabled:SetShown(isSelected)
-		frame.MiddleDisabled:SetShown(isSelected)
-		frame.RightDisabled:SetShown(isSelected)
+		frame.CfLeftActive:SetShown(isSelected)
+		frame.CfMiddleActive:SetShown(isSelected)
+		frame.CfRightActive:SetShown(isSelected)
+
+		if isSelected then
+			frame.Text:SetPoint("CENTER", 0, -4)
+		else
+			frame.Text:SetPoint("CENTER", 0, -8)
+		end
 	end)
 end
