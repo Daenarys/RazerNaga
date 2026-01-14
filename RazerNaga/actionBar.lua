@@ -41,6 +41,12 @@ ActionBar.mainbarOffsets = {
         elseif i == 'ROGUE' then
             pages.stealth = 6
             pages.shadowdance = 6
+        elseif i == 'WARRIOR' then
+            pages.battle = 6
+            pages.defensive = 7
+            pages.berserker = 8
+        elseif i == 'PRIEST' then
+            pages.shadowform = 6
         end
 
         t[i] = pages
