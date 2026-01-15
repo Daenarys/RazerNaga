@@ -1,15 +1,15 @@
 if not _G.ObjectiveTrackerFrame then return end
 
 local function SetCollapsed(self, collapsed)
-	local normalTexture = self.MinimizeButton:GetNormalTexture()
-	local pushedTexture = self.MinimizeButton:GetPushedTexture()
+	self.MinimizeButton:SetNormalTexture("Interface\\Buttons\\QuestTrackerButtons")
+	self.MinimizeButton:SetPushedTexture("Interface\\Buttons\\QuestTrackerButtons")
 
 	if collapsed then
-		normalTexture:SetAtlas("ui-questtrackerbutton-expand-all", true)
-		pushedTexture:SetAtlas("ui-questtrackerbutton-expand-all-pressed", true)
+		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.40625, 0.523438, 0.265625, 0.484375)
+		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.40625, 0.523438, 0.015625, 0.234375)
 	else
-		normalTexture:SetAtlas("ui-questtrackerbutton-collapse-all", true)
-		pushedTexture:SetAtlas("ui-questtrackerbutton-collapse-all-pressed", true)
+		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.273438, 0.390625, 0.265625, 0.484375)
+		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.273438, 0.390625, 0.015625, 0.234375)
 	end
 end
 
@@ -31,8 +31,8 @@ for _, tracker in pairs(trackers) do
 	tracker.Header.Background:SetPoint("TOPLEFT", -19, 14)
 	tracker.Header.Text:SetPoint("LEFT", 14, 0)
 	tracker.Header.MinimizeButton:SetSize(15, 14)
-	tracker.Header.MinimizeButton:SetPoint("RIGHT", -15, 0)
-	tracker.Header.MinimizeButton:SetHighlightAtlas("ui-questtrackerbutton-red-highlight", "ADD")
+	tracker.Header.MinimizeButton:SetPoint("RIGHT", -35, 0)
+	tracker.Header.MinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
 	SetCollapsed(tracker.Header, _G.ObjectiveTrackerFrame.isCollapsed)
 	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsed)
 	tracker.ContentsFrame:SetPoint("RIGHT", -8, 0)
