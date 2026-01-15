@@ -37,14 +37,16 @@ for _, tracker in pairs(trackers) do
 	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsed)
 	tracker.ContentsFrame:SetPoint("RIGHT", -8, 0)
 
-	if (tracker.Header.CfMinimizeButton == nil) then
-		tracker.Header.CfMinimizeButton = tracker.Header:CreateTexture(nil, "ARTWORK")
-		tracker.Header.CfMinimizeButton:SetSize(15, 14)
-		tracker.Header.CfMinimizeButton:SetTexture("Interface\\Buttons\\QuestTrackerButtons")
-		tracker.Header.CfMinimizeButton:SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
-		tracker.Header.CfMinimizeButton:SetPoint("RIGHT", -15, 0)
-		tracker.Header.CfMinimizeButton:Hide()
-	end
+	local CfMinimizeButton = CreateFrame("Button", nil, tracker.Header)
+	tracker.Header.CfMinimizeButton = CfMinimizeButton
+	CfMinimizeButton:SetSize(15, 14)
+	CfMinimizeButton:SetNormalTexture("Interface\\Buttons\\QuestTrackerButtons")
+	CfMinimizeButton:GetNormalTexture():SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
+	CfMinimizeButton:SetPushedTexture("Interface\\Buttons\\QuestTrackerButtons")
+	CfMinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
+	CfMinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
+	CfMinimizeButton:SetPoint("RIGHT", tracker.Header, "RIGHT", -15, 0)
+	CfMinimizeButton:Hide()
 end
 
 hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
