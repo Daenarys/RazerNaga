@@ -36,6 +36,15 @@ for _, tracker in pairs(trackers) do
 	SetCollapsed(tracker.Header, _G.ObjectiveTrackerFrame.isCollapsed)
 	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsed)
 	tracker.ContentsFrame:SetPoint("RIGHT", -8, 0)
+
+	if (tracker.Header.CfMinimizeButton == nil) then
+		tracker.Header.CfMinimizeButton = tracker.Header:CreateTexture(nil, "ARTWORK")
+		tracker.Header.CfMinimizeButton:SetSize(15, 14)
+		tracker.Header.CfMinimizeButton:SetTexture("Interface\\Buttons\\QuestTrackerButtons")
+		tracker.Header.CfMinimizeButton:SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
+		tracker.Header.CfMinimizeButton:SetPoint("RIGHT", -15, 0)
+		tracker.Header.CfMinimizeButton:Hide()
+	end
 end
 
 hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
@@ -54,12 +63,18 @@ hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
 				end
+				if module.Header.CfMinimizeButton then
+					module.Header.CfMinimizeButton:Hide()
+				end
 			else
 				module:SetPoint("TOP")
 				if module == ScenarioObjectiveTracker then
 					module:SetPoint("LEFT", self, "LEFT", -15, 0)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
+				end
+				if module.Header.CfMinimizeButton then
+					module.Header.CfMinimizeButton:Show()
 				end
 			end
 			prevModule = module
