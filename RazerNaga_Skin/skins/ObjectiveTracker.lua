@@ -27,6 +27,47 @@ local trackers = {
 }
 
 for _, tracker in pairs(trackers) do
+	local function ObjectiveTracker_Collapse()
+		ObjectiveTrackerFrame.collapsed = true
+		tracker.Header.CfMinimizeButton:GetNormalTexture():SetTexCoord(0.273438, 0.390625, 0.765625, 0.984375)
+		tracker.Header.CfMinimizeButton:GetPushedTexture():SetTexCoord(0.273438, 0.390625, 0.515625, 0.734375)
+		for i = 1, #trackers do
+			local tracker = trackers[i]
+			if tracker then
+				tracker.ContentsFrame:Hide()
+				tracker.Header.Background:Hide()
+				tracker.Header.Text:Hide()
+				tracker.Header.MinimizeButton:Hide()
+			end
+		end
+		tracker.Header.CfTitle:Show()
+	end
+
+	local function ObjectiveTracker_Expand()
+		ObjectiveTrackerFrame.collapsed = nil
+		tracker.Header.CfMinimizeButton:GetNormalTexture():SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
+		tracker.Header.CfMinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
+		for i = 1, #trackers do
+			local tracker = trackers[i]
+			if tracker then
+				tracker.ContentsFrame:Show()
+				tracker.Header.Background:Show()
+				tracker.Header.Text:Show()
+				tracker.Header.MinimizeButton:Show()
+			end
+		end
+		tracker.Header.CfTitle:Hide()
+	end
+
+	local function ObjectiveTracker_MinimizeButton_OnClick(self)
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		if ( ObjectiveTrackerFrame.collapsed ) then
+			ObjectiveTracker_Expand()
+		else
+			ObjectiveTracker_Collapse()
+		end
+	end
+
 	tracker.Header.Background:SetAtlas("Objective-Header", true)
 	tracker.Header.Background:SetPoint("TOPLEFT", -19, 14)
 	tracker.Header.Text:SetPoint("LEFT", 14, 0)
@@ -46,7 +87,14 @@ for _, tracker in pairs(trackers) do
 	CfMinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
 	CfMinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
 	CfMinimizeButton:SetPoint("RIGHT", tracker.Header, "RIGHT", -15, 0)
+	CfMinimizeButton:SetScript("OnClick", ObjectiveTracker_MinimizeButton_OnClick)
 	CfMinimizeButton:Hide()
+
+	local CfTitle = tracker.Header:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	tracker.Header.CfTitle = CfTitle
+	CfTitle:SetText(OBJECTIVES_TRACKER_LABEL)
+	CfTitle:SetPoint("RIGHT", CfMinimizeButton, "LEFT", -3, 1)
+	CfTitle:Hide()
 end
 
 hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
