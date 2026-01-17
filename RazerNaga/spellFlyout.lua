@@ -28,6 +28,7 @@ local SpellFlyoutButtonMixin = {}
 function SpellFlyoutButtonMixin:Initialize()
 	self:SetAttribute("type", "spell")
 	self:RegisterForClicks("AnyUp", "AnyDown")
+	self.maxDisplayCount = 99
 
 	self:SetScript("OnEnter", self.OnEnter)
 	self:SetScript("OnLeave", self.OnLeave)
@@ -39,7 +40,7 @@ end
 --------------------------------------------------------------------------------
 
 function SpellFlyoutButtonMixin:OnEnter()
-	if GetCVarBool("UberTooltips") then
+	if GetCVar("UberTooltips") == "1" then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4)
 		if GameTooltip:SetSpellByID(self.spellID) then
 			self.UpdateTooltip = self.OnEnter
@@ -127,16 +128,7 @@ function SpellFlyoutButtonMixin:UpdateCount()
 
 	if spellID then
 		local text = self.Count
-		if IsConsumableSpell(self.spellID) then
-			local count = C_Spell.GetSpellCastCount(self.spellID)
-			if count > (self.maxDisplayCount or 9999 ) then
-				text:SetText("*")
-			else
-				text:SetText(count)
-			end
-		else
-			text:SetText("")
-		end
+		text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount))
 	end
 end
 
