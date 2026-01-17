@@ -28,7 +28,6 @@ local SpellFlyoutButtonMixin = {}
 function SpellFlyoutButtonMixin:Initialize()
 	self:SetAttribute("type", "spell")
 	self:RegisterForClicks("AnyUp", "AnyDown")
-	self.maxDisplayCount = 99
 
 	self:SetScript("OnEnter", self.OnEnter)
 	self:SetScript("OnLeave", self.OnLeave)
@@ -128,7 +127,7 @@ function SpellFlyoutButtonMixin:UpdateCount()
 
 	if spellID then
 		local text = self.Count
-		text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount))
+		text:SetText(C_Spell.GetSpellDisplayCount(self.spellID, self.maxDisplayCount or 9999))
 	end
 end
 
