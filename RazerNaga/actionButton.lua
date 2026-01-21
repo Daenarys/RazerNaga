@@ -68,6 +68,8 @@ local function skinActionButton(self)
     self.Border:SetBlendMode("ADD")
     self.cooldown:ClearAllPoints()
     self.cooldown:SetAllPoints()
+    self.chargeCooldown:SetAllPoints()
+    self.lossOfControlCooldown:SetAllPoints()
     self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
     self.Flash:ClearAllPoints()
     self.Flash:SetAllPoints()
@@ -341,9 +343,7 @@ end
 local function OverlayGlow_OnUpdate(self, elapsed)
     AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
     local cooldown = self:GetParent().cooldown
-    if cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration() > 3000 then
-        self:SetAlpha(0.5)
-    else
+    if cooldown and cooldown:IsShown() then
         self:SetAlpha(1.0)
     end
 end
@@ -513,6 +513,12 @@ hooksecurefunc(ActionButtonSpellAlertManager, "HideAlert", function(self, button
         else
             OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
         end
+    end
+end)
+
+hooksecurefunc("CooldownFrame_Set", function(self)
+    if not self:IsForbidden() then
+        self:SetEdgeTexture("Interface\\Cooldown\\edge")
     end
 end)
 
