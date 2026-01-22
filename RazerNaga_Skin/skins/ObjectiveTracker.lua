@@ -1,9 +1,22 @@
 if not _G.ObjectiveTrackerFrame then return end
 
-local function SetCollapsed(self, collapsed)
+local function SetCollapsedHeader(self, collapsed)
 	self.MinimizeButton:SetNormalTexture("Interface\\Buttons\\QuestTrackerButtons")
 	self.MinimizeButton:SetPushedTexture("Interface\\Buttons\\QuestTrackerButtons")
+	if collapsed then
+		self.Title:Show()
+		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.273438, 0.390625, 0.765625, 0.984375)
+		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.273438, 0.390625, 0.515625, 0.734375)
+	else
+		self.Title:Hide()
+		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
+		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
+	end
+end
 
+local function SetCollapsedModule(self, collapsed)
+	self.MinimizeButton:SetNormalTexture("Interface\\Buttons\\QuestTrackerButtons")
+	self.MinimizeButton:SetPushedTexture("Interface\\Buttons\\QuestTrackerButtons")
 	if collapsed then
 		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.40625, 0.523438, 0.265625, 0.484375)
 		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.40625, 0.523438, 0.015625, 0.234375)
@@ -11,6 +24,22 @@ local function SetCollapsed(self, collapsed)
 		self.MinimizeButton:GetNormalTexture():SetTexCoord(0.273438, 0.390625, 0.265625, 0.484375)
 		self.MinimizeButton:GetPushedTexture():SetTexCoord(0.273438, 0.390625, 0.015625, 0.234375)
 	end
+end
+
+if ObjectiveTrackerFrame.Header then
+	ObjectiveTrackerFrame.Header.Background:Hide()
+	ObjectiveTrackerFrame.Header.Text:Hide()
+	ObjectiveTrackerFrame.Header.MinimizeButton:SetSize(15, 14)
+	ObjectiveTrackerFrame.Header.MinimizeButton:SetPoint("RIGHT", -10, 3)
+	ObjectiveTrackerFrame.Header.MinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
+
+	local title = ObjectiveTrackerFrame.Header:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	ObjectiveTrackerFrame.Header.Title = title
+	title:SetText(OBJECTIVES_TRACKER_LABEL)
+	title:SetPoint("RIGHT", ObjectiveTrackerFrame.Header.MinimizeButton, "LEFT", -2, 1)
+
+	SetCollapsedHeader(ObjectiveTrackerFrame.Header, _G.ObjectiveTrackerFrame.isCollapsed)
+	hooksecurefunc(ObjectiveTrackerFrame.Header, 'SetCollapsed', SetCollapsedHeader)
 end
 
 local trackers = {
@@ -27,81 +56,18 @@ local trackers = {
 }
 
 for _, tracker in pairs(trackers) do
-	local function ObjectiveTracker_Collapse()
-		ObjectiveTrackerFrame.collapsed = true
-		tracker.Header.CfMinimizeButton:GetNormalTexture():SetTexCoord(0.273438, 0.390625, 0.765625, 0.984375)
-		tracker.Header.CfMinimizeButton:GetPushedTexture():SetTexCoord(0.273438, 0.390625, 0.515625, 0.734375)
-		for i = 1, #trackers do
-			local tracker = trackers[i]
-			if tracker then
-				tracker.ContentsFrame:Hide()
-				tracker.Header.Background:Hide()
-				tracker.Header.Text:Hide()
-				tracker.Header.MinimizeButton:Hide()
-			end
-		end
-		tracker.Header.CfTitle:Show()
-	end
-
-	local function ObjectiveTracker_Expand()
-		ObjectiveTrackerFrame.collapsed = nil
-		tracker.Header.CfMinimizeButton:GetNormalTexture():SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
-		tracker.Header.CfMinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
-		for i = 1, #trackers do
-			local tracker = trackers[i]
-			if tracker then
-				tracker.ContentsFrame:Show()
-				tracker.Header.Background:Show()
-				tracker.Header.Text:Show()
-				tracker.Header.MinimizeButton:Show()
-			end
-		end
-		tracker.Header.CfTitle:Hide()
-	end
-
-	local function ObjectiveTracker_MinimizeButton_OnClick(self)
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		if ( ObjectiveTrackerFrame.collapsed ) then
-			ObjectiveTracker_Expand()
-		else
-			ObjectiveTracker_Collapse()
-		end
-	end
-
+	tracker.ContentsFrame:SetPoint("RIGHT", -8, 0)
 	tracker.Header.Background:SetAtlas("Objective-Header", true)
 	tracker.Header.Background:SetPoint("TOPLEFT", -19, 14)
 	tracker.Header.Text:SetPoint("LEFT", 14, 0)
 	tracker.Header.MinimizeButton:SetSize(15, 14)
 	tracker.Header.MinimizeButton:SetPoint("RIGHT", -35, 0)
 	tracker.Header.MinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
-	SetCollapsed(tracker.Header, _G.ObjectiveTrackerFrame.isCollapsed)
-	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsed)
-	tracker.ContentsFrame:SetPoint("RIGHT", -8, 0)
-
-	local CfMinimizeButton = CreateFrame("Button", nil, tracker.Header)
-	tracker.Header.CfMinimizeButton = CfMinimizeButton
-	CfMinimizeButton:SetSize(15, 14)
-	CfMinimizeButton:SetNormalTexture("Interface\\Buttons\\QuestTrackerButtons")
-	CfMinimizeButton:GetNormalTexture():SetTexCoord(0.140625, 0.257812, 0.546875, 0.765625)
-	CfMinimizeButton:SetPushedTexture("Interface\\Buttons\\QuestTrackerButtons")
-	CfMinimizeButton:GetPushedTexture():SetTexCoord(0.0078125, 0.125, 0.546875, 0.765625)
-	CfMinimizeButton:SetHighlightAtlas("UI-QuestTrackerButton-Red-Highlight", "ADD")
-	CfMinimizeButton:SetPoint("RIGHT", tracker.Header, "RIGHT", -15, 0)
-	CfMinimizeButton:SetScript("OnClick", ObjectiveTracker_MinimizeButton_OnClick)
-	CfMinimizeButton:Hide()
-
-	local CfTitle = tracker.Header:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	tracker.Header.CfTitle = CfTitle
-	CfTitle:SetText(OBJECTIVES_TRACKER_LABEL)
-	CfTitle:SetPoint("RIGHT", CfMinimizeButton, "LEFT", -3, 1)
-	CfTitle:Hide()
+	SetCollapsedModule(tracker.Header, _G.ObjectiveTrackerFrame.isCollapsed)
+	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsedModule)
 end
 
 hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
-	if self.Header then
-		self.Header:Hide()
-	end
-
 	local prevModule = nil
 	for i, module in ipairs(self.modules) do
 		local heightUsed = module:GetContentsHeight()
@@ -113,18 +79,12 @@ hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
 				end
-				if module.Header.CfMinimizeButton then
-					module.Header.CfMinimizeButton:Hide()
-				end
 			else
 				module:SetPoint("TOP")
 				if module == ScenarioObjectiveTracker then
 					module:SetPoint("LEFT", self, "LEFT", -15, 0)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
-				end
-				if module.Header.CfMinimizeButton then
-					module.Header.CfMinimizeButton:Show()
 				end
 			end
 			prevModule = module
