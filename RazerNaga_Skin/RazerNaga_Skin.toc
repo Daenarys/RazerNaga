@@ -39,4 +39,5 @@ skins\Talents.lua
 skins\TimeManager.lua
 skins\WorkOrders.lua
 skins\WorldMap.lua
+skins\unitframes\NamePlate.lua
 skins\unitframes\PartyFrame.lua
