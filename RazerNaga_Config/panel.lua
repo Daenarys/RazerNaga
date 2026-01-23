@@ -29,6 +29,8 @@ function Panel:New(name, parent, title, subtitle, icon)
 	subtext:SetJustifyH('LEFT')
 	subtext:SetJustifyV('TOP')
 	subtext:SetText(subtitle)
+	
+	RazerNaga:AddCategory(f)
 
 	return f
 end
