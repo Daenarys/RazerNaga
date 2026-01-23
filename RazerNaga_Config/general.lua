@@ -14,22 +14,26 @@ do
 	Options.panels = {}
 
 	Options.name = AddonName
+
+	local mainCategory = Settings.RegisterCanvasLayoutCategory(Options, AddonName)
+	Settings.RegisterAddOnCategory(mainCategory)
+	Options.mainCategory = mainCategory
 	
 	Options:SetScript('OnShow', function(self)
-		RazerNaga:OpenToCategory(self.panels[1])
+		Settings.OpenToCategory(self.panels[1].settingsCategory:GetID())
 	end)
 	
 	Options.NewPanel = function(self, title, subtitle, icon)
 		local panel = RazerNaga.Panel:New('$parent' .. title, AddonName, title, subtitle, icon)
 
+		local subCategory = Settings.RegisterCanvasLayoutSubcategory(self.mainCategory, panel, title)
+		panel.settingsCategory = subCategory
+
 		table.insert(self.panels, panel)
 
 		return panel
 	end
-
-	RazerNaga:AddCategory(Options)
 end
-
 
 local GeneralOptions = RazerNaga.Options:NewPanel(L.General, L.GeneralPanelDesc, [[Interface\Addons\RazerNaga\Icons\RazerNaga]])
 
