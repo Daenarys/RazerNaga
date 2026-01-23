@@ -7,13 +7,75 @@ hooksecurefunc(NamePlateClassificationFrameMixin, "UpdateClassificationIndicator
     end
 end)
 
+hooksecurefunc(NamePlateAurasMixin, "RefreshList", function(self)
+    if self:IsForbidden() then return end
+
+    for auraItemFrame in self.auraItemFramePool:EnumerateActive() do
+        if auraItemFrame.Cooldown then
+            local r1 = auraItemFrame.Cooldown:GetRegions()
+            if r1 and r1.GetObjectType and r1:GetObjectType() == "FontString" then
+                r1:SetAlpha(0)
+            end
+        end
+    end
+end)
+
 local function SkinCastbar(self)
     if self:IsForbidden() then return end
 
+    if self.Background then
+        self.Background:SetColorTexture(0.2, 0.2, 0.2, 0.85)
+    end
+
     if self.Text then
         self.Text:ClearAllPoints()
-        self.Text:SetPoint("CENTER")
+        self.Text:SetPoint("CENTER", 0, -1)
     end
+
+    hooksecurefunc(self, 'UpdateShownState', function()
+        self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        self.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+        self.Spark:SetSize(16, 16)
+        self.Spark:SetBlendMode("ADD")
+        if self.channeling then
+            self.Spark:Hide()
+        end
+    end)
+
+    hooksecurefunc(self, 'PlayInterruptAnims', function()
+        self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        self.Spark:Hide()
+    end)
+
+    hooksecurefunc(self, 'PlayFinishAnim', function()
+        self:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        self.Flash:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        self.Flash:SetVertexColor(self:GetStatusBarColor())
+        self.Flash:ClearAllPoints()
+        self.Flash:SetAllPoints()
+        if not self.NewFlash then
+            self.NewFlash = self.Flash:CreateAnimationGroup()
+            self.NewFlash:SetToFinalAlpha(true)
+            local FlashAnim = self.NewFlash:CreateAnimation("Alpha") 
+            FlashAnim:SetDuration(0.2)
+            FlashAnim:SetFromAlpha(1)
+            FlashAnim:SetToAlpha(0)
+        end
+        self.NewFlash:Play()
+    end)
+
+    hooksecurefunc(self, 'GetTypeInfo', function(barType)
+        if ( self.barType == "interrupted") then
+            self:SetValue(100)
+            self:SetStatusBarColor(1, 0, 0)
+        elseif (self.barType == "channel") then
+            self:SetStatusBarColor(0, 1, 0)
+        elseif (self.barType == "uninterruptable") then
+            self:SetStatusBarColor(0.7, 0.7, 0.7)
+        else
+            self:SetStatusBarColor(1, 0.7, 0)
+        end
+    end)
 
     hooksecurefunc(self, 'SetIsHighlightedCastTarget', function()
         if self.CastTargetIndicator then
@@ -34,7 +96,7 @@ local function CreateBorder(frame, r, g, b, a)
     return border
 end
 
-local function SetupBorderOnFrame(frame, hpBar)
+local function SkinBorder(frame, hpBar)
     if frame.border then
         frame.border:Hide()
     end
@@ -43,7 +105,6 @@ local function SetupBorderOnFrame(frame, hpBar)
         frame.healthBar.bgTexture:SetAlpha(0)
         frame.healthBar.selectedBorder:SetAlpha(0)
         frame.healthBar.deselectedOverlay:SetAlpha(0)
-        -- frame = frame.HealthBarsContainer
         if not frame.background then
             frame.background = frame:CreateTexture(nil, "BACKGROUND")
             frame.background:SetAllPoints(frame)
@@ -123,34 +184,40 @@ local function HandleNamePlateAdded(unit)
     local nameplate, frame = GetSafeNameplate(unit)
     if not frame then return end
 
+    SkinBorder(frame.HealthBarsContainer, true)
+
     if frame.castBar then
-        SkinCastbar(frame.castBar)
+        if not frame.castBar.skinned then
+            SkinCastbar(frame.castBar)
+            frame.castBar.skinned = true
+        end
     end
-
-    if frame.name then
-        frame.name:SetIgnoreParentScale(true)
-    end
-
-    SetupBorderOnFrame(frame.HealthBarsContainer, true)
 
     hooksecurefunc(frame, "UpdateAnchors", function()
         frame.castBar:SetHeight(12)
         frame.castBar:ClearAllPoints()
         frame.castBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 26, 0)
         frame.castBar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -26, 0)
+        frame.castBar.BorderShield:SetSize(10, 12)
+        frame.castBar.Icon:SetSize(14, 14)
         frame.castBar.Icon:ClearAllPoints()
         frame.castBar.Icon:SetPoint("CENTER", frame.castBar, "LEFT")
+        frame.castBar.Text:SetTextHeight(12)
         frame.HealthBarsContainer:SetHeight(6)
+        frame.name:SetIgnoreParentScale(true)
+        frame.name:SetShadowOffset(1, -1)
+        frame.name:SetShadowColor(0, 0, 0, 1)
         frame.name:ClearAllPoints()
         frame.name:SetPoint("BOTTOM", frame.HealthBarsContainer, "TOP", 0, 4)
         frame.name:SetJustifyH("CENTER")
+        PixelUtil.SetPoint(frame.AurasFrame.DebuffListFrame, "BOTTOM", frame.name, "TOP", 0, 10)
     end)
 end
 
-local frameAdded = CreateFrame("Frame")
-frameAdded:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-frameAdded:SetScript("OnEvent", function(self, event, unit)
-    if C_CVar.GetCVar("nameplateStyle") == "5" then -- Legacy
+local f = CreateFrame("Frame")
+f:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+f:SetScript("OnEvent", function(self, event, unit)
+    if C_CVar.GetCVar("nameplateStyle") == "5" then
         HandleNamePlateAdded(unit)
     end
 end)
