@@ -79,6 +79,7 @@ hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
 				end
+				module.Header.MinimizeButton:Show()
 			else
 				module:SetPoint("TOP")
 				if module == ScenarioObjectiveTracker then
@@ -86,6 +87,7 @@ hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
 				else
 					module:SetPoint("LEFT", self, "LEFT", 5, 0)
 				end
+				module.Header.MinimizeButton:Hide()
 			end
 			prevModule = module
 		end
