@@ -119,7 +119,7 @@ elseif class == 'PALADIN' then
     addFormState('class', 'retribution', 10301)
     addFormState('class', 'shadow', 19896)
 elseif class == 'PRIEST' then
-    addState('class', 'shadowform', '[form:1]', getSpellName(15473))
+    addState('class', 'shadowform', '[form:1]', GetSpellName(15473))
 elseif class == 'ROGUE' then
     addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
 elseif class == 'WARRIOR' then
