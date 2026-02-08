@@ -20,6 +20,11 @@ do
 	Options.mainCategory = mainCategory
 	
 	Options:SetScript('OnShow', function(self)
+		if InCombatLockdown() then
+			RazerNaga:Printf(_G.ERR_NOT_IN_COMBAT)
+			return
+		end
+
 		Settings.OpenToCategory(self.panels[1].settingsCategory:GetID())
 	end)
 	
