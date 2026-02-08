@@ -24,6 +24,9 @@ for id = 1, NUM_PET_ACTION_SLOTS do
 
     -- enable cooldown bling
     button.cooldown:SetDrawBling(true)
+
+    -- disable cooldown numbers
+    button.cooldown:SetHideCountdownNumbers(true)
 end
 
 --------------------------------------------------------------------------------

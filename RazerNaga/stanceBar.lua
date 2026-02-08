@@ -36,6 +36,9 @@ for id = 1, 10 do
 
     -- enable cooldown bling
     button.cooldown:SetDrawBling(true)
+
+    -- disable cooldown numbers
+    button.cooldown:SetHideCountdownNumbers(true)
 end
 
 --------------------------------------------------------------------------------
