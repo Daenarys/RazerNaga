@@ -38,6 +38,13 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
+	--create a loader for the options menu
+	local f = CreateFrame('Frame', nil, SettingsPanel)
+	f:SetScript('OnShow', function(self)
+		self:SetScript('OnShow', nil)
+		C_AddOns.LoadAddOn('RazerNaga_Config')
+	end)
+
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
