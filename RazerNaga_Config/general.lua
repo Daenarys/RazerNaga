@@ -20,6 +20,11 @@ do
 	Options.mainCategory = mainCategory
 	
 	Options:SetScript('OnShow', function(self)
+		if InCombatLockdown() then
+			RazerNaga:Printf(_G.ERR_NOT_IN_COMBAT)
+			return
+		end
+
 		Settings.OpenToCategory(self.panels[1].settingsCategory:GetID())
 	end)
 	
@@ -59,7 +64,6 @@ bind:SetPoint('LEFT', lock, 'RIGHT', 4, 0)
 --[[ Check Buttons ]]--
 
 --[[ General Settings ]]--
-
 
 local stickyBars = GeneralOptions:NewCheckButton(L.StickyBars)
 stickyBars:SetScript('OnShow', function(self)

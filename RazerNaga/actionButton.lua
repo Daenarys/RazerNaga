@@ -122,6 +122,9 @@ function ActionButtonMixin:OnCreate(id)
 
     -- enable cooldown bling
     self.cooldown:SetDrawBling(true)
+
+    -- disable cooldown numbers
+    self.cooldown:SetHideCountdownNumbers(true)
 end
 
 function ActionButtonMixin:UpdateOverrideBindings()
