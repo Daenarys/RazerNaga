@@ -9,12 +9,6 @@ CASTING_BAR_TYPES = {
 		sparkFx = "CraftingGlow",
 		finishAnim = "CraftingFinish",
 	},
-	applyingtalents = { 
-		filling = "ui-castingbar-filling-standard",
-		full = "ui-castingbar-full-standard",
-		glow = "ui-castingbar-full-glow-standard",
-		sparkFx = "StandardGlow",
-	},
 	standard = { 
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
