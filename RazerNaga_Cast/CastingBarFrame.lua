@@ -1,19 +1,17 @@
 local CASTBAR_STAGE_INVALID = -1
 local CASTBAR_STAGE_DURATION_INVALID = -1
 
-CASTING_BAR_TYPES = {
+RAZERNAGA_CASTING_BAR_TYPES = {
 	applyingcrafting = { 
 		filling = "ui-castingbar-filling-applyingcrafting",
 		full = "ui-castingbar-full-applyingcrafting",
 		glow = "ui-castingbar-full-glow-applyingcrafting",
-		sparkFx = "CraftingGlow",
 		finishAnim = "CraftingFinish",
 	},
 	standard = { 
 		filling = "ui-castingbar-filling-standard",
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
-		sparkFx = "StandardGlow",
 		finishAnim = "StandardFinish",
 	},
 	empowered = { 
@@ -25,7 +23,6 @@ CASTING_BAR_TYPES = {
 		filling = "ui-castingbar-filling-channel",
 		full = "ui-castingbar-full-channel",
 		glow = "ui-castingbar-full-glow-channel",
-		sparkFx = "ChannelShadow",
 		finishAnim = "ChannelFinish",
 	},
 	uninterruptable = {
@@ -42,12 +39,12 @@ CASTING_BAR_TYPES = {
 
 RazerNagaCastingBarMixin = {}
 
-function RazerNagaCastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
+function RazerNagaCastingBarMixin:OnLoad(unit, showTradeSkills)
 	self.StagePoints = {}
 	self.StagePips = {}
 	self.StageTiers = {}
 
-	self:SetUnit(unit, showTradeSkills, showShield)
+	self:SetUnit(unit, showTradeSkills)
 
 	self.showCastbar = true
 
@@ -66,11 +63,10 @@ function RazerNagaCastingBarMixin:UpdateShownState(desiredShow)
 	self:SetShown(self.casting and self.showCastbar)
 end
 
-function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
+function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills)
 	if self.unit ~= unit then
 		self.unit = unit
 		self.showTradeSkills = showTradeSkills
-		self.showShield = showShield
 
 		self.casting = nil
 		self.channeling = nil
@@ -137,9 +133,8 @@ function RazerNagaCastingBarMixin:GetTypeInfo(barType)
 	if not barType then
 		barType = "standard"
 	end
-	return CASTING_BAR_TYPES[barType]
+	return RAZERNAGA_CASTING_BAR_TYPES[barType]
 end
-
 
 function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
 	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
@@ -198,7 +193,6 @@ function RazerNagaCastingBarMixin:HandleCastStop(event, ...)
 		end
 
 		self:PlayFadeAnim()
-		self:PlayFinishAnim()
 
 		if ( event == "UNIT_SPELLCAST_STOP" ) then
 			self.casting = nil
@@ -256,12 +250,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text)
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture)
-			if ( self.iconWhenNoninterruptible ) then
-				self.Icon:SetShown(not notInterruptible)
-			end
-		end
 		self.casting = true
 		self.castID = castID
 		self.channeling = nil
@@ -269,20 +257,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show()
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide()
-				end
-			else
-				self.BorderShield:Hide()
-				if ( self.BarBorder ) then
-					self.BarBorder:Show()
-				end
-			end
-		end
 
 		self:UpdateShownState(self.showCastbar)
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
@@ -357,9 +331,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text)
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture)
-		end
 		if (isChargeSpell) then
 			self.reverseChanneling = true
 			self.casting = true
@@ -372,20 +343,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show()
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide()
-				end
-			else
-				self.BorderShield:Hide()
-				if ( self.BarBorder ) then
-					self.BarBorder:Show()
-				end
-			end
-		end
 
 		self:UpdateShownState(self.showCastbar)
 
@@ -417,24 +374,6 @@ function RazerNagaCastingBarMixin:UpdateInterruptibleState(notInterruptible)
 		local _, _, _, _, _, isTradeSkill = UnitCastingInfo(self.unit)
 		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false)
 		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling)
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show()
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide()
-				end
-			else
-				self.BorderShield:Hide()
-				if ( self.BarBorder ) then
-					self.BarBorder:Show()
-				end
-			end
-		end
-
-		if ( self.Icon and self.iconWhenNoninterruptible ) then
-			self.Icon:SetShown(not notInterruptible)
-		end
 	end
 end
 
@@ -501,7 +440,6 @@ function RazerNagaCastingBarMixin:FinishSpell()
 	end
 	
 	self:PlayFadeAnim()
-	self:PlayFinishAnim()
 	
 	self.casting = nil
 	self.channeling = nil
@@ -525,25 +463,11 @@ function RazerNagaCastingBarMixin:ShowSpark()
 		self.Spark:SetAtlas("ui-castingbar-pip")
 		self.Spark.offsetY = 0
 	end
-
-	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
-		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx]
-		if sparkFx then
-			sparkFx:SetShown(self.playCastFX and barType == currentBarType)
-		end
-	end
 end
 
 function RazerNagaCastingBarMixin:HideSpark()
 	if ( self.Spark ) then
 		self.Spark:Hide()
-	end
-
-	for barType, barTypeInfo in pairs(CASTING_BAR_TYPES) do
-		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx]
-		if sparkFx then
-			sparkFx:Hide()
-		end
 	end
 end
 
@@ -551,34 +475,11 @@ function RazerNagaCastingBarMixin:PlayInterruptAnims()
 	if self.HoldFadeOutAnim then
 		self.HoldFadeOutAnim:Play()
 	end
-	
-	if not self.playCastFX then
-		return
-	end
-
-	if self.InterruptShakeAnim and tonumber(GetCVar("ShakeStrengthUI")) > 0 then
-		self.InterruptShakeAnim:Play()
-	end
-	if self.InterruptGlowAnim then
-		self.InterruptGlowAnim:Play()
-	end
-	if self.InterruptSparkAnim then
-		self.InterruptSparkAnim:Play()
-	end
 end
 
 function RazerNagaCastingBarMixin:StopInterruptAnims()
 	if self.HoldFadeOutAnim then
 		self.HoldFadeOutAnim:Stop()
-	end
-	if self.InterruptShakeAnim then
-		self.InterruptShakeAnim:Stop()
-	end
-	if self.InterruptGlowAnim then
-		self.InterruptGlowAnim:Stop()
-	end
-	if self.InterruptSparkAnim then
-		self.InterruptSparkAnim:Stop()
 	end
 end
 
@@ -600,32 +501,6 @@ function RazerNagaCastingBarMixin:PlayFadeAnim()
 	end
 end
 
-function RazerNagaCastingBarMixin:PlayFinishAnim()
-	if not self.playCastFX then
-		return
-	end
-
-	local barTypeInfo = self:GetTypeInfo(self.barType)
-
-	local playFinish = not barTypeInfo.finishCondition or barTypeInfo.finishCondition(self)
-	if playFinish then
-		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim]
-		if finishAnim then
-			finishAnim:Play()
-		end
-	end
-
-	if self.barType == "empowered" then
-		for i = 1, self.CurrSpellStage do
-			local stageTier = self.StageTiers[i]
-			if stageTier and stageTier.FinishAnim then
-				stageTier.FlashAnim:Stop()
-				stageTier.FinishAnim:Play()
-			end
-		end
-	end
-end
-
 function RazerNagaCastingBarMixin:StopFinishAnims()
 	if self.FlashAnim then
 		self.FlashAnim:Stop()
@@ -634,7 +509,7 @@ function RazerNagaCastingBarMixin:StopFinishAnims()
 		self.FadeOutAnim:Stop()
 	end
 
-	for _, barTypeInfo in pairs(CASTING_BAR_TYPES) do
+	for _, barTypeInfo in pairs(RAZERNAGA_CASTING_BAR_TYPES) do
 		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim]
 		if finishAnim then
 			finishAnim:Stop()
@@ -768,18 +643,6 @@ function RazerNagaCastingBarMixin:UpdateStage()
 			local stagePip = self.StagePips[maxStage]
 			if stagePip and stagePip.StageAnim then
 				stagePip.StageAnim:Play()
-			end
-		end
-
-		if self.playCastFX then
-			if maxStage == self.NumStages - 1 then
-				if self.StageFinish then
-					self.StageFinish:Play()
-				end
-			elseif maxStage > 0 then
-				if self.StageFlash then
-					self.StageFlash:Play()
-				end
 			end
 		end
 		
