@@ -111,8 +111,11 @@ function BindableButton:UpdateHotkeys()
     local key = (self.GetHotkey or getButtonHotkey)(self) or ''
     local hotkey = self.HotKey
 
+    self.TextOverlayContainer:SetFrameLevel(2)
+
     hotkey:SetText(key)
     hotkey:SetShown(key ~= '')
+    hotkey:SetDrawLayer("ARTWORK", 2)
 
     if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
         hotkey:ClearAllPoints()
