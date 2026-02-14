@@ -14,8 +14,8 @@
 				</Texture>
 				<Texture parentKey="Background" atlas="ui-castingbar-background">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="1"/>
-						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
