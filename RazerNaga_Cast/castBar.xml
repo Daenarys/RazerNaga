@@ -14,16 +14,16 @@
 				</Texture>
 				<Texture parentKey="Background" atlas="ui-castingbar-background">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Border" atlas="ui-castingbar-frame">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-1" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="1" y="-2"/>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
 				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
