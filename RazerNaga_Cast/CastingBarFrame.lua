@@ -50,6 +50,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return
 		end
 		self:SetStatusBarTexture("ui-castingbar-filling-standard")
+		self.Flash:SetAtlas("ui-castingbar-full-glow-standard")
 		if ( self.Spark ) then
 			self.Spark:Show()
 		end
@@ -144,6 +145,7 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			return
 		end
 		self:SetStatusBarTexture("ui-castingbar-filling-channel")
+		self.Flash:SetAtlas("ui-castingbar-full-glow-channel")
 		self.value = ((endTime / 1000) - GetTime())
 		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
