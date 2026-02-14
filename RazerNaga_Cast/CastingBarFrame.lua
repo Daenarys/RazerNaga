@@ -234,12 +234,10 @@ function CastingBarFrame_OnUpdate(self, elapsed)
 end
 
 function CastingBarFrame_FinishSpell(self)
-	self:SetStatusBarTexture("ui-castingbar-full-channel")
 	if ( self.Spark ) then
 		self.Spark:Hide()
 	end
 	if ( self.Flash ) then
-		self.Flash:SetAtlas("ui-castingbar-full-glow-channel")
 		self.Flash:SetAlpha(0.0)
 		self.Flash:Show()
 	end
