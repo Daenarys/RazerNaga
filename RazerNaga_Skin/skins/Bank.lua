@@ -1,4 +1,0 @@
-if not _G.BankFrame then return end
-
-ApplyDropDown(BankPanel.TabSettingsMenu.BorderBox.IconTypeDropdown)
-ApplyDropDown(BankPanel.TabSettingsMenu.DepositSettingsMenu.ExpansionFilterDropdown)
