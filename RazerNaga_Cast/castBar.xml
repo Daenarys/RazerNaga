@@ -2,7 +2,7 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="CastingBarFrame.lua"/>
 	<Script file="castBar.lua"/>
-	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
+	<StatusBar name="RazerNagaCastingBarTemplate" mixin="RazerNagaCastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" hidden="true" virtual="true">
 		<Size x="208" y="11"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
@@ -49,10 +49,10 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, 'player', true)
+				self:OnLoad("player", true, false)
 			</OnLoad>
-			<OnEvent function="CastingBarFrame_OnEvent"/>
-			<OnUpdate function="CastingBarFrame_OnUpdate"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</StatusBar>
 </Ui>
