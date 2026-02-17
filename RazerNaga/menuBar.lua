@@ -673,8 +673,15 @@ function MenuBarModule:OnInitialize()
         end)
     end
 
-    -- temp fix for 10.2.6 bug
-    MicroMenu.GetEdgeButton = function() end
+    if MicroMenu then
+        local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+        HiddenFrame:SetAllPoints(UIParent)
+        HiddenFrame:Hide()
+
+        for _, button in ipairs { MicroMenu:GetChildren() } do
+            button:SetParent(HiddenFrame)
+        end
+    end
 end
 
 function MenuBarModule:Load()
