@@ -14,11 +14,6 @@ RAZERNAGA_CASTING_BAR_TYPES = {
 		full = "ui-castingbar-full-standard",
 		glow = "ui-castingbar-full-glow-standard",
 	},
-	empowered = { 
-		filling = "",
-		full = "",
-		glow = "",
-	},
 	channel = { 
 		filling = "ui-castingbar-filling-channel",
 		full = "ui-castingbar-full-channel",
@@ -66,7 +61,6 @@ function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 
 		self.casting = nil
 		self.channeling = nil
-		self.reverseChanneling = nil
 		
 		self:StopAnims()
 
@@ -76,9 +70,6 @@ function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unit)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", unit)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unit)
-			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", unit)
-			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", unit)
-			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", unit)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit)
 			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit)
@@ -91,9 +82,6 @@ function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START")
-			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE")
-			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
 			self:UnregisterEvent("UNIT_SPELLCAST_START")
 			self:UnregisterEvent("UNIT_SPELLCAST_STOP")
 			self:UnregisterEvent("UNIT_SPELLCAST_FAILED")
@@ -105,7 +93,7 @@ function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
 	end
 end
 
-function RazerNagaCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
+function RazerNagaCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill)
 	if isTradeSkill then
 		return "applyingcrafting"
 	end
@@ -114,9 +102,6 @@ function RazerNagaCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, 
 	end
 	if isChannel then
 		return "channel"
-	end
-	if isEmpowered then
-		return "empowered"
 	end
 	return "standard"
 end
@@ -128,12 +113,11 @@ function RazerNagaCastingBarMixin:GetTypeInfo(barType)
 	return RAZERNAGA_CASTING_BAR_TYPES[barType]
 end
 
-function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
-	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
+function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(event, ...)
+	if ((self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
 		self.barType = "interrupted" -- failed and interrupted use same bar art
 
-		--We don't want to show the full state for the empowered texture since it produces a gradient.
-		self:SetStatusBarTexture(empoweredInterrupt and nil or self:GetTypeInfo(self.barType).full)
+		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).full)
 
 		self:ShowSpark()
 
@@ -147,7 +131,6 @@ function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrup
 
 		self.casting = nil
 		self.channeling = nil
-		self.reverseChanneling = nil
 
 		self:PlayInterruptAnims()
 	end
@@ -159,28 +142,20 @@ function RazerNagaCastingBarMixin:HandleCastStop(event, ...)
 		self:UpdateShownState(desiredShowFalse)
 	end
 	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
-	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
-		
-		local castComplete = select(4, ...)
-		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
-			self:HandleInterruptOrSpellFailed(true, event, ...)
-			return 
-		end 
+	    ((self.channeling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP")) ) then
 		
 		-- Cast info not available once stopped, so update bar based on cached barType
 		local barTypeInfo = self:GetTypeInfo(self.barType)
 		self:SetStatusBarTexture(barTypeInfo.full)
 
-		if not self.reverseChanneling then
-			self:HideSpark()
-		end
+		self:HideSpark()
 
 		if ( self.Flash ) then
 			self.Flash:SetAtlas(barTypeInfo.glow)
 			self.Flash:SetAlpha(0.0)
 			self.Flash:Show()
 		end
-		if not self.reverseChanneling and not self.channeling then
+		if not self.channeling then
 			self:SetValue(self.maxValue)
 		end
 
@@ -190,10 +165,6 @@ function RazerNagaCastingBarMixin:HandleCastStop(event, ...)
 			self.casting = nil
 		else
 			self.channeling = nil
-			if (self.reverseChanneling) then
-				self.casting = nil
-			end
-			self.reverseChanneling = nil
 		end
 	end
 end
@@ -228,7 +199,7 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 			return
 		end
 
-		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false)
+		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill)
 		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling)
 
 		self:ShowSpark()
@@ -243,16 +214,15 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		self.casting = true
 		self.castID = castID
 		self.channeling = nil
-		self.reverseChanneling = nil
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
 
 		self:UpdateShownState(self:ShouldShowCastBar())
-	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
+	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
 		self:HandleCastStop(event, ...)
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		self:HandleInterruptOrSpellFailed(false, event, ...)
+		self:HandleInterruptOrSpellFailed(event, ...)
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
@@ -266,7 +236,7 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 			self.maxValue = (endTime - startTime) / 1000
 			self:SetMinMaxValues(0, self.maxValue)
 			if ( not self.casting ) then
-				self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false)
+				self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill)
 				self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling)
 				self:ShowSpark()
 				if ( self.Flash ) then
@@ -275,12 +245,11 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 				end
 				self.casting = true
 				self.channeling = nil
-				self.reverseChanneling = nil
 
 				self:StopAnims()
 			end
 		end
-	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" ) then
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
 		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _, numStages = UnitChannelInfo(unit)
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
 			-- if there is no name, there is no bar
@@ -290,16 +259,9 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		end
 
 		self.maxValue = (endTime - startTime) / 1000
-
-		self.barType = self:GetEffectiveType(not isChargeSpell, notInterruptible, isTradeSkill, isChargeSpell)
-
+		self.barType = self:GetEffectiveType(true, notInterruptible, isTradeSkill)
 		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling)
-		
-		if (isChargeSpell) then
-			self.value = GetTime() - (startTime / 1000)
-		else
-			self.value = (endTime / 1000) - GetTime()
-		end
+		self.value = (endTime / 1000) - GetTime()
 
 		self:ShowSpark()
 
@@ -308,21 +270,14 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text)
 		end
-		if (isChargeSpell) then
-			self.reverseChanneling = true
-			self.casting = true
-			self.channeling = false
-		else
-			self.reverseChanneling = nil
-			self.casting = nil
-			self.channeling = true
-		end
+		self.casting = nil
+		self.channeling = true
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
 
 		self:UpdateShownState(self:ShouldShowCastBar())
-	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" or event == "UNIT_SPELLCAST_EMPOWER_UPDATE" ) then
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
 		if ( self:IsShown() ) then
 			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
@@ -340,19 +295,11 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 end
 
 function RazerNagaCastingBarMixin:OnUpdate(elapsed)
-	if ( self.casting or self.reverseChanneling) then
+	if ( self.casting) then
 		self.value = self.value + elapsed
 		if ( self.value >= self.maxValue ) then
 			self:SetValue(self.maxValue)
-			if (not self.reverseChanneling) then
-				self:FinishSpell()
-			else
-				if self.FlashLoopingAnim and not self.FlashLoopingAnim:IsPlaying() then
-					self.FlashLoopingAnim:Play()
-					self.Flash:Show()
-				end
-			end
-			self:HideSpark()
+			self:FinishSpell()
 			return
 		end
 		self:SetValue(self.value)
@@ -371,7 +318,7 @@ function RazerNagaCastingBarMixin:OnUpdate(elapsed)
 		end
 	end
 
-	if ( self.casting or self.reverseChanneling or self.channeling ) then
+	if ( self.casting or self.channeling ) then
 		if ( self.Spark ) then
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
 			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 0)
@@ -384,7 +331,7 @@ function RazerNagaCastingBarMixin:ApplyAlpha(alpha)
 end
 
 function RazerNagaCastingBarMixin:FinishSpell()
-	if self.maxValue and not self.reverseChanneling and not self.channeling then
+	if self.maxValue and not self.channeling then
 		self:SetValue(self.maxValue)
 	end
 	local barTypeInfo = self:GetTypeInfo(self.barType)
@@ -402,7 +349,6 @@ function RazerNagaCastingBarMixin:FinishSpell()
 	
 	self.casting = nil
 	self.channeling = nil
-	self.reverseChanneling = nil
 end
 
 function RazerNagaCastingBarMixin:ShowSpark()
@@ -415,9 +361,6 @@ function RazerNagaCastingBarMixin:ShowSpark()
 	if currentBarType == "interrupted" then
 		self.Spark:SetAtlas("ui-castingbar-pip-red")
 		self.Spark.offsetY = 0
-	elseif currentBarType == "empowered" then
-		self.Spark:SetAtlas("ui-castingbar-empower-cursor")
-		self.Spark.offsetY = 4
 	else
 		self.Spark:SetAtlas("ui-castingbar-pip")
 		self.Spark.offsetY = 0
@@ -444,11 +387,7 @@ end
 
 function RazerNagaCastingBarMixin:PlayFadeAnim()
 	if self.FadeOutAnim and self:GetAlpha() > 0 and self:IsVisible() then
-		if self.reverseChanneling and self.CurrSpellStage < self.NumStages then
-			self.HoldFadeOutAnim:Play()
-		else
-			self.FadeOutAnim:Play()
-		end
+		self.FadeOutAnim:Play()
 	end
 end
 
