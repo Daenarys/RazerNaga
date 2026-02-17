@@ -49,10 +49,11 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:OnLoad("player", true)
+				self:OnLoad("player", true, false)
 			</OnLoad>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</StatusBar>
 </Ui>
