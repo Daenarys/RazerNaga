@@ -9,26 +9,33 @@ local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
 --binding confirmation dialog
 local function CreateEnableAutomaticBindingsPrompt()
-	local f = CreateFrame('Frame', nil, UIParent)
+	local f = CreateFrame('Frame', nil, UIParent, BackdropTemplateMixin and 'BackdropTemplate')
 	f:SetFrameStrata('DIALOG')
 	f:EnableMouse(true)
 	f:SetClampedToScreen(true)
 	f:SetSize(320, 72)
+	f:SetBackdrop{
+		bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
+		edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
+		tile = true,
+		insets = {left = 11, right = 12, top = 12, bottom = 11},
+		tileSize = 32,
+		edgeSize = 32,
+	}
 	f:SetPoint('TOP', 0, -24)
 	f:Hide()
 
 	f:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	f:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
-	local border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
-
-	local header = CreateFrame('Frame', nil, f, 'DialogHeaderTemplate')
-	header:SetWidth(140) 
+	local header = f:CreateTexture(nil, 'ARTWORK')
+	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
+	header:SetSize(320, 64)
 	header:SetPoint('TOP', 0, 12)
 
-	local title = header:CreateFontString(nil, 'ARTWORK')
+	local title = f:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
-	title:SetPoint('TOP', 0, -14)
+	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText('RazerNaga')
 
 	local desc = f:CreateFontString(nil, 'ARTWORK')
