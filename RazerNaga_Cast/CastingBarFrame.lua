@@ -71,11 +71,10 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self:Show()
 		end
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
-		local _unit, castGUID, _spellID = ...
 		if ( not self:IsVisible() ) then
 			self:Hide()
 		end
-		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and castGUID == self.castID) or
+		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
 		     (self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") ) then
 			if ( self.Spark ) then
 				self.Spark:Hide()
@@ -95,9 +94,8 @@ function CastingBarFrame_OnEvent(self, event, ...)
 			self.holdTime = 0
 		end
 	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		local _unit, castID, _spellID = ...
 		if ( self:IsShown() and
-		     (self.casting and castID == self.castID) and not self.fadeOut ) then
+		     (self.casting and select(2, ...) == self.castID) and not self.fadeOut ) then
 			self:SetValue(self.maxValue)
 			self:SetStatusBarColor(0.86, 0.08, 0.24)
 			if ( self.Spark ) then
