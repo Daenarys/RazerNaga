@@ -211,7 +211,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
-
 		self:UpdateShownState(self:ShouldShowCastBar())
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
 		self:HandleCastStop(event, ...)
@@ -252,13 +251,13 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 			return
 		end
 
-		self.maxValue = (endTime - startTime) / 1000
 		self.barType = self:GetEffectiveType(true, notInterruptible, isTradeSkill)
 		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling)
-		self.value = (endTime / 1000) - GetTime()
 
 		self:ShowSpark()
 
+		self.value = (endTime / 1000) - GetTime()
+		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
 		self:SetValue(self.value)
 		if ( self.Text ) then
@@ -269,7 +268,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims()
 		self:ApplyAlpha(1.0)
-
 		self:UpdateShownState(self:ShouldShowCastBar())
 	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
 		if ( self:IsShown() ) then
