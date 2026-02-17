@@ -49,7 +49,7 @@
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				self:OnLoad("player", true, false)
+				self:OnLoad("player", true)
 			</OnLoad>
 			<OnEvent method="OnEvent"/>
 			<OnUpdate method="OnUpdate"/>

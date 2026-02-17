@@ -33,15 +33,10 @@ RAZERNAGA_CASTING_BAR_TYPES = {
 
 RazerNagaCastingBarMixin = {}
 
-function RazerNagaCastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
-	self:SetUnit(unit, showTradeSkills, showShield)
+function RazerNagaCastingBarMixin:OnLoad(unit, showTradeSkills)
+	self:SetUnit(unit, showTradeSkills)
 
 	self.showCastbar = true
-
-	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint(1)
-	if ( point == "CENTER" ) then
-		self.Spark.offsetY = offsetY
-	end
 end
 
 function RazerNagaCastingBarMixin:UpdateShownState(desiredShow)
@@ -53,11 +48,10 @@ function RazerNagaCastingBarMixin:UpdateShownState(desiredShow)
 	self:SetShown(self.casting and self:ShouldShowCastBar())
 end
 
-function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
+function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills)
 	if self.unit ~= unit then
 		self.unit = unit
 		self.showTradeSkills = showTradeSkills
-		self.showShield = showShield
 
 		self.casting = nil
 		self.channeling = nil
@@ -321,7 +315,7 @@ function RazerNagaCastingBarMixin:OnUpdate(elapsed)
 	if ( self.casting or self.channeling ) then
 		if ( self.Spark ) then
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 0)
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, 0)
 		end
 	end
 end
@@ -360,10 +354,8 @@ function RazerNagaCastingBarMixin:ShowSpark()
 
 	if currentBarType == "interrupted" then
 		self.Spark:SetAtlas("ui-castingbar-pip-red")
-		self.Spark.offsetY = 0
 	else
 		self.Spark:SetAtlas("ui-castingbar-pip")
-		self.Spark.offsetY = 0
 	end
 end
 
