@@ -278,12 +278,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text);
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
-			if ( self.iconWhenNoninterruptible ) then
-				self.Icon:SetShown(not notInterruptible);
-			end
-		end
 		self.casting = true;
 		self.castID = castID;
 		self.channeling = nil;
@@ -291,21 +285,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims();
 		self:ApplyAlpha(1.0);
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show();
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide();
-				end
-			else
-				self.BorderShield:Hide();
-				if ( self.BarBorder ) then
-					self.BarBorder:Show();
-				end
-			end
-		end
-
 		self:UpdateShownState(self:ShouldShowCastBar());
 	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
 		self:HandleCastStop(event, ...);
@@ -379,9 +358,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		if ( self.Text ) then
 			self.Text:SetText(text);
 		end
-		if ( self.Icon ) then
-			self.Icon:SetTexture(texture);
-		end
 		if (isChargeSpell) then
 			self.reverseChanneling = true;
 			self.casting = true;
@@ -394,21 +370,6 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 		
 		self:StopAnims();
 		self:ApplyAlpha(1.0);
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show();
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide();
-				end
-			else
-				self.BorderShield:Hide();
-				if ( self.BarBorder ) then
-					self.BarBorder:Show();
-				end
-			end
-		end
-
 		self:UpdateShownState(self:ShouldShowCastBar());
 
 		-- AddStages after Show so that the layout is valid
@@ -439,24 +400,6 @@ function RazerNagaCastingBarMixin:UpdateInterruptibleState(notInterruptible)
 		local _, _, _, _, _, isTradeSkill = UnitCastingInfo(self.unit);
 		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
 		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
-
-		if ( self.BorderShield ) then
-			if ( self.showShield and notInterruptible ) then
-				self.BorderShield:Show();
-				if ( self.BarBorder ) then
-					self.BarBorder:Hide();
-				end
-			else
-				self.BorderShield:Hide();
-				if ( self.BarBorder ) then
-					self.BarBorder:Show();
-				end
-			end
-		end
-
-		if ( self.Icon and self.iconWhenNoninterruptible ) then
-			self.Icon:SetShown(not notInterruptible);
-		end
 	end
 end
 
