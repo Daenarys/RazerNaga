@@ -94,9 +94,11 @@ for _, tracker in pairs(trackers) do
 	hooksecurefunc(tracker.Header, 'SetCollapsed', SetCollapsedModule)
 end
 
+local seen = {}
 local function ObjectiveTracker_CountVisibleModules()
+	wipe(seen)
+
 	local count = 0
-	local seen = {}
 	for index, module in ipairs(ObjectiveTrackerFrame.modules) do
 		local header = module.Header
 		if header and not seen[header] then
@@ -136,7 +138,8 @@ hooksecurefunc(ObjectiveTrackerContainerMixin, "Update", function(self)
 			end
 			prevModule = module
 		end
-		module.Header.MinimizeButton:SetShown(showAllModuleMinimizeButtons)
+		local shouldShowThisModuleMinimizeButton = showAllModuleMinimizeButtons or module:IsCollapsed()
+		module.Header.MinimizeButton:SetShown(shouldShowThisModuleMinimizeButton)
 	end
 end)
 
