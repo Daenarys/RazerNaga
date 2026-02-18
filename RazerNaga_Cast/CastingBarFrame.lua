@@ -1,249 +1,850 @@
-local CASTING_BAR_ALPHA_STEP = 0.05
-local CASTING_BAR_FLASH_STEP = 0.2
-local CASTING_BAR_HOLD_TIME = 1
+local CASTBAR_STAGE_INVALID = -1;
+local CASTBAR_STAGE_DURATION_INVALID = -1;
 
-function CastingBarFrame_OnLoad(self, unit, showTradeSkills)
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit)
-	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit)
-	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit)
+RAZERNAGA_CASTING_BAR_TYPES = {
+	applyingcrafting = { 
+		filling = "ui-castingbar-filling-applyingcrafting",
+		full = "ui-castingbar-full-applyingcrafting",
+		glow = "ui-castingbar-full-glow-applyingcrafting",
+		sparkFx = "CraftingGlow",
+		finishAnim = "CraftingFinish",
+	},
+	applyingtalents = { 
+		filling = "ui-castingbar-filling-standard",
+		full = "ui-castingbar-full-standard",
+		glow = "ui-castingbar-full-glow-standard",
+		sparkFx = "StandardGlow",
+	},
+	standard = { 
+		filling = "ui-castingbar-filling-standard",
+		full = "ui-castingbar-full-standard",
+		glow = "ui-castingbar-full-glow-standard",
+		sparkFx = "StandardGlow",
+		finishAnim = "StandardFinish",
+	},
+	empowered = { 
+		filling = "",
+		full = "",
+		glow = "",
+	},
+	channel = { 
+		filling = "ui-castingbar-filling-channel",
+		full = "ui-castingbar-full-channel",
+		glow = "ui-castingbar-full-glow-channel",
+		sparkFx = "ChannelShadow",
+		finishAnim = "ChannelFinish",
+	},
+	uninterruptable = {
+		filling = "ui-castingbar-uninterruptable",
+		full = "ui-castingbar-uninterruptable",
+		glow = "ui-castingbar-full-glow-standard",
+	},
+	interrupted = { 
+		filling = "ui-castingbar-interrupted",
+		full = "ui-castingbar-interrupted",
+		glow = "ui-castingbar-full-glow-standard",
+	},
+};
 
-	self.unit = unit
-	self.showTradeSkills = showTradeSkills
-	self.casting = nil
-	self.channeling = nil
-	self.holdTime = 0
-	self.showCastbar = true
+RazerNagaCastingBarMixin = {};
+
+function RazerNagaCastingBarMixin:OnLoad(unit, showTradeSkills, showShield)
+	self.StagePoints = {};
+	self.StagePips = {};
+	self.StageTiers = {};
+
+	self:SetUnit(unit, showTradeSkills, showShield);
+
+	self.showCastbar = true;
+
+	local point, relativeTo, relativePoint, offsetX, offsetY = self.Spark:GetPoint(1);
+	if ( point == "CENTER" ) then
+		self.Spark.offsetY = offsetY;
+	end
 end
 
-function CastingBarFrame_OnEvent(self, event, ...)
-	local arg1 = ...
-	
-	local unit = self.unit
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
-		local nameChannel = UnitChannelInfo(unit)
-		local nameSpell = UnitCastingInfo(unit)
-		if ( nameChannel ) then
-			event = "UNIT_SPELLCAST_CHANNEL_START"
-			arg1 = unit
-		elseif ( nameSpell ) then
-			event = "UNIT_SPELLCAST_START"
-			arg1 = unit
+function RazerNagaCastingBarMixin:UpdateShownState(desiredShow)
+	if desiredShow ~= nil then
+		self:SetShown(desiredShow);
+		return;
+	end
+
+	self:SetShown(self.casting and self:ShouldShowCastBar());
+end
+
+function RazerNagaCastingBarMixin:SetUnit(unit, showTradeSkills, showShield)
+	if self.unit ~= unit then
+		self.unit = unit;
+		self.showTradeSkills = showTradeSkills;
+		self.showShield = showShield;
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+		
+		self:StopAnims();
+
+		if unit then
+			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_UPDATE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit);
+			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit);
+			self:RegisterEvent("PLAYER_ENTERING_WORLD");
+
+			self:OnEvent("PLAYER_ENTERING_WORLD")
 		else
-		    CastingBarFrame_FinishSpell(self)
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED");
+			self:UnregisterEvent("UNIT_SPELLCAST_DELAYED");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE");
+			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_UPDATE");
+			self:UnregisterEvent("UNIT_SPELLCAST_EMPOWER_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE");
+			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+			self:UnregisterEvent("UNIT_SPELLCAST_START");
+			self:UnregisterEvent("UNIT_SPELLCAST_STOP");
+			self:UnregisterEvent("UNIT_SPELLCAST_FAILED");
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD");
+
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:OnShow()
+	if ( self.unit ) then
+		if ( self.casting ) then
+			local _, _, _, startTime = UnitCastingInfo(self.unit);
+			if ( startTime ) then
+				self.value = (GetTime() - (startTime / 1000));
+			end
+		else
+			local _, _, _, _, endTime = UnitChannelInfo(self.unit);
+			if ( endTime ) then
+				self.value = ((endTime / 1000) - GetTime());
+			end
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:GetEffectiveType(isChannel, notInterruptible, isTradeSkill, isEmpowered)
+	if isTradeSkill then
+		return "applyingcrafting";
+	end
+	if notInterruptible then
+		return "uninterruptable";
+	end
+	if isChannel then
+		return "channel";
+	end
+	if isEmpowered then
+		return "empowered";
+	end
+	return "standard";
+end
+
+function RazerNagaCastingBarMixin:GetTypeInfo(barType)
+	if not barType then
+		barType = "standard";
+	end
+	return RAZERNAGA_CASTING_BAR_TYPES[barType];
+end
+
+
+function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
+	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
+		self.barType = "interrupted"; -- failed and interrupted use same bar art
+
+		--We don't want to show the full state for the empowered texture since it produces a gradient.
+		self:SetStatusBarTexture(empoweredInterrupt and nil or self:GetTypeInfo(self.barType).full);
+
+		self:ShowSpark();
+
+		if ( self.Text ) then
+			if ( event == "UNIT_SPELLCAST_FAILED" ) then
+				self.Text:SetText(FAILED);
+			else
+				self.Text:SetText(INTERRUPTED);
+			end
+		end
+
+		self.casting = nil;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+
+		self:PlayInterruptAnims();
+	end
+end 
+
+function RazerNagaCastingBarMixin:HandleCastStop(event, ...)
+	if ( not self:IsVisible() ) then
+		local desiredShowFalse = false;
+		self:UpdateShownState(desiredShowFalse);
+	end
+	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
+	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
+		
+		local castComplete = select(4, ...);
+		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
+			self:HandleInterruptOrSpellFailed(true, event, ...);
+			return; 
+		end 
+		
+		-- Cast info not available once stopped, so update bar based on cached barType
+		local barTypeInfo = self:GetTypeInfo(self.barType);
+		self:SetStatusBarTexture(barTypeInfo.full);
+
+		if not self.reverseChanneling then
+			self:HideSpark();
+		end
+
+		if ( self.Flash ) then
+			self.Flash:SetAtlas(barTypeInfo.glow);
+			self.Flash:SetAlpha(0.0);
+			self.Flash:Show();
+		end
+		if not self.reverseChanneling and not self.channeling then
+			self:SetValue(self.maxValue);
+		end
+
+		self:PlayFadeAnim();
+		self:PlayFinishAnim();
+
+		if ( event == "UNIT_SPELLCAST_STOP" ) then
+			self.casting = nil;
+		else
+			self.channeling = nil;
+			if (self.reverseChanneling) then
+				self.casting = nil;
+			end
+			self.reverseChanneling = nil;
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:OnEvent(event, ...)
+	local arg1 = ...;
+
+	local unit = self.unit;
+	if ( event == "PLAYER_ENTERING_WORLD" ) then
+		local nameChannel = UnitChannelInfo(unit);
+		local nameSpell = UnitCastingInfo(unit);
+		if ( nameChannel ) then
+			event = "UNIT_SPELLCAST_CHANNEL_START";
+			arg1 = unit;
+		elseif ( nameSpell ) then
+			event = "UNIT_SPELLCAST_START";
+			arg1 = unit;
+		else
+		    self:FinishSpell();
 		end
 	end
 
 	if ( arg1 ~= unit ) then
-		return
+		return;
 	end
 
 	if ( event == "UNIT_SPELLCAST_START" ) then
-		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
+		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-			self:Hide()
-			return
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+			return;
 		end
-		self:SetStatusBarColor(1.0, 0.7, 0.0)
-		self.Flash:SetVertexColor(1.0, 0.7, 0.0)
-		if ( self.Spark ) then
-			self.Spark:Show()
-		end
-		self.value = (GetTime() - (startTime / 1000))
-		self.maxValue = (endTime - startTime) / 1000
-		self:SetMinMaxValues(0, self.maxValue)
-		self:SetValue(self.value)
+
+		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
+		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+
+		self:ClearStages();
+
+		self:ShowSpark();
+
+		self.value = (GetTime() - (startTime / 1000));
+		self.maxValue = (endTime - startTime) / 1000;
+		self:SetMinMaxValues(0, self.maxValue);
+		self:SetValue(self.value);
 		if ( self.Text ) then
-			self.Text:SetText(text)
+			self.Text:SetText(text);
 		end
-		self:SetAlpha(1.0)
-		self.holdTime = 0
-		self.casting = true
-		self.castID = castID
-		self.channeling = nil
-		self.fadeOut = nil
-		if ( self.showCastbar ) then
-			self:Show()
-		end
-	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP") then
-		if ( not self:IsVisible() ) then
-			self:Hide()
-		end
-		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
-		     (self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") ) then
-			if ( self.Spark ) then
-				self.Spark:Hide()
+		if ( self.Icon ) then
+			self.Icon:SetTexture(texture);
+			if ( self.iconWhenNoninterruptible ) then
+				self.Icon:SetShown(not notInterruptible);
 			end
-			if ( self.Flash ) then
-				self.Flash:SetAlpha(0.0)
-				self.Flash:Show()
-			end
-			self:SetValue(self.maxValue)
-			if ( event == "UNIT_SPELLCAST_STOP" ) then
-				self.casting = nil
+		end
+		self.casting = true;
+		self.castID = castID;
+		self.channeling = nil;
+		self.reverseChanneling = nil;
+		
+		self:StopAnims();
+		self:ApplyAlpha(1.0);
+
+		if ( self.BorderShield ) then
+			if ( self.showShield and notInterruptible ) then
+				self.BorderShield:Show();
+				if ( self.BarBorder ) then
+					self.BarBorder:Hide();
+				end
 			else
-				self.channeling = nil
-			end
-			self.flash = true
-			self.fadeOut = true
-			self.holdTime = 0
-		end
-	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
-		if ( self:IsShown() and
-		     (self.casting and select(2, ...) == self.castID) and not self.fadeOut ) then
-			self:SetValue(self.maxValue)
-			self:SetStatusBarColor(0.86, 0.08, 0.24)
-			if ( self.Spark ) then
-				self.Spark:Hide()
-			end
-			if ( self.Text ) then
-				if ( event == "UNIT_SPELLCAST_FAILED" ) then
-					self.Text:SetText(FAILED)
-				else
-					self.Text:SetText(INTERRUPTED)
+				self.BorderShield:Hide();
+				if ( self.BarBorder ) then
+					self.BarBorder:Show();
 				end
 			end
-			self.casting = nil
-			self.channeling = nil
-			self.fadeOut = true
-			self.holdTime = GetTime() + CASTING_BAR_HOLD_TIME
 		end
+
+		self:UpdateShownState(self:ShouldShowCastBar());
+	elseif ( event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP") then
+		self:HandleCastStop(event, ...);
+	elseif ( event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" ) then
+		self:HandleInterruptOrSpellFailed(false, event, ...);
 	elseif ( event == "UNIT_SPELLCAST_DELAYED" ) then
 		if ( self:IsShown() ) then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
+			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit);
 			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				self:Hide()
-				return
+				-- if there is no name, there is no bar
+				local desiredShowFalse = false;
+				self:UpdateShownState(desiredShowFalse);
+				return;
 			end
-			self.value = (GetTime() - (startTime / 1000))
-			self.maxValue = (endTime - startTime) / 1000
-			self:SetMinMaxValues(0, self.maxValue)
+			self.value = (GetTime() - (startTime / 1000));
+			self.maxValue = (endTime - startTime) / 1000;
+			self:SetMinMaxValues(0, self.maxValue);
 			if ( not self.casting ) then
-				self:SetStatusBarColor(1.0, 0.7, 0.0)
-				if ( self.Spark ) then
-					self.Spark:Show()
-				end
+				self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
+				self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+				self:ClearStages();
+				self:ShowSpark();
 				if ( self.Flash ) then
-					self.Flash:SetAlpha(0.0)
-					self.Flash:Hide()
+					self.Flash:SetAlpha(0.0);
+					self.Flash:Hide();
 				end
-				self.casting = true
-				self.channeling = nil
-				self.flash = nil
-				self.fadeOut = nil
+				self.casting = true;
+				self.channeling = nil;
+				self.reverseChanneling = nil;
+
+				self:StopAnims();
 			end
 		end
-	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" ) then
-		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _, numStages = UnitChannelInfo(unit)
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" ) then
+		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID, _, numStages = UnitChannelInfo(unit);
 		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-			self:Hide()
-			return
+			-- if there is no name, there is no bar
+			local desiredShowFalse = false;
+			self:UpdateShownState(desiredShowFalse);
+			return;
 		end
-		self:SetStatusBarColor(0.0, 1.0, 0.0)
-		self.Flash:SetVertexColor(0.0, 1.0, 0.0)
-		self.value = ((endTime / 1000) - GetTime())
-		self.maxValue = (endTime - startTime) / 1000
-		self:SetMinMaxValues(0, self.maxValue)
-		self:SetValue(self.value)
+
+		local isChargeSpell = numStages > 0;
+
+		if isChargeSpell then
+			endTime = endTime + GetUnitEmpowerHoldAtMaxTime(self.unit);
+		end
+		
+		self.maxValue = (endTime - startTime) / 1000;
+
+		self.barType = self:GetEffectiveType(not isChargeSpell, notInterruptible, isTradeSkill, isChargeSpell);
+
+		if isChargeSpell then
+			self:SetColorFill(0, 0, 0, 0);
+		else
+			self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+		end
+
+		self:ClearStages();
+		
+		if (isChargeSpell) then
+			self.value = GetTime() - (startTime / 1000);
+		else
+			self.value = (endTime / 1000) - GetTime();
+		end
+
+		self:ShowSpark();
+
+		self:SetMinMaxValues(0, self.maxValue);
+		self:SetValue(self.value);
 		if ( self.Text ) then
-			self.Text:SetText(text)
+			self.Text:SetText(text);
 		end
-		if ( self.Spark ) then
-			self.Spark:Hide()
+		if ( self.Icon ) then
+			self.Icon:SetTexture(texture);
 		end
-		self:SetAlpha(1.0)
-		self.holdTime = 0
-		self.casting = nil
-		self.channeling = true
-		self.fadeOut = nil
-		if ( self.showCastbar ) then
-			self:Show()
+		if (isChargeSpell) then
+			self.reverseChanneling = true;
+			self.casting = true;
+			self.channeling = false;
+		else
+			self.reverseChanneling = nil;
+			self.casting = nil;
+			self.channeling = true;
 		end
-	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" ) then
-		if ( self:IsShown() ) then
-			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)
-			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				self:Hide()
-				return
+		
+		self:StopAnims();
+		self:ApplyAlpha(1.0);
+
+		if ( self.BorderShield ) then
+			if ( self.showShield and notInterruptible ) then
+				self.BorderShield:Show();
+				if ( self.BarBorder ) then
+					self.BarBorder:Hide();
+				end
+			else
+				self.BorderShield:Hide();
+				if ( self.BarBorder ) then
+					self.BarBorder:Show();
+				end
 			end
-			self.value = ((endTime / 1000) - GetTime())
-			self.maxValue = (endTime - startTime) / 1000
-			self:SetMinMaxValues(0, self.maxValue)
-			self:SetValue(self.value)
+		end
+
+		self:UpdateShownState(self:ShouldShowCastBar());
+
+		-- AddStages after Show so that the layout is valid
+		if (isChargeSpell) then
+			self:AddStages(numStages);
+		end
+	elseif ( event == "UNIT_SPELLCAST_CHANNEL_UPDATE" or event == "UNIT_SPELLCAST_EMPOWER_UPDATE" ) then
+		if ( self:IsShown() ) then
+			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit);
+			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
+				-- if there is no name, there is no bar
+				local desiredShowFalse = false;
+				self:UpdateShownState(desiredShowFalse);
+				return;
+			end
+			self.value = ((endTime / 1000) - GetTime());
+			self.maxValue = (endTime - startTime) / 1000;
+			self:SetMinMaxValues(0, self.maxValue);
+			self:SetValue(self.value);
+		end
+	elseif ( event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" ) then
+		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE");
+	end
+end
+
+function RazerNagaCastingBarMixin:UpdateInterruptibleState(notInterruptible)
+	if ( self.casting or self.channeling ) then
+		local _, _, _, _, _, isTradeSkill = UnitCastingInfo(self.unit);
+		self.barType = self:GetEffectiveType(false, notInterruptible, isTradeSkill, false);
+		self:SetStatusBarTexture(self:GetTypeInfo(self.barType).filling);
+
+		if ( self.BorderShield ) then
+			if ( self.showShield and notInterruptible ) then
+				self.BorderShield:Show();
+				if ( self.BarBorder ) then
+					self.BarBorder:Hide();
+				end
+			else
+				self.BorderShield:Hide();
+				if ( self.BarBorder ) then
+					self.BarBorder:Show();
+				end
+			end
+		end
+
+		if ( self.Icon and self.iconWhenNoninterruptible ) then
+			self.Icon:SetShown(not notInterruptible);
 		end
 	end
 end
 
-function CastingBarFrame_OnUpdate(self, elapsed)
-	if ( self.casting ) then
-		self.value = self.value + elapsed
+function RazerNagaCastingBarMixin:OnUpdate(elapsed)
+	if ( self.casting or self.reverseChanneling) then
+		self.value = self.value + elapsed;
+		if(self.reverseChanneling and self.NumStages > 0) then
+			self:UpdateStage();
+		end
 		if ( self.value >= self.maxValue ) then
-			self:SetValue(self.maxValue)
-			CastingBarFrame_FinishSpell(self)
-			return
+			self:SetValue(self.maxValue);
+			if (not self.reverseChanneling) then
+				self:FinishSpell();
+			else
+				if self.FlashLoopingAnim and not self.FlashLoopingAnim:IsPlaying() then
+					self.FlashLoopingAnim:Play();
+					self.Flash:Show();
+				end
+			end
+			self:HideSpark();
+			return;
 		end
-		self:SetValue(self.value)
+		self:SetValue(self.value);
 		if ( self.Flash ) then
-			self.Flash:Hide()
-		end
-		if ( self.Spark ) then
-			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -4)
+			self.Flash:Hide();
 		end
 	elseif ( self.channeling ) then
-		self.value = self.value - elapsed
+		self.value = self.value - elapsed;
 		if ( self.value <= 0 ) then
-			CastingBarFrame_FinishSpell(self)
-			return
+			self:FinishSpell();
+			return;
 		end
-		self:SetValue(self.value)
+		self:SetValue(self.value);
 		if ( self.Flash ) then
-			self.Flash:Hide()
+			self.Flash:Hide();
 		end
-	elseif ( GetTime() < self.holdTime ) then
-		return
-	elseif ( self.flash ) then
-		local alpha = 0
-		if ( self.Flash ) then
-			alpha = self.Flash:GetAlpha() + CASTING_BAR_FLASH_STEP
-		end
-		if ( alpha < 1 ) then
-			if ( self.Flash ) then
-				self.Flash:SetAlpha(alpha)
-			end
-		else
-			if ( self.Flash ) then
-				self.Flash:SetAlpha(1.0)
-			end
-			self.flash = nil
-		end
-	elseif ( self.fadeOut ) then
-		local alpha = self:GetAlpha() - CASTING_BAR_ALPHA_STEP
-		if ( alpha > 0 ) then
-			self:SetAlpha(alpha)
-		else
-			self.fadeOut = nil
-			self:Hide()
+	end
+
+	if ( self.casting or self.reverseChanneling or self.channeling ) then
+		if ( self.Spark ) then
+			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 0);
 		end
 	end
 end
 
-function CastingBarFrame_FinishSpell(self)
-	self:SetStatusBarColor(0.0, 1.0, 0.0)
-	if ( self.Spark ) then
-		self.Spark:Hide()
+function RazerNagaCastingBarMixin:ApplyAlpha(alpha)
+	self:SetAlpha(alpha);
+end
+
+function RazerNagaCastingBarMixin:FinishSpell()
+	if self.maxValue and not self.reverseChanneling and not self.channeling then
+		self:SetValue(self.maxValue);
 	end
+	local barTypeInfo = self:GetTypeInfo(self.barType);
+	self:SetStatusBarTexture(barTypeInfo.full);
+
+	self:HideSpark();
+
 	if ( self.Flash ) then
-		self.Flash:SetAlpha(0.0)
-		self.Flash:Show()
+		self.Flash:SetAtlas(barTypeInfo.glow);
+		self.Flash:SetAlpha(0.0);
+		self.Flash:Show();
 	end
-	self.flash = true
-	self.fadeOut = true
-	self.casting = nil
-	self.channeling = nil
+	
+	self:PlayFadeAnim();
+	self:PlayFinishAnim();
+	
+	self.casting = nil;
+	self.channeling = nil;
+	self.reverseChanneling = nil;
+end
+
+function RazerNagaCastingBarMixin:ShowSpark()
+	if ( self.Spark ) then
+		self.Spark:Show();
+	end
+
+	local currentBarType = self.barType;
+
+	if currentBarType == "interrupted" then
+		self.Spark:SetAtlas("ui-castingbar-pip-red");
+		self.Spark.offsetY = 0;
+	elseif currentBarType == "empowered" then
+		self.Spark:SetAtlas("ui-castingbar-empower-cursor");
+		self.Spark.offsetY = 4;
+	else
+		self.Spark:SetAtlas("ui-castingbar-pip");
+		self.Spark.offsetY = 0;
+	end
+
+	for barType, barTypeInfo in pairs(RAZERNAGA_CASTING_BAR_TYPES) do
+		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
+		if sparkFx then
+			sparkFx:SetShown(self.playCastFX and barType == currentBarType);
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:HideSpark()
+	if ( self.Spark ) then
+		self.Spark:Hide();
+	end
+
+	for barType, barTypeInfo in pairs(RAZERNAGA_CASTING_BAR_TYPES) do
+		local sparkFx = barTypeInfo.sparkFx and self[barTypeInfo.sparkFx];
+		if sparkFx then
+			sparkFx:Hide();
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:PlayInterruptAnims()
+	if self.HoldFadeOutAnim then
+		self.HoldFadeOutAnim:Play();
+	end
+	
+	if not self.playCastFX then
+		return;
+	end
+
+	if self.InterruptShakeAnim and tonumber(GetCVar("ShakeStrengthUI")) > 0 then
+		self.InterruptShakeAnim:Play();
+	end
+	if self.InterruptGlowAnim then
+		self.InterruptGlowAnim:Play();
+	end
+	if self.InterruptSparkAnim then
+		self.InterruptSparkAnim:Play();
+	end
+end
+
+function RazerNagaCastingBarMixin:StopInterruptAnims()
+	if self.HoldFadeOutAnim then
+		self.HoldFadeOutAnim:Stop();
+	end
+	if self.InterruptShakeAnim then
+		self.InterruptShakeAnim:Stop();
+	end
+	if self.InterruptGlowAnim then
+		self.InterruptGlowAnim:Stop();
+	end
+	if self.InterruptSparkAnim then
+		self.InterruptSparkAnim:Stop();
+	end
+end
+
+function RazerNagaCastingBarMixin:PlayFadeAnim()
+	if self.FlashLoopingAnim then
+		self.FlashLoopingAnim:Stop();
+	end
+
+	if self.FlashAnim then
+		self.FlashAnim:Play();
+	end
+
+	if self.FadeOutAnim and self:GetAlpha() > 0 and self:IsVisible() then
+		if self.reverseChanneling and self.CurrSpellStage < self.NumStages then
+			self.HoldFadeOutAnim:Play();
+		else
+			self.FadeOutAnim:Play();
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:PlayFinishAnim()
+	if not self.playCastFX then
+		return;
+	end
+
+	local barTypeInfo = self:GetTypeInfo(self.barType);
+
+	local playFinish = not barTypeInfo.finishCondition or barTypeInfo.finishCondition(self);
+	if playFinish then
+		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim];
+		if finishAnim then
+			finishAnim:Play();
+		end
+	end
+
+	if self.barType == "empowered" then
+		for i = 1, self.CurrSpellStage do
+			local stageTier = self.StageTiers[i];
+			if stageTier and stageTier.FinishAnim then
+				stageTier.FlashAnim:Stop();
+				stageTier.FinishAnim:Play();
+			end
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:StopFinishAnims()
+	if self.FlashAnim then
+		self.FlashAnim:Stop();
+	end
+	if self.FadeOutAnim then
+		self.FadeOutAnim:Stop();
+	end
+
+	for _, barTypeInfo in pairs(RAZERNAGA_CASTING_BAR_TYPES) do
+		local finishAnim = barTypeInfo.finishAnim and self[barTypeInfo.finishAnim];
+		if finishAnim then
+			finishAnim:Stop();
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:StopAnims()
+	self:StopInterruptAnims();
+	self:StopFinishAnims();
+end
+
+function RazerNagaCastingBarMixin:ShouldShowCastBar()
+	return self.showCastbar and (self.unit ~= nil);
+end
+
+function RazerNagaCastingBarMixin:AddStages(numStages)
+	self.CurrSpellStage = CASTBAR_STAGE_INVALID;
+	self.NumStages = numStages + 1;
+	self.SpellID = spellID;
+	local sumDuration = 0;
+	self.StagePoints = {};
+	self.StagePips = {};
+	self.StageTiers = {};
+	local hasFX = self.StandardFinish ~= nil;
+	local stageMaxValue = self.maxValue * 1000;
+
+	local getStageDuration = function(stage)
+		if stage == self.NumStages then	
+			return GetUnitEmpowerHoldAtMaxTime(self.unit);
+		else
+			return GetUnitEmpowerStageDuration(self.unit, stage-1);
+		end
+	end;
+
+	local castBarLeft = self:GetLeft();
+	local castBarRight = self:GetRight();
+
+	if not castBarLeft or not castBarRight then
+		return;
+	end
+
+	local castBarWidth = castBarRight - castBarLeft;
+
+	for i = 1,self.NumStages-1,1 do
+		local duration = getStageDuration(i);
+		if(duration > CASTBAR_STAGE_DURATION_INVALID) then
+			sumDuration = sumDuration + duration;
+			local portion = sumDuration / stageMaxValue;
+			local offset = castBarWidth * portion;
+			self.StagePoints[i] = sumDuration;
+
+			local stagePipName = "StagePip" .. i;
+			local stagePip = self[stagePipName];
+			if not stagePip then
+				stagePip = CreateFrame("FRAME", nil, self, hasFX and "CastingBarFrameStagePipFXTemplate" or "CastingBarFrameStagePipTemplate");
+				self[stagePipName] = stagePip;
+			end
+
+			if stagePip then
+				table.insert(self.StagePips, stagePip);
+				stagePip:ClearAllPoints();
+				stagePip:SetPoint("TOP", self, "TOPLEFT", offset, -1);
+				stagePip:SetPoint("BOTTOM", self, "BOTTOMLEFT", offset, 1);
+				stagePip:Show();
+				stagePip.BasePip:SetShown(i ~= self.NumStages);
+			end
+		end
+	end
+
+	for i = 1,self.NumStages-1,1 do
+		local chargeTierName = "ChargeTier" .. i;
+		local chargeTier = self[chargeTierName];
+		if not chargeTier then
+			chargeTier = CreateFrame("FRAME", nil, self, "CastingBarFrameStageTierTemplate");
+			self[chargeTierName] = chargeTier;
+		end
+
+		if chargeTier then
+			local leftStagePip = self.StagePips[i];
+			local rightStagePip = self.StagePips[i+1];
+
+			if leftStagePip then
+				chargeTier:SetPoint("TOPLEFT", leftStagePip, "TOP", 0, 0);
+			end
+			if rightStagePip then
+				chargeTier:SetPoint("BOTTOMRIGHT", rightStagePip, "BOTTOM", 0, 0);
+			else
+				chargeTier:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 0, 1);
+			end
+
+			local chargeTierLeft = chargeTier:GetLeft();
+			local chargeTierRight = chargeTier:GetRight();
+
+			local left = (chargeTierLeft - castBarLeft) / castBarWidth;
+			local right = 1.0 - ((castBarRight - chargeTierRight) / castBarWidth);
+
+			chargeTier.FlashAnim:Stop();
+			chargeTier.FinishAnim:Stop();
+
+			chargeTier.Normal:SetAtlas(("ui-castingbar-tier%d-empower"):format(i));
+			chargeTier.Disabled:SetAtlas(("ui-castingbar-disabled-tier%d-empower"):format(i));
+			chargeTier.Glow:SetAtlas(("ui-castingbar-glow-tier%d-empower"):format(i));
+
+			chargeTier.Normal:SetTexCoord(left, right, 0, 1);
+			chargeTier.Disabled:SetTexCoord(left, right, 0, 1);
+			chargeTier.Glow:SetTexCoord(left, right, 0, 1);
+
+			chargeTier.Normal:SetShown(false);
+			chargeTier.Disabled:SetShown(true);
+			chargeTier.Glow:SetAlpha(0);
+
+			chargeTier:Show();
+			table.insert(self.StageTiers, chargeTier);
+		end
+	end
+
+end
+
+function RazerNagaCastingBarMixin:UpdateStage()
+	local maxStage = 0;
+	local stageValue = self.value*1000;
+	for i = 1, self.NumStages do
+		if self.StagePoints[i] then
+			if stageValue > self.StagePoints[i] then
+				maxStage = i;
+			else
+				break;
+			end
+		end
+	end
+
+	if (maxStage ~= self.CurrSpellStage and maxStage > CASTBAR_STAGE_INVALID and maxStage <= self.NumStages) then
+		self.CurrSpellStage = maxStage;
+		if maxStage < self.NumStages then
+			local stagePip = self.StagePips[maxStage];
+			if stagePip and stagePip.StageAnim then
+				stagePip.StageAnim:Play();
+			end
+		end
+
+		if self.playCastFX then
+			if maxStage == self.NumStages - 1 then
+				if self.StageFinish then
+					self.StageFinish:Play();
+				end
+			elseif maxStage > 0 then
+				if self.StageFlash then
+					self.StageFlash:Play();
+				end
+			end
+		end
+		
+		local chargeTierName = "ChargeTier" .. self.CurrSpellStage;
+		local chargeTier = self[chargeTierName];
+		if chargeTier then
+			chargeTier.Normal:SetShown(true);
+			chargeTier.Disabled:SetShown(false);
+			chargeTier.FlashAnim:Play();
+		end
+	end
+end
+
+function RazerNagaCastingBarMixin:ClearStages()
+	if self.ChargeGlow then
+		self.ChargeGlow:SetShown(false);
+	end
+	if self.ChargeFlash then
+		self.ChargeFlash:SetAlpha(0);
+	end
+
+	for _, stagePip in pairs(self.StagePips) do
+		local maxStage = self.NumStages;
+		for i = 1, maxStage do
+			local stageAnimName = "Stage" .. i;
+			local stageAnim = stagePip[stageAnimName];
+			if stageAnim then
+				stageAnim:Stop();
+			end
+		end
+		stagePip:Hide();
+	end
+
+	for _, stageTier in pairs(self.StageTiers) do
+		stageTier:Hide();
+	end
+
+	self.NumStages = 0;
+	table.wipe(self.StagePoints);
+	table.wipe(self.StageTiers);
 end
