@@ -19,10 +19,6 @@ do
 	Settings.RegisterAddOnCategory(mainCategory)
 	Options.mainCategory = mainCategory
 	
-	Options:SetScript('OnShow', function(self)
-		Settings.OpenToCategory(self.panels[1].settingsCategory:GetID())
-	end)
-	
 	Options.NewPanel = function(self, title, subtitle, icon)
 		local panel = RazerNaga.Panel:New('$parent' .. title, AddonName, title, subtitle, icon)
 
