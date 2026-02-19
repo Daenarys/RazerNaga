@@ -52,6 +52,7 @@
 				CastingBarFrame_OnLoad(self, 'player', true)
 			</OnLoad>
 			<OnEvent function="CastingBarFrame_OnEvent"/>
+			<OnShow function="CastingBarFrame_OnShow"/>
 		</Scripts>
 		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
 		<BarColor r="1.0" g="0.7" b="0.0"/>
