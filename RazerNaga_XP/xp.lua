@@ -42,7 +42,6 @@ function DXP:Unload()
     self.frame:Free()
 end
 
-
 --[[ XP Object ]]--
 
 XP = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
@@ -159,7 +158,6 @@ function XP:ShouldWatchFaction()
     return (not self.sets.alwaysShowXP) and C_Reputation.GetWatchedFactionData()
 end
 
-
 --[[ Experience ]]--
 
 function XP:WatchExperience()
@@ -234,8 +232,6 @@ function XP:GetXPFormat()
         return format("%s: %s / %s [%s%%]", label, comma(xp), comma(xpMax), pct)
     ]]
 end
-
-
 
 --[[ Reputation ]]--
 
@@ -355,7 +351,6 @@ function XP:GetRepFormat()
     ]]
 end
 
-
 --[[ Layout ]]--
 
 function XP:Layout()
@@ -392,7 +387,6 @@ function XP:SetAlwaysShowXP(enable)
     self:UpdateWatch()
 end
 
-
 --[[ Text ]]--
 
 if XP.IsMouseOver then
@@ -418,10 +412,7 @@ function XP:ToggleText(enable)
     self:UpdateTextShown()
 end
 
-
---[[
-    Layout Panel
---]]
+--[[ Layout Panel ]]--
 
 local function CreateWidthSlider(p)
     local s = p:NewSlider(L.Width, 1, 100, 1)
@@ -469,10 +460,7 @@ local function AddLayoutPanel(menu)
     showXP:SetScript('OnShow', function(self) self:SetChecked(self:GetParent().owner.sets.alwaysShowXP) end)
 end
 
-
---[[
-    Texture Picker
---]]
+--[[ Texture Picker ]]--
 
 --yeah I know I'm bad in that I didn't capitialize some constants
 local NUM_ITEMS = 9
@@ -565,7 +553,6 @@ local function AddTexturePanel(menu)
 
     p.height = 200
 end
-
 
 --[[ Menu Code ]]--
 
