@@ -75,7 +75,7 @@ function ActionButtonMixin:OnCreate(id)
     -- initialize secure state
     self:SetAttributeNoHandler("action", 0)
     self:SetAttributeNoHandler("commandName", GetActionButtonCommand(id) or ("CLICK %s:HOTKEY"):format(self:GetName()))
-    self:SetAttributeNoHandler("showgrid", 0)
+    self:SetAttributeNoHandler("showgrid", RazerNaga:ShowGrid())
     self:SetAttributeNoHandler("useparent-checkfocuscast", true)
     self:SetAttributeNoHandler("useparent-checkmouseovercast", true)
     self:SetAttributeNoHandler("useparent-checkselfcast", true)
@@ -98,8 +98,9 @@ function ActionButtonMixin:OnCreate(id)
     self:SetAttributeNoHandler("UpdateShown", [[
         local show = (HasAction(self:GetAttribute("action")))
             and not self:GetAttribute("statehidden")
+        local showgrid = self:GetAttribute("showgrid")
 
-        if show then
+        if show or showgrid then
             self:SetAlpha(1)
         else
             self:SetAlpha(0)
