@@ -225,6 +225,10 @@ function RazerNaga:HideBlizzard()
 		end
 	end
 
+	local function wipeActionButtons(bar)
+		table.wipe(bar.actionButtons)
+	end
+
 	apply(banish,
 		"MainActionBar",
 		"MultiBarBottomLeft",
@@ -272,6 +276,16 @@ function RazerNaga:HideBlizzard()
 		"MultiBarBottomRight",
 		"MultiBarLeft",
 		"MultiBarRight"
+	)
+
+	apply(wipeActionButtons,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7"
 	)
 
 	_G.MultiActionBar_ShowAllGrids = function() end
