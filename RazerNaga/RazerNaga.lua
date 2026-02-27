@@ -751,7 +751,7 @@ end
 --binding text
 function RazerNaga:SetShowBindingText(enable)
     self.db.profile.showBindingText = enable or false
-    self.Frame:ForEach('ForButtons', 'SetShowBindingText', enable)
+    self.Frame:ForEach('ForButtons', 'UpdateHotkeys')
 end
 
 function RazerNaga:ShowBindingText()
