@@ -1,5 +1,5 @@
 ## Interface: 120001
-## IconTexture: Interface\Addons\RazerNaga\Icons\RazerNagaMini
+## IconTexture: Interface/AddOns/RazerNaga/Icons/RazerNagaMini
 ## Title: Razer Naga XP
 ## Notes: A movable experience/reputation bar
 ## Author: Daenarys
