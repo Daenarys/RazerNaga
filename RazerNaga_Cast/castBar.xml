@@ -2,58 +2,58 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Script file="CastingBarFrame.lua"/>
 	<Script file="castBar.lua"/>
-	<StatusBar name="RazerNagaCastingBarTemplate" drawLayer="BORDER" hidden="true" virtual="true">
-		<Size x="210" y="14"/>
+	<StatusBar name="RazerNagaCastingBarTemplate" mixin="RazerNagaCastingBarMixin" inherits="CastingBarFrameAnimsTemplate" drawLayer="BORDER" hidden="true" virtual="true">
+		<Size x="208" y="11"/>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true">
-					<Color r="0" g="0" b="0" a="0.5"/>
+			<Layer level="BACKGROUND" textureSubLevel="0">
+				<Texture parentKey="TextBorder" atlas="ui-castingbar-textbox">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-12"/>
+					</Anchors>
 				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="GameFontHighlight">
+				<Texture parentKey="Background" atlas="ui-castingbar-background">
 					<Anchors>
-						<Anchor point="CENTER">
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Time" font="GameFontHighlight" hidden="true">
-					<Anchors>
-						<Anchor point="RIGHT">
-							<Offset x="-4" y="0"/>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<Texture parentKey="Border" file="Interface\CastingBar\UI-CastingBar-Border-Small">
-					<Size x="275" y="68"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
-					<Size x="32" y="32"/>
+				<Texture parentKey="Border" atlas="ui-castingbar-frame">
 					<Anchors>
-						<Anchor point="CENTER">
-						</Anchor>
+						<Anchor point="TOPLEFT" x="-2" y="2"/>
+						<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
 					</Anchors>
 				</Texture>
-				<Texture parentKey="Flash" file="Interface\CastingBar\UI-CastingBar-Flash-Small" alphaMode="ADD">
-					<Size x="275" y="78"/>
+				<Texture parentKey="Spark" atlas="ui-castingbar-pip">
+					<Size x="6" y="16"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-1" y="1"/>
+						<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="SystemFont_Shadow_Small">
+					<Size x="0" y="16"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-8"/>
+						<Anchor point="TOPRIGHT" x="0" y="-8"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnLoad>
-				CastingBarFrame_OnLoad(self, 'player', true)
+				self:OnLoad("player", true, false)
 			</OnLoad>
-			<OnEvent function="CastingBarFrame_OnEvent"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
-		<BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
-		<BarColor r="1.0" g="0.7" b="0.0"/>
 	</StatusBar>
 </Ui>
