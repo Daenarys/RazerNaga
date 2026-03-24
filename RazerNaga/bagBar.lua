@@ -53,12 +53,12 @@ function BagBar:Reload()
 	end
 
 	if not self.sets.oneBag then
+		if self.sets.reagentSlot then
+			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
+		end
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
-		end
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
 		end
 	end
 
