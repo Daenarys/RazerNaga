@@ -77,7 +77,6 @@ local function skinActionButton(self)
     self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
     self.Flash:ClearAllPoints()
     self.Flash:SetAllPoints()
-
     if self.IconMask then
         self.IconMask:Hide()
     end
