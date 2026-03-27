@@ -124,6 +124,10 @@ function BindableButton:UpdateHotkeys()
         hotkey:ClearAllPoints()
         hotkey:SetPoint("TOPLEFT", 3, -3)
     end
+
+    self.TextOverlayContainer:SetFrameLevel(2)
+    self.TextOverlayContainer.Count:SetDrawLayer("ARTWORK", 2)
+    self.TextOverlayContainer.HotKey:SetDrawLayer("ARTWORK", 2)
 end
 
 function BindableButton:OnEnter()
