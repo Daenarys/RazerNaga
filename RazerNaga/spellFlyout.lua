@@ -80,18 +80,9 @@ end
 --------------------------------------------------------------------------------
 
 function SpellFlyoutButtonMixin:Update()
-	self:UpdateCooldown()
 	self:UpdateState()
 	self:UpdateUsable()
 	self:UpdateCount()
-end
-
-function SpellFlyoutButtonMixin:UpdateCooldown()
-	local spellID = self.spellID
-
-	if spellID then
-		ActionButton_UpdateCooldown(self)
-	end
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
@@ -538,10 +529,6 @@ function SpellFlyout:PET_STABLE_UPDATE()
 	end
 end
 
-function SpellFlyout:SPELL_UPDATE_COOLDOWN()
-	self.frame:ForShown("UpdateCooldown")
-end
-
 function SpellFlyout:SPELL_UPDATE_USABLE()
 	self.frame:ForShown("UpdateUsable")
 end
@@ -558,7 +545,6 @@ function SpellFlyout:OnFlyoutShown()
 		self.flyoutShown = true
 
 		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
-		self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 		self:RegisterEvent("SPELL_UPDATE_USABLE")
 	end
 end
@@ -568,7 +554,6 @@ function SpellFlyout:OnFlyoutHidden()
 		self.flyoutShown = nil
 
 		self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED")
-		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 		self:UnregisterEvent("SPELL_UPDATE_USABLE")
 	end
 end
