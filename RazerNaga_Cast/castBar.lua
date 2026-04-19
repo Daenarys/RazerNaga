@@ -40,7 +40,7 @@ function CastBar:GetDefaults()
 		point = 'CENTER',
 		x = 0,
 		y = 30,
-		showText = true,
+		showText = true
 	}
 end
 

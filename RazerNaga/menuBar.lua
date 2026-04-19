@@ -30,7 +30,7 @@ local MICRO_BUTTON_NAMES = {
     ['TalentMicroButton'] = _G['TALENTS'],
     ['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
     ['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
-    ['GuildMicroButton'] = _G['LOOKINGFORGUILD'],
+    ['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
     ['PVPMicroButton'] = _G['PLAYER_V_PLAYER'],
     ['LFGMicroButton'] = _G['LFG_BUTTON'],
     ['CollectionsMicroButton'] = _G['COLLECTIONS'],
@@ -38,29 +38,6 @@ local MICRO_BUTTON_NAMES = {
     ['StoreMicroButton'] = _G['BLIZZARD_STORE'],
     ['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
 }
-
-function MenuBar:SkinButton(button)
-    if button.skinned then return end
-
-    local normalTexture = button:GetNormalTexture()
-    if (normalTexture) then
-        normalTexture:SetTexelSnappingBias(0)
-    end
-    local pushedTexture = button:GetPushedTexture()
-    if (pushedTexture) then
-        pushedTexture:SetTexelSnappingBias(0)
-    end
-    local disabledTexture = button:GetDisabledTexture()
-    if (disabledTexture) then
-        disabledTexture:SetTexelSnappingBias(0)
-    end
-    local highlightTexture = button:GetHighlightTexture()
-    if (highlightTexture) then
-        highlightTexture:SetTexelSnappingBias(0)
-    end
-
-    button.skinned = true
-end
 
 function MenuBar:New()
     local bar = MenuBar.proto.New(self, 'menu')
@@ -77,6 +54,62 @@ function MenuBar:Create(frameId)
     bar.buttons = {}
     bar.activeButtons = {}
     bar.overrideButtons = {}
+
+    bar.updateLayout = function()
+        bar:Layout()
+        bar.updatingLayout = nil
+    end
+
+    local function getOrHook(frame, script, action)
+        if frame:GetScript(script) then
+            frame:HookScript(script, action)
+        else
+            frame:SetScript(script, action)
+        end
+    end
+
+    local function requestLayoutUpdate()
+        if not bar.updatingLayout then
+            bar.updatingLayout = true
+            C_Timer.After(0.1, bar.updateLayout)
+        end
+    end
+
+    hooksecurefunc('UpdateMicroButtons', requestLayoutUpdate)
+
+    if PetBattleFrame and PetBattleFrame.BottomFrame and PetBattleFrame.BottomFrame.MicroButtonFrame then
+        local petMicroButtons = PetBattleFrame.BottomFrame.MicroButtonFrame
+
+        getOrHook(
+            petMicroButtons, 'OnShow', function()
+                self.isPetBattleUIShown = true
+                requestLayoutUpdate()
+            end
+        )
+
+        getOrHook(
+            petMicroButtons, 'OnHide', function()
+                self.isPetBattleUIShown = nil
+                requestLayoutUpdate()
+            end
+        )
+    end
+
+    if OverrideActionBar then
+        getOrHook(
+            OverrideActionBar, 'OnShow', function()
+                self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
+                requestLayoutUpdate()
+            end
+        )
+
+        getOrHook(
+            OverrideActionBar, 'OnHide', function()
+                self.isOverrideUIShown = nil
+                requestLayoutUpdate()
+            end
+        )
+    end
 
     return bar
 end
@@ -96,7 +129,6 @@ function MenuBar:AddButton(i)
     if button then
         button:SetParent(self)
         button:Show()
-        self:SkinButton(button)
 
         self.buttons[i] = button
     end
@@ -180,7 +212,7 @@ function MenuBar:LayoutNormal()
 
     local firstButton = self.buttons[1]
     local w = firstButton:GetWidth() + spacing - 2
-    local h = firstButton:GetHeight() + spacing - 20
+    local h = firstButton:GetHeight() + spacing - 1
 
     for i, button in pairs(self.activeButtons) do
         local col, row
@@ -199,7 +231,7 @@ function MenuBar:LayoutNormal()
         
         button:SetParent(self)
         button:ClearAllPoints()
-        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 20)
+        button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
         button:Show()
     end
 
@@ -233,11 +265,11 @@ function MenuBar:FixButtonPositions()
         button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
         button:ClearAllPoints()
         if i == 1 then
-            button:SetPoint('TOPLEFT', -12, 25)
+            button:SetPoint('TOPLEFT', -4, 3)
         elseif i == 7 then
-            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 25)
+            button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
         else
-            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', 0, 0)
+            button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
         end
 
         button:Show()
@@ -332,24 +364,6 @@ end
 --------------------------------------------------------------------------------
 
 local MenuBarModule = RazerNaga:NewModule('MenuBar')
-
-function MenuBarModule:OnInitialize()
-    local perf = MainMenuMicroButton and MainMenuBarPerformanceBar
-    if perf then
-        perf:SetSize(28, 58)
-        perf:ClearAllPoints()
-        perf:SetPoint('CENTER')
-    end
-
-    local layout = RazerNaga:Debounce(function()
-        local frame = self.frame
-        if frame then
-            self.frame:Layout()
-        end
-    end)
-
-    hooksecurefunc('UpdateMicroButtons', layout)
-end
 
 function MenuBarModule:Load()
     self.frame = MenuBar:New()

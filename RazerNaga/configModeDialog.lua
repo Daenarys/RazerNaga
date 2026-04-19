@@ -6,7 +6,7 @@
 local RazerNaga = RazerNaga
 local L = LibStub('AceLocale-3.0'):GetLocale('RazerNaga')
 
-local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, BackdropTemplateMixin and 'BackdropTemplate')
+local ConfigModeDialog = CreateFrame('Frame', 'RazerNagaConfigHelperDialog', UIParent, "BackdropTemplate")
 ConfigModeDialog:SetPoint('TOP', 0, -24)
 ConfigModeDialog:SetScript('OnShow', function(self) self:Load() end)
 ConfigModeDialog:Hide()
@@ -18,23 +18,16 @@ function ConfigModeDialog:Load()
 	self:EnableMouse(true)
 	self:SetClampedToScreen(true)
 	self:SetSize(360, 192)
-	self:SetBackdrop {
-		bgFile='Interface\\DialogFrame\\UI-DialogBox-Background' ,
-		edgeFile='Interface\\DialogFrame\\UI-DialogBox-Border',
-		tile = true,
-		insets = {left = 11, right = 12, top = 12, bottom = 11},
-		tileSize = 32,
-		edgeSize = 32,
-	}
+	self:SetBackdrop(BACKDROP_DIALOG_32_32)
 	self:SetScript('OnShow', function() PlaySound(SOUNDKIT.IG_MAINMENU_OPTION) end)
 	self:SetScript('OnHide', function() PlaySound(SOUNDKIT.GS_TITLE_OPTION_EXIT) end)
 
 	local header = self:CreateTexture(nil, 'ARTWORK')
 	header:SetTexture('Interface\\DialogFrame\\UI-DialogBox-Header')
-	header:SetSize(326, 64)
+	header:SetSize(326, 64) 
 	header:SetPoint('TOP', 0, 12)
 
-	local title = self:CreateFontString('ARTWORK')
+	local title = self:CreateFontString(nil, 'ARTWORK')
 	title:SetFontObject('GameFontNormal')
 	title:SetPoint('TOP', header, 'TOP', 0, -14)
 	title:SetText(L.ConfigMode)
@@ -49,7 +42,7 @@ function ConfigModeDialog:Load()
 
 	--menu buttons
 	local exitConfig = self:CreateExitButton()
-	exitConfig:SetPoint('TOPRIGHT', -5, -5)
+	exitConfig:SetPoint('TOPRIGHT', -4, -4)
 
 	--ui menu display
 	local bindingMode = self:CreateBindingModeButton()
@@ -213,6 +206,11 @@ end
 
 function ConfigModeDialog:CreateExitButton()
 	local exitConfig = CreateFrame('Button', self:GetName() .. 'ExitConfig', self, 'UIPanelCloseButton')
+	exitConfig:SetSize(32, 32)
+	exitConfig:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	exitConfig:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	exitConfig:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	exitConfig:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
 
 	exitConfig:SetScript('OnClick', function() RazerNaga:SetLock(true) end)
 

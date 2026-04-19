@@ -1,4 +1,5 @@
 ## Interface: 50504
+## IconTexture: Interface/AddOns/RazerNaga/icons/RazerNagaMini
 ## Title: Razer Naga Config
 ## Notes: GUI based configuration for Razer Naga
 ## Author: Daenarys

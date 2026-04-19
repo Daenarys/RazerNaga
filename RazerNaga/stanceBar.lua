@@ -7,6 +7,7 @@ local RazerNaga = _G[...]
 -- don't bother loading the module if the player is currently playing something without a stance
 if not ({
     DRUID = true,
+    EVOKER = true,
     PALADIN = true,
     PRIEST = true,
     ROGUE = true,
@@ -24,15 +25,8 @@ local function getStanceButton(id)
 end
 
 local function skinStanceButton(self)
-    local r = self:GetWidth() / _G['ActionButton1']:GetWidth()
-
-    local nt = self:GetNormalTexture()
-    nt:ClearAllPoints()
-    nt:SetPoint('TOPLEFT', -15 * r, 15 * r)
-    nt:SetPoint('BOTTOMRIGHT', 15 * r, -15 * r)
-
-    self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-    self:GetNormalTexture():SetVertexColor(1, 1, 1, 0.5)
+    _G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+    self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
 end
 
 for id = 1, 10 do
@@ -47,6 +41,12 @@ for id = 1, 10 do
 
     -- apply pre 10.x button skin
     skinStanceButton(button)
+
+    -- enable cooldown bling
+    button.cooldown:SetDrawBling(true)
+
+    -- disable cooldown numbers
+    button.cooldown:SetHideCountdownNumbers(true)
 end
 
 --------------------------------------------------------------------------------
@@ -82,9 +82,6 @@ end
 function StanceBar:OnDetachButton(button)
     RazerNaga:GetModule('Tooltips'):Unregister(button)
 end
-
--- exports
-RazerNaga.StanceBar = StanceBar
 
 --------------------------------------------------------------------------------
 -- Module

@@ -112,19 +112,22 @@ function BindableButton:UpdateHotkeys()
     local hotkey = self.HotKey
 
     hotkey:SetText(key)
-    hotkey:SetShown(key ~= '')
-    hotkey:SetSize(36, 10)
+    hotkey:SetShown(key ~= '' and RazerNaga:ShowBindingText())
 
-    if key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'BONUSACTIONBUTTON' then
+    if key ~= '' and self.buttonType == 'BONUSACTIONBUTTON' then
         hotkey:ClearAllPoints()
         hotkey:SetPoint("TOPLEFT", -2, -3)
-    elseif key ~= '' and RazerNaga:ShowBindingText() and self.buttonType == 'SHAPESHIFTBUTTON' then
+    elseif key ~= '' and self.buttonType == 'SHAPESHIFTBUTTON' then
         hotkey:ClearAllPoints()
         hotkey:SetPoint("TOPLEFT", -2, -3)
-    elseif key ~= '' and RazerNaga:ShowBindingText() then
+    elseif key ~= '' then
         hotkey:ClearAllPoints()
-        hotkey:SetPoint("TOPLEFT", 1, -3)
+        hotkey:SetPoint("TOPLEFT", 3, -3)
     end
+
+    self.TextOverlayContainer:SetFrameLevel(2)
+    self.TextOverlayContainer.Count:SetDrawLayer("ARTWORK", 2)
+    self.TextOverlayContainer.HotKey:SetDrawLayer("ARTWORK", 2)
 end
 
 function BindableButton:OnEnter()

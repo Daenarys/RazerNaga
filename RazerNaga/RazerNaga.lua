@@ -38,6 +38,13 @@ function RazerNaga:OnInitialize()
 	--slash command support
 	self:RegisterSlashCommands()
 
+	--create a loader for the options menu
+	local f = CreateFrame('Frame', nil, SettingsPanel)
+	f:SetScript('OnShow', function(self)
+		self:SetScript('OnShow', nil)
+		C_AddOns.LoadAddOn('RazerNaga_Config')
+	end)
+
 	--keybound support
 	local kb = LibStub('LibKeyBound-1.0')
 	kb.RegisterCallback(self, 'LIBKEYBOUND_ENABLED')
@@ -55,6 +62,7 @@ function RazerNaga:OnEnable()
 	end
 
 	self:RegisterEvent('UPDATE_BINDINGS')
+	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
 
 	self:HideBlizzard()
 	self:UpdateUseOverrideUI()
@@ -181,73 +189,111 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	-- Hidden parent frame
-	local UIHider = CreateFrame('Frame', nil, UIParent, 'SecureFrameTemplate'); UIHider:Hide()
-	self.UIHider = UIHider
-	
-	--[[ disable multibars ]]--
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
 
-	_G['MultiBarBottomLeft']:SetParent(UIHider)
-	_G['MultiBarBottomRight']:SetParent(UIHider)
-	_G['MultiBarLeft']:SetParent(UIHider)
-	_G['MultiBarRight']:SetParent(UIHider)
+	local function apply(func, ...)
+	    for i = 1, select('#', ...) do
+	        local name = (select(i, ...))
+	        local frame = _G[name]
 
-	if MultiActionBar_UpdateGrid then
-		MultiActionBar_UpdateGrid = Multibar_EmptyFunc
+	        if frame then
+	            func(frame)
+	        else
+				self:Printf('Could not find frame %q', name)
+	        end
+	    end
 	end
 
-	--[[ disable menu bar ]]--
+	local function banish(frame)
+	    (frame.HideBase or frame.Hide)(frame)
+	    frame:SetParent(HiddenFrame)
+	end
 
-	MainMenuBar:EnableMouse(false)
+	local function unregisterEvents(frame)
+	    frame:UnregisterAllEvents()
+	end
 
-	local animations = {MainMenuBar.slideOut:GetAnimations()}
-	animations[1]:SetOffset(0,0)
+	local function disableActionButtons(frame)
+		if frame.actionButtons and type(frame.actionButtons) == "table" then
+			for _, button in pairs(frame.actionButtons) do
+				button:UnregisterAllEvents()
+				button:SetAttributeNoHandler("statehidden", true)
+				button:Hide()
+			end
+		end
+	end
 
-	animations = {OverrideActionBar.slideOut:GetAnimations()}
-	animations[1]:SetOffset(0,0)
+	local function wipeActionButtons(bar)
+		table.wipe(bar.actionButtons)
+	end
 
-	MainMenuBarArtFrame:Hide()
-	MainMenuBarArtFrame:SetParent(UIHider)
+	apply(banish,
+		"MainActionBar",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"PetActionBar",
+		"StatusTrackingBarManager",
+		"MainMenuBarVehicleLeaveButton",
+		"MicroButtonAndBagsBar",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer",
+		"PlayerCastingBarFrame",
+		"MainMenuBarArtFrame",
+		"MainMenuBarMaxLevelBar"
+	)
 
-	MainMenuExpBar:SetParent(UIHider)
+	apply(unregisterEvents,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"StanceBar",
+		"PossessActionBar",
+		"MainMenuBarVehicleLeaveButton",
+		"BagsBar",
+		"MicroMenu",
+		"MicroMenuContainer",
+		"PlayerCastingBarFrame",
+		"MainMenuBarArtFrame",
+		"MainMenuBarMaxLevelBar"
+	)
 
-	MainMenuBarMaxLevelBar:Hide()
-	MainMenuBarMaxLevelBar:SetParent(UIHider)
+	apply(disableActionButtons,
+		"MainActionBar",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7",
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight"
+	)
 
-	ReputationWatchBar:SetParent(UIHider)
+	apply(wipeActionButtons,
+		"MultiBarBottomLeft",
+		"MultiBarBottomRight",
+		"MultiBarLeft",
+		"MultiBarRight",
+		"MultiBar5",
+		"MultiBar6",
+		"MultiBar7"
+	)
 
-	--[[ disable stance bar ]]--
-
-	local stanceBar = _G['StanceBarFrame']
-	-- stanceBar:UnregisterAllEvents()
-	stanceBar:SetParent(UIHider)
-
-	-- [[ disable possess bar ]]--
-
-	local possessBar = _G['PossessBarFrame']
-	possessBar:UnregisterAllEvents()
-	possessBar:SetParent(UIHider)
-
-	-- [[ disable pet action bar ]]--
-
-	local petActionBar = _G['PetActionBarFrame']
-	-- petActionBar:UnregisterAllEvents()
-	petActionBar:SetParent(UIHider)
-
-	-- [[ disable cast bar ]]--
-
-	local castBar = _G['CastingBarFrame']
-	castBar:UnregisterAllEvents()
-	castBar:SetParent(UIHider)
-
-	--[[ disable ui position manager ]]--
-
-	_G['MultiBarBottomLeft'].ignoreFramePositionManager = true
-	_G['MultiBarRight'].ignoreFramePositionManager = true
-	_G['MainMenuBar'].ignoreFramePositionManager = true
-	_G['StanceBarFrame'].ignoreFramePositionManager = true
-	_G['PossessBarFrame'].ignoreFramePositionManager = true
-	_G['MultiCastActionBarFrame'].ignoreFramePositionManager = true
+	_G.MultiActionBar_ShowAllGrids = function() end
+	_G.MultiActionBar_HideAllGrids = function() end
 end
 
 --[[ Keybound Events ]]--
@@ -396,33 +442,6 @@ end
 
 --[[ Options Menu Display ]]--
 
-function RazerNaga:AddCategory(frame, addOn, position)
-	frame.OnCommit = frame.okay;
-	frame.OnDefault = frame.default;
-	frame.OnRefresh = frame.refresh;
-
-	if frame.parent then
-		local category = Settings.GetCategory(frame.parent)
-		local subcategory, layout = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name)
-		subcategory.ID = frame.name;
-		return subcategory, category;
-	else
-		local category, layout = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name)
-		category.ID = frame.name;
-		Settings.RegisterAddOnCategory(category)
-		return category;
-	end
-end
-
-function RazerNaga:OpenToCategory(categoryIDOrFrame)
-	if type(categoryIDOrFrame) == "table" then
-		local categoryID = categoryIDOrFrame.name;
-		return Settings.OpenToCategory(categoryID)
-	else
-		return Settings.OpenToCategory(categoryIDOrFrame)
-	end
-end
-
 function RazerNaga:ShowOptions()
 	if InCombatLockdown() then
 		self:Printf(_G.ERR_NOT_IN_COMBAT)
@@ -430,7 +449,7 @@ function RazerNaga:ShowOptions()
 	end
 
 	if C_AddOns.LoadAddOn('RazerNaga_Config') then
-		self:OpenToCategory(self.Options)
+		Settings.OpenToCategory(self.Options.mainCategory:GetID())
 		return true
 	end
 	return false
@@ -736,7 +755,7 @@ end
 --binding text
 function RazerNaga:SetShowBindingText(enable)
     self.db.profile.showBindingText = enable or false
-    self.Frame:ForEach('ForButtons', 'SetShowBindingText', enable)
+    self.Frame:ForEach('ForButtons', 'UpdateHotkeys')
 end
 
 function RazerNaga:ShowBindingText()

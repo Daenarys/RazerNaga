@@ -62,6 +62,7 @@ L.ShowOverrideUI = 'Use Blizzard Override Action Bar'
 L.ShowInOverrideUI = 'Show With Override UI'
 L.ShowInPetBattleUI = 'Show With Pet Battle UI'
 
+
 --totems
 L.ShowTotems = 'Show Totems'
 L.ShowTotemRecall = 'Show Recall'

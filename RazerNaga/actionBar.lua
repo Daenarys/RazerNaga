@@ -5,8 +5,6 @@
 local RazerNaga = _G[...]
 
 local ACTION_BUTTON_COUNT = 120
-local ACTION_BUTTON_SHOW_GRID_REASON_ADDON = 1024
-local ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND = 2048
 
 local ActionBar = RazerNaga:CreateClass('Frame', RazerNaga.ButtonBar)
 
@@ -40,19 +38,9 @@ ActionBar.mainbarOffsets = {
             pages.bear = 8
             pages.moonkin = 9
             pages.tree = 7
-        -- elseif i == 'WARRIOR' then
-            -- pages.battle = 6
-            -- pages.defensive = 7
-            -- pages.berserker = 8
-        elseif i == 'PRIEST' then
-            pages.shadow = 6
         elseif i == 'ROGUE' then
             pages.stealth = 6
             pages.shadowdance = 6
-        elseif i == 'MONK' then
-            pages.tiger = 6
-            pages.ox = 7
-            pages.serpent = 8
         end
 
         t[i] = pages
@@ -107,16 +95,18 @@ function ActionBar:AcquireButton(index)
 end
 
 function ActionBar:ReleaseButton(button)
-    button:SetAttribute('statehidden', true)
-    button:Hide()
+    button:SetAlpha(0)
 end
 
 function ActionBar:OnAttachButton(button)
     button:SetAttribute("action", button:GetAttribute("index") + (self:GetAttribute("actionOffset") or 0))
-    button:SetAttribute("statehidden", (button:GetAttribute("index") > self:NumButtons()) or nil)
-
+    
     button:SetFlyoutDirection(self:GetFlyoutDirection())
     button:SetShowMacroText(RazerNaga:ShowMacroText())
+
+    if button:HasAction() then
+        button:SetAlpha(1)
+    end
 
     RazerNaga:GetModule('Tooltips'):Register(button)
 end
@@ -206,32 +196,44 @@ function ActionBar:IsOverrideBar()
 end
 
 -- grid
-function ActionBar:ShowGrid(reason)
+function ActionBar:ShowGrid()
     for _,b in pairs(self.buttons) do
-        b:ShowGrid(reason)
+        if b:IsShown() then
+            b:SetAlpha(1.0)
+        end
     end
 end
 
-function ActionBar:HideGrid(reason)
+function ActionBar:HideGrid()
     for _,b in pairs(self.buttons) do
-        b:HideGrid(reason)
+        if b:IsShown() and not b:HasAction() and not RazerNaga:ShowGrid() then
+            b:SetAlpha(0.0)
+        end
     end
 end
 
 function ActionBar:UpdateGrid()
     if RazerNaga:ShowGrid() then
-        self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+        self:ShowGrid()
     else
-        self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_ADDON)
+        self:HideGrid()
+    end
+end
+
+function ActionBar:UpdateSlot()
+    for _,b in pairs(self.buttons) do
+        if b:IsShown() and b:HasAction() then
+            b:SetAlpha(1.0)
+        end
     end
 end
 
 function ActionBar:KEYBOUND_ENABLED()
-    self:ShowGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:ShowGrid()
 end
 
 function ActionBar:KEYBOUND_DISABLED()
-    self:HideGrid(ACTION_BUTTON_SHOW_GRID_REASON_KEYBOUND)
+    self:HideGrid()
 end
 
 -- right click unit
@@ -422,6 +424,10 @@ function ActionBarsModule:Load()
 
     self:RegisterEvent('UPDATE_SHAPESHIFT_FORMS')
     RazerNaga.RegisterCallback(self, "ACTIONBAR_COUNT_UPDATED")
+    self:RegisterEvent("ACTIONBAR_SHOWGRID")
+    self:RegisterEvent("ACTIONBAR_HIDEGRID")
+    self:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+    self:RegisterEvent("SPELLS_CHANGED")
 end
 
 function ActionBarsModule:Unload()
@@ -441,6 +447,22 @@ function ActionBarsModule:UPDATE_SHAPESHIFT_FORMS()
     end
 
     self:ForActive('UpdateStateDriver')
+end
+
+function ActionBarsModule:ACTIONBAR_SHOWGRID()
+    self:ForActive('ShowGrid')
+end
+
+function ActionBarsModule:ACTIONBAR_HIDEGRID()
+    self:ForActive('HideGrid')
+end
+
+function ActionBarsModule:ACTIONBAR_SLOT_CHANGED()
+    self:ForActive('UpdateSlot')
+end
+
+function ActionBarsModule:SPELLS_CHANGED()
+    self:ForActive('UpdateGrid')
 end
 
 function ActionBarsModule:SetBarCount(count)
