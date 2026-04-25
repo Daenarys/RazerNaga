@@ -162,7 +162,6 @@ local SpellFlyoutFrame_Toggle = [[
 			local button = FLYOUT_SLOTS[numButtons]
 
 			button:ClearAllPoints()
-
 			if direction == "UP" then
 				if prevButton then
 					button:SetPoint("BOTTOM", prevButton, "TOP", 0, SPELLFLYOUT_DEFAULT_SPACING)
@@ -284,7 +283,7 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 	self.Background.End:ClearAllPoints()
 
 	if direction == "UP" then
-		self.Background.End:SetPoint("TOP", 0, SPELLFLYOUT_INITIAL_SPACING)
+		self.Background.End:SetPoint("TOP")
 		SetClampedTextureRotation(self.Background.End, 0)
 		SetClampedTextureRotation(self.Background.VerticalMiddle, 0)
 		self.Background.HorizontalMiddle:Hide()
@@ -293,27 +292,24 @@ function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
 		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM")
 		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance)
 	elseif direction == "DOWN" then
-		self.Background.End:SetPoint("BOTTOM", 0, -SPELLFLYOUT_INITIAL_SPACING)
+		self.Background.End:SetPoint("BOTTOM")
 		SetClampedTextureRotation(self.Background.End, 180)
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 180)
 		self.Background.HorizontalMiddle:Hide()
 		self.Background.VerticalMiddle:Show()
 		self.Background.VerticalMiddle:ClearAllPoints()
 		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP")
 		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance)
 	elseif direction == "LEFT" then
-		self.Background.End:SetPoint("LEFT", -SPELLFLYOUT_INITIAL_SPACING, 0)
+		self.Background.End:SetPoint("LEFT")
 		SetClampedTextureRotation(self.Background.End, 270)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 180)
 		self.Background.VerticalMiddle:Hide()
 		self.Background.HorizontalMiddle:Show()
 		self.Background.HorizontalMiddle:ClearAllPoints()
 		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT")
 		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0)
 	elseif direction == "RIGHT" then
-		self.Background.End:SetPoint("RIGHT", SPELLFLYOUT_INITIAL_SPACING, 0)
+		self.Background.End:SetPoint("RIGHT")
 		SetClampedTextureRotation(self.Background.End, 90)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 0)
 		self.Background.VerticalMiddle:Hide()
 		self.Background.HorizontalMiddle:Show()
 		self.Background.HorizontalMiddle:ClearAllPoints()
