@@ -162,7 +162,6 @@ function RazerNagaCastingBarMixin:GetTypeInfo(barType)
 	return RAZERNAGA_CASTING_BAR_TYPES[barType];
 end
 
-
 function RazerNagaCastingBarMixin:HandleInterruptOrSpellFailed(empoweredInterrupt, event, ...)
 	if ( empoweredInterrupt or (self:IsShown() and (self.casting and select(2, ...) == self.castID) and (not self.FadeOutAnim or not self.FadeOutAnim:IsPlaying()))) then
 		self.barType = "interrupted"; -- failed and interrupted use same bar art
