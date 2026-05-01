@@ -2,79 +2,79 @@ local states = {}
 
 local GetSpellName
 if type(GetSpellInfo) == "function" then
-    GetSpellName = function(spell) return (GetSpellInfo(spell)) end
+	GetSpellName = function(spell) return (GetSpellInfo(spell)) end
 else
-    GetSpellName = C_Spell.GetSpellName
+	GetSpellName = C_Spell.GetSpellName
 end
 
 local function getStateIterator(type, i)
-    for j = i + 1, #states do
-        local state = states[j]
-        if state and ((not type) or state.type == type) then
-            return j, state
-        end
-    end
+	for j = i + 1, #states do
+		local state = states[j]
+		if state and ((not type) or state.type == type) then
+			return j, state
+		end
+	end
 end
 
 local BarStates = {
-    add = function(_, state, index)
-        if index then
-            return table.insert(states, index, state)
-        end
-        return table.insert(states, state)
-    end,
+	add = function(_, state, index)
+		if index then
+			return table.insert(states, index, state)
+		end
+		return table.insert(states, state)
+	end,
 
-    getAll = function(_, type)
-        return getStateIterator, type, 0
-    end,
+	getAll = function(_, type)
+		return getStateIterator, type, 0
+	end,
 
-    get = function(_, id)
-        for _, v in pairs(states) do
-            if v.id == id then
-                return v
-            end
-        end
-    end,
+	get = function(_, id)
+		for _, v in pairs(states) do
+			if v.id == id then
+				return v
+			end
+		end
+	end,
 
-    map = function(_, f)
-        local results = {}
-        for _, v in ipairs(states) do
-            if f(v) then
-                table.insert(results, v)
-            end
-        end
-        return results
-    end
+	map = function(_, f)
+		local results = {}
+		for _, v in ipairs(states) do
+			if f(v) then
+				table.insert(results, v)
+			end
+		end
+		return results
+	end
 }
 
 RazerNaga.BarStates = BarStates
 
 local function addState(stateType, stateId, stateValue, stateText)
-    return BarStates:add {
-        type = stateType,
-        id = stateId,
-        value = stateValue,
-        text = stateText
-    }
+	return BarStates:add {
+		type = stateType,
+		id = stateId,
+		value = stateValue,
+		text = stateText
+	}
 end
 
 -- some class states are a bit dynamic
 -- druid forms, for instance, can vary based on how many different abilities
 -- are known
 local function addFormState(stateType, stateId, spellID)
-    local lookupFormConditional = function()
-        for i = 1, GetNumShapeshiftForms() do
-            local _, _, _, formSpellID = GetShapeshiftFormInfo(i)
+	local lookupFormConditional = function()
+		for i = 1, GetNumShapeshiftForms() do
+			local _, _, _, formSpellID = GetShapeshiftFormInfo(i)
 
-            if spellID == formSpellID then
-                return ('[form:%d]'):format(i)
-            end
-        end
-    end
+			if spellID == formSpellID then
+				return ('[form:%d]'):format(i)
+			end
+		end
+	end
 
-    local name = GetSpellName(spellID)
+	local name = GetSpellName(spellID)
 
-    addState(stateType, stateId, lookupFormConditional, name)
+	addState(stateType, stateId, lookupFormConditional, name)
 end
 
 -- keybindings
@@ -90,7 +90,7 @@ addState('modifier', 'meta', '[mod:meta]')
 
 -- paging
 for i = 2, NUM_ACTIONBAR_PAGES do
-    addState('page', ('page%d'):format(i), ('[bar:%d]'):format(i), _G['BINDING_NAME_ACTIONPAGE' .. i])
+	addState('page', ('page%d'):format(i), ('[bar:%d]'):format(i), _G['BINDING_NAME_ACTIONPAGE' .. i])
 end
 
 -- class
@@ -111,19 +111,19 @@ elseif class == 'PALADIN' then
 	addFormState('class', 'devotion', 465)
 	addFormState('class', 'retribution', 183435)
 elseif class == 'ROGUE' then
-    if GetSpellName(185313) then
-        addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellName(185313))
-    end
-    addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
+	if GetSpellName(185313) then
+		addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellName(185313))
+	end
+	addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
 end
 
 -- race
 if race == 'NightElf' then
-    local name = (GetSpellName(58984) or GetSpellName(20580))
+	local name = (GetSpellName(58984) or GetSpellName(20580))
 
-    if name then
-        addState('class', 'shadowmeld', '[stealth]', name)
-    end
+	if name then
+		addState('class', 'shadowmeld', '[stealth]', name)
+	end
 end
 
 -- target reaction

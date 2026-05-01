@@ -420,9 +420,9 @@ local SpellFlyoutButton_OnClick = [[
 ]]
 
 local SpellFlyoutButton_OnClickPost = [[
-    if message == "close" then
-        control:Hide()
-    end
+	if message == "close" then
+		control:Hide()
+	end
 ]]
 
 function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
@@ -457,20 +457,20 @@ local SpellFlyout = { }
 LibStub('AceEvent-3.0'):Embed(SpellFlyout)
 
 local button_OnClick = [[
-    local type, id = GetActionInfo(self:GetEffectiveAttribute("action", button))
-    if type == 'flyout' then
+	local type, id = GetActionInfo(self:GetEffectiveAttribute("action", button))
+	if type == 'flyout' then
 		if not down then
 			control:SetAttribute("caller", self:GetFrameRef("owner") or self)
 			control:RunAttribute("Toggle", id)
 		end
-        return false
-    end
+		return false
+	end
 ]]
 
 function SpellFlyout:Register(button)
-    local frame = self.frame
+	local frame = self.frame
 
-    if not frame then
+	if not frame then
 		frame = CreateFrame("Frame", nil, nil, "SecureHandlerShowHideTemplate")
 
 		Mixin(frame, SpellFlyoutFrameMixin)
@@ -482,8 +482,8 @@ function SpellFlyout:Register(button)
 		self:RegisterEvent("SPELL_FLYOUT_UPDATE")
 		self:RegisterEvent("PET_STABLE_UPDATE")
 
-        self.frame = frame
-    end
+		self.frame = frame
+	end
 
 	frame:WrapScript(button, "OnClick", button_OnClick)
 end

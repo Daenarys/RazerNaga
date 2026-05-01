@@ -157,16 +157,16 @@ function BagBarModule:OnInitialize()
 		BagsBar.Layout = noopFunc
 	end
 
-    if BagsBar and BagsBar.Layout then
-    	hooksecurefunc(BagsBar, "Layout", function()
-    		if InCombatLockdown() then return end
+	if BagsBar and BagsBar.Layout then
+		hooksecurefunc(BagsBar, "Layout", function()
+			if InCombatLockdown() then return end
 
 			if self.frame then
 				self.frame:Layout()
 			end
-    	end)
-        EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
-    end
+		end)
+		EventRegistry:UnregisterCallback("MainMenuBarManager.OnExpandChanged", BagsBar)
+	end
 end
 
 function BagBarModule:Load()

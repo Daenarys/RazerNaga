@@ -193,7 +193,7 @@ function RazerNagaCastingBarMixin:HandleCastStop(event, ...)
 		self:UpdateShownState(desiredShowFalse);
 	end
 	if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
-	    ((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
+		((self.channeling or self.reverseChanneling) and (event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP")) ) then
 		
 		local castComplete = select(4, ...);
 		if(event == "UNIT_SPELLCAST_EMPOWER_STOP" and not castComplete) then
@@ -247,7 +247,7 @@ function RazerNagaCastingBarMixin:OnEvent(event, ...)
 			event = "UNIT_SPELLCAST_START";
 			arg1 = unit;
 		else
-		    self:FinishSpell();
+			self:FinishSpell();
 		end
 	end
 

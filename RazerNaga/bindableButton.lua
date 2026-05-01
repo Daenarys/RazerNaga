@@ -9,49 +9,49 @@ local COMMAND_TEMPLATE = 'CLICK %s:HOTKEY'
 -- we use a virtual button (arbitrarily named HOTKEY)
 -- to enable cast on key press support
 local function getButtonBindingAction(button)
-    return button:GetAttribute("commandName")
-        or COMMAND_TEMPLATE:format(button:GetName())
+	return button:GetAttribute("commandName")
+		or COMMAND_TEMPLATE:format(button:GetName())
 end
 
 local function getButtonBindingActionName(button)
-    return button:GetAttribute("displayName")
-        or _G["BINDING_NAME_" .. getButtonBindingAction(button)]
-        or button:GetName()
+	return button:GetAttribute("displayName")
+		or _G["BINDING_NAME_" .. getButtonBindingAction(button)]
+		or button:GetName()
 end
 
 local function getButtonBindings(button)
-    return GetBindingKey(getButtonBindingAction(button))
+	return GetBindingKey(getButtonBindingAction(button))
 end
 
 -- returns what hotkey to display for the button
 local function getButtonHotkey(button)
-    local key = (getButtonBindings(button))
+	local key = (getButtonBindings(button))
 
-    if key then
-        return KeyBound:ToShortKey(key)
-    end
+	if key then
+		return KeyBound:ToShortKey(key)
+	end
 
-    return ''
+	return ''
 end
 
 -- returns a space separated list of all bindings for the given button
 local function getButtonBindingsList(button)
-    return strjoin(' ', getButtonBindings(button))
+	return strjoin(' ', getButtonBindings(button))
 end
 
 -- set bindings
 local function setButtonBinding(button, key)
-    return SetBinding(key, getButtonBindingAction(button))
+	return SetBinding(key, getButtonBindingAction(button))
 end
 
 -- clears all bindings from the button
 local function clearButtonBindings(button)
-    local key = (getButtonBindings(button))
+	local key = (getButtonBindings(button))
 
-    while key do
-        SetBinding(key, nil)
-        key = (getButtonBindings(button))
-    end
+	while key do
+		SetBinding(key, nil)
+		key = (getButtonBindings(button))
+	end
 end
 
 -- used to implement keybinding support without applying all of the LibKeyBound
@@ -60,34 +60,34 @@ local BindableButtonProxy = RazerNaga:CreateHiddenFrame('Frame', "RazerNaga" .. 
 
 -- call a thing if the thing exists
 local function whenExists(obj, func, ...)
-    if obj then
-        return func(obj, ...)
-    end
+	if obj then
+		return func(obj, ...)
+	end
 end
 
 function BindableButtonProxy:GetHotkey()
-    return whenExists(self:GetParent(), getButtonHotkey)
+	return whenExists(self:GetParent(), getButtonHotkey)
 end
 
 function BindableButtonProxy:SetKey(key)
-    return whenExists(self:GetParent(), setButtonBinding, key)
+	return whenExists(self:GetParent(), setButtonBinding, key)
 end
 
 function BindableButtonProxy:GetBindings()
-    return whenExists(self:GetParent(), getButtonBindingsList)
+	return whenExists(self:GetParent(), getButtonBindingsList)
 end
 
 function BindableButtonProxy:ClearBindings()
-    return whenExists(self:GetParent(), clearButtonBindings)
+	return whenExists(self:GetParent(), clearButtonBindings)
 end
 
 function BindableButtonProxy:GetActionName()
-    return whenExists(self:GetParent(), getButtonBindingActionName) or UNKNOWN
+	return whenExists(self:GetParent(), getButtonBindingActionName) or UNKNOWN
 end
 
 BindableButtonProxy:SetScript('OnLeave', function(self)
-    self:ClearAllPoints()
-    self:SetParent(nil)
+	self:ClearAllPoints()
+	self:SetParent(nil)
 end)
 
 -- methods to inject onto a bar to add in common binding functionality
@@ -96,46 +96,46 @@ local BindableButton = {}
 
 -- adds quickbinding support to buttons
 function BindableButton:AddQuickBindingSupport(button)
-    button:HookScript('OnEnter', BindableButton.OnEnter)
+	button:HookScript('OnEnter', BindableButton.OnEnter)
 
-    if button.UpdateHotkeys then
-        hooksecurefunc(button, 'UpdateHotkeys', BindableButton.UpdateHotkeys)
-    else
-        button.UpdateHotkeys = BindableButton.UpdateHotkeys
-    end
+	if button.UpdateHotkeys then
+		hooksecurefunc(button, 'UpdateHotkeys', BindableButton.UpdateHotkeys)
+	else
+		button.UpdateHotkeys = BindableButton.UpdateHotkeys
+	end
 
-    button:UpdateHotkeys()
+	button:UpdateHotkeys()
 end
 
 function BindableButton:UpdateHotkeys()
-    local key = (self.GetHotkey or getButtonHotkey)(self) or ''
-    local hotkey = self.HotKey
+	local key = (self.GetHotkey or getButtonHotkey)(self) or ''
+	local hotkey = self.HotKey
 
-    hotkey:SetText(key)
-    hotkey:SetShown(key ~= '' and RazerNaga:ShowBindingText())
+	hotkey:SetText(key)
+	hotkey:SetShown(key ~= '' and RazerNaga:ShowBindingText())
 
-    if key ~= '' and self.buttonType == 'BONUSACTIONBUTTON' then
-        hotkey:ClearAllPoints()
-        hotkey:SetPoint("TOPLEFT", -2, -3)
-    elseif key ~= '' and self.buttonType == 'SHAPESHIFTBUTTON' then
-        hotkey:ClearAllPoints()
-        hotkey:SetPoint("TOPLEFT", -2, -3)
-    elseif key ~= '' then
-        hotkey:ClearAllPoints()
-        hotkey:SetPoint("TOPLEFT", 3, -3)
-    end
+	if key ~= '' and self.buttonType == 'BONUSACTIONBUTTON' then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPLEFT", -2, -3)
+	elseif key ~= '' and self.buttonType == 'SHAPESHIFTBUTTON' then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPLEFT", -2, -3)
+	elseif key ~= '' then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPLEFT", 3, -3)
+	end
 end
 
 function BindableButton:OnEnter()
-    if not KeyBound:IsShown() then
-        return
-    end
+	if not KeyBound:IsShown() then
+		return
+	end
 
-    BindableButtonProxy:ClearAllPoints()
-    BindableButtonProxy:SetParent(self)
-    BindableButtonProxy:SetAllPoints()
+	BindableButtonProxy:ClearAllPoints()
+	BindableButtonProxy:SetParent(self)
+	BindableButtonProxy:SetAllPoints()
 
-    KeyBound:Set(BindableButtonProxy)
+	KeyBound:Set(BindableButtonProxy)
 end
 
 -- exports
