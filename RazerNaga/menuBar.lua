@@ -521,20 +521,36 @@ function MenuBar:FixButtonPositions()
 		tinsert(self.overrideButtons, _G[buttonName])
 	end
 
-	local l, r, t, b = self.overrideButtons[1]:GetHitRectInsets()
+	if OverrideActionBar and OverrideActionBar:IsVisible() then
+		for i, button in pairs(self.overrideButtons) do
+			button:ClearAllPoints()
+			button:SetParent(OverrideActionBar)
 
-	for i, button in ipairs(self.overrideButtons) do
-		button:SetParent(PetBattleFrame.BottomFrame.MicroButtonFrame)
-		button:ClearAllPoints()
-		if i == 1 then
-			button:SetPoint('TOPLEFT', -4, 3)
-		elseif i == 7 then
-			button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
-		else
-			button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
+			if i == 1 then
+				button:SetPoint('BOTTOMLEFT', 535, 43)
+			elseif i == 7 then
+				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
+			else
+				button:SetPoint('BOTTOMLEFT', self.overrideButtons[i - 1], 'BOTTOMRIGHT')
+			end
+
+			button:Show()
 		end
+	elseif PetMicroButtonFrame and PetMicroButtonFrame:IsVisible() then
+		for i, button in ipairs(self.overrideButtons) do
+			button:ClearAllPoints()
+			button:SetParent(PetMicroButtonFrame)
 
-		button:Show()
+			if i == 1 then
+				button:SetPoint('TOPLEFT', -17, 9)
+			elseif i == 7 then
+				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
+			else
+				button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
+			end
+
+			button:Show()
+		end
 	end
 end
 
@@ -548,12 +564,6 @@ function MenuBar:UpdateActiveButtons()
 			table.insert(self.activeButtons, button)
 		end
 	end
-end
-
-function MenuBar:GetButtonInsets()
-	local l, r, t, b = MenuBar.proto.GetButtonInsets(self)
-
-	return l, r + 1, t + 3, b
 end
 
 --------------------------------------------------------------------------------
