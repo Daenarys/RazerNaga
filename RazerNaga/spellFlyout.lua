@@ -236,7 +236,6 @@ local SpellFlyoutFrame_Toggle = [[
 
 	self:CallMethod("LayoutTextures", direction, 0)
 	self:Show()
-	self:SetFrameStrata("LOW")
 ]]
 
 function SpellFlyoutFrameMixin:Initialize()
