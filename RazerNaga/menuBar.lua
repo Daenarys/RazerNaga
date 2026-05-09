@@ -646,12 +646,8 @@ function MenuBarModule:OnInitialize()
 	end
 
 	if MicroMenu then
-		local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-		HiddenFrame:SetAllPoints(UIParent)
-		HiddenFrame:Hide()
-
 		for _, button in ipairs { MicroMenu:GetChildren() } do
-			button:SetParent(HiddenFrame)
+			button:SetParent(RazerNaga.ShadowUIParent)
 		end
 
 		hooksecurefunc(MicroMenu, "UpdateFramerateFrameAnchor", function()
