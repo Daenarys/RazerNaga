@@ -527,7 +527,7 @@ function MenuBar:FixButtonPositions()
 			button:SetParent(OverrideActionBar)
 
 			if i == 1 then
-				button:SetPoint('BOTTOMLEFT', 535, 43)
+				button:SetPoint('BOTTOMLEFT', 532, 43)
 			elseif i == 7 then
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
