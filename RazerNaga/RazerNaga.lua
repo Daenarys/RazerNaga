@@ -65,6 +65,7 @@ function RazerNaga:OnEnable()
 	self:RegisterEvent("GAME_PAD_ACTIVE_CHANGED", "UPDATE_BINDINGS")
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -188,6 +189,10 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
+
 	local function apply(func, ...)
 		for i = 1, select('#', ...) do
 			local name = (select(i, ...))
@@ -203,7 +208,7 @@ function RazerNaga:HideBlizzard()
 
 	local function banish(frame)
 		(frame.HideBase or frame.Hide)(frame)
-		frame:SetParent(RazerNaga.ShadowUIParent)
+		frame:SetParent(HiddenFrame)
 	end
 
 	local function unregisterEvents(frame)
@@ -768,14 +773,11 @@ end
 --possess bar settings
 function RazerNaga:SetOverrideBar(id)
 	local prevBar = self:GetOverrideBar()
-
 	self.db.profile.possessBar = id
 	local newBar = self:GetOverrideBar()
 
 	prevBar:UpdateOverrideBar()
 	newBar:UpdateOverrideBar()
-
-	self.callbacks:Fire('OVERRIDE_BAR_UPDATED', newBar)
 end
 
 function RazerNaga:GetOverrideBar()
@@ -784,11 +786,28 @@ end
 
 function RazerNaga:SetUseOverrideUI(enable)
 	self.db.profile.useOverrideUI = enable and true or false
-	self.callbacks:Fire("USE_OVERRRIDE_UI_CHANGED", self:UsingOverrideUI())
+	self:UpdateUseOverrideUI()
 end
 
 function RazerNaga:UsingOverrideUI()
 	return self.db.profile.useOverrideUI
+end
+
+function RazerNaga:UpdateUseOverrideUI()
+	if not self.OverrideController then return end
+
+	local usingOverrideUI = self:UsingOverrideUI()
+	self.OverrideController:SetAttribute('state-useoverrideui', usingOverrideUI)
+
+	local oab = _G.OverrideActionBar
+	if oab then
+		oab:ClearAllPoints()
+		if usingOverrideUI then
+			oab:SetPoint('BOTTOM')
+		else
+			oab:SetPoint('LEFT', oab:GetParent(), 'RIGHT', 100, 0)
+		end
+	end
 end
 
 --action bar numbers
@@ -1128,8 +1147,3 @@ function RazerNaga:Debounce(func, delay, ...)
 		timer = C_Timer.NewTimer(delay, callback)
 	end
 end
-
--- shadow ui parent
-local ShadowUIParent = RazerNaga:CreateHiddenFrame('Frame', nil, UIParent)
-ShadowUIParent:SetAllPoints(UIParent)
-RazerNaga.ShadowUIParent = ShadowUIParent

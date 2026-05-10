@@ -527,7 +527,7 @@ function MenuBar:FixButtonPositions()
 			button:SetParent(OverrideActionBar)
 
 			if i == 1 then
-				button:SetPoint('BOTTOMLEFT', 532, 43)
+				button:SetPoint('BOTTOMLEFT', 535, 43)
 			elseif i == 7 then
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
@@ -646,8 +646,12 @@ function MenuBarModule:OnInitialize()
 	end
 
 	if MicroMenu then
+		local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+		HiddenFrame:SetAllPoints(UIParent)
+		HiddenFrame:Hide()
+
 		for _, button in ipairs { MicroMenu:GetChildren() } do
-			button:SetParent(RazerNaga.ShadowUIParent)
+			button:SetParent(HiddenFrame)
 		end
 
 		hooksecurefunc(MicroMenu, "UpdateFramerateFrameAnchor", function()
