@@ -3,11 +3,17 @@
 -- Defines the RazerNaga menuBar object
 --------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------
--- Bar
---------------------------------------------------------------------------------
+local PetMicroButtonFrame = PetBattleFrame and PetBattleFrame.BottomFrame.MicroButtonFrame
 
-local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
+if MicroMenu then
+	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
+	HiddenFrame:SetAllPoints(UIParent)
+	HiddenFrame:Hide()
+
+	for _, button in ipairs { MicroMenu:GetChildren() } do
+		button:SetParent(HiddenFrame)
+	end
+end
 
 local MICRO_BUTTONS = {
 	"CharacterMicroButton",
@@ -24,18 +30,24 @@ local MICRO_BUTTONS = {
 }
 
 local MICRO_BUTTON_NAMES = {
-	['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
-	['ProfessionMicroButton'] = _G['PROFESSIONS_BUTTON'],
-	['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
-	['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
-	['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
-	['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
-	['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
-	['CollectionsMicroButton'] = _G['COLLECTIONS'],
-	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
-	['StoreMicroButton'] = _G['BLIZZARD_STORE'],
-	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
+	["CharacterMicroButton"] = _G["CHARACTER_BUTTON"],
+	["ProfessionMicroButton"] = _G["PROFESSIONS_BUTTON"],
+	["PlayerSpellsMicroButton"] = _G["TALENTS_BUTTON"],
+	["AchievementMicroButton"] = _G["ACHIEVEMENT_BUTTON"],
+	["QuestLogMicroButton"] = _G["QUESTLOG_BUTTON"],
+	["GuildMicroButton"] = _G["GUILD_AND_COMMUNITIES"],
+	["LFDMicroButton"] = _G["DUNGEONS_BUTTON"],
+	["CollectionsMicroButton"] = _G["COLLECTIONS"],
+	["EJMicroButton"] = _G["ENCOUNTER_JOURNAL"],
+	["StoreMicroButton"] = _G["BLIZZARD_STORE"],
+	["MainMenuMicroButton"] = _G["MAINMENU_BUTTON"]
 }
+
+--------------------------------------------------------------------------------
+-- Bar
+--------------------------------------------------------------------------------
+
+local MenuBar = RazerNaga:CreateClass("Frame", RazerNaga.Frame)
 
 function MenuBar:SkinButton(button)
 	if button.skinned then return end
@@ -301,7 +313,7 @@ function MenuBar:SkinButton(button)
 end
 
 function MenuBar:New()
-	local bar = MenuBar.proto.New(self, 'menu')
+	local bar = MenuBar.proto.New(self, "menu")
 
 	bar:LoadButtons()
 	bar:Layout()
@@ -336,40 +348,30 @@ function MenuBar:Create(frameId)
 		end
 	end
 
-	hooksecurefunc('UpdateMicroButtons', requestLayoutUpdate)
-
-	if PetBattleFrame and PetBattleFrame.BottomFrame and PetBattleFrame.BottomFrame.MicroButtonFrame then
-		local petMicroButtons = PetBattleFrame.BottomFrame.MicroButtonFrame
-
-		getOrHook(
-			petMicroButtons, 'OnShow', function()
-				self.isPetBattleUIShown = true
-				requestLayoutUpdate()
-			end
-		)
-
-		getOrHook(
-			petMicroButtons, 'OnHide', function()
-				self.isPetBattleUIShown = nil
-				requestLayoutUpdate()
-			end
-		)
-	end
+	hooksecurefunc("UpdateMicroButtons", requestLayoutUpdate)
 
 	if OverrideActionBar then
-		getOrHook(
-			OverrideActionBar, 'OnShow', function()
-				self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
-				requestLayoutUpdate()
-			end
-		)
+		getOrHook(OverrideActionBar, "OnShow", function()
+			self.isOverrideUIShown = RazerNaga:UsingOverrideUI()
+			requestLayoutUpdate()
+		end)
 
-		getOrHook(
-			OverrideActionBar, 'OnHide', function()
-				self.isOverrideUIShown = nil
-				requestLayoutUpdate()
-			end
-		)
+		getOrHook(OverrideActionBar, "OnHide", function()
+			self.isOverrideUIShown = nil
+			requestLayoutUpdate()
+		end)
+	end
+
+	if PetMicroButtonFrame then
+		getOrHook(PetMicroButtonFrame, "OnShow", function()
+			self.isPetBattleUIShown = true
+			requestLayoutUpdate()
+		end)
+
+		getOrHook(PetMicroButtonFrame, "OnHide", function()
+			self.isPetBattleUIShown = nil
+			requestLayoutUpdate()
+		end)
 	end
 
 	return bar
@@ -414,7 +416,7 @@ function MenuBar:LoadSettings(...)
 end
 
 function MenuBar:GetDefaults()
-	return {point = 'BOTTOMRIGHT', x = -244, y = 0}
+	return {point = "BOTTOMRIGHT", x = -244, y = 0}
 end
 
 function MenuBar:NumButtons()
@@ -493,7 +495,7 @@ function MenuBar:LayoutNormal()
 		
 		button:SetParent(self)
 		button:ClearAllPoints()
-		button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
+		button:SetPoint("TOPLEFT", w*col + pW, -(h*row + pH) + 1)
 		button:Show()
 	end
 
@@ -527,7 +529,8 @@ function MenuBar:FixButtonPositions()
 			button:SetParent(OverrideActionBar)
 
 			if i == 1 then
-				button:SetPoint('BOTTOMLEFT', 532, 43)
+				local x, y = OverrideActionBar:GetMicroButtonAnchor()
+				button:SetPoint('BOTTOMLEFT', x - 125, y + 30)
 			elseif i == 7 then
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
@@ -571,7 +574,7 @@ end
 --------------------------------------------------------------------------------
 
 local function Menu_AddLayoutPanel(menu)
-	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').Layout)
+	local panel = menu:NewPanel(LibStub("AceLocale-3.0"):GetLocale("RazerNaga-Config").Layout)
 
 	panel:NewOpacitySlider()
 	panel:NewFadeSlider()
@@ -586,34 +589,26 @@ end
 local function Panel_AddDisableMenuButtonCheckbox(panel, button, name)
 	local checkbox = panel:NewCheckButton(name or button:GetName())
 
-	checkbox:SetScript(
-		'OnClick', function(self)
-			local owner = self:GetParent().owner
+	checkbox:SetScript("OnClick", function(self)
+		local owner = self:GetParent().owner
+		owner:DisableMenuButton(button, self:GetChecked())
+	end)
 
-			owner:DisableMenuButton(button, self:GetChecked())
-		end
-	)
-
-	checkbox:SetScript(
-		'OnShow', function(self)
-			local owner = self:GetParent().owner
-
-			self:SetChecked(owner:IsMenuButtonDisabled(button))
-		end
-	)
+	checkbox:SetScript("OnShow", function(self)
+		local owner = self:GetParent().owner
+		self:SetChecked(owner:IsMenuButtonDisabled(button))
+	end)
 
 	return checkbox
 end
 
 local function Menu_AddDisableMenuButtonsPanel(menu)
-	local panel = menu:NewPanel(LibStub('AceLocale-3.0'):GetLocale('RazerNaga-Config').DisableMenuButtons)
+	local panel = menu:NewPanel(LibStub("AceLocale-3.0"):GetLocale("RazerNaga-Config").DisableMenuButtons)
 
 	panel.width = 200
 
 	for i, buttonName in ipairs(MICRO_BUTTONS) do
-		Panel_AddDisableMenuButtonCheckbox(
-			panel, _G[buttonName], MICRO_BUTTON_NAMES[buttonName]
-		)
+		Panel_AddDisableMenuButtonCheckbox(panel, _G[buttonName], MICRO_BUTTON_NAMES[buttonName])
 	end
 
 	return panel
@@ -635,7 +630,7 @@ end
 -- Module
 --------------------------------------------------------------------------------
 
-local MenuBarModule = RazerNaga:NewModule('MenuBar')
+local MenuBarModule = RazerNaga:NewModule("MenuBar")
 
 function MenuBarModule:OnInitialize()
 	local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
@@ -645,29 +640,19 @@ function MenuBarModule:OnInitialize()
 		perf:SetPoint("BOTTOM")
 	end
 
-	if MicroMenu then
-		local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-		HiddenFrame:SetAllPoints(UIParent)
-		HiddenFrame:Hide()
-
-		for _, button in ipairs { MicroMenu:GetChildren() } do
-			button:SetParent(HiddenFrame)
+	hooksecurefunc(MicroMenu, "UpdateFramerateFrameAnchor", function()
+		if FramerateFrame then
+			FramerateFrame:ClearAllPoints()
+			FramerateFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 75)
 		end
+	end)
 
-		hooksecurefunc(MicroMenu, "UpdateFramerateFrameAnchor", function()
-			if FramerateFrame then
-				FramerateFrame:ClearAllPoints()
-				FramerateFrame:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 75)
-			end
-		end)
-
-		hooksecurefunc(MicroMenu, "UpdateHelpTicketButtonAnchor", function()
-			if HelpOpenWebTicketButton then
-				HelpOpenWebTicketButton:ClearAllPoints()
-				HelpOpenWebTicketButton:SetPoint("CENTER", CharacterMicroButton, "CENTER", 0, 20)
-			end
-		end)
-	end
+	hooksecurefunc(MicroMenu, "UpdateHelpTicketButtonAnchor", function()
+		if HelpOpenWebTicketButton then
+			HelpOpenWebTicketButton:ClearAllPoints()
+			HelpOpenWebTicketButton:SetPoint("CENTER", CharacterMicroButton, "CENTER", 0, 20)
+		end
+	end)
 end
 
 function MenuBarModule:Load()
