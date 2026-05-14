@@ -128,7 +128,7 @@ function RazerNaga:GetDefaults()
 			showBindingText = true,
 			showTooltips = true,
 			showTooltipsCombat = true,
-			useOverrideUI = true,
+			useVehicleUI = true,
 
 			minimap = {
 				hide = false,
