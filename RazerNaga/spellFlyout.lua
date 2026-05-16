@@ -280,9 +280,7 @@ function SpellFlyoutFrameMixin:Initialize()
 end
 
 function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
-	self.direction = direction
 	self.Background.End:ClearAllPoints()
-
 	if direction == "UP" then
 		self.Background.End:SetPoint("TOP")
 		SetClampedTextureRotation(self.Background.End, 0)
