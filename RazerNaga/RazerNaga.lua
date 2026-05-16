@@ -189,10 +189,6 @@ end
 --[[ Blizzard Stuff Hiding ]]--
 
 function RazerNaga:HideBlizzard()
-	local HiddenFrame = CreateFrame("Frame", nil, UIParent)
-	HiddenFrame:SetAllPoints(UIParent)
-	HiddenFrame:Hide()
-
 	local function apply(func, ...)
 		for i = 1, select('#', ...) do
 			local name = (select(i, ...))
@@ -208,7 +204,7 @@ function RazerNaga:HideBlizzard()
 
 	local function banish(frame)
 		(frame.HideBase or frame.Hide)(frame)
-		frame:SetParent(HiddenFrame)
+		frame:SetParent(RazerNaga.ShadowUIParent)
 	end
 
 	local function unregisterEvents(frame)

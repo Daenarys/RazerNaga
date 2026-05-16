@@ -15,6 +15,7 @@ tooltipController.lua
 settingsLoader.lua
 autoBinder.lua
 drag.lua
+shadowUIParent.lua
 frame.lua
 barStates.lua
 buttonBar.lua

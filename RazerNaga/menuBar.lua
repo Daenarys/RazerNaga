@@ -1,9 +1,14 @@
 --------------------------------------------------------------------------------
 -- Menu Bar
--- Defines the RazerNaga menuBar object
 --------------------------------------------------------------------------------
 
 local PetMicroButtonFrame = PetBattleFrame and PetBattleFrame.BottomFrame.MicroButtonFrame
+
+if MicroMenu then
+	for _, button in ipairs { MicroMenu:GetChildren() } do
+		button:SetParent(RazerNaga.ShadowUIParent)
+	end
+end
 
 local MICRO_BUTTONS = {
 	'CharacterMicroButton',
@@ -21,18 +26,18 @@ local MICRO_BUTTONS = {
 }
 
 local MICRO_BUTTON_NAMES = {
-	['CharacterMicroButton'] = _G['CHARACTER_BUTTON'],
-	['ProfessionMicroButton'] = _G['PROFESSIONS_BUTTON'],
-	['PlayerSpellsMicroButton'] = _G['TALENTS_BUTTON'],
-	['AchievementMicroButton'] = _G['ACHIEVEMENT_BUTTON'],
-	['QuestLogMicroButton'] = _G['QUESTLOG_BUTTON'],
-	['HousingMicroButton'] = _G['HOUSING_MICRO_BUTTON'],
-	['GuildMicroButton'] = _G['GUILD_AND_COMMUNITIES'],
-	['LFDMicroButton'] = _G['DUNGEONS_BUTTON'],
-	['CollectionsMicroButton'] = _G['COLLECTIONS'],
-	['EJMicroButton'] = _G['ENCOUNTER_JOURNAL'],
-	['StoreMicroButton'] = _G['BLIZZARD_STORE'],
-	['MainMenuMicroButton'] = _G['MAINMENU_BUTTON']
+	['CharacterMicroButton'] = CHARACTER_BUTTON,
+	['ProfessionMicroButton'] = PROFESSIONS_BUTTON,
+	['PlayerSpellsMicroButton'] = PLAYERSPELLS_BUTTON,
+	['AchievementMicroButton'] = ACHIEVEMENT_BUTTON,
+	['QuestLogMicroButton'] = QUESTLOG_BUTTON,
+	['HousingMicroButton'] = HOUSING_MICRO_BUTTON,
+	['GuildMicroButton'] = GUILD_AND_COMMUNITIES,
+	['LFDMicroButton'] = DUNGEONS_BUTTON,
+	['CollectionsMicroButton'] = COLLECTIONS,
+	['EJMicroButton'] = ENCOUNTER_JOURNAL,
+	['StoreMicroButton'] = BLIZZARD_STORE,
+	['MainMenuMicroButton'] = MAINMENU_BUTTON
 }
 
 --------------------------------------------------------------------------------
@@ -40,14 +45,6 @@ local MICRO_BUTTON_NAMES = {
 --------------------------------------------------------------------------------
 
 local MenuBar = RazerNaga:CreateClass('Frame', RazerNaga.Frame)
-
-function MenuBar:SkinButton(button)
-	if button.skinned then return end
-
-	button:SetSize(28, 36)
-
-	button.skinned = true
-end
 
 function MenuBar:New()
 	local bar = MenuBar.proto.New(self, 'menu')
@@ -129,7 +126,7 @@ function MenuBar:AddButton(i)
 	if button then
 		button:SetParent(self)
 		button:Show()
-		self:SkinButton(button)
+		button:SetSize(28, 36)
 
 		self.buttons[i] = button
 	end
@@ -153,7 +150,11 @@ function MenuBar:LoadSettings(...)
 end
 
 function MenuBar:GetDefaults()
-	return {point = 'BOTTOMRIGHT', x = -244, y = 0}
+	return {
+		point = 'BOTTOMRIGHT', 
+		x = -244, 
+		y = 0
+	}
 end
 
 function MenuBar:NumButtons()
@@ -245,6 +246,7 @@ function MenuBar:LayoutNormal()
 		button:SetParent(self)
 		button:ClearAllPoints()
 		button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
+		button:SetScale(1)
 		button:Show()
 	end
 
@@ -276,10 +278,11 @@ function MenuBar:FixButtonPositions()
 		for i, button in pairs(self.overrideButtons) do
 			button:ClearAllPoints()
 			button:SetParent(OverrideActionBar)
+			button:SetScale(0.82)
 
 			if i == 1 then
 				local x, y = OverrideActionBar:GetMicroButtonAnchor()
-				button:SetPoint('BOTTOMLEFT', x - 125, y + 30)
+				button:SetPoint('BOTTOMLEFT', x + button:GetWidth(), y + button:GetHeight())
 			elseif i == 7 then
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
@@ -370,14 +373,9 @@ end
 local MenuBarModule = RazerNaga:NewModule('MenuBar')
 
 function MenuBarModule:OnInitialize()
-	if MicroMenu then
-		local HiddenFrame = CreateFrame('Frame', nil, UIParent)
-		HiddenFrame:SetAllPoints(UIParent)
-		HiddenFrame:Hide()
-
-		for _, button in ipairs { MicroMenu:GetChildren() } do
-			button:SetParent(HiddenFrame)
-		end
+	local perf = MainMenuMicroButton and MainMenuMicroButton.MainMenuBarPerformanceBar
+	if perf then
+		perf:SetSize(28, 58)
 	end
 
 	hooksecurefunc(MicroMenu, 'UpdateFramerateFrameAnchor', function()
