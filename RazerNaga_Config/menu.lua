@@ -14,9 +14,10 @@ Menu.extraWidth = 20
 Menu.extraHeight = 40
 
 function Menu:New(name)
-	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent))
+	local f = self:Bind(CreateFrame('Frame', 'RazerNagaFrameMenu' .. name, UIParent, "BackdropTemplate"))
 	f.panels = {}
 
+	f:SetBackdrop(BACKDROP_DIALOG_32_32)
 	f:EnableMouse(true)
 	f:SetToplevel(true)
 	f:SetMovable(true)
@@ -27,7 +28,6 @@ function Menu:New(name)
 	f:SetScript('OnHide', self.OnHide)
 
 	--border
-	f.border = CreateFrame('Frame', nil, f, 'DialogBorderTemplate')
 
 	--title text
 	f.text = f:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
@@ -35,7 +35,12 @@ function Menu:New(name)
 
 	--close button
 	f.close = CreateFrame('Button', nil, f, 'UIPanelCloseButton')
-	f.close:SetPoint('TOPRIGHT')
+	f.close:SetSize(32, 32)
+	f.close:SetDisabledTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Disabled")
+	f.close:SetNormalTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Up")
+	f.close:SetPushedTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Down")
+	f.close:SetHighlightTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+	f.close:SetPoint('TOPRIGHT', -5, -5)
 
 	return f
 end
