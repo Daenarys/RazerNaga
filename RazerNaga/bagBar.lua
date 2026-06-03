@@ -29,31 +29,6 @@ function BagBar:SkinButton(b)
 		b.IconOverlay:SetSize(30, 30)
 	end
 
-	if b.CircleMask then
-		b.CircleMask:Hide()
-	end
-
-	local function updateTextures(self)
-		self:GetNormalTexture():SetTexture("Interface\\Buttons\\UI-Quickslot2")
-		self:GetNormalTexture():SetSize(50, 50)
-		self:GetNormalTexture():SetAlpha(1)
-		self:GetNormalTexture():ClearAllPoints()
-		self:GetNormalTexture():SetPoint("CENTER", 0, -1)
-		self:SetPushedTexture("Interface\\Buttons\\UI-Quickslot-Depress")
-		self:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-		self:GetHighlightTexture():SetAlpha(1)
-		self.SlotHighlightTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		self.SlotHighlightTexture:SetBlendMode("ADD")
-	end
-
-	hooksecurefunc(b, "SetItemButtonQuality", ItemButtonMixin.SetItemButtonQuality)
-	hooksecurefunc(b, "UpdateTextures", updateTextures)
-
-	updateTextures(b)
-	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
-	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
-
 	b.skinned = true
 end
 
@@ -68,11 +43,6 @@ function BagBar:SetSetOneBag(enable)
 	self:Reload()
 end
 
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
-	self:Reload()
-end
-
 function BagBar:Reload()
 	if not self.bags then
 		self.bags = {}
@@ -83,9 +53,6 @@ function BagBar:Reload()
 	end
 
 	if not self.sets.oneBag then
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
-		end
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
 			table.insert(self.bags, _G[string.format('CharacterBag%dSlot', slot)])
@@ -154,17 +121,6 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
-	end)
-
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
-		_G[panel:GetName() .. L.Columns]:OnShow()
-	end)
-
 	menu:AddAdvancedPanel()
 	self.menu = menu
 end
@@ -179,7 +135,6 @@ function BagBarModule:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
-		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
 		CharacterBag3Slot.SetBarExpanded = noopFunc
 		CharacterBag2Slot.SetBarExpanded = noopFunc
 		CharacterBag1Slot.SetBarExpanded = noopFunc

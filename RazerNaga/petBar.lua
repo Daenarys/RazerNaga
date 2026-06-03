@@ -13,23 +13,7 @@ local function getPetButton(id)
 end
 
 local function skinPetButton(self)
-	_G[self:GetName() .. 'Icon']:SetTexCoord(0.06, 0.94, 0.06, 0.94)
-	self.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
-	self.PushedTexture:ClearAllPoints()
-	self.PushedTexture:SetAllPoints()
-	self.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
-	self.HighlightTexture:ClearAllPoints()
-	self.HighlightTexture:SetAllPoints()
-	self.HighlightTexture:SetBlendMode("ADD")
-	self.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
-	self.CheckedTexture:ClearAllPoints()
-	self.CheckedTexture:SetAllPoints()
-	self.CheckedTexture:SetBlendMode("ADD")
-	self.Flash:SetTexture([[Interface\Buttons\UI-QuickslotRed]])
-	self.Flash:ClearAllPoints()
-	self.Flash:SetAllPoints()
-	self.AutoCastOverlay.Mask:SetPoint("TOPLEFT")
-	self.AutoCastOverlay.Mask:SetPoint("BOTTOMRIGHT")
+	self.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
 	if self.IconMask then
 		self.IconMask:Hide()
 	end
@@ -40,19 +24,12 @@ local function skinPetButton(self)
 	--simulate old floatingbg
 	hooksecurefunc(PetActionBar, 'Update', function()
 		local petActionID = self:GetID()
-		local texture = GetPetActionInfo(petActionID);
+		local texture = GetPetActionInfo(petActionID)
 		if ( texture ) then
 			self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-			self.NormalTexture:SetSize(54, 54)
-			self.NormalTexture:ClearAllPoints()
-			self.NormalTexture:SetPoint("CENTER", 0, -1)
-			self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
+
 		else
 			self.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot]])
-			self.NormalTexture:SetSize(54, 54)
-			self.NormalTexture:ClearAllPoints()
-			self.NormalTexture:SetPoint("CENTER", 0, -1)
-			self.NormalTexture:SetVertexColor(1, 1, 1, 0.5)
 		end
 	end)
 end
