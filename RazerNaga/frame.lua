@@ -141,10 +141,10 @@ end
 
 -- called when a frame is acquired from the pool
 function Frame:OnAcquire(id)
-    if self.OnEnable then
-        RazerNaga:Printf('Bar %q called deprecated method OnEnable', id)
-        self:OnEnable()
-    end
+	if self.OnEnable then
+		RazerNaga:Printf('Bar %q called deprecated method OnEnable', id)
+		self:OnEnable()
+	end
 end
 
 -- called when a frame is first created
@@ -157,10 +157,10 @@ end
 
 -- called when a frame is sent to the inactive pool
 function Frame:OnRelease(id, deleteSettings)
-    if self.OnFree then
-        RazerNaga:Printf('Bar %q called deprecated method OnFree', id)
-        self:OnFree()
-    end
+	if self.OnFree then
+		RazerNaga:Printf('Bar %q called deprecated method OnFree', id)
+		self:OnFree()
+	end
 end
 
 function Frame:OnLoadSettings()
@@ -339,12 +339,12 @@ function Frame:Layout()
 end
 
 function Frame:TrySetSize(width, height)
-    if not _G.InCombatLockdown() then
-        self:SetSize(width, height)
-        return true
-    end
+	if not _G.InCombatLockdown() then
+		self:SetSize(width, height)
+		return true
+	end
 
-    return false
+	return false
 end
 
 --[[ Scaling ]]--
@@ -989,21 +989,21 @@ end
 --[[ Metafunctions ]]--
 
 function Frame:CallMethod(method, ...)
-    local func = self[method]
+	local func = self[method]
 
-    if type(func) == 'function' then
-        return func(self, ...)
-    else
-        error(('Frame %s does not have a method named %q'):format(self.id, method), 2)
-    end
+	if type(func) == 'function' then
+		return func(self, ...)
+	else
+		error(('Frame %s does not have a method named %q'):format(self.id, method), 2)
+	end
 end
 
 function Frame:MaybeCallMethod(method, ...)
-    local func = self[method]
+	local func = self[method]
 
-    if type(func) == 'function' then
-        return func(self, ...)
-    end
+	if type(func) == 'function' then
+		return func(self, ...)
+	end
 end
 
 function Frame:Get(id)
@@ -1026,9 +1026,9 @@ function Frame:ForDocked(method, ...)
 end
 
 function Frame:ForEach(method, ...)
-    for _, frame in self:GetAll() do
-        frame:MaybeCallMethod(method, ...)
-    end
+	for _, frame in self:GetAll() do
+		frame:MaybeCallMethod(method, ...)
+	end
 end
 
 --takes a frameId, and performs the specified action on that frame

@@ -7,7 +7,8 @@ local RazerNaga = _G[...]
 -- A precalculated list of all known valid flyout ids. Not robust, but also sparse.
 -- TODO: regeneate this list once every build
 local VALID_FLYOUT_IDS = {
-	1, 8, 9, 10, 11, 12, 66, 67, 84
+	1, 8, 9, 10, 11, 12, 66, 67, 84, 92, 93, 96, 103, 106, 217, 219, 220, 222, 223, 224,
+	225, 226, 227, 229, 230, 231, 232, 235, 242, 243
 }
 
 -- layout constants from SpellFlyout.lua
@@ -39,7 +40,7 @@ end
 
 function SpellFlyoutButtonMixin:OnEnter()
 	if GetCVar("UberTooltips") == "1" then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT", 4, 4)
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
 		if GameTooltip:SetSpellByID(self.spellID) then
 			self.UpdateTooltip = self.OnEnter
 		else
@@ -79,18 +80,9 @@ end
 --------------------------------------------------------------------------------
 
 function SpellFlyoutButtonMixin:Update()
-	self:UpdateCooldown()
 	self:UpdateState()
 	self:UpdateUsable()
 	self:UpdateCount()
-end
-
-function SpellFlyoutButtonMixin:UpdateCooldown()
-	local spellID = self.spellID
-
-	if spellID then
-		ActionButton_UpdateCooldown(self)
-	end
 end
 
 function SpellFlyoutButtonMixin:UpdateState()
@@ -170,7 +162,6 @@ local SpellFlyoutFrame_Toggle = [[
 			local button = FLYOUT_SLOTS[numButtons]
 
 			button:ClearAllPoints()
-
 			if direction == "UP" then
 				if prevButton then
 					button:SetPoint("BOTTOM", prevButton, "TOP", 0, SPELLFLYOUT_DEFAULT_SPACING)
@@ -222,7 +213,6 @@ local SpellFlyoutFrame_Toggle = [[
 	local vertical = false
 
 	self:ClearAllPoints()
-
 	if direction == "UP" then
 		self:SetPoint("BOTTOM", parent, "TOP")
 		vertical = true
@@ -243,7 +233,7 @@ local SpellFlyoutFrame_Toggle = [[
 		self:SetHeight(bH + (SPELLFLYOUT_DEFAULT_SPACING * 2))
 	end
 
-	self:CallMethod("LayoutTextures", direction, 0)
+	self:CallMethod("LayoutTextures", direction)
 	self:Show()
 ]]
 
@@ -253,21 +243,22 @@ function SpellFlyoutFrameMixin:Initialize()
 	self.Background = CreateFrame('Frame', nil, self)
 	self.Background:SetAllPoints()
 
-	self.Background.End = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.End:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutButton', true)
+	self.Background.End = self.Background:CreateTexture(nil, "BACKGROUND")
+	self.Background.End:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton")
+	self.Background.End:SetSize(37,22)
+	self.Background.End:SetTexCoord(0.01562500,0.59375000,0.74218750,0.91406250)
 
-	self.Background.HorizontalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.HorizontalMiddle:SetAtlas('_UI-HUD-ActionBar-IconFrame-FlyoutMidLeft', true)
+	self.Background.HorizontalMiddle = self.Background:CreateTexture(nil, "BACKGROUND")
+	self.Background.HorizontalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMidLeft")
 	self.Background.HorizontalMiddle:SetHorizTile(true)
-	self.Background.HorizontalMiddle:Hide()
+	self.Background.HorizontalMiddle:SetSize(32,37)
+	self.Background.HorizontalMiddle:SetTexCoord(0,1,0,0.578125)
 
-	self.Background.VerticalMiddle = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.VerticalMiddle:SetAtlas('!UI-HUD-ActionBar-IconFrame-FlyoutMid', true)
+	self.Background.VerticalMiddle = self.Background:CreateTexture(nil, "BACKGROUND")
+	self.Background.VerticalMiddle:SetTexture("Interface\\Buttons\\ActionBarFlyoutButton-FlyoutMid")
 	self.Background.VerticalMiddle:SetVertTile(true)
-	self.Background.VerticalMiddle:Hide()
-
-	self.Background.Start = self.Background:CreateTexture(nil, 'BACKGROUND')
-	self.Background.Start:SetAtlas('UI-HUD-ActionBar-IconFrame-FlyoutBottom', true)
+	self.Background.VerticalMiddle:SetSize(37,32)
+	self.Background.VerticalMiddle:SetTexCoord(0,0.578125,0,1)
 
 	local command = [[
 		FLYOUT_INFO = newtable()
@@ -285,56 +276,45 @@ function SpellFlyoutFrameMixin:Initialize()
 	self:UpdateKnownFlyouts()
 end
 
-function SpellFlyoutFrameMixin:LayoutTextures(direction, distance)
+function SpellFlyoutFrameMixin:LayoutTextures(direction)
 	self.direction = direction
 	self.Background.End:ClearAllPoints()
-	self.Background.Start:ClearAllPoints()
 
 	if direction == "UP" then
-		self.Background.End:SetPoint("TOP", 0, SPELLFLYOUT_INITIAL_SPACING)
+		self.Background.End:SetPoint("TOP")
 		SetClampedTextureRotation(self.Background.End, 0)
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 0)
-		self.Background.Start:SetPoint("TOP", self.Background.VerticalMiddle, "BOTTOM")
-		SetClampedTextureRotation(self.Background.Start, 0)
 		self.Background.HorizontalMiddle:Hide()
 		self.Background.VerticalMiddle:Show()
 		self.Background.VerticalMiddle:ClearAllPoints()
 		self.Background.VerticalMiddle:SetPoint("TOP", self.Background.End, "BOTTOM")
-		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, distance)
+		self.Background.VerticalMiddle:SetPoint("BOTTOM", 0, 3)
 	elseif direction == "DOWN" then
-		self.Background.End:SetPoint("BOTTOM", 0, -SPELLFLYOUT_INITIAL_SPACING)
+		self.Background.End:SetPoint("BOTTOM")
 		SetClampedTextureRotation(self.Background.End, 180)
-		SetClampedTextureRotation(self.Background.VerticalMiddle, 180)
-		self.Background.Start:SetPoint("BOTTOM", self.Background.VerticalMiddle, "TOP")
-		SetClampedTextureRotation(self.Background.Start, 180)
 		self.Background.HorizontalMiddle:Hide()
 		self.Background.VerticalMiddle:Show()
 		self.Background.VerticalMiddle:ClearAllPoints()
 		self.Background.VerticalMiddle:SetPoint("BOTTOM", self.Background.End, "TOP")
-		self.Background.VerticalMiddle:SetPoint("TOP", 0, -distance)
+		self.Background.VerticalMiddle:SetPoint("TOP", 0, -3)
 	elseif direction == "LEFT" then
-		self.Background.End:SetPoint("LEFT", -SPELLFLYOUT_INITIAL_SPACING, 0)
+		self.Background.End:SetPoint("LEFT")
 		SetClampedTextureRotation(self.Background.End, 270)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 180)
-		self.Background.Start:SetPoint("LEFT", self.Background.HorizontalMiddle, "RIGHT")
-		SetClampedTextureRotation(self.Background.Start, 270)
 		self.Background.VerticalMiddle:Hide()
 		self.Background.HorizontalMiddle:Show()
 		self.Background.HorizontalMiddle:ClearAllPoints()
 		self.Background.HorizontalMiddle:SetPoint("LEFT", self.Background.End, "RIGHT")
-		self.Background.HorizontalMiddle:SetPoint("RIGHT", -distance, 0)
+		self.Background.HorizontalMiddle:SetPoint("RIGHT", -3, 0)
 	elseif direction == "RIGHT" then
-		self.Background.End:SetPoint("RIGHT", SPELLFLYOUT_INITIAL_SPACING, 0)
+		self.Background.End:SetPoint("RIGHT")
 		SetClampedTextureRotation(self.Background.End, 90)
-		SetClampedTextureRotation(self.Background.HorizontalMiddle, 0)
-		self.Background.Start:SetPoint("RIGHT", self.Background.HorizontalMiddle, "LEFT")
-		SetClampedTextureRotation(self.Background.Start, 90)
 		self.Background.VerticalMiddle:Hide()
 		self.Background.HorizontalMiddle:Show()
 		self.Background.HorizontalMiddle:ClearAllPoints()
 		self.Background.HorizontalMiddle:SetPoint("RIGHT", self.Background.End, "LEFT")
-		self.Background.HorizontalMiddle:SetPoint("LEFT", distance, 0)
+		self.Background.HorizontalMiddle:SetPoint("LEFT", 3, 0)
 	end
+
+	self:SetBorderColor(0.7, 0.7, 0.7)
 end
 
 function SpellFlyoutFrameMixin:UpdateKnownFlyouts()
@@ -439,14 +419,35 @@ local SpellFlyoutButton_OnClick = [[
 ]]
 
 local SpellFlyoutButton_OnClickPost = [[
-    if message == "close" then
-        control:Hide()
-    end
+	if message == "close" then
+		control:Hide()
+	end
 ]]
 
 function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	local name = ('%sSpellFlyoutButton%d'):format("RazerNaga", id)
 	local button = CreateFrame('CheckButton', name, self, 'SmallActionButtonTemplate, SecureActionButtonTemplate')
+
+	button:SetSize(28, 28)
+	button.cooldown:SetDrawBling(true)
+	_G[button:GetName().."Icon"]:SetTexCoord(4/64, 60/64, 4/64, 60/64)
+	button.NormalTexture:SetAlpha(0)
+	button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	button.CheckedTexture:ClearAllPoints()
+	button.CheckedTexture:SetPoint("TOPLEFT")
+	button.CheckedTexture:SetPoint("BOTTOMRIGHT")
+	button.CheckedTexture:SetBlendMode("ADD")
+	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:ClearAllPoints()
+	button.HighlightTexture:SetPoint("TOPLEFT")
+	button.HighlightTexture:SetPoint("BOTTOMRIGHT")
+	button.HighlightTexture:SetBlendMode("ADD")
+	button.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	button.PushedTexture:ClearAllPoints()
+	button.PushedTexture:SetPoint("TOPLEFT")
+	button.PushedTexture:SetPoint("BOTTOMRIGHT")
+	button.cooldown:ClearAllPoints()
+	button.cooldown:SetAllPoints()
 
 	Mixin(button, SpellFlyoutButtonMixin)
 
@@ -455,6 +456,12 @@ function SpellFlyoutFrameMixin:CreateFlyoutButton(id)
 	self:WrapScript(button, "OnClick", SpellFlyoutButton_OnClick, SpellFlyoutButton_OnClickPost)
 
 	return button
+end
+
+function SpellFlyoutFrameMixin:SetBorderColor(r, g, b)
+	self.Background.HorizontalMiddle:SetVertexColor(r, g, b)
+	self.Background.VerticalMiddle:SetVertexColor(r, g, b)
+	self.Background.End:SetVertexColor(r, g, b)
 end
 
 function SpellFlyoutFrameMixin:ForShown(method, ...)
@@ -474,20 +481,20 @@ local SpellFlyout = { }
 LibStub('AceEvent-3.0'):Embed(SpellFlyout)
 
 local button_OnClick = [[
-    local type, id = GetActionInfo(self:GetEffectiveAttribute("action", button))
-    if type == 'flyout' then
+	local type, id = GetActionInfo(self:GetEffectiveAttribute("action", button))
+	if type == 'flyout' then
 		if not down then
 			control:SetAttribute("caller", self:GetFrameRef("owner") or self)
 			control:RunAttribute("Toggle", id)
 		end
-        return false
-    end
+		return false
+	end
 ]]
 
 function SpellFlyout:Register(button)
-    local frame = self.frame
+	local frame = self.frame
 
-    if not frame then
+	if not frame then
 		frame = CreateFrame("Frame", nil, nil, "SecureHandlerShowHideTemplate")
 
 		Mixin(frame, SpellFlyoutFrameMixin)
@@ -499,8 +506,8 @@ function SpellFlyout:Register(button)
 		self:RegisterEvent("SPELL_FLYOUT_UPDATE")
 		self:RegisterEvent("PET_STABLE_UPDATE")
 
-        self.frame = frame
-    end
+		self.frame = frame
+	end
 
 	frame:WrapScript(button, "OnClick", button_OnClick)
 end
@@ -537,10 +544,6 @@ function SpellFlyout:PET_STABLE_UPDATE()
 	end
 end
 
-function SpellFlyout:SPELL_UPDATE_COOLDOWN()
-	self.frame:ForShown("UpdateCooldown")
-end
-
 function SpellFlyout:SPELL_UPDATE_USABLE()
 	self.frame:ForShown("UpdateUsable")
 end
@@ -557,7 +560,6 @@ function SpellFlyout:OnFlyoutShown()
 		self.flyoutShown = true
 
 		self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
-		self:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 		self:RegisterEvent("SPELL_UPDATE_USABLE")
 	end
 end
@@ -567,7 +569,6 @@ function SpellFlyout:OnFlyoutHidden()
 		self.flyoutShown = nil
 
 		self:UnregisterEvent("CURRENT_SPELL_CAST_CHANGED")
-		self:UnregisterEvent("SPELL_UPDATE_COOLDOWN")
 		self:UnregisterEvent("SPELL_UPDATE_USABLE")
 	end
 end
