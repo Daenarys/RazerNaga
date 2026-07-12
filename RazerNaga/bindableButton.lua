@@ -122,12 +122,15 @@ function BindableButton:UpdateHotkeys()
 		hotkey:SetPoint("TOPLEFT", -2, -3)
 	elseif key ~= '' then
 		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPLEFT", 3, -3)
+		hotkey:SetPoint("TOPLEFT", 1, -3)
 	end
 
 	self.TextOverlayContainer:SetFrameLevel(2)
 	self.TextOverlayContainer.Count:SetDrawLayer("ARTWORK", 2)
 	self.TextOverlayContainer.HotKey:SetDrawLayer("ARTWORK", 2)
+
+	self.TextOverlayContainer.HotKey:SetSize(36, 10)
+	self.TextOverlayContainer.HotKey:SetFont("Fonts\\ARIALN.TTF", 12, "THICKOUTLINE, MONOCHROME")
 end
 
 function BindableButton:OnEnter()
