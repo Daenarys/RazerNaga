@@ -1,0 +1,13 @@
+## Interface: 90002
+## Title: Razer Naga Config
+## Notes: GUI based configuration for Razer Naga
+## Author: Tuller
+## Dependencies: RazerNaga
+## LoadOnDemand: 1
+localization.xml
+radioGroup.lua
+dropdown.lua
+menu.lua
+panel.lua
+general.lua
+profiles.lua
