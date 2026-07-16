@@ -1,5 +1,5 @@
 --[[
-        xp.lua
+		xp.lua
 			The dominos xp bar
 --]]
 
@@ -30,7 +30,6 @@ local textEnv = {
 }
 
 -- compatibility shims
-local AZERITE_API_EXISTS = _G.C_AzeriteItem ~= nil
 local IsInActiveWorldPVP = _G.IsInActiveWorldPVP or function() return false end
 local GetHonorExhaustion = _G.GetHonorExhaustion or function() return 0 end
 
@@ -41,20 +40,9 @@ local XPBarModule = RazerNaga:NewModule('xp', 'AceEvent-3.0')
 local XP
 
 function XPBarModule:Load()
-	if AZERITE_API_EXISTS then
-		self.bars = {
-			XP:New('xp', { 'honor', 'reputation', 'xp' }),
-			XP:New('artifact', { 'artifact', 'azerite' })
-		}
-
-		-- azerite events
-		self:RegisterEvent('AZERITE_ITEM_EXPERIENCE_CHANGED')
-	else
-		self.bars = {
-			XP:New('xp', { 'honor', 'reputation', 'xp' }),
-			XP:New('artifact', { 'artifact' })
-		}
-	end
+	self.bars = {
+		XP:New('xp', { 'honor', 'reputation', 'xp' }),
+	}
 
 	-- common events
 	self:RegisterEvent('PLAYER_ENTERING_WORLD')
@@ -70,10 +58,6 @@ function XPBarModule:Load()
 	-- honor events
 	self:RegisterEvent("HONOR_XP_UPDATE");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
-
-	-- artifact events
-	self:RegisterEvent('ARTIFACT_XP_UPDATE')
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED")
 end
 
 function XPBarModule:Unload()
@@ -101,20 +85,6 @@ function XPBarModule:PLAYER_XP_UPDATE()
 end
 
 function XPBarModule:UPDATE_FACTION()
-	self:UpdateAllBars()
-end
-
-function XPBarModule:ARTIFACT_XP_UPDATE()
-	self:UpdateAllBars()
-end
-
-function XPBarModule:AZERITE_ITEM_EXPERIENCE_CHANGED()
-	self:UpdateAllBars()
-end
-
-function XPBarModule:UNIT_INVENTORY_CHANGED(_, unit)
-	if unit ~= 'player' then return end
-
 	self:UpdateAllBars()
 end
 
@@ -227,14 +197,6 @@ function XP:OnModeChanged()
 		return self:WatchHonor()
 	end
 
-	if mode == 'artifact' then
-		return self:WatchArtifact()
-	end
-
-	if mode == 'azerite' and AZERITE_API_EXISTS then
-		return self:WatchAzerite()
-	end
-
 	if mode == 'xp' then
 		return self:WatchExperience()
 	end
@@ -300,15 +262,7 @@ function XP:IsValidMode(mode)
 	end
 
 	if mode == 'honor' then
-		return IsWatchingHonorAsXP() or C_PvP.IsActiveBattlefield() or IsInActiveWorldPVP()
-	end
-
-	if mode == 'artifact' then
-		return HasArtifactEquipped()
-	end
-
-	if mode == 'azerite' then
-		return AZERITE_API_EXISTS and C_AzeriteItem.HasActiveAzeriteItem()
+		return IsWatchingHonorAsXP() or IsInActiveWorldPVP()
 	end
 
 	return mode == 'xp'
@@ -533,176 +487,6 @@ do
 			end
 			return format("%s: %s / %s [%s%%]", label, comma(val), comma(valMax), pct)
 		]]
-	end
-end
-
-
---[[ Artifact ]]--
-
-do
-	function XP:WatchArtifact()
-		self:UnregisterAllEvents()
-		self:RegisterEvent('ARTIFACT_XP_UPDATE')
-		self:RegisterEvent("UNIT_INVENTORY_CHANGED")
-		self:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
-		self:SetScript('OnEvent', self.OnArtifactEvent)
-
-		local r, g, b, a = 1.0, 0.24, 0, 1
-		self.value:SetStatusBarColor(r, g, b, a)
-		self.rest:SetStatusBarColor(0, 0, 0, 0)
-		self.rest:SetValue(0)
-		self.bg:SetVertexColor(r / 3, g / 3, b / 3, 0.6)
-
-		self:UpdateArtifact()
-	end
-
-	function XP:OnArtifactEvent(event, ...)
-		if event == 'UNIT_INVENTORY_CHANGED' and ... == 'player' then
-			self:UpdateArtifact()
-		elseif event == 'ARTIFACT_XP_UPDATE' or event == 'UPDATE_EXTRA_ACTIONBAR' then
-			self:UpdateArtifact()
-		end
-	end
-
-	function XP:UpdateArtifact()
-        if not HasArtifactEquipped() then
-            self.value:SetMinMaxValues(0, 1)
-			self.value:SetValue(0)
-            self.text:SetText(_G.ARTIFACT_POWER)
-            return
-        end
-
-		local value, max = self:GetArtifactBarValues()
-		self.value:SetMinMaxValues(0, max)
-		self.value:SetValue(value)
-
-		--update statusbar text
-		textEnv.val = value
-		textEnv.valMax = max
-		textEnv.tnl = max - value
-		textEnv.pct = (max > 0 and round((value / max) * 100)) or 0
-
-		local getArtifactText = assert(loadstring(self:GetArtifactFormat(), "getArtifactText"))
-		setfenv(getArtifactText, textEnv)
-		self.text:SetText(getArtifactText())
-	end
-
-	if _G.ArtifactBarGetNumArtifactTraitsPurchasableFromXP ~= nil then
-		function XP:GetArtifactBarValues()
-			local artifactItemID, _, _, _, artifactTotalXP, artifactPointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-			if not artifactItemID then
-				return 0, 0
-			end
-
-			local _, xp, xpForNextPoint = ArtifactBarGetNumArtifactTraitsPurchasableFromXP(artifactPointsSpent, artifactTotalXP, artifactTier)
-
-			return xp, xpForNextPoint
-		end
-	else
-		function XP:GetArtifactBarValues()
-			local _, _, _, _, xp, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-			local pointsAvailable = 0
-			local nextRankCost = C_ArtifactUI.GetCostForPointAtRank(pointsSpent + pointsAvailable, artifactTier) or 0
-
-			while xp >= nextRankCost and nextRankCost > 0 do
-				xp = xp - nextRankCost
-				pointsAvailable = pointsAvailable + 1
-				nextRankCost = C_ArtifactUI.GetCostForPointAtRank(pointsSpent + pointsAvailable, artifactTier) or 0
-			end
-
-			return xp, nextRankCost
-		end
-	end
-
-	function XP:SetArtifactFormat(fmt)
-		if self:GetArtifactFormat() ~= fmt then
-			self.sets.artifactFormat = fmt
-
-			if self:GetMode() == 'artifact' then
-				self:UpdateArtifact()
-			end
-		end
-	end
-
-	function XP:GetArtifactFormat()
-		return self.sets.artifactFormat
-			or [[ return format("%s / %s [%s%%]", comma(val), comma(valMax), pct) ]]
-	end
-end
-
---[[ Azerite ]]--
-
-if C_AzeriteItem ~= nil then
-	function XP:WatchAzerite()
-		self:UnregisterAllEvents()
-		self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
-		self:SetScript('OnEvent', self.OnAzeriteEvent)
-
-		local r, g, b, a = ARTIFACT_BAR_COLOR:GetRGBA()
-		self.value:SetStatusBarColor(r, g, b, a)
-		self.rest:SetStatusBarColor(0, 0, 0, 0)
-		self.rest:SetValue(0)
-		self.bg:SetVertexColor(r / 3, g / 3, b / 3, 0.6)
-
-		self:UpdateAzerite()
-	end
-
-	function XP:OnAzeriteEvent(event, ...)
-		self:UpdateAzerite()
-	end
-
-	function XP:UpdateAzerite()
-        if not C_AzeriteItem.HasActiveAzeriteItem() then
-            self.value:SetMinMaxValues(0, 1)
-			self.value:SetValue(0)
-            self.text:SetFormattedText(AZERITE_POWER_BAR, 0)
-            return
-		end
-
-		local value, max = self:GetAzeriteBarValues()
-		self.value:SetMinMaxValues(0, max)
-		self.value:SetValue(value)
-
-		--update statusbar text
-		textEnv.val = value
-		textEnv.valMax = max
-		textEnv.tnl = max - value
-		textEnv.pct = (max > 0 and round((value / max) * 100)) or 0
-
-		local getAzeriteText = assert(loadstring(self:GetAzeriteFormat(), "getAzeriteText"))
-		setfenv(getAzeriteText, textEnv)
-		self.text:SetText(getAzeriteText())
-	end
-
-	function XP:GetAzeriteBarValues()
-		local azeriteItemLocation = C_AzeriteItem.FindActiveAzeriteItem()
-		if not azeriteItemLocation then
-			return 0, 1
-		end
-
-		local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
-		if AzeriteUtil.IsAzeriteItemLocationBankBag(azeriteItemLocation) then
-			return 0, 1
-		end
-
-		local value, max = C_AzeriteItem.GetAzeriteItemXPInfo(azeriteItemLocation)
-
-		return value, max
-	end
-
-	function XP:SetAzeriteFormat(fmt)
-		if self:GetAzeriteFormat() ~= fmt then
-			self.sets.azeriteFormat = fmt
-
-			if self:GetMode() == 'azerite' then
-				self:UpdateAzerite()
-			end
-		end
-	end
-
-	function XP:GetAzeriteFormat()
-		return self.sets.azeriteFormat
-			or [[ return format("%s / %s [%s%%]", comma(val), comma(valMax), pct) ]]
 	end
 end
 

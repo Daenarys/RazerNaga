@@ -200,7 +200,6 @@ function MenuBar:LayoutNormal()
         return
     end
 
-    local l, r, t, b = self.buttons[1]:GetHitRectInsets()
     local cols = min(self:NumColumns(), numButtons)
     local rows = ceil(numButtons / cols)
 
@@ -211,8 +210,8 @@ function MenuBar:LayoutNormal()
     local isTopToBottom = self:GetTopToBottom()
 
     local firstButton = self.buttons[1]
-    local w = firstButton:GetWidth() + spacing - (l + r)
-    local h = firstButton:GetHeight() + spacing - (t + b)
+    local w = firstButton:GetWidth() + spacing - 2
+    local h = firstButton:GetHeight() + spacing - 20
 
     for i, button in pairs(self.activeButtons) do
         local col, row
@@ -231,14 +230,14 @@ function MenuBar:LayoutNormal()
 
         button:SetParent(self.header)
         button:ClearAllPoints()
-        button:SetPoint('TOPLEFT', w * col + pW - l, -(h * row + pH) + r)
+        button:SetPoint('TOPLEFT', w * col + pW, -(h * row + pH) + 20)
         button:Show()
     end
 
     -- Update bar size, if we're not in combat
     -- TODO: manage bar size via secure code
     if not InCombatLockdown() then
-        local newWidth = max(w * cols - spacing + pW * 2 + l, 8)
+        local newWidth = max(w * cols - spacing + pW * 2 + 2, 8)
         local newHeight = max(h * ceil(numButtons / cols) - spacing + pH * 2, 8)
         self:SetSize(newWidth, newHeight)
     end

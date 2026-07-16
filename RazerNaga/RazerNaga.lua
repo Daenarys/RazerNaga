@@ -61,6 +61,7 @@ function RazerNaga:OnEnable()
 	self:RegisterEvent('PLAYER_REGEN_DISABLED')
 
 	self:HideBlizzard()
+	self:UpdateUseOverrideUI()
 	self:CreateDataBrokerPlugin()
 	self:Load()
 end
@@ -348,17 +349,21 @@ function RazerNaga:HideBlizzard()
 	end
 
 	apply(hide,
-		ActionBarDownButton,
-		ActionBarUpButton,
-		MainMenuBarPerformanceBarFrame,
-		MicroButtonAndBagsBar,
+		ArtifactWatchBar,
+		CastingBarFrame,
+		HonorWatchBar,
 		MultiBarBottomLeft,
 		MultiBarBottomRight,
 		MultiBarLeft,
 		MultiBarRight,
-		MultiCastActionBarFrame,
+		MainMenuBarArtFrame,
+		MainMenuExpBar,
+		MainMenuBarMaxLevelBar,
+		ReputationWatchBar,
+		StanceBarFrame,
+		PossessBarFrame,
 		PetActionBarFrame,
-		StanceBarFrame
+		MultiCastActionBarFrame
 	)
 
 	apply(disableSlideOutAnimations,
@@ -372,73 +377,7 @@ function RazerNaga:HideBlizzard()
 	-- dependent on it being visible
 	if MainMenuBar then
 		MainMenuBar:EnableMouse(false)
-
-		-- the main menu bar is responsible for updating the micro buttons
-		-- so we don't disable all events for it
-		MainMenuBar:UnregisterEvent('ACTIONBAR_PAGE_CHANGED')
-		MainMenuBar:UnregisterEvent('PLAYER_ENTERING_WORLD')
-		MainMenuBar:UnregisterEvent('DISPLAY_SIZE_CHANGED')
-		MainMenuBar:UnregisterEvent('UI_SCALE_CHANGED')
-	end
-
-	-- don't hide the art frame, as the multi action bars are dependent on GetLeft
-	-- or similar calls returning a value
-	if MainMenuBarArtFrame then
-		MainMenuBarArtFrame:SetAlpha(0)
-	end
-
-	-- don't reparent the tracking manager, as it assumes its parent has a callback
-	if StatusTrackingBarManager then
-		StatusTrackingBarManager:UnregisterAllEvents()
-		StatusTrackingBarManager:Hide()
-	end
-
-	if MainMenuExpBar then
-		MainMenuExpBar:UnregisterAllEvents()
-		hide(MainMenuExpBar)
-	end
-
-	if ReputationWatchBar then
-		ReputationWatchBar:UnregisterAllEvents()
-		hide(ReputationWatchBar)
-
-		hooksecurefunc(
-			'MainMenuBar_UpdateExperienceBars',
-			function()
-				ReputationWatchBar:Hide()
-			end
-		)
-	end
-
-	if VerticalMultiBarsContainer then
-		VerticalMultiBarsContainer:UnregisterAllEvents()
-		hide(VerticalMultiBarsContainer)
-
-		-- a hack to preserve the multi action bar spacing behavior for the quest log
-		hooksecurefunc(
-			'MultiActionBar_Update',
-			function()
-				local width = 0
-				local showLeft = SHOW_MULTI_ACTIONBAR_3
-				local showRight = SHOW_MULTI_ACTIONBAR_4
-				local stack = GetCVarBool('multiBarRightVerticalLayout')
-
-				if showLeft then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				if showRight and not stack then
-					width = width + VERTICAL_MULTI_BAR_WIDTH
-				end
-
-				VerticalMultiBarsContainer:SetWidth(width)
-			end
-		)
-	end
-
-	if PossessBarFrame then
-		PossessBarFrame:UnregisterAllEvents()
-		hide(PossessBarFrame)
+		MainMenuBar.ignoreFramePositionManager = true
 	end
 
 	-- set the stock action buttons to hidden by default
@@ -460,7 +399,8 @@ function RazerNaga:HideBlizzard()
 		disableActionButton(('MultiBarBottomLeftButton%d'):format(id))
 	end
 
-	self:UpdateUseOverrideUI()
+	_G.MultiActionBar_ShowAllGrids = function() end
+	_G.MultiActionBar_HideAllGrids = function() end
 end
 
 function RazerNaga:SetUseOverrideUI(enable)
