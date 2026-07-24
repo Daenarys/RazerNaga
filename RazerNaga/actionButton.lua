@@ -86,6 +86,20 @@ local function skinActionButton(self)
 	if self.SlotBackground then
 		self.SlotBackground:Hide()
 	end
+
+	hooksecurefunc(self, "Update", function()
+		local action = self.action
+		local texture = C_ActionBar.GetActionTexture(action)
+		-- Update icon and hotkey text
+		if not ( texture ) then
+			local hotkey = self.HotKey
+	        if ( hotkey:GetText() == RANGE_INDICATOR ) then
+				hotkey:Hide()
+			else
+				hotkey:SetVertexColor(0.6, 0.6, 0.6)
+			end
+		end
+	end)
 end
 
 function ActionButtonMixin:OnCreate(id)
@@ -525,6 +539,27 @@ hooksecurefunc(ActionButtonSpellAlertManager, "HideAlert", function(self, button
 			button.ActionButtonOverlay.animOut:Play()
 		else
 			OverlayGlowAnimOutFinished(button.ActionButtonOverlay.animOut)
+		end
+	end
+end)
+
+hooksecurefunc("ActionButton_UpdateRangeIndicator", function(self, checksRange, inRange)
+	if ( self.HotKey:GetText() == RANGE_INDICATOR ) then
+		if ( checksRange ) then
+			self.HotKey:Show()
+			if ( inRange ) then
+				self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB())
+			else
+				self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB())
+			end
+		else
+			self.HotKey:Hide()
+		end
+	else
+		if ( checksRange and not inRange ) then
+			self.HotKey:SetVertexColor(RED_FONT_COLOR:GetRGB())
+		else
+			self.HotKey:SetVertexColor(LIGHTGRAY_FONT_COLOR:GetRGB())
 		end
 	end
 end)
