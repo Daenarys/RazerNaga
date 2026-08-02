@@ -529,5 +529,24 @@ hooksecurefunc(ActionButtonSpellAlertManager, "HideAlert", function(self, button
 	end
 end)
 
+for i = 1, NUM_OVERRIDE_BUTTONS do
+	local button = _G["OverrideActionBarButton" .. i]
+	button.NormalTexture:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+	button.NormalTexture:ClearAllPoints()
+	button.NormalTexture:SetPoint("TOPLEFT", -15, 15)
+	button.NormalTexture:SetPoint("BOTTOMRIGHT", 15, -15)
+	button.PushedTexture:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	button.PushedTexture:ClearAllPoints()
+	button.PushedTexture:SetAllPoints()
+	button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	button.HighlightTexture:ClearAllPoints()
+	button.HighlightTexture:SetAllPoints()
+	button.HighlightTexture:SetBlendMode("ADD")
+	button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+	button.CheckedTexture:ClearAllPoints()
+	button.CheckedTexture:SetAllPoints()
+	button.CheckedTexture:SetBlendMode("ADD")
+end
+
 -- exports
 RazerNaga.ActionButton = ActionButton
