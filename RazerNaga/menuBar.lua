@@ -507,7 +507,6 @@ function MenuBar:LayoutNormal()
 		button:SetParent(self)
 		button:ClearAllPoints()
 		button:SetPoint('TOPLEFT', w*col + pW, -(h*row + pH) + 1)
-		button:SetScale(1)
 		button:Show()
 	end
 
@@ -539,11 +538,10 @@ function MenuBar:FixButtonPositions()
 		for i, button in pairs(self.overrideButtons) do
 			button:ClearAllPoints()
 			button:SetParent(OverrideActionBar)
-			button:SetScale(0.82)
 
 			if i == 1 then
 				local x, y = OverrideActionBar:GetMicroButtonAnchor()
-				button:SetPoint('BOTTOMLEFT', x + button:GetWidth(), y + button:GetHeight())
+				button:SetPoint('BOTTOMLEFT', x - 110, y + 28)
 			elseif i == 7 then
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
