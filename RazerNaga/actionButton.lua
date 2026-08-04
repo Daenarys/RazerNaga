@@ -351,7 +351,7 @@ local function OverlayGlow_OnHide(self)
 end
 
 local function OverlayGlow_OnUpdate(self, elapsed)
-	AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
+	TextureUtil.AnimateTexCoords(self.ants, 256, 256, 48, 48, 22, elapsed, 0.01)
 	local cooldown = self:GetParent().cooldown
 	local duration = cooldown and cooldown:IsShown() and cooldown:GetCooldownDuration()
 	if((not issecretvalue or not issecretvalue(duration)) and duration and duration > 3000) then

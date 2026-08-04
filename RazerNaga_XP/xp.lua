@@ -389,21 +389,11 @@ end
 
 --[[ Text ]]--
 
-if XP.IsMouseOver then
-	function XP:UpdateTextShown()
-		if self:IsMouseOver() or self.sets.alwaysShowText then
-			self.text:Show()
-		else
-			self.text:Hide()
-		end
-	end
-else
-	function XP:UpdateTextShown()
-		if MouseIsOver(self) or self.sets.alwaysShowText then
-			self.text:Show()
-		else
-			self.text:Hide()
-		end
+function XP:UpdateTextShown()
+	if self:IsMouseOver() or self.sets.alwaysShowText then
+		self.text:Show()
+	else
+		self.text:Hide()
 	end
 end
 

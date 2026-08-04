@@ -273,9 +273,9 @@ function MenuBar:SkinButton(button)
 			CharacterMicroButton_SetNormal()
 		end
 		if not CharacterMicroButton:IsEnabled() then
-			SetDesaturation(MicroButtonPortrait, true)
+			MicroButtonPortrait:SetDesaturated(true)
 		else
-			SetDesaturation(MicroButtonPortrait, false)
+			MicroButtonPortrait:SetDesaturated(false)
 		end
 		GuildMicroButton:GetNormalTexture():SetVertexColor(1, 1, 1)
 		GuildMicroButton:GetPushedTexture():SetVertexColor(1, 1, 1)

@@ -42,7 +42,7 @@ function HoverMenu:IsOwned(frame)
 end
 
 function HoverMenu:OnUpdate(elapsed)
-	if not(MouseIsOver(self, 2, -2, -2, 2) or MouseIsOver(self.owner, 2, -2, -2, 2)) then
+	if not(self:IsMouseOver(2, -2, -2, 2) or self.owner:IsMouseOver(2, -2, -2, 2)) then
 		self:Set(nil)
 	end
 end
