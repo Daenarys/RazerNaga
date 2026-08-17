@@ -543,13 +543,16 @@ for i = 1, NUM_OVERRIDE_BUTTONS do
 		button.PushedTexture:ClearAllPoints()
 		button.PushedTexture:SetAllPoints()
 		button.HighlightTexture:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+		button.HighlightTexture:SetBlendMode("ADD")
 		button.HighlightTexture:ClearAllPoints()
 		button.HighlightTexture:SetAllPoints()
-		button.HighlightTexture:SetBlendMode("ADD")
 		button.CheckedTexture:SetTexture([[Interface\Buttons\CheckButtonHilight]])
+		button.CheckedTexture:SetBlendMode("ADD")
 		button.CheckedTexture:ClearAllPoints()
 		button.CheckedTexture:SetAllPoints()
-		button.CheckedTexture:SetBlendMode("ADD")
+		button.cooldown:SetDrawBling(true)
+		button.cooldown:SetBlingTexture("Interface\\Cooldown\\star4", 0.3, 0.6, 1, 0.8)
+		button.cooldown:SetSwipeColor(0, 0, 0, 0.8)
 	end
 end
 
