@@ -528,13 +528,9 @@ function lib:ResetButtonBorder(name)
 	if button.border then
 		button.border:Show()
 		button.border:ClearAllPoints()
-		button.border:SetPoint("TOPLEFT", 0, 0)
-		button.border:SetTexture(136430) --"Interface\\Minimap\\MiniMap-TrackingBorder"
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			button.border:SetSize(50, 50)
-		else
-			button.border:SetSize(53, 53)
-		end
+		button.border:SetPoint("TOPLEFT")
+		button.border:SetSize(53, 53)
+		button.border:SetTexture("Interface\\AddOns\\RazerNaga\\icons\\MiniMap-TrackingBorder")
 	end
 end
 
@@ -569,13 +565,8 @@ function lib:ResetButtonBackground(name)
 		button.background:Show()
 		button.background:ClearAllPoints()
 		button.background:SetTexture(136467) --"Interface\\Minimap\\UI-Minimap-Background"
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			button.background:SetSize(24, 24)
-			button.background:SetPoint("CENTER", 0, 0)
-		else
-			button.background:SetSize(20, 20)
-			button.background:SetPoint("TOPLEFT", 7, -5)
-		end
+		button.background:SetSize(20, 20)
+		button.background:SetPoint("TOPLEFT", 7, -5)
 	end
 end
 
@@ -604,15 +595,9 @@ function lib:ResetButtonIcon(name)
 		button.icon:UpdateCoord()
 		local r, g, b = button.icon:GetVertexColor()
 		button.icon:SetVertexColor(button.dataObject.iconR or r, button.dataObject.iconG or g, button.dataObject.iconB or b)
-		if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-			button.icon:SetSize(18, 18)
-			button.icon:ClearAllPoints()
-			button.icon:SetPoint("CENTER")
-		else
-			button.icon:SetSize(17, 17)
-			button.icon:ClearAllPoints()
-			button.icon:SetPoint("TOPLEFT", 7, -6)
-		end
+		button.icon:SetSize(17, 17)
+		button.icon:ClearAllPoints()
+		button.icon:SetPoint("TOPLEFT", 7, -6)
 	end
 end
 
