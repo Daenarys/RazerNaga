@@ -1,4 +1,4 @@
-## Interface: 120100
+## Interface: 16001
 ## IconTexture: Interface/AddOns/RazerNaga/icons/RazerNagaMini
 ## Title: Razer Naga
 ## Notes: A main actionbar replacement
