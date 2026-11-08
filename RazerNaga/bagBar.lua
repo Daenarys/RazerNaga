@@ -29,8 +29,8 @@ function BagBar:SkinButton(b)
 		b.IconOverlay:SetSize(30, 30)
 	end
 
-	if b.CircleMask then
-		b.CircleMask:Hide()
+	if b.Mask then
+		b.Mask:Hide()
 	end
 
 	local function updateTextures(self)
@@ -50,9 +50,8 @@ function BagBar:SkinButton(b)
 	hooksecurefunc(b, "UpdateTextures", updateTextures)
 
 	updateTextures(b)
-	MainMenuBarBackpackButtonIconTexture:SetAtlas("hud-backpack", false)
-	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("CENTER", 1, -7)
+	MainMenuBarBackpackButton.FreeSlots:ClearAllPoints()
+	MainMenuBarBackpackButton.FreeSlots:SetPoint("CENTER", 1, -7)
 
 	b.skinned = true
 end
@@ -68,8 +67,8 @@ function BagBar:SetSetOneBag(enable)
 	self:Reload()
 end
 
-function BagBar:SetShowReagentSlot(enable)
-	self.sets.reagentSlot = enable or false
+function BagBar:SetShowKeyRing(enable)
+	self.sets.keyRing = enable or false
 	self:Reload()
 end
 
@@ -83,8 +82,8 @@ function BagBar:Reload()
 	end
 
 	if not self.sets.oneBag then
-		if self.sets.reagentSlot then
-			table.insert(self.bags, _G['CharacterReagentBag0Slot'])
+		if self.sets.keyRing then
+			table.insert(self.bags, _G['KeyRingButton'])
 		end
 		local startSlot = NUM_BAG_SLOTS - 1
 		for slot = startSlot, 0, -1 do
@@ -154,14 +153,14 @@ function BagBar:CreateMenu()
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
-	--add reagentslot option
-	local reagentSlot = panel:NewCheckButton(L.ReagentSlot)
-	reagentSlot:SetScript('OnShow', function()
-		reagentSlot:SetChecked(self.sets.reagentSlot)
+	--add keyring option
+	local keyRing = panel:NewCheckButton(L.KeyRing)
+	keyRing:SetScript('OnShow', function()
+		keyRing:SetChecked(self.sets.keyRing)
 	end)
 
-	reagentSlot:SetScript('OnClick', function()
-		self:SetShowReagentSlot(reagentSlot:GetChecked())
+	keyRing:SetScript('OnClick', function()
+		self:SetShowKeyRing(keyRing:GetChecked())
 		_G[panel:GetName() .. L.Columns]:OnShow()
 	end)
 
@@ -179,7 +178,7 @@ function BagBarModule:OnInitialize()
 	if not self.frame then
 		local noopFunc = function() end
 
-		CharacterReagentBag0Slot.SetBarExpanded = noopFunc
+		KeyRingButton.SetBarExpanded = noopFunc
 		CharacterBag3Slot.SetBarExpanded = noopFunc
 		CharacterBag2Slot.SetBarExpanded = noopFunc
 		CharacterBag1Slot.SetBarExpanded = noopFunc
