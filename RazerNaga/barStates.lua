@@ -101,20 +101,17 @@ if class == 'DRUID' then
 	addState('class', 'bear', '[bonusbar:3]', GetSpellName(5487))
 	addState('class', 'prowl', '[bonusbar:1,stealth]', GetSpellName(5215))
 	addState('class', 'cat', '[bonusbar:1]', GetSpellName(768))
-	addState('class', 'moonkin', '[bonusbar:4]', GetSpellName(24858))
-	addFormState('class', 'tree', 114282)
+	addFormState('class', 'moonkin', 24858)
 	addFormState('class', 'travel', 783)
-	addFormState('class', 'stag', 210053)
-elseif class == 'PALADIN' then
-	addFormState('class', 'concentration', 317920)
-	addFormState('class', 'crusader', 32223)
-	addFormState('class', 'devotion', 465)
-	addFormState('class', 'retribution', 183435)
+	addFormState('class', 'aquatic', 1066)
+elseif class == 'PRIEST' then
+	addState('class', 'shadowform', '[form:1]', GetSpellName(15473))
 elseif class == 'ROGUE' then
-	if GetSpellName(185313) then
-		addState('class', 'shadowdance', '[bonusbar:1,form:2]', GetSpellName(185313))
-	end
 	addState('class', 'stealth', '[bonusbar:1]', GetSpellName(1784))
+elseif class == 'WARRIOR' then
+	addFormState('class', 'battle', 2457)
+	addFormState('class', 'defensive', 71)
+	addFormState('class', 'berserker', 2458)
 end
 
 -- race

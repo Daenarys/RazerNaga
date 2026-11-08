@@ -20,7 +20,6 @@ frame.lua
 barStates.lua
 buttonBar.lua
 bindableButton.lua
-spellFlyout.lua
 actionButton.lua
 actionBar.lua
 petBar.lua

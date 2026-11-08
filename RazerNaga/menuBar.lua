@@ -2,38 +2,30 @@
 -- Menu Bar
 --------------------------------------------------------------------------------
 
-local PetMicroButtonFrame = PetBattleFrame and PetBattleFrame.BottomFrame.MicroButtonFrame
-
-if MicroMenu then
-	for _, button in ipairs { MicroMenu:GetChildren() } do
-		button:SetParent(RazerNaga.ShadowUIParent)
-	end
-end
-
 local MICRO_BUTTONS = {
 	'CharacterMicroButton',
-	'ProfessionMicroButton',
-	'PlayerSpellsMicroButton',
-	'AchievementMicroButton',
+	'SpellbookMicroButton',
+	'TalentMicroButton',
+	'LegacyMicroButton',
 	'QuestLogMicroButton',
 	'GuildMicroButton',
 	'LFDMicroButton',
 	'CollectionsMicroButton',
-	'EJMicroButton',
+	'ProfessionMicroButton',
 	'StoreMicroButton',
 	'MainMenuMicroButton'
 }
 
 local MICRO_BUTTON_NAMES = {
 	['CharacterMicroButton'] = CHARACTER_BUTTON,
-	['ProfessionMicroButton'] = PROFESSIONS_BUTTON,
-	['PlayerSpellsMicroButton'] = PLAYERSPELLS_BUTTON,
-	['AchievementMicroButton'] = ACHIEVEMENT_BUTTON,
+	['SpellbookMicroButton'] = SPELLBOOK_ABILITIES_BUTTON,
+	['TalentMicroButton'] = PLAYERSPELLS_BUTTON,
+	['LegacyMicroButton'] = LEGACY_BUTTON,
 	['QuestLogMicroButton'] = QUESTLOG_BUTTON,
 	['GuildMicroButton'] = GUILD_AND_COMMUNITIES,
 	['LFDMicroButton'] = DUNGEONS_BUTTON,
 	['CollectionsMicroButton'] = COLLECTIONS,
-	['EJMicroButton'] = ENCOUNTER_JOURNAL,
+	['ProfessionMicroButton'] = PROFESSIONS_BUTTON,
 	['StoreMicroButton'] = BLIZZARD_STORE,
 	['MainMenuMicroButton'] = MAINMENU_BUTTON
 }
@@ -51,14 +43,14 @@ function MenuBar:SkinButton(button)
 
 	local buttons = {
 		{button = CharacterMicroButton, name = 'Character'},
-		{button = ProfessionMicroButton, name = 'Spellbook'},
-		{button = PlayerSpellsMicroButton, name = 'Talents'},
-		{button = AchievementMicroButton, name = 'Achievement'},
+		{button = SpellbookMicroButton, name = 'Spellbook'},
+		{button = TalentMicroButton, name = 'Talents'},
+		{button = LegacyMicroButton, name = 'Achievement'},
 		{button = QuestLogMicroButton, name = 'Quest'},
 		{button = GuildMicroButton, name = 'Socials'},
 		{button = LFDMicroButton, name = 'LFG'},
 		{button = CollectionsMicroButton, name = 'Mounts'},
-		{button = EJMicroButton, name = 'EJ'},
+		{button = ProfessionMicroButton, name = 'EJ'},
 		{button = StoreMicroButton, name = 'BStore'},  
 		{button = MainMenuMicroButton, name = 'MainMenu'}
 	}
@@ -357,18 +349,6 @@ function MenuBar:Create(frameId)
 		end)
 	end
 
-	if PetMicroButtonFrame then
-		getOrHook(PetMicroButtonFrame, 'OnShow', function()
-			self.isPetBattleUIShown = true
-			requestLayoutUpdate()
-		end)
-
-		getOrHook(PetMicroButtonFrame, 'OnHide', function()
-			self.isPetBattleUIShown = nil
-			requestLayoutUpdate()
-		end)
-	end
-
 	return bar
 end
 
@@ -454,9 +434,7 @@ function MenuBar:IsMenuButtonDisabled(button)
 end
 
 function MenuBar:Layout()
-	if self.isPetBattleUIShown then
-		self:LayoutPetBattle()
-	elseif self.isOverrideUIShown then
+	if self.isOverrideUIShown then
 		self:LayoutOverrideUI()
 	else
 		self:LayoutNormal()
@@ -519,10 +497,6 @@ function MenuBar:LayoutNormal()
 	end
 end
 
-function MenuBar:LayoutPetBattle()
-	self:FixButtonPositions()
-end
-
 function MenuBar:LayoutOverrideUI()
 	self:FixButtonPositions()
 end
@@ -546,21 +520,6 @@ function MenuBar:FixButtonPositions()
 				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT')
 			else
 				button:SetPoint('BOTTOMLEFT', self.overrideButtons[i - 1], 'BOTTOMRIGHT')
-			end
-
-			button:Show()
-		end
-	elseif PetMicroButtonFrame and PetMicroButtonFrame:IsVisible() then
-		for i, button in ipairs(self.overrideButtons) do
-			button:ClearAllPoints()
-			button:SetParent(PetMicroButtonFrame)
-
-			if i == 1 then
-				button:SetPoint('TOPLEFT', -17, 9)
-			elseif i == 7 then
-				button:SetPoint('TOPLEFT', self.overrideButtons[1], 'BOTTOMLEFT', 0, 6)
-			else
-				button:SetPoint('TOPLEFT', self.overrideButtons[i - 1], 'TOPRIGHT', -5, 0)
 			end
 
 			button:Show()
