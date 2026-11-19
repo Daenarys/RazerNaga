@@ -129,11 +129,6 @@ function ActionButtonMixin:OnCreate(id)
 	-- apply hooks for quick binding
 	RazerNaga.BindableButton:AddQuickBindingSupport(self)
 
-	-- apply custom flyout
-	if RazerNaga.SpellFlyout then
-		RazerNaga.SpellFlyout:Register(self)
-	end
-
 	-- use pre 10.x button size
 	self:SetSize(36, 36)
 
@@ -298,7 +293,10 @@ function ActionButton:AddCastOnKeyPressSupport(button)
 	bind:SetAttributeNoHandler("useparent-flyoutDirection", true)
 	bind:SetAttributeNoHandler("useparent-pressAndHoldAction", true)
 	bind:SetAttributeNoHandler("useparent-unit", true)
-	SecureHandlerSetFrameRef(bind, "owner", button)
+
+	-- needs the real frame. secure code can only store a handle, which the
+	-- click action can't use
+	bind:SetAttributeNoHandler("clickbutton", button)
 
 	bind:EnableMouseWheel()
 	bind:RegisterForClicks("AnyUp", "AnyDown")
@@ -307,14 +305,21 @@ function ActionButton:AddCastOnKeyPressSupport(button)
 
 	bind.SetOverrideBindings = bindButton_SetOverrideBindings
 
-	if RazerNaga.SpellFlyout then
-		RazerNaga.SpellFlyout:Register(bind)
-	end
-
-	-- translate HOTKEY button "clicks" into LeftButton
+	-- HOTKEY -> LeftButton. flyouts need their own button to open, so those
+	-- click the owner instead (type click + clickbutton)
 	self:WrapScript(bind, "OnClick", [[
 		if button == "HOTKEY" then
+			if GetActionInfo(self:GetEffectiveAttribute("action")) == "flyout" then
+				self:SetAttribute("type", "click")
+
+				return "LeftButton", "flyout"
+			end
+
 			return "LeftButton"
+		end
+	]], [[
+		if message == "flyout" then
+			self:SetAttribute("type", "action")
 		end
 	]])
 
